@@ -213,7 +213,7 @@ $resolveAssetUrl = static function (string $path): string {
                         <h2 class="dashboard-cta-title">Unlock all AI career tools</h2>
                         <div class="pro-ad-services">
                             <div class="pro-ad-service">
-                                <div class="pro-ad-service-title"><i class="fas fa-route"></i> Career Transition AI</div>
+                                <div class="pro-ad-service-title"><i class="fas fa-map-signs"></i> Career Transition AI</div>
                                 <ul class="pro-ad-features">
                                     <li>Personalized roadmap</li>
                                     <li>Skill gap analysis</li>

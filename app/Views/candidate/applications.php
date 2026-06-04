@@ -14,10 +14,9 @@ $completedApplications = count(array_filter($applications ?? [], function ($appl
     <div class="container">
         <div class="page-board-header applications-page-header">
             <div class="page-board-copy">
-                <span class="page-board-kicker"><i class="fas fa-list-check"></i> Application tracking</span>
+                <span class="page-board-kicker"><i class="fas fa-briefcase"></i> Application tracking</span>
                 <h1 class="page-board-title">My Applications</h1>
-                <p class="page-board-subtitle">Track application status, recruiter activity, and next steps in a simple
-                    dashboard.</p><br/>
+                <p class="page-board-subtitle">Track application status, recruiter activity, and next steps in a simple dashboard.</p>
             </div>
             <div class="page-board-metrics">
                 <span class="hero-stat-chip"><strong
@@ -33,10 +32,10 @@ $completedApplications = count(array_filter($applications ?? [], function ($appl
     <div class="container content-wrap pb-5">
         <div id="candidateApplicationsAjaxAlert"></div>
         <?php if (empty($applications)): ?>
-            <div class="text-center bg-white rounded shadow-sm p-5 mb-4">
-                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
-                <h4 class="text-muted">No Applications Yet</h4>
-                <p class="text-muted mb-4">You have not applied to any jobs yet.</p><br/>
+            <div class="applications-empty-state">
+                <i class="fas fa-inbox"></i>
+                <h4>No Applications Yet</h4>
+                <p>You have not applied to any jobs yet.</p>
                 <a href="<?= base_url('jobs') ?>" class="btn btn-primary btn-lg">
                     <i class="fas fa-search"></i> Browse Jobs
                 </a>

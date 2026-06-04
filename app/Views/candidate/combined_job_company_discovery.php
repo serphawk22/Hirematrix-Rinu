@@ -4,7 +4,7 @@
     <div class="container">
         <div class="page-board-header">
             <div class="page-board-copy">
-                <span class="page-board-kicker"><i class="fas fa-magnifying-glass"></i> AI Discovery</span>
+                <span class="page-board-kicker"><i class="fas fa-search"></i> AI Discovery</span>
                 <h1 class="page-board-title">Company & Job Discovery</h1>
                 <p class="page-board-subtitle">Search for live job listings from top multinational companies or browse our comprehensive company directory</p>
             </div>

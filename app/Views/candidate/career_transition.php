@@ -17,7 +17,7 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
         <div class="container">
             <div class="page-board-header page-board-header-tight">
                 <div class="page-board-copy">
-                    <span class="page-board-kicker"><i class="fas fa-route"></i> Career learning path</span>
+                    <span class="page-board-kicker"><i class="fas fa-map-signs"></i> Career learning path</span>
                     <h1 class="page-board-title">Career Transition AI</h1>
                     <p class="page-board-subtitle">Get a personalised roadmap toward your target role with clear daily steps.</p>
                 </div>
