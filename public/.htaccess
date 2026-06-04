@@ -1,0 +1,34 @@
+# Disable directory browsing
+Options -Indexes
+
+# Block direct access to sensitive files that should never be web-served.
+ 
+<FilesMatch "\.(sql|zip|env|bak|config|ini|log|lock|md)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^ai_interview/api/ - [F,L,NC]
+    RewriteRule ^ai_interview/config\.php$ - [F,L,NC]
+    RewriteRule ^ai_interview/database/ - [F,L,NC]
+    RewriteRule ^database/ - [F,L,NC]
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    ErrorDocument 404 index.php
+</IfModule>
+
+ServerSignature Off

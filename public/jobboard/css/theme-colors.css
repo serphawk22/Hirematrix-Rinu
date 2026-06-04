@@ -1,0 +1,57 @@
+/* HireMatrix Theme Colors - Light & Dark Mode */
+
+:root {
+  /* Brand Colors - Light Mode */
+  --primary: #1FB7B5;
+  --primary-dark: #0D8A90;
+  
+  --secondary: #53B86C;
+  --secondary-dark: #3F9E58;
+  
+  --accent: #B5D84E;
+  --accent-dark: #9DC23D;
+  
+  /* Layout - Light Mode */
+  --background: #F8FCFB;
+  --foreground: #16212B;
+  
+  --card: #FFFFFF;
+  
+  --muted: #EDF8F5;
+  --muted-foreground: #64748B;
+  
+  --border: #D9ECE5;
+  --text-light: #94A3B8;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
+  --gradient-soft: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%);
+}
+
+:root.dark {
+  /* Brand Colors - Dark Mode */
+  --primary: #1FB7B5;
+  --primary-dark: #0D8A90;
+  
+  --secondary: #53B86C;
+  --secondary-dark: #3F9E58;
+  
+  --accent: #B5D84E;
+  --accent-dark: #9DC23D;
+  
+  /* Layout - Dark Mode */
+  --background: #0E1619;
+  --foreground: #F8FAFC;
+  
+  --card: #162327;
+  
+  --muted: #1B2A2F;
+  --muted-foreground: #94A3B8;
+  
+  --border: #23343A;
+  --text-light: #7A8B96;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
+  --gradient-soft: linear-gradient(135deg, #162327 0%, #1B2A2F 100%);
+}

@@ -1,0 +1,1081 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Libraries\AiCandidateMatcher;
+use App\Libraries\AtsScoreService;
+use App\Libraries\ResumeTemplateRenderer;
+use App\Models\UserModel;
+use App\Models\ApplicationModel;
+use App\Models\CandidateResumeVersionModel;
+use App\Models\WorkExperienceModel;
+use App\Models\EducationModel;
+use App\Models\CertificationModel;
+use App\Models\CandidateSkillsModel;
+use App\Models\CandidateInterestsModel;
+use App\Models\CandidateProjectModel;
+use App\Models\GithubAnalysisModel;
+use App\Models\RecruiterCandidateActionModel;
+use App\Models\NotificationModel;
+use App\Models\RecruiterCandidateMessageModel;
+use App\Models\RecruiterCandidateNoteModel;
+use App\Models\RecruiterJobInvitationModel;
+use App\Models\JobModel;
+
+class RecruiterCandidates extends BaseController
+{
+    private const ACTION_DEDUPE_HOURS = 24;
+
+    public function index()
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return redirect()->to(base_url('login'))->with('error', 'Unauthorized');
+        }
+
+        $userModel = model('UserModel');
+        $filters = [
+            'keyword' => trim((string) $this->request->getGet('keyword')),
+            'skills' => trim((string) $this->request->getGet('skills')),
+            'location' => trim((string) $this->request->getGet('location')),
+            'exp_min' => trim((string) $this->request->getGet('exp_min')),
+            'exp_max' => trim((string) $this->request->getGet('exp_max')),
+            'resume' => trim((string) $this->request->getGet('resume')),
+            'job_id' => (int) ($this->request->getGet('job_id') ?? 0),
+        ];
+
+        $expMinYears = is_numeric($filters['exp_min']) ? max(0, (float) $filters['exp_min']) : null;
+        $expMaxYears = is_numeric($filters['exp_max']) ? max(0, (float) $filters['exp_max']) : null;
+        if ($expMinYears !== null && $expMaxYears !== null && $expMinYears > $expMaxYears) {
+            [$expMinYears, $expMaxYears] = [$expMaxYears, $expMinYears];
+        }
+        $expMinMonths = $expMinYears !== null ? (int) round($expMinYears * 12) : null;
+        $expMaxMonths = $expMaxYears !== null ? (int) round($expMaxYears * 12) : null;
+
+        if (!in_array($filters['resume'], ['', 'yes', 'no'], true)) {
+            $filters['resume'] = '';
+        }
+        $jobModel = model('JobModel');
+        $recruiterId = (int) session()->get('user_id');
+        $recruiterJobs = $jobModel
+            ->select('id, title, company, category, location, description, required_skills, experience_level, employment_type, status, created_at')
+            ->where('recruiter_id', $recruiterId)
+            ->where('status', 'open')
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+
+        $selectedJob = null;
+        if ($filters['job_id'] > 0) {
+            foreach ($recruiterJobs as $job) {
+                if ((int) ($job['id'] ?? 0) === $filters['job_id']) {
+                    $selectedJob = $job;
+                    break;
+                }
+            }
+            if ($selectedJob === null) {
+                $filters['job_id'] = 0;
+            }
+        }
+
+        $experienceSubQuery = '(SELECT user_id, SUM(TIMESTAMPDIFF(MONTH, start_date, COALESCE(NULLIF(end_date, \'\'), CURDATE()))) AS total_experience_months FROM work_experiences GROUP BY user_id) candidate_experience';
+
+        $builder = $userModel
+            ->select('users.id, users.name, users.email, candidate_profiles.location as location, candidate_profiles.resume_path as resume_path, candidate_profiles.profile_photo as profile_photo, candidate_profiles.allow_public_recruiter_visibility as allow_public_recruiter_visibility, users.created_at, MAX(candidate_skills.skill_name) as skill_name, COALESCE(candidate_experience.total_experience_months, 0) as total_experience_months')
+            ->join('candidate_skills', 'candidate_skills.candidate_id = users.id', 'left')
+            ->join('candidate_profiles', 'candidate_profiles.user_id = users.id', 'left')
+            ->join($experienceSubQuery, 'candidate_experience.user_id = users.id', 'left', false)
+            ->where('users.role', 'candidate')
+            ->groupBy('users.id')
+            ->orderBy('users.created_at', 'DESC');
+
+        $this->applyRecruiterVisibilityFilter($builder, $recruiterId);
+
+        if ($filters['keyword'] !== '') {
+            $builder->groupStart()
+                ->like('users.name', $filters['keyword'])
+                ->orLike('users.email', $filters['keyword'])
+                ->orLike('candidate_skills.skill_name', $filters['keyword'])
+                ->groupEnd();
+        }
+
+        if ($filters['skills'] !== '') {
+            $builder->like('candidate_skills.skill_name', $filters['skills']);
+        }
+
+        if ($filters['location'] !== '') {
+            $builder->where(
+                'candidate_profiles.location LIKE ' . $builder->db->escape('%' . $filters['location'] . '%'),
+                null,
+                false
+            );
+        }
+
+        if ($expMinMonths !== null) {
+            $builder->where('COALESCE(candidate_experience.total_experience_months, 0) >= ' . $expMinMonths, null, false);
+        }
+
+        if ($expMaxMonths !== null) {
+            $builder->where('COALESCE(candidate_experience.total_experience_months, 0) <= ' . $expMaxMonths, null, false);
+        }
+
+        if ($filters['resume'] === 'yes') {
+            $builder->where('candidate_profiles.resume_path IS NOT NULL', null, false)
+                ->where('candidate_profiles.resume_path <>', '');
+        } elseif ($filters['resume'] === 'no') {
+            $builder->groupStart()
+                ->where('candidate_profiles.resume_path IS NULL', null, false)
+                ->orWhere('candidate_profiles.resume_path =', '')
+                ->groupEnd();
+        }
+
+        $candidates = $builder->paginate(12);
+        $pager = $userModel->pager;
+
+        foreach ($candidates as &$candidate) {
+            $candidate['experience_display'] = $this->formatExperienceDisplay((int) ($candidate['total_experience_months'] ?? 0));
+        }
+        unset($candidate);
+
+        $aiSuggestions = [];
+        if ($selectedJob) {
+            $suggestionBuilder = $userModel
+                ->select('users.id, users.name, users.email, candidate_profiles.location as location, candidate_profiles.resume_path as resume_path, candidate_profiles.profile_photo as profile_photo, candidate_profiles.allow_public_recruiter_visibility as allow_public_recruiter_visibility, users.created_at, MAX(candidate_skills.skill_name) as skill_name, COALESCE(candidate_experience.total_experience_months, 0) as total_experience_months')
+                ->join('candidate_skills', 'candidate_skills.candidate_id = users.id', 'left')
+                ->join('candidate_profiles', 'candidate_profiles.user_id = users.id', 'left')
+                ->join($experienceSubQuery, 'candidate_experience.user_id = users.id', 'left', false)
+                ->where('users.role', 'candidate')
+                ->groupBy('users.id')
+                ->orderBy('users.created_at', 'DESC');
+
+            $this->applyRecruiterVisibilityFilter($suggestionBuilder, $recruiterId);
+            $this->applySelectedJobAvailabilityFilter($suggestionBuilder, (int) $selectedJob['id']);
+
+            if ($filters['keyword'] !== '') {
+                $suggestionBuilder->groupStart()
+                    ->like('users.name', $filters['keyword'])
+                    ->orLike('users.email', $filters['keyword'])
+                    ->orLike('candidate_skills.skill_name', $filters['keyword'])
+                    ->groupEnd();
+            }
+
+            if ($filters['skills'] !== '') {
+                $suggestionBuilder->like('candidate_skills.skill_name', $filters['skills']);
+            }
+
+            if ($filters['location'] !== '') {
+                $suggestionBuilder->where(
+                    'candidate_profiles.location LIKE ' . $suggestionBuilder->db->escape('%' . $filters['location'] . '%'),
+                    null,
+                    false
+                );
+            }
+
+            if ($expMinMonths !== null) {
+                $suggestionBuilder->where('COALESCE(candidate_experience.total_experience_months, 0) >= ' . $expMinMonths, null, false);
+            }
+
+            if ($expMaxMonths !== null) {
+                $suggestionBuilder->where('COALESCE(candidate_experience.total_experience_months, 0) <= ' . $expMaxMonths, null, false);
+            }
+
+            if ($filters['resume'] === 'yes') {
+                $suggestionBuilder->where('candidate_profiles.resume_path IS NOT NULL', null, false)
+                    ->where('candidate_profiles.resume_path <>', '');
+            } elseif ($filters['resume'] === 'no') {
+                $suggestionBuilder->groupStart()
+                    ->where('candidate_profiles.resume_path IS NULL', null, false)
+                    ->orWhere('candidate_profiles.resume_path =', '')
+                    ->groupEnd();
+            }
+
+            $candidatePool = $suggestionBuilder->limit(120)->findAll();
+            $atsScoreService = new AtsScoreService();
+            foreach ($candidatePool as &$poolRow) {
+                $poolRow['experience_display'] = $this->formatExperienceDisplay((int) ($poolRow['total_experience_months'] ?? 0));
+                $atsAnalysis = $atsScoreService->analyzeCandidateJob((int) ($poolRow['id'] ?? 0), $selectedJob);
+                $poolRow['match_score'] = (int) ($atsAnalysis['score'] ?? 0);
+                $poolRow['match_reason'] = (string) ($atsAnalysis['match_reason'] ?? 'ATS alignment based on current resume and profile signals.');
+            }
+            unset($poolRow);
+
+            usort($candidatePool, static fn (array $a, array $b): int => ((int) ($b['match_score'] ?? 0)) <=> ((int) ($a['match_score'] ?? 0)));
+            $aiSuggestions = array_values(array_slice(array_filter($candidatePool, static function (array $candidate): bool {
+                return (int) ($candidate['match_score'] ?? 0) > 0;
+            }), 0, 20));
+        }
+
+        return view('recruiter/candidates/index', [
+            'candidates' => $candidates,
+            'pager' => $pager,
+            'recruiterJobs' => $recruiterJobs,
+            'selectedJob' => $selectedJob,
+            'aiSuggestions' => $aiSuggestions,
+            'filters' => [
+                'keyword' => $filters['keyword'],
+                'skills' => $filters['skills'],
+                'location' => $filters['location'],
+                'exp_min' => $expMinYears !== null ? (string) $expMinYears : '',
+                'exp_max' => $expMaxYears !== null ? (string) $expMaxYears : '',
+                'resume' => $filters['resume'],
+                'job_id' => $filters['job_id'],
+            ],
+        ]);
+    }
+
+    public function viewProfile($candidateId)
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return redirect()->to(base_url('login'))->with('error', 'Unauthorized');
+        }
+
+        $userModel = new UserModel();
+        $candidate = $userModel->findCandidateWithProfile((int) $candidateId) ?? $userModel->find($candidateId);
+        
+        if (!$candidate || $candidate['role'] !== 'candidate') {
+            return redirect()->back()->with('error', 'Candidate not found');
+        }
+
+        if (!$this->canRecruiterAccessCandidate((int) $candidateId, (int) session()->get('user_id'))) {
+            return redirect()->back()->with('error', 'This candidate profile is private unless they apply to your jobs.');
+        }
+
+        $applicationId = (int) ($this->request->getGet('application_id') ?? 0);
+        $jobId = (int) ($this->request->getGet('job_id') ?? 0);
+        $recruiterId = (int) session()->get('user_id');
+        $actionModel = new RecruiterCandidateActionModel();
+        $applicationContext = null;
+        $applicationId = $this->resolveApplicationIdForCandidateJob((int) $candidateId, $recruiterId, $applicationId, $jobId);
+
+        if ($applicationId > 0) {
+            $applicationContext = (new ApplicationModel())
+                ->select('applications.*, jobs.title as job_title, jobs.recruiter_id as job_recruiter_id')
+                ->join('jobs', 'jobs.id = applications.job_id', 'left')
+                ->where('applications.id', $applicationId)
+                ->where('applications.candidate_id', (int) $candidateId)
+                ->first();
+
+            if ($applicationContext && (int) ($applicationContext['job_recruiter_id'] ?? 0) !== $recruiterId) {
+                $applicationContext = null;
+            } elseif ($applicationContext) {
+                $applicationContext['questionnaire_items'] = $this->decodeQuestionnaireResponses(
+                    (string) ($applicationContext['questionnaire_responses'] ?? '')
+                );
+            }
+        }
+
+        $wasLogged = $actionModel->logAction(
+            (int) $candidateId,
+            $recruiterId,
+            RecruiterCandidateActionModel::ACTION_PROFILE_VIEWED,
+            $applicationId > 0 ? $applicationId : null,
+            $jobId > 0 ? $jobId : null,
+            self::ACTION_DEDUPE_HOURS
+        );
+
+        if ($wasLogged) {
+            $this->notifyCandidateAction(
+                (int) $candidateId,
+                $applicationId > 0 ? $applicationId : null,
+                'recruiter_profile_viewed',
+                'Profile Viewed',
+                'One recruiter viewed your profile.'
+            );
+        }
+        
+        $workExpModel = new WorkExperienceModel();
+        $educationModel = new EducationModel();
+        $certificationModel = new CertificationModel();
+        $skillsModel = new CandidateSkillsModel();
+        $interestsModel = new CandidateInterestsModel();
+        $githubModel = new GithubAnalysisModel();
+        $projectModel = new CandidateProjectModel();
+
+        $workExperiences = $workExpModel->getByUser($candidateId);
+        $education = $educationModel->getByUser($candidateId);
+        $certifications = $certificationModel->getByUser($candidateId);
+        // Calculate total experience in months
+        $totalExperienceMonths = 0;
+        foreach ($workExperiences as $exp) {
+            $startDate = new \DateTime($exp['start_date']);
+            $endDate = !empty($exp['is_current']) ? new \DateTime() : new \DateTime($exp['end_date']);
+            $interval = $startDate->diff($endDate);
+            $totalExperienceMonths += ($interval->y * 12) + $interval->m;
+        }
+
+        $skills = $skillsModel->where('candidate_id', $candidateId)->first();
+        $interestRow = $interestsModel->where('candidate_id', $candidateId)->first();
+        $interests = [];
+        if ($interestRow && !empty($interestRow['interest'])) {
+            $interests = array_values(array_filter(array_map('trim', explode(',', (string) $interestRow['interest']))));
+        }
+        $github = $githubModel->where('candidate_id', $candidateId)->first();
+        $projects = \Config\Database::connect()->tableExists('candidate_projects')
+            ? $projectModel->getByUser((int) $candidateId)
+            : [];
+        $messages = (new RecruiterCandidateMessageModel())->getThread(
+            (int) $candidateId,
+            (int) $recruiterId,
+            $applicationId > 0 ? $applicationId : null
+        );
+        $recruiterNote = (new RecruiterCandidateNoteModel())->getByCandidateAndRecruiter(
+            (int) $candidateId,
+            (int) $recruiterId
+        );
+        
+        return view('recruiter/candidate_profile', [
+            'candidate' => $candidate,
+            'workExperiences' => $workExperiences,
+            'education' => $education,
+            'certifications' => $certifications,
+            'skills' => $skills,
+            'interests' => $interests,
+            'github' => $github,
+            'projects' => $projects,
+            'messages' => $messages,
+            'totalExperienceMonths' => $totalExperienceMonths,
+            'isFresherCandidate' => (int)($candidate['is_fresher_candidate'] ?? 0) === 1,
+            'recruiterNote' => $recruiterNote,
+            'recruiterJobs' => $this->getRecruiterOpenJobs($recruiterId),
+            'jobInvitations' => $this->getCandidateInvitationStatusMap((int) $candidateId, $recruiterId),
+            'applicationContext' => $applicationContext,
+        ]);
+    }
+
+    /**
+     * @return array<int, array<string, string>>
+     */
+    private function decodeQuestionnaireResponses(string $rawResponses): array
+    {
+        if (trim($rawResponses) === '') {
+            return [];
+        }
+
+        $decoded = json_decode($rawResponses, true);
+        if (!is_array($decoded)) {
+            return [];
+        }
+
+        $items = [];
+        foreach ($decoded as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
+            $label = trim((string) ($row['label'] ?? ''));
+            $answer = trim((string) ($row['answer'] ?? ''));
+            if ($label === '' || $answer === '') {
+                continue;
+            }
+
+            $items[] = [
+                'label' => $label,
+                'answer' => $answer,
+                'type' => trim((string) ($row['type'] ?? 'textarea')),
+            ];
+        }
+
+        return $items;
+    }
+
+    public function viewContact($candidateId)
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return redirect()->to(base_url('login'))->with('error', 'Unauthorized');
+        }
+
+        $userModel = new UserModel();
+        $candidate = $userModel->findCandidateWithProfile((int) $candidateId) ?? $userModel->find($candidateId);
+        if (!$candidate || $candidate['role'] !== 'candidate') {
+            return redirect()->back()->with('error', 'Candidate not found');
+        }
+
+        if (!$this->canRecruiterAccessCandidate((int) $candidateId, (int) session()->get('user_id'))) {
+            return redirect()->back()->with('error', 'This candidate profile is private unless they apply to your jobs.');
+        }
+
+        $applicationId = (int) ($this->request->getGet('application_id') ?? 0);
+        $jobId = (int) ($this->request->getGet('job_id') ?? 0);
+        $applicationId = $this->resolveApplicationIdForCandidateJob((int) $candidateId, (int) session()->get('user_id'), $applicationId, $jobId);
+
+        $wasLogged = (new RecruiterCandidateActionModel())->logAction(
+            (int) $candidateId,
+            (int) session()->get('user_id'),
+            RecruiterCandidateActionModel::ACTION_CONTACT_VIEWED,
+            $applicationId > 0 ? $applicationId : null,
+            $jobId > 0 ? $jobId : null,
+            self::ACTION_DEDUPE_HOURS
+        );
+
+        if ($wasLogged) {
+            $this->notifyCandidateAction(
+                (int) $candidateId,
+                $applicationId > 0 ? $applicationId : null,
+                'recruiter_contact_viewed',
+                'Contact Viewed',
+                'One recruiter viewed your contact details.'
+            );
+        }
+
+        $redirectUrl = base_url('recruiter/candidate/' . $candidateId)
+            . '?show_contact=1'
+            . '&application_id=' . $applicationId
+            . '&job_id=' . $jobId;
+
+        return redirect()->to($redirectUrl);
+    }
+
+    public function downloadResume($candidateId)
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return redirect()->to(base_url('login'))->with('error', 'Unauthorized');
+        }
+
+        $userModel = new UserModel();
+        $candidate = $userModel->findCandidateWithProfile((int) $candidateId) ?? $userModel->find($candidateId);
+        if (!$candidate || $candidate['role'] !== 'candidate') {
+            return redirect()->back()->with('error', 'Resume not found.');
+        }
+
+        if (!$this->canRecruiterAccessCandidate((int) $candidateId, (int) session()->get('user_id'))) {
+            return redirect()->back()->with('error', 'This candidate profile is private unless they apply to your jobs.');
+        }
+
+        $applicationId = (int) ($this->request->getGet('application_id') ?? 0);
+        $jobId = (int) ($this->request->getGet('job_id') ?? 0);
+        $applicationId = $this->resolveApplicationIdForCandidateJob((int) $candidateId, (int) session()->get('user_id'), $applicationId, $jobId);
+        $submittedResumeVersion = $this->getSubmittedResumeVersion((int) $candidateId, $applicationId);
+
+        $wasLogged = (new RecruiterCandidateActionModel())->logAction(
+            (int) $candidateId,
+            (int) session()->get('user_id'),
+            RecruiterCandidateActionModel::ACTION_RESUME_DOWNLOADED,
+            $applicationId > 0 ? $applicationId : null,
+            $jobId > 0 ? $jobId : null,
+            self::ACTION_DEDUPE_HOURS
+        );
+
+        if ($wasLogged) {
+            $this->notifyCandidateAction(
+                (int) $candidateId,
+                $applicationId > 0 ? $applicationId : null,
+                'recruiter_resume_downloaded',
+                'Resume Downloaded',
+                'One recruiter downloaded your resume.'
+            );
+        }
+
+        if ($submittedResumeVersion) {
+            $renderer = new ResumeTemplateRenderer();
+            $pdfPath = $renderer->createPdfFile((string) ($submittedResumeVersion['content'] ?? ''), [
+                'name' => (string) ($candidate['name'] ?? 'Candidate'),
+                'target_role' => (string) ($submittedResumeVersion['target_role'] ?? ''),
+                'summary' => (string) ($submittedResumeVersion['summary'] ?? ''),
+                'highlight_skills' => array_values(array_filter(array_map('trim', explode(',', (string) ($submittedResumeVersion['highlight_skills'] ?? ''))))),
+            ], (string) (($candidate['name'] ?? 'candidate') . '-' . ($submittedResumeVersion['target_role'] ?? 'resume')));
+
+            return $this->response->download($pdfPath, null)->setFileName(basename($pdfPath));
+        }
+
+        if (empty($candidate['resume_path'])) {
+            return redirect()->back()->with('error', 'Resume file not found.');
+        }
+
+        $filePath = WRITEPATH . $candidate['resume_path'];
+        if (!is_file($filePath)) {
+            return redirect()->back()->with('error', 'Resume file not found.');
+        }
+
+        return $this->response->download($filePath, null);
+    }
+
+    public function sendMessage($candidateId)
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return redirect()->to(base_url('login'))->with('error', 'Unauthorized');
+        }
+
+        $userModel = new UserModel();
+        $candidate = $userModel->findCandidateWithProfile((int) $candidateId) ?? $userModel->find($candidateId);
+        if (!$candidate || $candidate['role'] !== 'candidate') {
+            return redirect()->back()->with('error', 'Candidate not found');
+        }
+
+        if (!$this->canRecruiterAccessCandidate((int) $candidateId, (int) session()->get('user_id'))) {
+            return redirect()->back()->with('error', 'This candidate profile is private unless they apply to your jobs.');
+        }
+
+        $message = trim((string) $this->request->getPost('message'));
+        $applicationId = (int) ($this->request->getPost('application_id') ?? 0);
+        $jobId = (int) ($this->request->getPost('job_id') ?? 0);
+
+        if ($message === '') {
+            return redirect()->back()->with('error', 'Message cannot be empty.');
+        }
+
+        if (mb_strlen($message) > 1000) {
+            return redirect()->back()->with('error', 'Message is too long. Max 1000 characters.');
+        }
+
+        $recruiterName = (string) (session()->get('user_name') ?? 'Recruiter');
+        $messageModel = new RecruiterCandidateMessageModel();
+
+        $messageModel->insert([
+            'candidate_id' => (int) $candidateId,
+            'recruiter_id' => (int) session()->get('user_id'),
+            'application_id' => $applicationId > 0 ? $applicationId : null,
+            'job_id' => $jobId > 0 ? $jobId : null,
+            'sender_id' => (int) session()->get('user_id'),
+            'sender_role' => 'recruiter',
+            'message' => $message,
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $this->notifyCandidateAction(
+            (int) $candidateId,
+            $applicationId > 0 ? $applicationId : null,
+            'recruiter_message',
+            'Message from Recruiter',
+            "{$recruiterName} sent you a message. Open conversation to read it.",
+            base_url('candidate/messages/' . (int) session()->get('user_id') . ($applicationId > 0 ? '?application_id=' . $applicationId : ''))
+        );
+
+        $redirectUrl = base_url('recruiter/candidate/' . $candidateId)
+            . '?application_id=' . $applicationId
+            . '&job_id=' . $jobId
+            . '&show_contact=' . (int) ($this->request->getPost('show_contact') ?? 0);
+
+        return redirect()->to($redirectUrl)->with('success', 'Message sent to candidate.');
+    }
+
+    public function saveNotes($candidateId)
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return redirect()->to(base_url('login'))->with('error', 'Unauthorized');
+        }
+
+        $userModel = new UserModel();
+        $candidate = $userModel->findCandidateWithProfile((int) $candidateId) ?? $userModel->find($candidateId);
+        if (!$candidate || $candidate['role'] !== 'candidate') {
+            return redirect()->back()->with('error', 'Candidate not found');
+        }
+
+        $recruiterId = (int) session()->get('user_id');
+        if (!$this->canRecruiterAccessCandidate((int) $candidateId, $recruiterId)) {
+            return redirect()->back()->with('error', 'This candidate profile is private unless they apply to your jobs.');
+        }
+
+        $rawTags = trim((string) $this->request->getPost('tags'));
+        $notes = trim((string) $this->request->getPost('notes'));
+
+        if (mb_strlen($rawTags) > 255) {
+            return redirect()->back()->with('error', 'Tags are too long. Max 255 characters.');
+        }
+
+        if (mb_strlen($notes) > 5000) {
+            return redirect()->back()->with('error', 'Notes are too long. Max 5000 characters.');
+        }
+
+        $tags = $this->normalizeTags($rawTags);
+        $noteModel = new RecruiterCandidateNoteModel();
+        $existing = $noteModel->getByCandidateAndRecruiter((int) $candidateId, $recruiterId);
+
+        $data = [
+            'candidate_id' => (int) $candidateId,
+            'recruiter_id' => $recruiterId,
+            'tags' => $tags,
+            'notes' => $notes,
+        ];
+
+        if ($existing) {
+            $noteModel->update((int) $existing['id'], $data);
+        } else {
+            $noteModel->insert($data);
+        }
+
+        $applicationId = (int) ($this->request->getPost('application_id') ?? 0);
+        $jobId = (int) ($this->request->getPost('job_id') ?? 0);
+        $showContact = (int) ($this->request->getPost('show_contact') ?? 0);
+
+        $redirectUrl = base_url('recruiter/candidate/' . $candidateId)
+            . '?application_id=' . $applicationId
+            . '&job_id=' . $jobId
+            . '&show_contact=' . $showContact;
+
+        return redirect()->to($redirectUrl)->with('success', 'Recruiter notes saved.');
+    }
+
+    public function inviteToJob($candidateId)
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return redirect()->to(base_url('login'))->with('error', 'Unauthorized');
+        }
+
+        $result = $this->performJobInvitation(
+            (int) session()->get('user_id'),
+            (int) $candidateId,
+            (int) ($this->request->getPost('job_id') ?? 0),
+            trim((string) $this->request->getPost('message'))
+        );
+        $returnTo = trim((string) $this->request->getPost('return_to'));
+
+        $redirectTarget = $returnTo !== '' ? $returnTo : base_url('recruiter/candidate/' . (int) $candidateId);
+        $flashType = ($result['ok'] ?? false) ? 'success' : 'error';
+
+        return redirect()->to($redirectTarget)->with($flashType, (string) ($result['message'] ?? 'Could not send invitation.'));
+    }
+
+    public function bulkInviteToJob()
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return redirect()->to(base_url('login'))->with('error', 'Unauthorized');
+        }
+
+        $candidateIds = $this->request->getPost('candidate_ids');
+        $candidateIds = is_array($candidateIds) ? array_values(array_unique(array_map('intval', $candidateIds))) : [];
+        $jobId = (int) ($this->request->getPost('job_id') ?? 0);
+        $customMessage = trim((string) $this->request->getPost('message'));
+        $returnTo = trim((string) $this->request->getPost('return_to'));
+
+        if (empty($candidateIds)) {
+            return redirect()->back()->with('error', 'Select at least one candidate to send invitations.');
+        }
+
+        $successCount = 0;
+        $skippedCount = 0;
+        $firstError = '';
+
+        foreach ($candidateIds as $candidateId) {
+            if ($candidateId <= 0) {
+                continue;
+            }
+
+            $result = $this->performJobInvitation((int) session()->get('user_id'), $candidateId, $jobId, $customMessage);
+            if ($result['ok'] ?? false) {
+                $successCount++;
+                continue;
+            }
+
+            $skippedCount++;
+            if ($firstError === '') {
+                $firstError = (string) ($result['message'] ?? 'Some invitations could not be sent.');
+            }
+        }
+
+        $redirectTarget = $returnTo !== '' ? $returnTo : base_url('recruiter/candidates');
+        if ($successCount > 0) {
+            $message = $successCount . ' invitation' . ($successCount === 1 ? '' : 's') . ' sent successfully.';
+            if ($skippedCount > 0) {
+                $message .= ' ' . $skippedCount . ' skipped';
+                if ($firstError !== '') {
+                    $message .= ' because ' . strtolower(rtrim($firstError, '.')) . '.';
+                } else {
+                    $message .= '.';
+                }
+            }
+
+            return redirect()->to($redirectTarget)->with('success', $message);
+        }
+
+        return redirect()->to($redirectTarget)->with('error', $firstError !== '' ? $firstError : 'No invitations were sent.');
+    }
+
+    private function notifyCandidateAction(
+        int $candidateId,
+        ?int $applicationId,
+        string $type,
+        string $title,
+        string $message,
+        ?string $actionLink = null
+    ): void {
+        $notificationModel = new NotificationModel();
+        $notificationModel->insert([
+            'user_id' => $candidateId,
+            'application_id' => $applicationId,
+            'type' => $type,
+            'title' => $title,
+            'message' => $message,
+            'action_link' => $actionLink ?? base_url('candidate/applications'),
+            'is_read' => 0,
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $emailEligibleTypes = [
+            'recruiter_profile_viewed',
+            'recruiter_contact_viewed',
+            'recruiter_resume_downloaded',
+        ];
+
+        if (in_array($type, $emailEligibleTypes, true)) {
+            $userModel = new UserModel();
+            $candidate = $userModel->findCandidateWithProfile($candidateId) ?? $userModel->find($candidateId) ?? [];
+            $allowEmail = (int) ($candidate['job_alert_notify_email'] ?? 1) === 1;
+            if ($allowEmail) {
+                $this->sendCandidateActionEmail($candidate, $title, $message, $actionLink ?? base_url('candidate/applications'));
+            }
+        }
+    }
+
+    private function sendCandidateActionEmail(array $candidate, string $title, string $message, string $actionLink): void
+    {
+        $recipient = trim((string) ($candidate['email'] ?? ''));
+        if ($recipient === '') {
+            return;
+        }
+
+        $candidateName = trim((string) ($candidate['name'] ?? 'Candidate'));
+        $subject = $title . ' on HireMatrix';
+
+        $body = '
+            <div style="margin:0;padding:24px;background:#eef4ff;font-family:Segoe UI,Arial,sans-serif;color:#0f172a;">
+                <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:22px;overflow:hidden;box-shadow:0 18px 40px rgba(15,23,42,0.10);">
+                    <div style="padding:26px 30px;background:linear-gradient(135deg,#0b66ff 0%,#38bdf8 100%);color:#ffffff;">
+                        <div style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.88;margin-bottom:10px;">HireMatrix recruiter activity</div>
+                        <h1 style="margin:0;font-size:26px;line-height:1.25;">' . esc($title) . '</h1>
+                    </div>
+                    <div style="padding:28px 30px;">
+                        <p style="margin:0 0 16px;font-size:15px;line-height:1.7;">Hi ' . esc($candidateName) . ',</p>
+                        <p style="margin:0 0 20px;font-size:15px;line-height:1.8;">' . esc($message) . '</p>
+                        <a href="' . esc($actionLink) . '" style="display:inline-block;padding:13px 21px;border-radius:999px;background:#0b66ff;color:#ffffff;text-decoration:none;font-weight:700;">View Activity</a>
+                        <p style="margin:18px 0 0;font-size:13px;line-height:1.7;color:#64748b;">You can manage email notifications from your candidate notification settings.</p>
+                    </div>
+                </div>
+            </div>';
+
+        try {
+            $email = \Config\Services::email(null, false);
+            $config = config('Email');
+            $email->clear(true);
+            $email->setMailType('html');
+
+            if ($config->fromEmail !== '') {
+                $email->setFrom($config->fromEmail, $config->fromName ?: 'HireMatrix');
+            }
+
+            $email->setTo($recipient);
+            $email->setSubject($subject);
+            $email->setMessage($body);
+            $email->send(false);
+        } catch (\Throwable $e) {
+            log_message('error', 'Candidate action email failed: ' . $e->getMessage());
+        }
+    }
+
+    private function getRecruiterOpenJobs(int $recruiterId): array
+    {
+        return (new JobModel())
+            ->select('id, title, company, status')
+            ->where('recruiter_id', $recruiterId)
+            ->where('status', 'open')
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+    }
+
+    private function getCandidateInvitationStatusMap(int $candidateId, int $recruiterId): array
+    {
+        $db = \Config\Database::connect();
+        if (!$db->tableExists('recruiter_job_invitations')) {
+            return [];
+        }
+
+        $rows = (new RecruiterJobInvitationModel())
+            ->where('candidate_id', $candidateId)
+            ->where('recruiter_id', $recruiterId)
+            ->orderBy('id', 'DESC')
+            ->findAll();
+
+        $map = [];
+        foreach ($rows as $row) {
+            $jobId = (int) ($row['job_id'] ?? 0);
+            if ($jobId <= 0 || isset($map[$jobId])) {
+                continue;
+            }
+            $map[$jobId] = $row;
+        }
+
+        return $map;
+    }
+
+    private function buildInvitationMessage(string $candidateName, string $jobTitle, string $companyName, string $recruiterName): string
+    {
+        return "Hi {$candidateName}, {$recruiterName} thinks your background could be a strong fit for {$jobTitle} at {$companyName}. Take a closer look and apply if the role feels right for your next move.";
+    }
+
+    private function performJobInvitation(int $recruiterId, int $candidateId, int $jobId, string $customMessage = ''): array
+    {
+        $userModel = new UserModel();
+        $candidate = $userModel->findCandidateWithProfile($candidateId) ?? $userModel->find($candidateId);
+        if (!$candidate || ($candidate['role'] ?? '') !== 'candidate') {
+            return ['ok' => false, 'message' => 'Candidate not found.'];
+        }
+
+        if (!$this->canRecruiterAccessCandidate($candidateId, $recruiterId)) {
+            return ['ok' => false, 'message' => 'This candidate profile is private unless they apply to your jobs.'];
+        }
+
+        $job = (new JobModel())
+            ->where('id', $jobId)
+            ->where('recruiter_id', $recruiterId)
+            ->where('status', 'open')
+            ->first();
+
+        if (!$job) {
+            return ['ok' => false, 'message' => 'Select a valid open job before sending an invitation.'];
+        }
+
+        $existingApplication = (new ApplicationModel())
+            ->where('job_id', $jobId)
+            ->where('candidate_id', $candidateId)
+            ->where('status !=', 'withdrawn')
+            ->first();
+
+        if ($existingApplication) {
+            return ['ok' => false, 'message' => 'This candidate has already applied for the selected job.'];
+        }
+
+        if (mb_strlen($customMessage) > 500) {
+            return ['ok' => false, 'message' => 'Invitation note is too long. Max 500 characters.'];
+        }
+
+        $db = \Config\Database::connect();
+        if (!$db->tableExists('recruiter_job_invitations')) {
+            return ['ok' => false, 'message' => 'Invitation tracking is not ready yet. Run the latest migrations first.'];
+        }
+
+        $invitationModel = new RecruiterJobInvitationModel();
+        if ($invitationModel->findActiveInvitation($recruiterId, $candidateId, $jobId)) {
+            return ['ok' => false, 'message' => 'An active invitation for this candidate and job already exists.'];
+        }
+
+        $defaultMessage = $this->buildInvitationMessage(
+            (string) ($candidate['name'] ?? 'there'),
+            (string) ($job['title'] ?? 'this role'),
+            (string) ($job['company'] ?? 'our team'),
+            (string) (session()->get('user_name') ?? 'A recruiter')
+        );
+        $message = $customMessage !== '' ? $customMessage : $defaultMessage;
+
+        $invitationId = $invitationModel->createInvitation($recruiterId, $candidateId, $jobId, $message);
+        $jobLink = base_url('job/' . $jobId . '?invitation=' . $invitationId);
+
+        $candidateProfile = $userModel->findCandidateWithProfile($candidateId) ?? $candidate;
+        $allowInApp = (int) ($candidateProfile['job_alert_notify_in_app'] ?? 1) === 1;
+        $allowEmail = (int) ($candidateProfile['job_alert_notify_email'] ?? 1) === 1;
+
+        if ($allowInApp) {
+            $this->notifyCandidateAction(
+                $candidateId,
+                null,
+                'job_invitation',
+                'Invitation to Apply',
+                $message,
+                $jobLink
+            );
+        }
+
+        if ($allowEmail) {
+            $this->sendInvitationEmail($candidateProfile, $job, $message, $jobLink);
+        }
+
+        return ['ok' => true, 'message' => 'Invitation sent to candidate successfully.'];
+    }
+
+    private function sendInvitationEmail(array $candidate, array $job, string $message, string $jobLink): void
+    {
+        $recipient = trim((string) ($candidate['email'] ?? ''));
+        if ($recipient === '') {
+            return;
+        }
+
+        $candidateName = trim((string) ($candidate['name'] ?? 'Candidate'));
+        $jobTitle = trim((string) ($job['title'] ?? 'this role'));
+        $companyName = trim((string) ($job['company'] ?? 'our company'));
+        $recruiterName = trim((string) (session()->get('user_name') ?? 'A recruiter'));
+
+        $subject = 'Invitation to apply: ' . $jobTitle . ' at ' . $companyName;
+
+        $body = '
+            <div style="margin:0;padding:24px;background:#eef4ff;font-family:Segoe UI,Arial,sans-serif;color:#0f172a;">
+                <div style="max-width:680px;margin:0 auto;background:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 18px 40px rgba(15,23,42,0.10);">
+                    <div style="padding:28px 32px;background:linear-gradient(135deg,#0b66ff 0%,#38bdf8 100%);color:#ffffff;">
+                        <div style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.88;margin-bottom:10px;">HireMatrix recruiter invite</div>
+                        <h1 style="margin:0;font-size:28px;line-height:1.2;">A recruiter wants you to consider a role</h1>
+                        <p style="margin:12px 0 0;font-size:15px;line-height:1.7;opacity:0.95;">This is a direct invitation designed to feel personal, not mass-sent.</p>
+                    </div>
+                    <div style="padding:28px 32px;">
+                        <p style="margin:0 0 16px;font-size:15px;line-height:1.7;">Hi ' . esc($candidateName) . ',</p>
+                        <p style="margin:0 0 18px;font-size:15px;line-height:1.8;">' . esc($recruiterName) . ' invited you to explore <strong>' . esc($jobTitle) . '</strong> at <strong>' . esc($companyName) . '</strong>.</p>
+                        <div style="padding:18px 20px;border-radius:18px;background:#f8fbff;border:1px solid #dbeafe;margin-bottom:20px;">
+                            <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.08em;color:#2563eb;font-weight:700;margin-bottom:8px;">Why you received this</div>
+                            <div style="font-size:15px;line-height:1.8;color:#1e293b;">' . nl2br(esc($message)) . '</div>
+                        </div>
+                        <a href="' . esc($jobLink) . '" style="display:inline-block;padding:14px 22px;border-radius:999px;background:#0b66ff;color:#ffffff;text-decoration:none;font-weight:700;">Review Role and Apply</a>
+                        <p style="margin:18px 0 0;font-size:13px;line-height:1.7;color:#64748b;">If the role fits your direction, you can apply right away from the job page. If not, you can simply ignore this invite.</p>
+                    </div>
+                </div>
+            </div>';
+
+        try {
+            $email = \Config\Services::email(null, false);
+            $config = config('Email');
+            $email->clear(true);
+            $email->setMailType('html');
+
+            if ($config->fromEmail !== '') {
+                $email->setFrom($config->fromEmail, $config->fromName ?: 'HireMatrix');
+            }
+
+            $email->setTo($recipient);
+            $email->setSubject($subject);
+            $email->setMessage($body);
+            $email->send(false);
+        } catch (\Throwable $e) {
+            log_message('error', 'Job invitation email failed: ' . $e->getMessage());
+        }
+    }
+
+    private function applyRecruiterVisibilityFilter($builder, int $recruiterId): void
+    {
+        $builder->groupStart()
+            ->where('COALESCE(candidate_profiles.allow_public_recruiter_visibility, 1) =', 1, false)
+            ->orWhere('users.id IN (SELECT applications.candidate_id FROM applications INNER JOIN jobs ON jobs.id = applications.job_id WHERE jobs.recruiter_id = ' . $recruiterId . ')', null, false)
+            ->groupEnd();
+    }
+
+    private function applySelectedJobAvailabilityFilter($builder, int $jobId): void
+    {
+        if ($jobId <= 0) {
+            return;
+        }
+
+        $db = \Config\Database::connect();
+
+        $builder->where(
+            'users.id NOT IN (SELECT applications.candidate_id FROM applications WHERE applications.job_id = ' . (int) $jobId . " AND applications.status != 'withdrawn')",
+            null,
+            false
+        );
+
+        if ($db->tableExists('recruiter_job_invitations')) {
+            $builder->where(
+                'users.id NOT IN (SELECT recruiter_job_invitations.candidate_id FROM recruiter_job_invitations WHERE recruiter_job_invitations.job_id = ' . (int) $jobId . " AND recruiter_job_invitations.status IN ('sent', 'viewed', 'applied'))",
+                null,
+                false
+            );
+        }
+    }
+
+    private function resolveApplicationIdForCandidateJob(int $candidateId, int $recruiterId, int $applicationId, int $jobId): int
+    {
+        if ($applicationId > 0 || $jobId <= 0) {
+            return $applicationId;
+        }
+
+        $application = (new ApplicationModel())
+            ->select('applications.id')
+            ->join('jobs', 'jobs.id = applications.job_id', 'inner')
+            ->where('applications.candidate_id', $candidateId)
+            ->where('applications.job_id', $jobId)
+            ->where('jobs.recruiter_id', $recruiterId)
+            ->where('applications.status !=', 'withdrawn')
+            ->orderBy('applications.applied_at', 'DESC')
+            ->first();
+
+        return (int) ($application['id'] ?? 0);
+    }
+
+    private function canRecruiterAccessCandidate(int $candidateId, int $recruiterId): bool
+    {
+        $userModel = new UserModel();
+        $candidate = $userModel->findCandidateWithProfile($candidateId) ?? $userModel->find($candidateId);
+        if (!$candidate || ($candidate['role'] ?? '') !== 'candidate') {
+            return false;
+        }
+
+        if ((int) ($candidate['allow_public_recruiter_visibility'] ?? 1) === 1) {
+            return true;
+        }
+
+        $application = (new ApplicationModel())
+            ->select('applications.id')
+            ->join('jobs', 'jobs.id = applications.job_id')
+            ->where('applications.candidate_id', $candidateId)
+            ->where('jobs.recruiter_id', $recruiterId)
+            ->first();
+
+        return !empty($application);
+    }
+
+    private function normalizeTags(string $rawTags): string
+    {
+        if ($rawTags === '') {
+            return '';
+        }
+
+        $parts = preg_split('/[,]+/', $rawTags) ?: [];
+        $clean = [];
+        foreach ($parts as $part) {
+            $tag = trim($part);
+            if ($tag === '') {
+                continue;
+            }
+            if (mb_strlen($tag) > 40) {
+                $tag = mb_substr($tag, 0, 40);
+            }
+            $clean[] = $tag;
+        }
+
+        $unique = [];
+        $seen = [];
+        foreach ($clean as $tag) {
+            $key = mb_strtolower($tag);
+            if (isset($seen[$key])) {
+                continue;
+            }
+            $seen[$key] = true;
+            $unique[] = $tag;
+        }
+
+        return implode(', ', $unique);
+    }
+
+    private function formatExperienceDisplay(int $months): string
+    {
+        if ($months <= 0) {
+            return '-';
+        }
+
+        $years = intdiv($months, 12);
+        $remainingMonths = $months % 12;
+
+        if ($years > 0 && $remainingMonths > 0) {
+            return $years . 'y ' . $remainingMonths . 'm';
+        }
+
+        if ($years > 0) {
+            return $years . 'y';
+        }
+
+        return $remainingMonths . 'm';
+    }
+
+    private function getSubmittedResumeVersion(int $candidateId, int $applicationId): ?array
+    {
+        $db = \Config\Database::connect();
+        if ($applicationId <= 0 || !$db->tableExists('candidate_resume_versions') || !$db->fieldExists('resume_version_id', 'applications')) {
+            return null;
+        }
+
+        $application = (new ApplicationModel())
+            ->select('applications.id, applications.resume_version_id, jobs.recruiter_id')
+            ->join('jobs', 'jobs.id = applications.job_id', 'inner')
+            ->where('applications.id', $applicationId)
+            ->where('applications.candidate_id', $candidateId)
+            ->where('jobs.recruiter_id', (int) session()->get('user_id'))
+            ->first();
+
+        if (!$application || empty($application['resume_version_id'])) {
+            return null;
+        }
+
+        return (new CandidateResumeVersionModel())->find((int) $application['resume_version_id']);
+    }
+}

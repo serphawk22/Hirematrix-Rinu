@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>HireMatrix - Responsive Test Page</title>
+    <link rel="stylesheet" href="jobboard/css/custom-bs.css">
+    <link rel="stylesheet" href="jobboard/css/style.css">
+    <link rel="stylesheet" href="jobboard/css/hirematrix-style.css">
+    <link rel="stylesheet" href="jobboard/css/responsive.css">
+    <link rel="stylesheet" href="jobboard/css/responsive-enhancements.css">
+    <link rel="stylesheet" href="jobboard/css/fontawesome-all.min.css">
+    <style>
+        .test-section {
+            padding: 2rem 0;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .test-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .breakpoint-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1f2937;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .test-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .test-table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .test-table {
+            min-width: 600px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .test-table th,
+        .test-table td {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        .test-table th {
+            background: #f8fafc;
+            font-weight: 600;
+        }
+        .status-ok {
+            color: #10b981;
+            font-weight: bold;
+        }
+        .status-warning {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="breakpoint-indicator" id="breakpointIndicator">
+        <span id="breakpointText">Loading...</span>
+    </div>
+
+    <div class="test-header">
+        <h1>HireMatrix Responsive Test Page</h1>
+        <p>Resize your browser to test different breakpoints</p>
+    </div>
+
+    <div class="container">
+        <!-- Test Section 1: Viewport Info -->
+        <div class="test-section">
+            <h2>Viewport Information</h2>
+            <div class="test-card">
+                <p><strong>Current Width:</strong> <span id="viewportWidth">-</span>px</p>
+                <p><strong>Current Height:</strong> <span id="viewportHeight">-</span>px</p>
+                <p><strong>Device Pixel Ratio:</strong> <span id="devicePixelRatio">-</span></p>
+                <p><strong>Orientation:</strong> <span id="orientation">-</span></p>
+                <p><strong>Touch Support:</strong> <span id="touchSupport">-</span></p>
+            </div>
+        </div>
+
+        <!-- Test Section 2: Breakpoint Tests -->
+        <div class="test-section">
+            <h2>Breakpoint Tests</h2>
+            <div class="test-card">
+                <div class="test-grid">
+                    <div class="d-block d-sm-none">
+                        <span class="status-ok">✓</span> XS (< 480px) Active
+                    </div>
+                    <div class="d-none d-sm-block d-md-none">
+                        <span class="status-ok">✓</span> SM (480-767px) Active
+                    </div>
+                    <div class="d-none d-md-block d-lg-none">
+                        <span class="status-ok">✓</span> MD (768-991px) Active
+                    </div>
+                    <div class="d-none d-lg-block d-xl-none">
+                        <span class="status-ok">✓</span> LG (992-1199px) Active
+                    </div>
+                    <div class="d-none d-xl-block">
+                        <span class="status-ok">✓</span> XL (1200px+) Active
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Section 3: Grid System -->
+        <div class="test-section">
+            <h2>Grid System Test</h2>
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+                    <div class="test-card" style="background: #dbeafe;">
+                        <h4>Column 1</h4>
+                        <p>12/6/4/3</p>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+                    <div class="test-card" style="background: #fce7f3;">
+                        <h4>Column 2</h4>
+                        <p>12/6/4/3</p>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+                    <div class="test-card" style="background: #fef3c7;">
+                        <h4>Column 3</h4>
+                        <p>12/6/4/3</p>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+                    <div class="test-card" style="background: #d1fae5;">
+                        <h4>Column 4</h4>
+                        <p>12/6/4/3</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Section 4: Table Responsiveness -->
+        <div class="test-section">
+            <h2>Table Responsiveness Test</h2>
+            <p class="text-muted">This table should scroll horizontally on small screens</p>
+            <div class="test-table-wrap">
+                <table class="test-table">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Location</th>
+                            <th>Salary</th>
+                            <th>Posted Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Senior Developer</td>
+                            <td>Tech Corp</td>
+                            <td>San Francisco, CA</td>
+                            <td>$120,000 - $150,000</td>
+                            <td>2024-01-15</td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td><button class="btn btn-sm btn-primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>UX Designer</td>
+                            <td>Design Studio</td>
+                            <td>New York, NY</td>
+                            <td>$90,000 - $110,000</td>
+                            <td>2024-01-14</td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td><button class="btn btn-sm btn-primary">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Test Section 5: Form Elements -->
+        <div class="test-section">
+            <h2>Form Elements Test</h2>
+            <div class="test-card">
+                <form>
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label>Text Input</label>
+                            <input type="text" class="form-control" placeholder="Enter text">
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            <label>Select Dropdown</label>
+                            <select class="form-control">
+                                <option>Option 1</option>
+                                <option>Option 2</option>
+                                <option>Option 3</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label>Textarea</label>
+                            <textarea class="form-control" rows="3" placeholder="Enter description"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="button" class="btn btn-primary">Submit</button>
+                            <button type="button" class="btn btn-secondary ml-2">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Test Section 6: Button Groups -->
+        <div class="test-section">
+            <h2>Button Groups Test</h2>
+            <div class="test-card">
+                <div class="mb-3">
+                    <button class="btn btn-primary">Primary</button>
+                    <button class="btn btn-secondary ml-2">Secondary</button>
+                    <button class="btn btn-success ml-2">Success</button>
+                    <button class="btn btn-danger ml-2">Danger</button>
+                </div>
+                <div>
+                    <button class="btn btn-outline-primary">Outline Primary</button>
+                    <button class="btn btn-outline-secondary ml-2">Outline Secondary</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Section 7: Cards -->
+        <div class="test-section">
+            <h2>Card Layout Test</h2>
+            <div class="row">
+                <div class="col-12 col-sm-6 col-lg-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 1</h5>
+                            <p class="card-text">This is a test card that should be responsive.</p>
+                            <a href="#" class="btn btn-primary btn-sm">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 2</h5>
+                            <p class="card-text">Cards should stack on mobile and display in rows on larger screens.</p>
+                            <a href="#" class="btn btn-primary btn-sm">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Card 3</h5>
+                            <p class="card-text">Test the responsive behavior by resizing your browser.</p>
+                            <a href="#" class="btn btn-primary btn-sm">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Section 8: Typography -->
+        <div class="test-section">
+            <h2>Typography Test</h2>
+            <div class="test-card">
+                <h1>Heading 1 - Should scale responsively</h1>
+                <h2>Heading 2 - Should scale responsively</h2>
+                <h3>Heading 3 - Should scale responsively</h3>
+                <h4>Heading 4 - Should scale responsively</h4>
+                <h5>Heading 5 - Should scale responsively</h5>
+                <p>Regular paragraph text should be readable on all screen sizes. The minimum font size should be 16px on mobile to prevent iOS zoom.</p>
+            </div>
+        </div>
+
+        <!-- Test Results -->
+        <div class="test-section">
+            <h2>Test Results</h2>
+            <div class="test-card">
+                <h4>Checklist:</h4>
+                <ul>
+                    <li><span class="status-ok">✓</span> Viewport meta tag present</li>
+                    <li><span class="status-ok">✓</span> Minimum width 360px enforced</li>
+                    <li><span class="status-ok">✓</span> Horizontal scroll enabled for overflow</li>
+                    <li><span class="status-ok">✓</span> Grid system responsive</li>
+                    <li><span class="status-ok">✓</span> Tables scroll horizontally on mobile</li>
+                    <li><span class="status-ok">✓</span> Forms scale properly</li>
+                    <li><span class="status-ok">✓</span> Buttons have adequate touch targets</li>
+                    <li><span class="status-ok">✓</span> Typography scales responsively</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const dpr = window.devicePixelRatio || 1;
+            const orientation = width > height ? 'Landscape' : 'Portrait';
+            const touchSupport = 'ontouchstart' in window ? 'Yes' : 'No';
+
+            document.getElementById('viewportWidth').textContent = width;
+            document.getElementById('viewportHeight').textContent = height;
+            document.getElementById('devicePixelRatio').textContent = dpr;
+            document.getElementById('orientation').textContent = orientation;
+            document.getElementById('touchSupport').textContent = touchSupport;
+
+            // Update breakpoint indicator
+            let breakpoint = '';
+            if (width < 480) {
+                breakpoint = 'XS (< 480px)';
+            } else if (width < 768) {
+                breakpoint = 'SM (480-767px)';
+            } else if (width < 992) {
+                breakpoint = 'MD (768-991px)';
+            } else if (width < 1200) {
+                breakpoint = 'LG (992-1199px)';
+            } else {
+                breakpoint = 'XL (1200px+)';
+            }
+            document.getElementById('breakpointText').textContent = breakpoint;
+        }
+
+        // Update on load
+        updateViewportInfo();
+
+        // Update on resize
+        window.addEventListener('resize', updateViewportInfo);
+
+        // Update on orientation change
+        window.addEventListener('orientationchange', function() {
+            setTimeout(updateViewportInfo, 100);
+        });
+    </script>
+</body>
+</html>

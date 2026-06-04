@@ -1,0 +1,153 @@
+/* HireMatrix Color Fix - Replace old #89ba16 with new theme colors */
+
+/* Replace all old green #89ba16 with CSS variables */
+.btn-primary, 
+.bg-primary,
+.badge-primary,
+.text-primary,
+.alert-primary,
+a.text-primary,
+.btn-success,
+.bg-success,
+.badge-success,
+.text-success,
+a.text-success {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #fff !important;
+}
+
+.text-primary,
+a.text-primary {
+  background-color: transparent !important;
+  color: var(--primary) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active {
+  background-color: var(--primary-dark) !important;
+  border-color: var(--primary-dark) !important;
+  color: #fff !important;
+}
+
+a.text-primary:hover,
+a.text-primary:focus,
+a.text-success:hover,
+a.text-success:focus {
+  color: var(--primary-dark) !important;
+  background-color: transparent !important;
+}
+
+/* Dropdown menu active items */
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: var(--primary) !important;
+  color: #fff !important;
+}
+
+/* Navigation active links */
+.nav-link.active,
+.navbar-nav .nav-link.active,
+.site-menu li.active > a,
+.site-menu li > a:hover,
+.site-menu li > a.active {
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+/* Borders */
+.border-primary,
+.has-border-primary {
+  border-color: var(--primary) !important;
+}
+
+/* Icons and symbols */
+.icon-success,
+.fa-check,
+.fas.fa-check,
+i.text-success,
+i.text-primary {
+  color: var(--primary) !important;
+}
+
+/* Form controls focus */
+.form-control:focus,
+.form-select:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(31, 183, 181, 0.25) !important;
+}
+
+/* Links */
+a:not(.btn):not(.dropdown-item) {
+  color: var(--primary);
+}
+
+a:not(.btn):not(.dropdown-item):hover {
+  color: var(--primary-dark);
+}
+
+/* Progress bars */
+.progress-bar {
+  background-color: var(--primary) !important;
+}
+
+/* Custom checkbox/radio checked state */
+.custom-control-input:checked ~ .custom-control-label::before,
+.form-check-input:checked {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+/* Pagination active */
+.pagination .page-item.active .page-link {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+/* List group active */
+.list-group-item.active {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+/* Outline buttons */
+.btn-outline-primary {
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  background-color: transparent !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  color: #fff !important;
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+.btn-outline-success {
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  background-color: transparent !important;
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-success:active {
+  color: #fff !important;
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+/* Spinner/Loader colors */
+.spinner-border.text-primary,
+.spinner-border-sm.text-primary {
+  color: var(--primary) !important;
+}

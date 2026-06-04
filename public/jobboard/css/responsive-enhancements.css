@@ -1,0 +1,729 @@
+/* =============================================================
+   HireMatrix – Enhanced Responsive System (Naukri-style)
+   Ensures all pages work on all device sizes
+   Horizontal scroll fallback for screens < 360px
+   ============================================================= */
+
+/* ── GLOBAL WRAPPER & MINIMUM WIDTH ── */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-width: 360px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+body {
+    min-width: 360px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.site-wrap {
+    min-width: 360px;
+    width: 100%;
+}
+
+/* ── CONTAINER RESPONSIVE PADDING ── */
+@media (max-width: 575.98px) {
+    .container,
+    .container-fluid {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+}
+
+@media (max-width: 479.98px) {
+    .container,
+    .container-fluid {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+}
+
+/* ── IMAGES & MEDIA ── */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+iframe,
+video {
+    max-width: 100%;
+}
+
+/* ── TABLES – HORIZONTAL SCROLL ── */
+@media (max-width: 991.98px) {
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        min-width: 600px;
+    }
+
+    .card .table {
+        min-width: 600px;
+    }
+}
+
+/* ── FORMS ── */
+@media (max-width: 767.98px) {
+    .form-control {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    select.form-control {
+        font-size: 16px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="number"],
+    textarea {
+        font-size: 16px;
+    }
+}
+
+/* ── BUTTONS ── */
+@media (max-width: 575.98px) {
+    .btn {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+
+    .btn-lg {
+        padding: 12px 20px;
+        font-size: 16px;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}
+
+/* ── CARDS ── */
+@media (max-width: 767.98px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .card-header {
+        padding: 0.75rem 1rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .card-body {
+        padding: 0.875rem;
+    }
+}
+
+/* ── MODALS ── */
+@media (max-width: 767.98px) {
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+
+    .modal-content {
+        border-radius: 12px;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .modal-dialog {
+        margin: 0.25rem;
+        max-width: calc(100% - 0.5rem);
+    }
+}
+
+/* ── NAVIGATION ── */
+@media (max-width: 1199.98px) {
+    .site-navigation {
+        display: none !important;
+    }
+
+    .site-menu-toggle {
+        display: block !important;
+    }
+}
+
+/* ── GRIDS ── */
+@media (max-width: 991.98px) {
+    .row > [class*="col-"] {
+        margin-bottom: 1rem;
+    }
+
+    .row > [class*="col-"]:last-child {
+        margin-bottom: 0;
+    }
+}
+
+/* ── JOB LISTINGS ── */
+@media (max-width: 767.98px) {
+    .job-listing {
+        flex-direction: column !important;
+    }
+
+    .job-listing-logo {
+        width: 100% !important;
+        max-width: 80px;
+        margin-bottom: 1rem;
+    }
+
+    .job-listing-about {
+        width: 100% !important;
+    }
+}
+
+/* ── DASHBOARD LAYOUTS ── */
+@media (max-width: 1199.98px) {
+    .dashboard-layout,
+    .jobs-layout,
+    .profile-layout {
+        display: block !important;
+        grid-template-columns: 1fr !important;
+    }
+
+    .dashboard-sidebar,
+    .jobs-sidebar,
+    .profile-sidebar {
+        position: static !important;
+        width: 100% !important;
+        max-height: none !important;
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* ── PROFILE SECTIONS ── */
+@media (max-width: 767.98px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-avatar {
+        margin: 0 auto 1rem;
+    }
+
+    .profile-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .profile-actions .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* ── SEARCH FORMS ── */
+@media (max-width: 991.98px) {
+    .search-form .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .search-form .row > [class*="col-"] {
+        padding-left: 0;
+        padding-right: 0;
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* ── HERO SECTIONS ── */
+@media (max-width: 991.98px) {
+    .section-hero {
+        min-height: auto !important;
+        padding: 3rem 0;
+    }
+
+    .hero-title {
+        font-size: clamp(1.75rem, 5vw, 2.5rem) !important;
+    }
+
+    .hero-subtitle {
+        font-size: clamp(1rem, 3vw, 1.25rem) !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .section-hero {
+        padding: 2rem 0;
+    }
+
+    .hero-title {
+        font-size: 1.75rem !important;
+    }
+}
+
+/* ── FOOTER ── */
+@media (max-width: 767.98px) {
+    .site-footer {
+        padding: 2rem 0 1rem;
+    }
+
+    .site-footer .row > [class*="col-"] {
+        margin-bottom: 1.5rem;
+    }
+
+    .site-footer h3 {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
+/* ── BREADCRUMBS ── */
+@media (max-width: 575.98px) {
+    .breadcrumb {
+        font-size: 0.875rem;
+        padding: 0.5rem 0;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        padding-right: 0.25rem;
+        padding-left: 0.25rem;
+    }
+}
+
+/* ── PAGINATION ── */
+@media (max-width: 575.98px) {
+    .pagination {
+        font-size: 0.875rem;
+    }
+
+    .page-link {
+        padding: 0.375rem 0.625rem;
+    }
+}
+
+/* ── ALERTS & NOTIFICATIONS ── */
+@media (max-width: 575.98px) {
+    .alert {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* ── BADGES ── */
+@media (max-width: 575.98px) {
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.25em 0.5em;
+    }
+}
+
+/* ── TABS ── */
+@media (max-width: 767.98px) {
+    .nav-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-tabs .nav-link {
+        white-space: nowrap;
+    }
+}
+
+/* ── DROPDOWNS ── */
+@media (max-width: 575.98px) {
+    .dropdown-menu {
+        min-width: 100%;
+        max-width: calc(100vw - 2rem);
+    }
+}
+
+/* ── SPACING UTILITIES ── */
+@media (max-width: 767.98px) {
+    .mb-5 {
+        margin-bottom: 2rem !important;
+    }
+
+    .mt-5 {
+        margin-top: 2rem !important;
+    }
+
+    .py-5 {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .mb-4 {
+        margin-bottom: 1.5rem !important;
+    }
+
+    .mt-4 {
+        margin-top: 1.5rem !important;
+    }
+
+    .py-4 {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+}
+
+/* ── TEXT UTILITIES ── */
+@media (max-width: 767.98px) {
+    h1 {
+        font-size: clamp(1.75rem, 5vw, 2.5rem) !important;
+    }
+
+    h2 {
+        font-size: clamp(1.5rem, 4vw, 2rem) !important;
+    }
+
+    h3 {
+        font-size: clamp(1.25rem, 3.5vw, 1.75rem) !important;
+    }
+
+    h4 {
+        font-size: clamp(1.125rem, 3vw, 1.5rem) !important;
+    }
+
+    h5 {
+        font-size: clamp(1rem, 2.5vw, 1.25rem) !important;
+    }
+}
+
+/* ── OVERFLOW HANDLING ── */
+.overflow-x-auto {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.overflow-y-auto {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ── FLEX UTILITIES ── */
+@media (max-width: 767.98px) {
+    .flex-md-column {
+        flex-direction: column !important;
+    }
+
+    .flex-md-wrap {
+        flex-wrap: wrap !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .flex-sm-column {
+        flex-direction: column !important;
+    }
+
+    .flex-sm-wrap {
+        flex-wrap: wrap !important;
+    }
+}
+
+/* ── NAUKRI-STYLE HORIZONTAL SCROLL (< 360px) ── */
+@media (max-width: 359.98px) {
+    html,
+    body,
+    .site-wrap,
+    header.site-navbar,
+    main,
+    footer.site-footer {
+        min-width: 360px !important;
+    }
+
+    .container,
+    .container-fluid {
+        min-width: 360px !important;
+    }
+}
+
+/* ── HIDE SCROLLBAR (OPTIONAL) ── */
+.scroll-hidden::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* ── TOUCH OPTIMIZATION ── */
+@media (hover: none) and (pointer: coarse) {
+    /* Touch devices */
+    a,
+    button,
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .form-control {
+        min-height: 44px;
+    }
+}
+
+/* ── LANDSCAPE MOBILE ── */
+@media (max-width: 767.98px) and (orientation: landscape) {
+    .section-hero {
+        min-height: auto !important;
+        padding: 2rem 0;
+    }
+
+    .modal-dialog {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* ── PRINT STYLES ── */
+@media print {
+    .site-navbar,
+    .site-footer,
+    .btn,
+    .site-mobile-menu {
+        display: none !important;
+    }
+
+    body {
+        min-width: auto !important;
+    }
+}
+
+/* ── ACCESSIBILITY ── */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ── HIGH CONTRAST MODE ── */
+@media (prefers-contrast: high) {
+    .btn {
+        border: 2px solid currentColor;
+    }
+
+    .card {
+        border: 2px solid currentColor;
+    }
+}
+
+/* ── DARK MODE SUPPORT (OPTIONAL) ── */
+@media (prefers-color-scheme: dark) {
+    /* Add dark mode styles if needed */
+}
+
+/* ── SPECIFIC PAGE FIXES ── */
+
+/* Job Details Page */
+@media (max-width: 991.98px) {
+    .job-details-layout {
+        display: block !important;
+    }
+
+    .job-details-sidebar {
+        position: static !important;
+        width: 100% !important;
+        margin-top: 1.5rem;
+    }
+}
+
+/* Applications Page */
+@media (max-width: 991.98px) {
+    .applications-layout {
+        display: block !important;
+    }
+
+    .application-filters {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Profile Page */
+@media (max-width: 991.98px) {
+    .profile-two-pane {
+        display: block !important;
+    }
+
+    .profile-left-pane,
+    .profile-right-pane {
+        width: 100% !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+    }
+}
+
+/* Settings Page */
+@media (max-width: 991.98px) {
+    .settings-layout {
+        display: block !important;
+    }
+
+    .settings-sidebar {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Recruiter Dashboard */
+@media (max-width: 991.98px) {
+    .recruiter-dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .recruiter-stats {
+        flex-direction: column;
+    }
+}
+
+/* Company Profile */
+@media (max-width: 991.98px) {
+    .company-profile-layout {
+        display: block !important;
+    }
+
+    .company-gallery {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .company-gallery {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Career Transition */
+@media (max-width: 991.98px) {
+    .career-roadmap {
+        grid-template-columns: 1fr !important;
+    }
+
+    .learning-modules {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Resume Studio */
+@media (max-width: 991.98px) {
+    .resume-studio-layout {
+        display: block !important;
+    }
+
+    .resume-preview {
+        margin-top: 1.5rem;
+    }
+}
+
+/* AI Interview */
+@media (max-width: 991.98px) {
+    .interview-layout {
+        display: block !important;
+    }
+
+    .interview-controls {
+        position: static !important;
+        margin-top: 1rem;
+    }
+}
+
+/* Bookings */
+@media (max-width: 767.98px) {
+    .booking-card {
+        flex-direction: column;
+    }
+
+    .booking-timeline {
+        padding-left: 1rem;
+    }
+}
+
+/* Notifications */
+@media (max-width: 575.98px) {
+    .notification-item {
+        padding: 0.75rem;
+    }
+
+    .notification-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .notification-actions .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Premium Plans */
+@media (max-width: 991.98px) {
+    .plans-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .plan-card {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* ── UTILITY CLASSES ── */
+.w-100-mobile {
+    width: 100% !important;
+}
+
+@media (max-width: 767.98px) {
+    .w-100-md {
+        width: 100% !important;
+    }
+
+    .text-center-md {
+        text-align: center !important;
+    }
+
+    .d-block-md {
+        display: block !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .w-100-sm {
+        width: 100% !important;
+    }
+
+    .text-center-sm {
+        text-align: center !important;
+    }
+
+    .d-block-sm {
+        display: block !important;
+    }
+}
+
+/* ── FINAL SAFETY NET ── */
+* {
+    max-width: 100%;
+}
+
+html,
+body {
+    overflow-x: auto !important;
+}

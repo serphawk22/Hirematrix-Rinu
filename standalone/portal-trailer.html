@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireMatrix Portal Showcase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fbff;
+            --ink: #1f2937;
+            --muted: #667085;
+            --line: #e2e8f0;
+            --primary: #3b82f6;
+            --secondary: #ff7b2a;
+            --accent: #00bfa5;
+            --shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: "Manrope", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 12% 0%, rgba(59, 130, 246, 0.16), transparent 32%),
+                radial-gradient(circle at 95% 4%, rgba(255, 123, 42, 0.14), transparent 28%),
+                var(--bg);
+        }
+
+        .container {
+            width: min(1140px, 92%);
+            margin: 0 auto;
+        }
+
+        .topbar {
+            margin: 20px auto 0;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(6px);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+        }
+        .brand-dot {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 10px 24px rgba(59, 130, 246, 0.28);
+        }
+        .chips { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+        .chip {
+            border: 1px solid var(--line);
+            background: #fff;
+            border-radius: 999px;
+            padding: 7px 11px;
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 52px 0 30px;
+        }
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--line);
+            background: #fff;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--muted);
+        }
+        h1 {
+            margin: 16px 0 10px;
+            font-size: clamp(34px, 7vw, 62px);
+            line-height: 1.03;
+        }
+        .grad {
+            background: linear-gradient(135deg, var(--primary), var(--secondary) 55%, #b24dff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero p {
+            margin: 0 auto 18px;
+            width: min(760px, 100%);
+            color: var(--muted);
+            font-size: clamp(16px, 2.2vw, 21px);
+        }
+        .jump {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .jump a {
+            text-decoration: none;
+            color: var(--ink);
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .section {
+            padding: 30px 0 0;
+        }
+        .section-head {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+        .kicker {
+            font-size: 12px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--primary);
+            font-weight: 800;
+        }
+        h2 {
+            margin: 8px 0 8px;
+            font-size: clamp(26px, 4.6vw, 42px);
+            line-height: 1.08;
+        }
+        .sub {
+            margin: 0 auto;
+            width: min(760px, 100%);
+            color: var(--muted);
+        }
+
+        .grid {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(12, 1fr);
+        }
+        .card {
+            grid-column: span 12;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            scroll-margin-top: 30px;
+        }
+        .card-head {
+            padding: 12px 14px;
+            background: linear-gradient(90deg, rgba(59,130,246,.09), rgba(255,123,42,.08));
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .card-head b { font-size: 18px; }
+        .badge {
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: #fff;
+            padding: 6px 9px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--primary);
+            font-weight: 800;
+        }
+        .card-body {
+            padding: 12px 14px 14px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .point {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            padding: 10px 11px;
+        }
+        .point .label {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .05em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .point p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .point.unique {
+            border-color: rgba(59, 130, 246, 0.25);
+            background: linear-gradient(90deg, rgba(59,130,246,.12), rgba(255,123,42,.1));
+        }
+        .point.unique .label { color: #1d4ed8; }
+        .point.unique p { color: #1f2937; font-weight: 600; }
+
+        @media (min-width: 860px) {
+            .card-half { grid-column: span 6; }
+            .card-third { grid-column: span 4; }
+            .card-body { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .card-third .card-body { grid-template-columns: 1fr; }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .stat {
+            grid-column: span 6;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            padding: 13px 12px;
+            text-align: center;
+        }
+        .stat b {
+            display: block;
+            font-size: 26px;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .stat span {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+        }
+        @media (min-width: 860px) {
+            .stat { grid-column: span 2; }
+        }
+
+        .flow {
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .flow table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .flow th, .flow td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            font-size: 14px;
+        }
+        .flow th {
+            background: var(--surface-soft);
+            color: var(--muted);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: .04em;
+        }
+        .flow tr:last-child td { border-bottom: 0; }
+
+        .cta {
+            margin: 34px 0 72px;
+            border-radius: 18px;
+            padding: 24px 18px;
+            background: linear-gradient(125deg, #eaf2ff, #f7edff 55%, #fff5ea);
+            border: 1px solid var(--line);
+            text-align: center;
+        }
+        .cta h3 {
+            margin: 0 0 8px;
+            font-size: clamp(24px, 4.5vw, 40px);
+            line-height: 1.08;
+        }
+        .cta p {
+            margin: 0 auto 14px;
+            width: min(760px, 100%);
+            color: var(--muted);
+        }
+        .cta-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 14px;
+            padding: 11px 16px;
+        }
+        .btn.primary {
+            background: linear-gradient(135deg, var(--primary), #5f7dff);
+            color: #fff;
+        }
+        .btn.ghost {
+            border: 1px solid var(--line);
+            color: var(--ink);
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="topbar">
+            <div class="brand">
+                <span class="brand-dot" aria-hidden="true"></span>
+                <span>HireMatrix</span>
+            </div>
+            <div class="chips">
+                <span class="chip">Candidate Path</span>
+                <span class="chip">Recruiter Path</span>
+                <span class="chip">AI Coaching Suite</span>
+            </div>
+        </header>
+    </div>
+
+    <main class="container">
+        <section class="hero">
+            <span class="status">Portal Experience</span>
+            <h1>Everything Your Hiring Journey <span class="grad">Needs</span></h1>
+            <p>
+                A structured candidate-recruiter ecosystem with preparation, interview,
+                and hiring workflows connected in one platform.
+            </p>
+            <div class="jump">
+                <a href="#candidate-journey">Candidate Journey</a>
+                <a href="#ai-coaching">AI Coaching Suite</a>
+                <a href="#connected-flows">Connected Flows</a>
+                <a href="#interview-coordination">Interview Coordination</a>
+            </div>
+        </section>
+
+        <section class="section" id="features">
+            <div class="section-head">
+                <div class="kicker">Feature Showcase</div>
+                <h2>Portal Features. Clear Differentiation.</h2>
+                <p class="sub">Built to help candidates prepare better and help recruiters evaluate faster.</p>
+            </div>
+
+            <div class="grid">
+                <article class="card card-half" id="candidate-journey">
+                    <div class="card-head">
+                        <b>Career Transition + Resume Studio + AI Interview Flow</b>
+                        <span class="badge">Candidate Journey</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="point">
+                            <div class="label">What people face</div>
+                            <p>Switching roles usually means fragmented planning, resume edits, and interview preparation.</p>
+                        </div>
+                        <div class="point">
+                            <div class="label">What to explore</div>
+                            <p>Transition planning, role-focused resume versions, and structured AI interview rounds in one path.</p>
+                        </div>
+                        <div class="point unique">
+                            <div class="label">Unique Advantage</div>
+                            <p>Most portals stop at job listing. Here, role-change preparation is a core product journey.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="card card-half" id="ai-coaching">
+                    <div class="card-head">
+                        <b>AI Coaching Suite for Readiness</b>
+                        <span class="badge">Preparation Layer</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="point">
+                            <div class="label">What people face</div>
+                            <p>Candidates apply without role-tuned resume guidance, interview structure, or post-application strategy.</p>
+                        </div>
+                        <div class="point">
+                            <div class="label">What to explore</div>
+                            <p>Job-specific Resume Coach, Pre-interview Preparation Coach with detailed mock support, and Job Search Strategy Coach.</p>
+                        </div>
+                        <div class="point unique">
+                            <div class="label">Unique Advantage</div>
+                            <p>Coaching spans before and after applying, so readiness improves continuously across the full cycle.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="card card-half" id="connected-flows">
+                    <div class="card-head">
+                        <b>Connected Candidate + Recruiter Workflows</b>
+                        <span class="badge">Two-Sided Design</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="point">
+                            <div class="label">What people face</div>
+                            <p>Candidate progress and recruiter decisions often live in disconnected systems.</p>
+                        </div>
+                        <div class="point">
+                            <div class="label">What to explore</div>
+                            <p>Applications, review actions, messaging, and status updates aligned between both user roles.</p>
+                        </div>
+                        <div class="point unique">
+                            <div class="label">Unique Advantage</div>
+                            <p>Both sides experience mirrored workflow stages, reducing confusion and unnecessary follow-ups.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="card card-half" id="interview-coordination">
+                    <div class="card-head">
+                        <b>Interview Slot + Application Stage Coordination</b>
+                        <span class="badge">Execution Layer</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="point">
+                            <div class="label">What people face</div>
+                            <p>Interview scheduling is usually separate from application stage management.</p>
+                        </div>
+                        <div class="point">
+                            <div class="label">What to explore</div>
+                            <p>Slot booking, rescheduling, and stage visibility tied directly to interview progress.</p>
+                        </div>
+                        <div class="point unique">
+                            <div class="label">Unique Advantage</div>
+                            <p>Scheduling and progression are linked, making momentum easier to maintain for both sides.</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div class="kicker">AI Pipelines</div>
+                <h2>5 Candidate AI Pipelines Built In</h2>
+                <p class="sub">Preparation and decision-support modules connected to live workflow steps.</p>
+            </div>
+            <div class="grid">
+                <article class="card card-third"><div class="card-head"><b>01 Resume Coach</b></div><div class="card-body"><div class="point"><p>Role-targeted resume improvement guidance per job context.</p></div></div></article>
+                <article class="card card-third"><div class="card-head"><b>02 Prep Coach</b></div><div class="card-body"><div class="point"><p>Pre-interview readiness plan with likely questions and checklist.</p></div></div></article>
+                <article class="card card-third"><div class="card-head"><b>03 Mock Interview</b></div><div class="card-body"><div class="point"><p>Detailed multi-round mock structure and answer framing support.</p></div></div></article>
+                <article class="card card-third"><div class="card-head"><b>04 Job Strategy Coach</b></div><div class="card-body"><div class="point"><p>Application strategy before and after applying to improve traction.</p></div></div></article>
+                <article class="card card-third"><div class="card-head"><b>05 Candidate-Job Fit</b></div><div class="card-body"><div class="point"><p>Contextual fit cues that help prioritize where to spend effort first.</p></div></div></article>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div class="kicker">Role Matrix</div>
+                <h2>4 Roles. Clear Responsibilities.</h2>
+            </div>
+            <div class="grid">
+                <article class="card card-third"><div class="card-head"><b>Candidate</b></div><div class="card-body"><div class="point"><p>Profile, resume, coaching, applications, interview flow, and alerts.</p></div></div></article>
+                <article class="card card-third"><div class="card-head"><b>Recruiter</b></div><div class="card-body"><div class="point"><p>Jobs, applications, candidate actions, interview slots, and shortlist views.</p></div></div></article>
+                <article class="card card-third"><div class="card-head"><b>Platform Admin</b></div><div class="card-body"><div class="point"><p>Operational visibility on user activity and API usage trends.</p></div></div></article>
+                <article class="card card-third"><div class="card-head"><b>System</b></div><div class="card-body"><div class="point"><p>Automated workflows for reminders, matching, and status progression.</p></div></div></article>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div class="kicker">Platform Snapshot</div>
+                <h2>Platform Statistics</h2>
+            </div>
+            <div class="stats">
+                <div class="stat"><b>36+</b><span>Key Features</span></div>
+                <div class="stat"><b>15</b><span>Core Modules</span></div>
+                <div class="stat"><b>20+</b><span>Workflow Screens</span></div>
+                <div class="stat"><b>14</b><span>Candidate Flows</span></div>
+                <div class="stat"><b>3</b><span>Major User Types</span></div>
+                <div class="stat"><b>8+</b><span>AI Touchpoints</span></div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <div class="kicker">Connection Flow</div>
+                <h2>How It All Connects</h2>
+            </div>
+            <div class="flow">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Stage</th>
+                            <th>Candidate View</th>
+                            <th>Recruiter View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Discover</td>
+                            <td>Role exploration + relevance cues</td>
+                            <td>Open role visibility + pipeline setup</td>
+                        </tr>
+                        <tr>
+                            <td>Prepare</td>
+                            <td>Resume + interview + strategy coaching</td>
+                            <td>Candidate profile and context review</td>
+                        </tr>
+                        <tr>
+                            <td>Apply</td>
+                            <td>Application status and next steps</td>
+                            <td>Shortlist, notes, and candidate actions</td>
+                        </tr>
+                        <tr>
+                            <td>Interview</td>
+                            <td>AI rounds and slot booking</td>
+                            <td>Slot management and interview tracking</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="cta">
+            <h3>Ready to Explore the HireMatrix Experience?</h3>
+            <p>See how preparation, interviews, and hiring coordination can feel more connected for both candidates and recruiters.</p>
+            <div class="cta-row">
+                <a class="btn primary" href="#">Try the Portal</a>
+                <a class="btn ghost" href="#features">View Feature Details</a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
