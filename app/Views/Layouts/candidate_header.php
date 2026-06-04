@@ -301,7 +301,7 @@
                         <span>Job Search Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="hm-drawer-link <?= $isCareerTransitionActive ? 'is-active' : '' ?>">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-route"></i></span>
+                        <span class="hm-drawer-link-icon"><i class="fas fa-rocket"></i></span>
                         <span>Career Transition AI</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
@@ -311,7 +311,7 @@
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($mentorUrl) ?>" class="hm-drawer-link <?= $isPremiumMentorActive ? 'is-active' : '' ?>">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-robot"></i></span>
+                        <span class="hm-drawer-link-icon"><i class="fas fa-comments"></i></span>
                         <span>AI Career Mentor</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
@@ -449,7 +449,7 @@
                         <span>Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="cand-leftnav__link <?= $isCareerTransitionActive ? 'is-active' : '' ?>" title="Career Transition">
-                        <span class="cand-leftnav__icon"><i class="fas fa-route"></i></span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-rocket"></i></span>
                         <span>Career Transition</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
@@ -459,7 +459,7 @@
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($mentorUrl) ?>" class="cand-leftnav__link <?= $isPremiumMentorActive ? 'is-active' : '' ?>" title="AI Mentor">
-                        <span class="cand-leftnav__icon"><i class="fas fa-robot"></i></span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-comments"></i></span>
                         <span>AI Mentor</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
@@ -471,7 +471,6 @@
         <!-- Bottom: utility actions -->
         <div class="cand-leftnav__bottom">
 
-            <!-- Theme + Language row -->
             <div class="cand-leftnav__utils">
                 <div class="candidate-language-menu" id="candidateLanguageMenu">
                     <button type="button" class="candidate-language-btn" id="candidateLanguageBtn" aria-haspopup="true" aria-expanded="false" title="Change language" aria-label="Change language">
@@ -483,6 +482,30 @@
                         <?= view('components/google_translate_widget') ?>
                     </div>
                 </div>
+            </div>
+
+            <div class="cand-leftnav__user" id="candidateLeftnavUser">
+                <div class="cand-leftnav__user-dropdown" id="candidateLeftnavUserDropdown">
+                    <a href="<?= base_url('candidate/profile') ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
+                    <a href="<?= base_url('candidate/settings') ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
+                    <a href="<?= base_url('premium/plans') ?>"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
+                    <a href="<?= base_url('payment/history') ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
+                    <a href="<?= base_url('logout') ?>" class="cand-leftnav__logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                </div>
+                <button type="button" class="cand-leftnav__user-btn" id="candidateLeftnavUserBtn" aria-haspopup="true" aria-expanded="false">
+                    <span class="cand-leftnav__avatar">
+                        <?php if ($candidatePhotoUrl !== ''): ?>
+                            <img src="<?= esc($candidatePhotoUrl) ?>" alt="<?= esc($candidateName) ?>">
+                        <?php else: ?>
+                            <?= esc($candidateInitial) ?>
+                        <?php endif; ?>
+                    </span>
+                    <span class="cand-leftnav__user-info">
+                        <strong><?= esc($candidateName) ?></strong>
+                        <span>Candidate</span>
+                    </span>
+                    <i class="fas fa-chevron-up cand-leftnav__user-more"></i>
+                </button>
             </div>
 
         </div>
@@ -519,7 +542,6 @@
                     </div>
                 </button>
                 <div class="candidate-avatar-dropdown cand-topbar__user-dropdown" id="candidateAvatarDropdown">
-                    <div class="candidate-avatar-dropdown-header">ACCOUNT</div>
                     <a href="<?= base_url('candidate/profile') ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
                     <a href="<?= base_url('candidate/settings') ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
                     <a href="<?= base_url('premium/plans') ?>"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
@@ -607,5 +629,6 @@
         </a>
     </nav>
         
+
 
 

@@ -104,7 +104,7 @@ $resolveAssetUrl = static function (string $path): string {
 
             <div class="dashboard-jobs-grid">
                 <?php if (!empty($topSuggestedJobs)): ?>
-                    <?php foreach (array_slice($topSuggestedJobs, 0, 6) as $job): ?>
+                    <?php foreach (array_slice($topSuggestedJobs, 0, 4) as $job): ?>
                         <?php
                         $score = (int) round((float) ($job['match_score'] ?? 0));
                         $title = (string) ($job['title'] ?? 'Untitled Role');
@@ -258,8 +258,8 @@ $resolveAssetUrl = static function (string $path): string {
                     <p class="section-subtitle mb-0">Quickly find openings in your preferred specialized domains.</p>
                 </div>
             </div>
-            <div class="top-companies-grid mb-5">
-                <?php foreach ($jobCategories as $category): ?>
+            <div class="top-companies-grid dashboard-tile-grid dashboard-role-grid mb-5">
+                <?php foreach (array_slice($jobCategories, 0, 10) as $category): ?>
                     <a href="<?= base_url('jobs?category=' . urlencode((string)($category['name'] ?? ''))) ?>" class="top-company-card">
                         <div class="top-company-logo">
                             <i class="<?= esc((string)($category['icon'] ?? 'fas fa-briefcase')) ?> text-primary candidate-icon-lg"></i>
@@ -285,8 +285,8 @@ $resolveAssetUrl = static function (string $path): string {
                 <h2 class="section-title mb-0">Top Companies Hiring Now</h2>
                 <a href="<?= base_url('candidate/company-job-discovery') ?>" class="btn btn-ghost text-primary">View all <i class="fas fa-arrow-right ms-1"></i></a>
             </div>
-            <div class="top-companies-grid">
-                <?php foreach ($topHiringCompanies as $co): ?>
+            <div class="top-companies-grid dashboard-tile-grid dashboard-company-grid">
+                <?php foreach (array_slice($topHiringCompanies, 0, 10) as $co): ?>
                     <?php
                     $coName    = trim((string) ($co['name'] ?? 'Company'));
                     $dbLogo    = trim((string) ($co['logo'] ?? ''));
