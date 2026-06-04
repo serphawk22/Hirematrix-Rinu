@@ -37,8 +37,8 @@ body {
 #google_translate_element .goog-te-gadget {
     font-family: inherit !important;
     color: rgba(255,255,255,0.85) !important;
-    font-size: 12px !important;
-    line-height: 1.4;
+    font-size: 0 !important;
+    line-height: 0 !important;
     margin: 0 !important;
 }
 
@@ -48,10 +48,12 @@ body {
 
 /* --- The actual language dropdown --- */
 #google_translate_element .goog-te-combo {
+    display: block !important;
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
     height: 32px;
+    margin: 0 !important;
     border: 1px solid rgba(255,255,255,0.22);
     border-radius: 6px;
     padding: 4px 8px;

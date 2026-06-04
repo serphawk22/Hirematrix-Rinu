@@ -6216,3 +6216,64 @@ main > .container {
 .recruiter-jobboard .site-footer {
   background: linear-gradient(135deg, var(--primary), var(--secondary));
 }
+
+/* Portal-wide typography normalization */
+html,
+body,
+.hirematrix-app,
+.hirematrix-app button,
+.hirematrix-app input,
+.hirematrix-app select,
+.hirematrix-app textarea {
+  font-family: var(--portal-font-family, "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+}
+
+.hirematrix-app h1,
+.hirematrix-app h2,
+.hirematrix-app h3,
+.hirematrix-app h4,
+.hirematrix-app h5,
+.hirematrix-app h6,
+.hirematrix-app .page-board-title,
+.hirematrix-app .section-title,
+.hirematrix-app .job-card-title,
+.hirematrix-app .dashboard-cta-title,
+.hirematrix-app .dashboard-strategy-title,
+.hirematrix-app .strategy-title,
+.hirematrix-app .application-detail-title,
+.hirematrix-app .settings-panel-title {
+  font-family: var(--portal-font-family, "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+.hirematrix-app .page-board-title {
+  font-size: 1.85rem !important;
+  line-height: 1.2 !important;
+  font-weight: 750 !important;
+}
+
+.hirematrix-app .section-title,
+.hirematrix-app .dashboard-strategy-title,
+.hirematrix-app .dashboard-cta-title {
+  font-size: 1.45rem !important;
+  line-height: 1.25 !important;
+  font-weight: 720 !important;
+}
+
+.hirematrix-app .section-subtitle,
+.hirematrix-app .page-board-subtitle {
+  font-size: 0.95rem !important;
+  line-height: 1.55 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.hirematrix-app .page-board-kicker,
+.hirematrix-app .section-kicker,
+.hirematrix-app .eyebrow,
+.hirematrix-app .kicker,
+.hirematrix-app .badge-label {
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}

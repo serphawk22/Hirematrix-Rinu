@@ -314,7 +314,7 @@ $activeFilterCount = count($activeFilterChips);
 <div class="container">
     <div class="page-board-header page-board-header-tight">
         <div class="page-board-copy">
-            <span class="page-board-kicker"><i class="fas fa-sparkles"></i> AI-powered matching</span>
+            <span class="page-board-kicker"><i class="fas fa-magic"></i> AI-powered matching</span>
             <h1 class="page-board-title"><?= esc($jobsHeroTitle) ?></h1>
             <p class="page-board-subtitle"><?= esc($jobsHeroSubtitle) ?></p>
             <?php if ($showFilters): ?>

@@ -33,7 +33,11 @@ $resolveAssetUrl = static function (string $path): string {
         <div class="container">
             <?php if (!empty($jobs)): ?>
                 <div class="results-bar">
-                    <span class="results-count"><strong><?= count($jobs) ?></strong> saved job<?= count($jobs) !== 1 ? 's' : '' ?></span>
+                    <span class="results-count">
+                        <i class="fas fa-bookmark"></i>
+                        <strong><?= count($jobs) ?></strong>
+                        saved job<?= count($jobs) !== 1 ? 's' : '' ?>
+                    </span>
                 </div>
 
                 <div class="saved-job-grid mb-4">

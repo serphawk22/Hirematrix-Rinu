@@ -17,7 +17,7 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
         <div class="container">
             <div class="page-board-header page-board-header-tight">
                 <div class="page-board-copy">
-                    <span class="page-board-kicker"><i class="fas fa-route"></i> Career learning path</span>
+                    <span class="page-board-kicker"><i class="fas fa-map-signs"></i> Career learning path</span>
                     <h1 class="page-board-title">Career Transition AI</h1>
                     <p class="page-board-subtitle">Get a personalised roadmap toward your target role with clear daily steps.</p>
                 </div>
@@ -97,26 +97,46 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
             <?php else: ?>
                 <div class="career-transition-simple-layout">
 
-                    <div class="career-transition-card dashboard-panel">
+                    <div class="career-transition-card dashboard-panel career-transition-overview-card">
                         <div class="panel-body">
-                            <div class="career-transition-path">
-                                <div class="career-transition-role"><?= esc($transition['current_role']) ?></div>
-                                <div class="career-transition-path-arrow"><i class="fas fa-arrow-down"></i></div>
-                                <div class="career-transition-role career-transition-role-target"><?= esc($transition['target_role']) ?></div>
-                                <?php if ($reactivationCount > 0): ?>
-                                    <p class="text-muted mt-3 mb-0">Reused <?= $reactivationCount ?> time(s)</p>
-                                <?php endif; ?>
-                            </div>
-                            <div class="career-transition-actions">
-                                <a href="<?= base_url('career-transition/course') ?>" class="btn btn-primary">
-                                    <i class="fas fa-book-open"></i> View Course
-                                </a>
-                                <a href="<?= base_url('career-transition/download-pdf') ?>" class="btn btn-primary">
-                                    <i class="fas fa-file-pdf"></i> Download PDF
-                                </a>
-                                <button type="button" class="btn btn-outline-secondary" onclick="if(confirm('Save current path to history and start a new one? Your progress will be preserved.')) window.location.href='<?= base_url('career-transition/reset') ?>'">
-                                    <i class="fas fa-sync"></i> Change Path
-                                </button>
+                            <div class="career-transition-overview">
+                                <div class="career-transition-path">
+                                    <span class="career-transition-path-label">Active path</span>
+                                    <div class="career-transition-role-flow">
+                                        <div class="career-transition-role"><?= esc($transition['current_role']) ?></div>
+                                        <div class="career-transition-path-arrow"><i class="fas fa-arrow-right"></i></div>
+                                        <div class="career-transition-role career-transition-role-target"><?= esc($transition['target_role']) ?></div>
+                                    </div>
+                                </div>
+
+                                <div class="career-transition-overview-side">
+                                    <div class="career-transition-stats">
+                                        <span>
+                                            <strong><?= (int) $taskCount ?></strong>
+                                            tasks
+                                        </span>
+                                        <span>
+                                            <strong><?= count($skillGaps) ?></strong>
+                                            skill gaps
+                                        </span>
+                                        <span>
+                                            <strong><?= $reactivationCount ?></strong>
+                                            reused
+                                        </span>
+                                    </div>
+
+                                    <div class="career-transition-actions">
+                                        <a href="<?= base_url('career-transition/course') ?>" class="btn btn-primary">
+                                            <i class="fas fa-book-open"></i> View Course
+                                        </a>
+                                        <a href="<?= base_url('career-transition/download-pdf') ?>" class="btn btn-primary">
+                                            <i class="fas fa-file-pdf"></i> PDF
+                                        </a>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="if(confirm('Save current path to history and start a new one? Your progress will be preserved.')) window.location.href='<?= base_url('career-transition/reset') ?>'">
+                                            <i class="fas fa-sync"></i> Change
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

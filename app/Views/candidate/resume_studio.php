@@ -29,7 +29,7 @@ $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' 
                     </a>
                     <?php if (!empty($activeTransition)): ?>
                         <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('syncTransitionForm').submit()">
-                            <i class="fas fa-arrows-rotate mr-1"></i> Sync Transition
+                            <i class="fas fa-sync-alt mr-1"></i> Sync Transition
                         </button>
                     <?php endif; ?>
                 </div>
@@ -236,7 +236,7 @@ $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' 
                                                 <?php if ((int) ($version['is_primary'] ?? 0) !== 1): ?>
                                                     <form method="post" action="<?= base_url('candidate/resume-version/' . (int) $version['id'] . '/primary') ?>" class="candidate-inline-block-form">
                                                         <?= csrf_field() ?>
-                                                        <button type="submit" class="btn btn-outline-primary btn-sm">Set primary</button>
+                                                        <button type="submit" class="btn btn-outline-primary btn-sm resume-version-set-primary">Set primary</button>
                                                     </form>
                                                 <?php endif; ?>
                                             </div>

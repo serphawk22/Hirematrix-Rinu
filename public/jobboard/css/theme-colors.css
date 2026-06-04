@@ -1,6 +1,9 @@
 /* HireMatrix Theme Colors - Light & Dark Mode */
 
 :root {
+  /* Typography */
+  --portal-font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
   /* Brand Colors - Light Mode */
   --primary: #1FB7B5;
   --primary-dark: #0D8A90;
