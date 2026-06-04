@@ -29,6 +29,16 @@ class Companies extends Controller
             'popularCities'     => $this->getPopularCities(),
         ]);
     }
+    
+    public function initLocalCompanies()
+    {
+        return $this->response->setJSON([
+            'featuredCompanies' => $this->getFeaturedCompanies(),
+            'popularRoles'      => $this->getPopularRoles(),
+            'popularCities'     => $this->getPopularCities(),
+        ]);
+    }
+
 
     public function fetchCompanies()
     {

@@ -23,6 +23,7 @@ class PremiumMentorMessageModel extends Model
     {
         return $this->where('user_id', $userId)
             ->orderBy('created_at', 'DESC')
+            ->orderBy('id', 'DESC')
             ->findAll($limit);
     }
 
@@ -31,6 +32,7 @@ class PremiumMentorMessageModel extends Model
         return $this->where('user_id', $userId)
             ->where('compacted', 0)
             ->orderBy('created_at', 'ASC')
+            ->orderBy('id', 'ASC')
             ->findAll($limit);
     }
 }

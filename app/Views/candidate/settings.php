@@ -177,5 +177,50 @@
     </section>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function pollSettings() {
+        // Fetch current database values
+        fetch('<?= base_url('candidate/get-settings-ajax') ?>')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success' && data.settings) {
+                    const settings = data.settings;
+                    
+                    const visibilityCheckbox = document.getElementById('allow_public_recruiter_visibility');
+                    const alertsCheckbox = document.getElementById('job_alerts_enabled');
+                    const inAppCheckbox = document.getElementById('job_alert_notify_in_app');
+                    const emailCheckbox = document.getElementById('job_alert_notify_email');
+                    
+                    if (visibilityCheckbox) {
+                        const isVisible = settings.allow_public_recruiter_visibility === 1;
+                        if (visibilityCheckbox.checked !== isVisible) {
+                            visibilityCheckbox.checked = isVisible;
+                            // Update progress bar
+                            const progressBar = document.querySelector('.settings-progress-bar');
+                            if (progressBar) {
+                                progressBar.style.width = isVisible ? '100%' : '35%';
+                                progressBar.setAttribute('aria-valuenow', isVisible ? '100' : '35');
+                            }
+                        }
+                    }
+                    if (alertsCheckbox) {
+                        alertsCheckbox.checked = settings.job_alerts_enabled === 1;
+                    }
+                    if (inAppCheckbox) {
+                        inAppCheckbox.checked = settings.job_alert_notify_in_app === 1;
+                    }
+                    if (emailCheckbox) {
+                        emailCheckbox.checked = settings.job_alert_notify_email === 1;
+                    }
+                }
+            })
+            .catch(err => console.error("Error polling settings:", err));
+    }
+    
+    // Poll settings status every 3 seconds to keep sync'd with mobile changes
+    setInterval(pollSettings, 3000);
+});
+</script>
 <?= view('Layouts/candidate_footer') ?>
 

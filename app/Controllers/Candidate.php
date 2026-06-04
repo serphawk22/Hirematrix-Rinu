@@ -37,6 +37,28 @@ class Candidate extends BaseController
         ]);
     }
 
+    
+    public function getSettingsAjax()
+    {
+        if (session()->get('role') !== 'candidate') {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Access denied.'])->setStatusCode(403);
+        }
+
+        $userId = (int) session()->get('user_id');
+        $userModel = model('UserModel');
+        $user = $userModel->findCandidateWithProfile($userId) ?? $userModel->find($userId) ?? [];
+
+        return $this->response->setJSON([
+            'status' => 'success',
+            'settings' => [
+                'allow_public_recruiter_visibility' => (int) ($user['allow_public_recruiter_visibility'] ?? 1),
+                'job_alerts_enabled' => (int) ($user['job_alerts_enabled'] ?? 1),
+                'job_alert_notify_in_app' => (int) ($user['job_alert_notify_in_app'] ?? 1),
+                'job_alert_notify_email' => (int) ($user['job_alert_notify_email'] ?? 1),
+            ]
+        ]);
+    }
+
     public function profile()
     {
         if (session()->get('role') !== 'candidate') {
@@ -190,6 +212,13 @@ class Candidate extends BaseController
         }
 
         $filePath = $uploadPath . $file->getName();
+
+                // Copy file to public path (FCPATH) for mobile/direct access
+        $fcPath = FCPATH . 'uploads/resumes/';
+        if (!is_dir($fcPath)) {
+            mkdir($fcPath, 0755, true);
+        }
+        @copy($filePath, $fcPath . $file->getName());
 
         $candidateModel = new UserModel();
         $resumeData = [
@@ -524,7 +553,9 @@ class Candidate extends BaseController
         }
         
         $filePath = WRITEPATH . $user['resume_path'];
-        
+        if (!file_exists($filePath)) {
+            $filePath = FCPATH . $user['resume_path'];
+        }
         if (!file_exists($filePath)) {
             return redirect()->back()->with('error', 'Resume file not found');
         }
@@ -543,7 +574,9 @@ class Candidate extends BaseController
         }
         
         $filePath = WRITEPATH . $user['resume_path'];
-        
+        if (!file_exists($filePath)) {
+            $filePath = FCPATH . $user['resume_path'];
+        }
         if (!file_exists($filePath)) {
             return $this->response->setJSON(['error' => 'Resume file not found']);
         }
@@ -573,7 +606,9 @@ class Candidate extends BaseController
         }
         
         $filePath = WRITEPATH . $user['resume_path'];
-        
+        if (!file_exists($filePath)) {
+            $filePath = FCPATH . $user['resume_path'];
+        }
         if (!file_exists($filePath)) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Resume file not found');
         }

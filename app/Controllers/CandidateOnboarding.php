@@ -159,6 +159,14 @@ class CandidateOnboarding extends BaseController
             return redirect()->back()->with('error', 'Failed to upload resume.');
         }
 
+        
+        // Copy file to FCPATH for direct public access on mobile
+        $fcPath = FCPATH . 'uploads/resumes/';
+        if (!is_dir($fcPath)) {
+            mkdir($fcPath, 0755, true);
+        }
+        @copy($uploadPath . $file->getName(), $fcPath . $file->getName());
+
         (new UserModel())->upsertCandidateProfile($candidateId, [
             'resume_path' => 'uploads/resumes/' . $file->getName(),
         ]);

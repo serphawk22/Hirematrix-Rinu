@@ -481,6 +481,10 @@ class RecruiterCandidates extends BaseController
 
         $filePath = WRITEPATH . $candidate['resume_path'];
         if (!is_file($filePath)) {
+            $filePath = FCPATH . $candidate['resume_path'];
+        }
+        
+        if (!is_file($filePath)) {
             return redirect()->back()->with('error', 'Resume file not found.');
         }
 

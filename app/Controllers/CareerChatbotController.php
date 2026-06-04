@@ -270,6 +270,7 @@ class CareerChatbotController extends BaseController
         return $this->conversationModel
             ->where('session_id', $sessionId)
             ->orderBy('created_at', 'ASC')
+            ->orderBy('id', 'ASC')
             ->findAll();
     }
 

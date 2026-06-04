@@ -74,6 +74,78 @@ $routes->get('auth/google', 'Auth::googleCandidateStart');
 $routes->post('auth/parse-resume', 'Auth::parseResumeForOnboarding');
 $routes->get('auth/google/callback', 'Auth::googleCandidateCallback');
 
+// API Routes for Flutter App
+$routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
+    $routes->post('login', 'ApiAuthController::login');
+    $routes->post('google-login', 'ApiAuthController::googleLogin');
+    $routes->post('register', 'ApiAuthController::register');
+    $routes->post('onboarding/(:segment)', 'ApiOnboardingController::saveStep/$1');
+    $routes->get('profile/(:num)', 'ApiProfileController::getProfile/$1');
+    $routes->post('profile/update_personal', 'ApiProfileController::updatePersonal');
+    $routes->post('profile/update_career', 'ApiProfileController::updateCareer');
+    $routes->post('profile/update_preferences', 'ApiProfileController::updatePreferences');
+    $routes->post('profile/update_settings', 'ApiProfileController::updateSettings');
+    $routes->post('change-password', 'ApiAuthController::changePassword');
+    $routes->post('forgot-password', 'ApiAuthController::forgotPassword');
+    $routes->post('reset-password', 'ApiAuthController::resetPassword');
+    $routes->post('profile/add_skill', 'ApiProfileController::addSkill');
+    $routes->post('profile/remove_skill', 'ApiProfileController::removeSkill');
+    $routes->post('profile/analyze_github', 'ApiProfileController::analyzeGithub');
+    $routes->post('profile/update_interests', 'ApiProfileController::updateInterests');
+    $routes->post('profile/save_experience', 'ApiProfileController::saveExperience');
+    $routes->post('profile/delete_experience/(:num)', 'ApiProfileController::deleteExperience/$1');
+    $routes->post('profile/save_project', 'ApiProfileController::saveProject');
+    $routes->post('profile/delete_project/(:num)', 'ApiProfileController::deleteProject/$1');
+    $routes->post('profile/save_education', 'ApiProfileController::saveEducation');
+    $routes->post('profile/delete_education/(:num)', 'ApiProfileController::deleteEducation/$1');
+    $routes->post('profile/save_certification', 'ApiProfileController::saveCertification');
+    $routes->post('profile/delete_certification/(:num)', 'ApiProfileController::deleteCertification/$1');
+    $routes->post('profile/upload_resume', 'ApiProfileController::uploadResume');
+    $routes->post('profile/upload_video', 'ApiProfileController::uploadVideo');
+    $routes->post('profile/upload_photo', 'ApiProfileController::uploadPhoto');
+    $routes->post('profile/delete_photo', 'ApiProfileController::deletePhoto');
+    $routes->get('dashboard/(:num)', 'ApiDashboardController::getDashboard/$1');
+    $routes->get('job-search-strategy/(:num)', 'ApiDashboardController::getJobSearchStrategy/$1');
+    $routes->get('jobs/featured', 'ApiJobsController::getFeaturedJobs');
+    $routes->get('local-companies/init', 'Companies::initLocalCompanies');
+    $routes->get('jobs/(:num)', 'ApiJobsController::getJobs/$1');
+    $routes->get('jobs/saved/(:num)', 'ApiJobsController::getSavedJobs/$1');
+    $routes->post('jobs/save', 'ApiJobsController::saveJob');
+    $routes->post('jobs/unsave', 'ApiJobsController::unsaveJob');
+    $routes->get('jobs/generate-ai-cover-letter', 'ApiJobsController::generateAiCoverLetter');
+    $routes->get('jobs/analyze-ats-match', 'ApiJobsController::analyzeAtsMatch');
+    $routes->get('plans/(:num)', 'ApiDashboardController::getPlans/$1');
+    $routes->post('plans/subscribe', 'ApiDashboardController::subscribe');
+    $routes->post('payment/create-order', 'ApiPaymentController::createOrder');
+    $routes->post('payment/verify', 'ApiPaymentController::verify');
+    $routes->get('applications/(:num)', 'ApiApplicationsController::getApplications/$1');
+    $routes->post('applications/withdraw/(:num)', 'ApiApplicationsController::withdraw/$1');
+    
+    // Career Transition AI API Routes
+    $routes->get('career-transition/(:num)', 'ApiCareerTransitionController::getTransition/$1');
+    $routes->post('career-transition/create', 'ApiCareerTransitionController::create');
+    $routes->post('career-transition/complete-task/(:num)', 'ApiCareerTransitionController::completeTask/$1');
+    $routes->get('career-transition/modules/(:num)', 'ApiCareerTransitionController::getModules/$1');
+    $routes->get('career-transition/module-lessons/(:num)', 'ApiCareerTransitionController::getLessons/$1');
+    $routes->post('career-transition/reset', 'ApiCareerTransitionController::reset');
+    $routes->get('career-transition/history/(:num)', 'ApiCareerTransitionController::history/$1');
+    $routes->post('career-transition/reactivate', 'ApiCareerTransitionController::reactivate');
+
+    // Resume Studio API Routes
+    $routes->get('resume-studio/(:num)', 'ApiResumeStudioController::getStudioData/$1');
+    $routes->post('resume-studio/generate', 'ApiResumeStudioController::generate');
+    $routes->post('resume-studio/sync-transition', 'ApiResumeStudioController::syncTransition');
+    $routes->post('resume-studio/set-primary', 'ApiResumeStudioController::setPrimary');
+    $routes->post('resume-studio/delete', 'ApiResumeStudioController::delete');
+    $routes->get('resume-studio/download-pdf/(:num)/(:num)', 'ApiResumeStudioController::downloadResumeVersion/$1/$2');
+    $routes->get('resume-studio/preview-html/(:num)/(:num)', 'ApiResumeStudioController::previewResumeVersion/$1/$2');
+
+    // Premium Mentor API Routes
+    $routes->get('premium-mentor/(:num)', 'ApiPremiumMentorController::getMentorData/$1');
+    $routes->post('premium-mentor/chat', 'ApiPremiumMentorController::chat');
+    $routes->post('premium-mentor/create-plan', 'ApiPremiumMentorController::createPlan');
+});
+
 // recruiter registration (restricted)
 $routes->get('recruiter/register', 'Auth::registerAdmin');
 $routes->post('recruiter/register', 'Auth::saveAdmin');
@@ -120,6 +192,7 @@ $routes->group('career-transition', ['filter' => 'candidate'], function($routes)
 });
 // NEW: PDF Download Route
 $routes->get('career-transition/download-pdf', 'CareerTransitionPDF_TCPDF::downloadCoursePDF', ['filter' => 'candidate']);
+$routes->get('career-transition/download-pdf/(:num)', 'CareerTransitionPDF_TCPDF::downloadCoursePDF/$1');
 // Career Transition History Routes
 $routes->get('career-transition/history', 'CareerTransition::history', ['filter' => 'candidate']);
 $routes->get('career-transition/reactivate/(:num)', 'CareerTransition::reactivate/$1', ['filter' => 'candidate']);
@@ -172,6 +245,7 @@ $routes->post('recruiter/post_job', 'Recruiter::saveJob', ['filter' => 'recruite
 
 $routes->get('candidate/profile', 'Candidate::profile', ['filter' => 'candidate']);
 $routes->get('candidate/settings', 'Candidate::settings', ['filter' => 'candidate']);
+$routes->get('candidate/get-settings-ajax', 'Candidate::getSettingsAjax', ['filter' => 'candidate']);
 $routes->post('candidate/update-notification-settings', 'Candidate::updateNotificationSettings', ['filter' => 'candidate']);
 $routes->get('candidate/resume-studio', 'Candidate::resumeStudio', ['filter' => 'candidate']);
 $routes->post('candidate/resume_upload', 'Candidate::resumeUpload', ['filter' => 'candidate']);

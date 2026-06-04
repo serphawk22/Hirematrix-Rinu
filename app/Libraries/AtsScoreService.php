@@ -168,6 +168,9 @@ class AtsScoreService
 
         if (trim((string) ($resumeVersion['content'] ?? '')) === '' && !empty($user['resume_path'])) {
             $filePath = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim((string) $user['resume_path'], DIRECTORY_SEPARATOR);
+            if (!is_file($filePath)) {
+                $filePath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim((string) $user['resume_path'], DIRECTORY_SEPARATOR);
+            }
             if (is_file($filePath)) {
                 try {
                     $parsed = (new ResumeParser())->parse($filePath);
