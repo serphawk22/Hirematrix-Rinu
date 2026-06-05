@@ -114,12 +114,16 @@ function companyCard(company) {
     const description = company.description || "Explore this company and review current opportunities.";
     const openJobs = Number(company.open_jobs || 0);
     const website = company.website || "";
+    const jobsUrl = company.jobs_url || "";
     const logo = company.logo || "";
     const logoHtml = logo
         ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(name)}" onerror="this.parentElement.textContent='${companyInitial(name)}';">`
         : companyInitial(name);
-    const websiteHtml = website
-        ? `<div class="local-company-actions"><a href="${escapeHtml(website)}" target="_blank" rel="noopener" class="local-company-primary"><i class="fas fa-external-link-alt"></i> Website</a></div>`
+    const actionsHtml = (jobsUrl || website)
+        ? `<div class="local-company-actions">
+                ${jobsUrl ? `<a href="${escapeHtml(jobsUrl)}" class="local-company-primary"><i class="fas fa-briefcase"></i> View Jobs</a>` : ""}
+                ${website ? `<a href="${escapeHtml(website)}" target="_blank" rel="noopener" class="local-company-secondary"><i class="fas fa-external-link-alt"></i> Website</a>` : ""}
+           </div>`
         : "";
 
     return `
@@ -136,7 +140,7 @@ function companyCard(company) {
                 <span class="local-company-pill"><i class="fas fa-briefcase"></i> ${openJobs > 0 ? openJobs + " open" : "Verify openings"}</span>
             </div>
             <p class="local-company-description">${escapeHtml(description)}</p>
-            ${websiteHtml}
+            ${actionsHtml}
         </article>
     `;
 }

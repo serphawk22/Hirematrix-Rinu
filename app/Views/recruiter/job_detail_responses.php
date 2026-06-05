@@ -411,7 +411,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                             </td>
                                             <td>
                                                 <div class="job-actions-wrap recruiter-booking-actions">
-                                                    <?php if ($isUpcoming && in_array($bookingStatus, ['confirmed', 'rescheduled'], true)): ?>
+                                                    <?php if ($isUpcoming && in_array($bookingStatus, ['booked', 'confirmed', 'rescheduled'], true)): ?>
                                                         <a href="<?= base_url('recruiter/slots/reschedule/' . $booking['id']) ?>" class="btn btn-sm btn-warning btn-action">
                                                             <i class="fas fa-sync"></i> Reschedule
                                                         </a>

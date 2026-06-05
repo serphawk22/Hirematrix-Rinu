@@ -65,6 +65,26 @@ $resolveAssetUrl = static function (string $path): string {
                             }
                         ?>
                         <article class="job-card saved-job-card">
+                            <div class="job-card-tools-wrapper">
+                                <button type="button" class="btn btn-sm btn-outline-secondary job-card-tools-toggle" title="Tools" aria-label="Job tools">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="job-card-tools-dropdown">
+                                    <a
+                                        href="<?= esc($detailsUrl) ?>"
+                                        class="job-card-tools-item js-mark-visited"
+                                        <?= $isExternal ? 'target="_blank" rel="noopener"' : '' ?>
+                                        data-job-id="<?= (int) $job['id'] ?>"
+                                    >
+                                        <i class="fas fa-external-link-alt"></i>
+                                        <?= $isExternal ? 'Apply now' : 'Open details' ?>
+                                    </a>
+                                    <a href="<?= base_url('jobs?search=' . urlencode($title)) ?>" class="job-card-tools-item">
+                                        <i class="fas fa-search"></i>
+                                        Similar jobs
+                                    </a>
+                                </div>
+                            </div>
                             <button
                                 type="button"
                                 class="btn btn-sm btn-outline-secondary py-0 px-2 job-card-save js-save-job-toggle is-saved"
@@ -78,7 +98,7 @@ $resolveAssetUrl = static function (string $path): string {
                                 data-save-label-save="Save Job"
                                 data-save-label-saved="Saved"
                             >
-                                <i class="js-save-icon fas fa-bookmark"></i>
+                                <i class="js-save-icon far fa-bookmark"></i>
                             </button>
                             <div class="job-card-icon saved-job-logo">
                                 <?php if ($companyLogo !== ''): ?>
@@ -101,13 +121,11 @@ $resolveAssetUrl = static function (string $path): string {
                                     <span><i class="fas fa-clock"></i> <?= esc($postedAt) ?></span>
                                 <?php endif; ?>
                             </div>
-                            <div class="job-card-tags">
-                                <span class="badge <?= $typeBadge ?>"><?= esc($job['employment_type'] ?: ($isExternal ? 'External' : 'Full Time')) ?></span>
-                                <span class="badge badge-secondary"><?= $isExternal ? 'MNC Discovery' : esc(substr($title, 0, 15) ?: 'Role') ?></span>
-                                 <?php if ($isVisited): ?>       <span class="badge badge-success">
-         Visited
-    </span>  <?php endif; ?>
-                            </div>
+                            <?php if ($isVisited): ?>
+                                <div class="job-card-tags">
+                                    <span class="badge badge-success">Visited</span>
+                                </div>
+                            <?php endif; ?>
                             <a href="<?= esc($detailsUrl) ?>" class="view-details js-mark-visited" <?= $isExternal ? 'target="_blank" rel="noopener"' : '' ?>  data-job-id="<?= (int) $job['id'] ?>">
                                 <?= $isExternal ? 'Apply Now' : 'View Details' ?> &rarr;
                             </a>
