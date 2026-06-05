@@ -30,7 +30,7 @@
                     <div class="settings-side-title">Account Settings</div>
                     <nav class="settings-nav" id="settingsNav">
                         <a href="#visibility" class="settings-nav-link <?= $activeTab === 'visibility' ? 'is-active' : '' ?>" data-settings-tab="visibility">
-                            <span><i class="fas fa-user-shield"></i></span>
+                            <span><i class="fas fa-eye"></i></span>
                             <span>
                                 Profile Visibility
                                 <small>Recruiter access</small>
@@ -51,7 +51,7 @@
                             </span>
                         </a>
                         <a href="#appearance" class="settings-nav-link <?= $activeTab === 'appearance' ? 'is-active' : '' ?>" data-settings-tab="appearance">
-                            <span><i class="fas fa-palette"></i></span>
+                            <span><i class="fas fa-paint-brush"></i></span>
                             <span>
                                 Appearance
                                 <small>Theme and display</small>
@@ -178,4 +178,3 @@
 </div>
 
 <?= view('Layouts/candidate_footer') ?>
-

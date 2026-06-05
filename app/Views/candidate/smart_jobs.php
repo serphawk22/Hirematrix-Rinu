@@ -23,6 +23,7 @@ $categories                 = $categories ?? [];
 $experienceLevels           = $experienceLevels ?? [];
 $employmentTypes            = $employmentTypes ?? [];
 $savedJobIds                = $savedJobIds ?? [];
+$appliedJobMap              = $appliedJobMap ?? [];
 $salaryRanges = [
     '' => 'Any Salary',
     'under_3' => 'Under 3 LPA',
@@ -111,7 +112,7 @@ $renderRecommendedPane = static function (
     string $recType,
     array $jobs,
     string $tabLabel
-) use ($recommendationType, $formatPostedMeta, $savedJobIds, $resolveAssetUrl, $hasBaseResume, $primaryResumeId, $loadedRecommendationTypes): string {
+) use ($recommendationType, $formatPostedMeta, $savedJobIds, $appliedJobMap, $resolveAssetUrl, $hasBaseResume, $primaryResumeId, $loadedRecommendationTypes): string {
     ob_start();
     $isActivePane = $recommendationType === $recType;
     $isLoadedPane = in_array($recType, (array) $loadedRecommendationTypes, true);
@@ -127,6 +128,7 @@ $renderRecommendedPane = static function (
                     $location = (string) ($job['location'] ?? 'N/A');
                     $postedMeta = $formatPostedMeta($job['created_at'] ?? null);
                     $isSaved = in_array((int) ($job['id'] ?? 0), $savedJobIds, true);
+                    $appliedStatus = $appliedJobMap[(int) ($job['id'] ?? 0)] ?? null;
                     $type = strtolower((string) ($job['employment_type'] ?? ''));
                     $typeBadge = str_contains($type, 'part') ? 'badge-secondary' : 'badge-primary';
                     $matchPct = max(10, min(100, (int) round($score)));
@@ -137,7 +139,7 @@ $renderRecommendedPane = static function (
                     $externalSource = trim((string) ($job['external_source'] ?? ''));
                     $isVisited = (int)($job['visited_flag'] ?? 0) === 1;
                 ?>
-                <article class="job-card recommended-job-card">
+                <article class="job-card recommended-job-card <?= $appliedStatus !== null ? 'is-applied' : '' ?>">
                     
                     <div class="job-card-icon">
                         <?php
@@ -176,6 +178,9 @@ $renderRecommendedPane = static function (
                                      <span class="badge badge-success">
          Visited
     </span>  <?php endif; ?>
+                            <?php if ($appliedStatus !== null): ?>
+                                <span class="badge job-card-applied-badge"><i class="fas fa-check-circle"></i> Applied</span>
+                            <?php endif; ?>
                         </div>
                         <?php if (!empty($job['match_reason'])): ?>
                             <div class="small text-muted mb-2"><?= esc($job['match_reason']) ?></div>
@@ -435,7 +440,10 @@ $activeFilterCount = count($activeFilterChips);
             <?php endif; ?>
 
             <?php
-            $uniqueEmploymentTypes = array_values(array_unique(array_column($employmentTypes, 'employment_type')));
+            $uniqueEmploymentTypes = array_values(array_filter(
+                array_unique(array_map(static fn($row) => trim((string) ($row['employment_type'] ?? '')), $employmentTypes)),
+                static fn($type) => $type !== ''
+            ));
             ?>
             <?php if (count($uniqueEmploymentTypes) > 1): ?>
             <div class="filter-section">
@@ -602,48 +610,38 @@ $activeFilterCount = count($activeFilterChips);
                 </div>
                 <?php endif; ?>
 
-                <?php if ($activeFilterCount > 0): ?>
-                <div class="jobs-search-feedback">
-                    <div class="jobs-search-feedback-copy">
-                        <div class="jobs-search-feedback-kicker">Search feedback</div>
-                        <p class="jobs-search-feedback-title">
-                            <?= $activeFilterCount . ' active filter' . ($activeFilterCount === 1 ? '' : 's') . ' applied' ?>
-                        </p>
-                        <p class="jobs-search-feedback-text">
+                <div class="jobs-results-summary">
+                    <div class="jobs-results-summary-copy">
+                        <div class="jobs-results-summary-kicker">Browse jobs</div>
+                        <h2 class="jobs-results-summary-title">
                             <?php if (!empty($filters['search'])): ?>
-                                Showing results for <strong>"<?= esc($filters['search']) ?>"</strong>.
+                                Results for "<?= esc($filters['search']) ?>"
                             <?php else: ?>
-                                Narrow by role, location, salary, and work mode to refine the list.
+                                <?= $activeFilterCount > 0 ? 'Filtered jobs' : 'All jobs' ?>
                             <?php endif; ?>
+                        </h2>
+                        <p class="jobs-results-summary-text">
+                            <strong><?= $totalJobs ?></strong> job<?= $totalJobs != 1 ? 's' : '' ?> found<?= $activeFilterCount > 0 ? ' with ' . $activeFilterCount . ' active filter' . ($activeFilterCount === 1 ? '' : 's') : '' ?>.
                         </p>
                     </div>
-                    <div class="jobs-search-feedback-actions">
-                        <?php
-                        $clearAllUrl = !empty($filters['company'])
-                            ? base_url('jobs?company=' . urlencode($filters['company']))
-                            : base_url('jobs?tab=all');
-                        ?>
-                        <a href="<?= esc($clearAllUrl) ?>" class="btn btn-outline-secondary btn-sm" data-jobs-filter-link="1">Clear all filters</a>
-                    </div>
-                </div>
-
-                <div class="active-filter-chips">
-                    <?php foreach ($activeFilterChips as $chip): ?>
-                        <a href="<?= esc($chip['url']) ?>" class="active-filter-chip" data-jobs-filter-link="1">
-                            <span><?= esc($chip['label']) ?></span>
-                            <i class="fas fa-times"></i>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-                <?php endif; ?>
-
-                <div class="results-bar">
-                    <span class="results-count">
-                        <?php if (!empty($filters['search'])): ?>
-                            Results for <strong>"<?= esc($filters['search']) ?>"</strong> -
-                        <?php endif; ?>
-                        <strong><?= $totalJobs ?></strong> job<?= $totalJobs != 1 ? 's' : '' ?> found
-                    </span>
+                    <?php
+                    $clearAllUrl = !empty($filters['company'])
+                        ? base_url('jobs?company=' . urlencode($filters['company']))
+                        : base_url('jobs?tab=all');
+                    ?>
+                    <?php if ($activeFilterCount > 0): ?>
+                        <a href="<?= esc($clearAllUrl) ?>" class="btn btn-outline-secondary btn-sm jobs-results-clear" data-jobs-filter-link="1">Clear all filters</a>
+                    <?php endif; ?>
+                    <?php if ($activeFilterCount > 0): ?>
+                        <div class="active-filter-chips">
+                            <?php foreach ($activeFilterChips as $chip): ?>
+                                <a href="<?= esc($chip['url']) ?>" class="active-filter-chip" data-jobs-filter-link="1">
+                                    <span><?= esc($chip['label']) ?></span>
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <?php if (!empty($jobs)): ?>
@@ -655,6 +653,7 @@ $activeFilterCount = count($activeFilterChips);
                             $location = (string) ($job['location'] ?? 'N/A');
                             $postedMeta = $formatPostedMeta($job['created_at'] ?? null);
                             $isSaved = in_array((int) ($job['id'] ?? 0), $savedJobIds, true);
+                            $appliedStatus = $appliedJobMap[(int) ($job['id'] ?? 0)] ?? null;
                             $type = strtolower((string) ($job['employment_type'] ?? ''));
                             $typeBadge = str_contains($type, 'part') ? 'badge-secondary' : 'badge-primary';
                             $companyInitial = strtoupper(substr($company, 0, 1) ?: 'C');
@@ -667,7 +666,7 @@ $activeFilterCount = count($activeFilterChips);
                             $isVisited = (int)($job['visited_flag'] ?? 0) === 1;
                         ?>
                         <div class="col-12">
-                            <div class="job-card">
+                            <div class="job-card <?= $appliedStatus !== null ? 'is-applied' : '' ?>">
                                 
                                 <div class="job-card-icon">
                                     <?php
@@ -705,6 +704,9 @@ $activeFilterCount = count($activeFilterChips);
                                          <?php if ($isVisited): ?>       <span class="badge badge-success">
          Visited
     </span>  <?php endif; ?>
+                                        <?php if ($appliedStatus !== null): ?>
+                                            <span class="badge job-card-applied-badge"><i class="fas fa-check-circle"></i> Applied</span>
+                                        <?php endif; ?>
                                     </div>
                                     
                                     <div class="job-card-tools-wrapper">

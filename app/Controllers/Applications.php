@@ -231,12 +231,11 @@ class Applications extends BaseController
                     'status' => $displayStatus,
                     'status_label' => ucwords(str_replace('_', ' ', $displayStatus)),
                     'filtered_out' => $knockoutFailure !== null,
-                    'redirect_url' => base_url('candidate/dashboard'),
                     'mismatch' => true,
                 ]);
             }
 
-            return redirect()->to('candidate/dashboard')->with('success', $applySuccessMessage);
+            return redirect()->back()->with('success', $applySuccessMessage);
         }
 
         if ($isAjax) {
