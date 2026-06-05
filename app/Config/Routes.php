@@ -112,14 +112,21 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->get('jobs/saved/(:num)', 'ApiJobsController::getSavedJobs/$1');
     $routes->post('jobs/save', 'ApiJobsController::saveJob');
     $routes->post('jobs/unsave', 'ApiJobsController::unsaveJob');
+    $routes->post('jobs/apply/(:num)', 'ApiJobsController::applyJob/$1');
     $routes->get('jobs/generate-ai-cover-letter', 'ApiJobsController::generateAiCoverLetter');
     $routes->get('jobs/analyze-ats-match', 'ApiJobsController::analyzeAtsMatch');
+    $routes->get('jobs/invitation', 'ApiJobsController::getJobInvitation');
+    $routes->get('company/(:num)', 'ApiJobsController::getCompanyProfile/$1');
+    $routes->post('company/(:num)/review', 'ApiJobsController::submitCompanyReview/$1');
     $routes->get('plans/(:num)', 'ApiDashboardController::getPlans/$1');
     $routes->post('plans/subscribe', 'ApiDashboardController::subscribe');
     $routes->post('payment/create-order', 'ApiPaymentController::createOrder');
     $routes->post('payment/verify', 'ApiPaymentController::verify');
     $routes->get('applications/(:num)', 'ApiApplicationsController::getApplications/$1');
     $routes->post('applications/withdraw/(:num)', 'ApiApplicationsController::withdraw/$1');
+    $routes->get('applications/(:num)/slots', 'ApiApplicationsController::getAvailableSlots/$1');
+    $routes->post('applications/book-slot', 'ApiApplicationsController::processBooking');
+    $routes->get('applications/bookings/(:num)', 'ApiApplicationsController::getMyBookings/$1');
     
     // Notification API Routes
     $routes->get('notifications/(:num)', 'ApiNotificationController::getNotifications/$1');

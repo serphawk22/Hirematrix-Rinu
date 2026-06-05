@@ -7,6 +7,7 @@ use App\Models\ApplicationModel;
 use App\Models\JobModel;
 use App\Models\RecruiterCandidateActionModel;
 use App\Models\CandidateResumeVersionModel;
+use App\Libraries\AiInterviewPrepCoach;
 
 class ApiApplicationsController extends ResourceController
 {
@@ -111,6 +112,7 @@ class ApiApplicationsController extends ResourceController
             $application['status_label'] = $this->getStatusLabel((string) ($application['status'] ?? ''));
             $application['status_message'] = $this->getStatusMessage((string) ($application['status'] ?? ''));
             $application['timeline'] = $this->buildApplicationTimeline((string) ($application['status'] ?? ''));
+            $application['interview_prep'] = $this->buildInterviewPrepCoach($application);
         }
 
         return $this->respond([
@@ -256,5 +258,314 @@ class ApiApplicationsController extends ResourceController
         }
 
         return $steps;
+    }
+
+    private function buildInterviewPrepCoach(array $application): array
+    {
+        if (in_array((string) ($application['status'] ?? ''), ['filtered_out', 'rejected', 'withdrawn', 'selected', 'hired'], true)) {
+            return [];
+        }
+
+        $requiredSkills = $this->tokenizeCsv((string) ($application['required_skills'] ?? ''));
+        $focusSkills = array_slice($requiredSkills, 0, 5);
+        $jobTitle = trim((string) ($application['job_title'] ?? 'this role'));
+        $targetRole = trim((string) ($application['resume_version_target_role'] ?? ''));
+        $resumeTitle = trim((string) ($application['resume_version_title'] ?? ''));
+        $policy = strtoupper((string) ($application['ai_interview_policy'] ?? JobModel::AI_POLICY_REQUIRED_HARD));
+        $status = (string) ($application['status'] ?? '');
+
+        $coachTitle = 'Pre-interview Preparation Coach';
+        if ($status === 'shortlisted' || $status === 'interview_slot_booked') {
+            $coachTitle = 'HR Interview Preparation Coach';
+        } elseif ($policy !== JobModel::AI_POLICY_OFF) {
+            $coachTitle = 'AI Interview Preparation Coach';
+        }
+
+        $talkingPoints = [];
+        if ($targetRole !== '') {
+            $talkingPoints[] = 'Explain why your background fits the target role "' . $targetRole . '".';
+        }
+        if ($resumeTitle !== '') {
+            $talkingPoints[] = 'Use examples from your saved resume version "' . $resumeTitle . '".';
+        }
+        if (!empty($focusSkills)) {
+            $talkingPoints[] = 'Prepare project stories around ' . implode(', ', array_slice($focusSkills, 0, 3)) . '.';
+        }
+        if (!empty($application['experience_level'])) {
+            $talkingPoints[] = 'Be ready to justify your experience level: ' . trim((string) $application['experience_level']) . '.';
+        }
+        if (empty($talkingPoints)) {
+            $talkingPoints[] = 'Prepare two role-relevant examples with measurable outcomes.';
+        }
+
+        $checklist = [
+            'Review the job description and map your strongest experience to the role.',
+            'Prepare concise STAR-format examples for one challenge, one achievement, and one collaboration story.',
+            'Keep your resume, project examples, and skill claims consistent.',
+        ];
+
+        if (!empty($focusSkills)) {
+            $checklist[] = 'Revise the top skills recruiters are likely to test: ' . implode(', ', array_slice($focusSkills, 0, 4)) . '.';
+        }
+
+        if ($policy !== JobModel::AI_POLICY_OFF && $status === 'applied') {
+            $checklist[] = 'Practice answering clearly on camera with short, structured responses for the AI round.';
+        }
+
+        $likelyQuestions = [];
+        foreach (array_slice($focusSkills, 0, 3) as $skill) {
+            $likelyQuestions[] = 'Describe a real example where you used ' . $skill . '.';
+        }
+        $likelyQuestions[] = 'Why are you interested in this ' . $jobTitle . ' role?';
+        $likelyQuestions[] = 'What problem did you solve recently that best shows your fit for this job?';
+
+        $fallback = [
+            'title' => $coachTitle,
+            'focus_skills' => $focusSkills,
+            'talking_points' => $talkingPoints,
+            'checklist' => $checklist,
+            'likely_questions' => array_slice($likelyQuestions, 0, 5),
+            'source' => 'fallback',
+        ];
+
+        return (new AiInterviewPrepCoach())->generate($application, $fallback);
+    }
+
+    private function tokenizeCsv(string $value): array
+    {
+        $parts = preg_split('/[,|\\/]+/', strtolower($value)) ?: [];
+        $tokens = [];
+        foreach ($parts as $part) {
+            $part = trim($part);
+            if ($part !== '') {
+                $tokens[] = $part;
+            }
+        }
+
+        return array_values(array_unique($tokens));
+    }
+
+    public function getAvailableSlots($applicationId)
+    {
+        $applicationId = (int) $applicationId;
+        if ($applicationId <= 0) {
+            return $this->fail('Invalid Application ID');
+        }
+
+        $applicationModel = model('ApplicationModel');
+        $jobModel = model('JobModel');
+        $slotModel = model('InterviewSlotModel');
+        $bookingModel = model('InterviewBookingModel');
+
+        $application = $applicationModel->find($applicationId);
+        if (!$application) {
+            return $this->failNotFound('Application not found');
+        }
+
+        $job = $jobModel->find($application['job_id']);
+        if (!$job) {
+            return $this->failNotFound('Job not found');
+        }
+        $application['job_title'] = $job['title'] ?? null;
+        $aiPolicy = JobModel::normalizeAiPolicy($job['ai_interview_policy'] ?? JobModel::AI_POLICY_REQUIRED_HARD);
+
+        // check if eligible
+        if (!$this->canBookSlotForStatus($application['status'], $aiPolicy)) {
+            return $this->respond([
+                'status' => 'error',
+                'message' => 'You are not eligible to book a slot yet'
+            ]);
+        }
+
+        // Check if already booked
+        $existingBooking = $bookingModel->getByApplicationId($applicationId);
+        if ($existingBooking) {
+            return $this->respond([
+                'status' => 'info',
+                'message' => 'You have already booked an interview slot',
+                'booking' => $existingBooking
+            ]);
+        }
+
+        $availableSlots = $slotModel->getAvailableSlots((int) $application['job_id']);
+
+        return $this->respond([
+            'status' => 'success',
+            'application' => $application,
+            'available_slots' => $availableSlots
+        ]);
+    }
+
+    private function canBookSlotForStatus(string $status, string $aiPolicy): bool
+    {
+        if ($status === 'shortlisted') {
+            return true;
+        }
+
+        if ($aiPolicy === JobModel::AI_POLICY_OPTIONAL) {
+            return $status === 'applied';
+        }
+
+        if ($aiPolicy === JobModel::AI_POLICY_OFF) {
+            return $status === 'applied';
+        }
+
+        return false;
+    }
+
+    public function processBooking()
+    {
+        $rawBody = $this->request->getBody();
+        $inputData = json_decode($rawBody ?? '', true);
+
+        $applicationId = (int) ($inputData['application_id'] ?? 0);
+        $slotId = (int) ($inputData['slot_id'] ?? 0);
+        $candidateId = (int) ($inputData['candidate_id'] ?? 0);
+
+        if ($applicationId <= 0 || $slotId <= 0 || $candidateId <= 0) {
+            return $this->fail('Invalid arguments');
+        }
+
+        $applicationModel = model('ApplicationModel');
+        $jobModel = model('JobModel');
+        $slotModel = model('InterviewSlotModel');
+        $bookingModel = model('InterviewBookingModel');
+        $notificationModel = model('NotificationModel');
+        $userModel = model('UserModel');
+
+        $candidate = $userModel->find($candidateId);
+        $candidateName = $candidate ? (string) ($candidate['name'] ?? 'A candidate') : 'A candidate';
+
+        // Verify application
+        $application = $applicationModel->find($applicationId);
+        if (!$application || $application['candidate_id'] != $candidateId) {
+            return $this->fail('Invalid application or ownership');
+        }
+
+        $job = $jobModel->find($application['job_id']);
+        if (!$job) {
+            return $this->failNotFound('Job not found');
+        }
+
+        $aiPolicy = JobModel::normalizeAiPolicy($job['ai_interview_policy'] ?? JobModel::AI_POLICY_REQUIRED_HARD);
+        if (!$this->canBookSlotForStatus($application['status'], $aiPolicy)) {
+            return $this->respond([
+                'status' => 'error',
+                'message' => 'You are not eligible to book a slot yet'
+            ]);
+        }
+
+        // Check if slot is available
+        if (!$slotModel->isSlotAvailable($slotId)) {
+            return $this->respond([
+                'status' => 'error',
+                'message' => 'Selected slot is no longer available'
+            ]);
+        }
+
+        $slot = $slotModel->find($slotId);
+
+        // Check if already booked
+        if ($bookingModel->getByApplicationId($applicationId)) {
+            return $this->respond([
+                'status' => 'error',
+                'message' => 'Already booked'
+            ]);
+        }
+
+        // Create booking
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        $bookingId = $bookingModel->insert([
+            'application_id' => $applicationId,
+            'user_id' => $candidateId,
+            'job_id' => $application['job_id'],
+            'slot_id' => $slotId,
+            'slot_datetime' => $slot['slot_datetime'],
+            'booking_status' => 'booked',
+            'reschedule_count' => 0,
+            'max_reschedules' => 2, // Configurable
+            'can_reschedule' => 1,
+            'booked_at' => date('Y-m-d H:i:s')
+        ]);
+
+        // Increment slot booked count
+        $slotModel->incrementBookedCount($slotId);
+
+        // Update application status and booking_id
+        $applicationModel->update($applicationId, [
+            'status' => 'interview_slot_booked',
+            'interview_slot' => $slot['slot_datetime'],
+            'booking_id' => $bookingId
+        ]);
+
+        $stageModel = model('StageHistoryModel');
+        $stageModel->moveToStage($applicationId, 'Interview Slot Booked');
+
+        $slotLabel = date('M d, Y h:i A', strtotime($slot['slot_datetime']));
+
+        // Notify candidate
+        $notificationModel->createNotification(
+            $candidateId,
+            (int) $applicationId,
+            'interview_booked',
+            "Your interview has been booked for {$slotLabel}.",
+            base_url('candidate/my-bookings'),
+            true
+        );
+
+        // Notify recruiter
+        if (!empty($job['recruiter_id'])) {
+            $notificationModel->createNotification(
+                (int) $job['recruiter_id'],
+                (int) $applicationId,
+                'interview_booked',
+                "{$candidateName} booked an interview for {$job['title']} on {$slotLabel}.",
+                base_url('recruiter/slots/bookings'),
+                true
+            );
+        }
+
+        $db->transComplete();
+
+        if ($db->transStatus()) {
+            // Sync to Google Calendar
+            try {
+                $bookingModel->syncToCalendar($bookingId);
+            } catch (\Exception $e) {}
+
+            // Send confirmation reminder
+            try {
+                $reminderService = new \App\Libraries\ReminderService();
+                $reminderService->sendBookingConfirmation($bookingId);
+            } catch (\Exception $e) {}
+
+            return $this->respond([
+                'status' => 'success',
+                'message' => 'Interview slot booked successfully!'
+            ]);
+        } else {
+            return $this->respond([
+                'status' => 'error',
+                'message' => 'Failed to book slot. Please try again.'
+            ]);
+        }
+    }
+
+    public function getMyBookings($candidateId)
+    {
+        $candidateId = (int) $candidateId;
+        if ($candidateId <= 0) {
+            return $this->fail('Invalid Candidate ID');
+        }
+
+        $bookingModel = model('InterviewBookingModel');
+        $bookings = $bookingModel->getUserBookings($candidateId);
+
+        return $this->respond([
+            'status' => 'success',
+            'bookings' => $bookings
+        ]);
     }
 }
