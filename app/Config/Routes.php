@@ -121,6 +121,16 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->get('applications/(:num)', 'ApiApplicationsController::getApplications/$1');
     $routes->post('applications/withdraw/(:num)', 'ApiApplicationsController::withdraw/$1');
     
+    // Notification API Routes
+    $routes->get('notifications/(:num)', 'ApiNotificationController::getNotifications/$1');
+    $routes->post('notifications/mark-read/(:num)', 'ApiNotificationController::markAsRead/$1');
+    $routes->post('notifications/mark-all-read/(:num)', 'ApiNotificationController::markAllAsRead/$1');
+    $routes->post('notifications/delete/(:num)', 'ApiNotificationController::deleteNotification/$1');
+
+    // Message API Routes
+    $routes->get('messages/thread', 'ApiMessagesController::getThread');
+    $routes->post('messages/reply', 'ApiMessagesController::sendReply');
+    
     // Career Transition AI API Routes
     $routes->get('career-transition/(:num)', 'ApiCareerTransitionController::getTransition/$1');
     $routes->post('career-transition/create', 'ApiCareerTransitionController::create');
