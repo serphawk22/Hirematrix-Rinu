@@ -28,11 +28,6 @@
                             <h5 class="mb-2"><?= esc($transition['current_role']) ?> to <?= esc($transition['target_role']) ?></h5>
                             <p class="text-muted mb-0">Open any module to start learning. Course content is available for offline-ready usage.</p>
                         </div>
-                        <div class="mt-2 mt-md-0">
-                            <a href="<?= base_url('career-transition') ?>" class="btn btn-outline-primary">
-                                <i class="fas fa-arrow-left"></i> Back
-                            </a>
-                        </div>
                     </div>
 
                     <div class="course-download-box mt-4">

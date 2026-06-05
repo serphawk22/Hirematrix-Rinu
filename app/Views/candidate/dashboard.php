@@ -234,7 +234,7 @@ $resolveAssetUrl = static function (string $path): string {
                                 </ul>
                             </div>
                         </div>
-                        <a href="<?= base_url('premium/plans') ?>" class="btn btn-primary dashboard-strategy-btn mt-3">
+                        <a href="<?= base_url('premium/plans') ?>" class="btn btn-primary dashboard-cta-btn">
                             View Plans <i class="fas fa-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -366,7 +366,7 @@ $resolveAssetUrl = static function (string $path): string {
                                     <?php foreach ($recentApps as $application): ?>
                                         <tr>
                                             <td><strong><?= esc($application['job_title'] ?? '-') ?></strong></td>
-                                            <td><?= esc($application['company_name'] ?? '-') ?></td>
+                                            <td><?= esc($application['company'] ?? $application['company_name'] ?? '-') ?></td>
                                             <td><?= !empty($application['applied_at']) ? $formatDate($application['applied_at']) : '-' ?></td>
                                             <td>
                                                 <span class="badge badge-primary">
@@ -374,8 +374,8 @@ $resolveAssetUrl = static function (string $path): string {
                                                 </span>
                                             </td>
                                             <td>
-                                                <a href="<?= base_url('job/' . (int) ($application['job_id'] ?? 0)) ?>" class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-eye me-1"></i> View
+                                                <a href="<?= base_url('job/' . (int) ($application['job_id'] ?? 0)) ?>" class="dashboard-table-link dashboard-table-icon-link" aria-label="View <?= esc((string) ($application['job_title'] ?? 'application'), 'attr') ?>">
+                                                    <i class="fas fa-eye" aria-hidden="true"></i>
                                                 </a>
                                             </td>
                                         </tr>

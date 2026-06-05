@@ -134,7 +134,7 @@ class Jobs extends BaseController
                 break;
         }
 
-        $jobs = $builder->paginate(perPage: 10);
+        $jobs = $builder->paginate(perPage: 4);
         $pager = $jobModel->pager;
         $totalJobs = $pager->getTotal();
 
@@ -336,6 +336,7 @@ class Jobs extends BaseController
         ];
 
         $savedJobIds = [];
+        $appliedJobMap = [];
         if ($candidateId > 0) {
             $displayJobIds = [];
             foreach ($jobs as $job) {
@@ -355,6 +356,16 @@ class Jobs extends BaseController
                     ->whereIn('job_id', $displayJobIds)
                     ->findAll();
                 $savedJobIds = array_map('intval', array_column($savedRows, 'job_id'));
+
+                $appliedRows = model('ApplicationModel')
+                    ->select('job_id, status')
+                    ->where('candidate_id', $candidateId)
+                    ->where('status !=', 'withdrawn')
+                    ->whereIn('job_id', $displayJobIds)
+                    ->findAll();
+                foreach ($appliedRows as $row) {
+                    $appliedJobMap[(int) ($row['job_id'] ?? 0)] = (string) ($row['status'] ?? 'applied');
+                }
             }
         }
 
@@ -380,6 +391,7 @@ class Jobs extends BaseController
             'behavior' => $behavior,
             'showFilters' => $showFilters,
             'savedJobIds' => $savedJobIds,
+            'appliedJobMap' => $appliedJobMap,
             'allJobsAreExternal' => $allJobsAreExternal,
             'hasBaseResume' => $hasBaseResume,
             'primaryResumeId' => $primaryResumeId,

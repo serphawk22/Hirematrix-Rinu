@@ -28,11 +28,6 @@
                         <p class="text-muted mb-0"><?= esc($module['description']) ?></p>
                         <small class="text-muted d-block mt-2"><i class="far fa-clock"></i> <?= (int) $module['duration_weeks'] ?> week(s)</small>
                     </div>
-                    <div class="mt-2 mt-md-0">
-                        <a href="<?= base_url('career-transition/course') ?>" class="btn btn-outline-primary">
-                            <i class="fas fa-arrow-left"></i> All Modules
-                        </a>
-                    </div>
                 </div>
             </div>
 
@@ -89,12 +84,6 @@
                         </div>
                     </div>
                 <?php endforeach; ?>
-
-                <div class="text-center mt-4">
-                    <a href="<?= base_url('career-transition/course') ?>" class="btn btn-outline-primary btn-lg">
-                        <i class="fas fa-arrow-left"></i> Back to All Modules
-                    </a>
-                </div>
             <?php endif; ?>
         </div>
     </section>
