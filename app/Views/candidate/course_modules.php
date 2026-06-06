@@ -1,25 +1,23 @@
 <?= view('Layouts/candidate_header', ['title' => 'Course Modules']) ?>
 
-<div class="course-modules-jobboard">
+<div class="course-modules-jobboard course-service-jobboard">
     <div class="offline-badge online" id="offlineStatus">Online</div>
 
-    <div class="container">
-        <div class="page-board-header page-board-header-tight">
-            <div class="page-board-copy">
-                <span class="page-board-kicker"><i class="fas fa-graduation-cap"></i> Career learning path</span>
-                <h1 class="page-board-title">Course Modules</h1>
-                <p class="page-board-subtitle">Open a module to continue your role transition roadmap and keep learning at your own pace.</p>
+    <section class="course-service-canvas">
+        <div class="container-fluid">
+            <div class="page-board-header page-board-header-tight">
+                <div class="page-board-copy">
+                    <span class="page-board-kicker"><i class="fas fa-graduation-cap"></i> Career learning path</span>
+                    <h1 class="page-board-title">Course Modules</h1>
+                    <p class="page-board-subtitle">Open a module to continue your role transition roadmap and keep learning at your own pace.</p>
+                </div>
+                <div class="page-board-actions">
+                    <a href="<?= base_url('career-transition') ?>" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </a>
+                </div>
             </div>
-            <div class="page-board-actions">
-                <a href="<?= base_url('career-transition') ?>" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left mr-1"></i> Back
-                </a>
-            </div>
-        </div>
-    </div>
 
-    <section class="site-section pt-0 content-wrap">
-        <div class="container">
             <div class="course-header-card mb-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start flex-wrap transition-header-row">

@@ -6,7 +6,7 @@ $serviceCards = [
     [
         'key' => 'career-transition',
         'title' => 'Career Transition AI',
-        'icon' => 'fas fa-route',
+        'icon' => 'fas fa-map-signs',
         'accent' => 'primary',
         'summary' => 'Build a structured learning path from your current role to your target role.',
         'points' => [
@@ -32,7 +32,7 @@ $serviceCards = [
     [
         'key' => 'mentor',
         'title' => 'AI Career Mentor',
-        'icon' => 'fas fa-robot',
+        'icon' => 'fas fa-comments',
         'accent' => 'info',
         'summary' => 'Chat with a career mentor for interview prep, strategy, and next-step guidance.',
         'points' => [
@@ -45,7 +45,7 @@ $serviceCards = [
 ];
 ?>
 
-<div class="career-transition-jobboard">
+<div class="career-transition-jobboard premium-plans-jobboard">
     <section class="career-transition-content">
         <div class="container-fluid px-lg-5">
             <div class="page-board-header page-board-header-tight">
@@ -87,11 +87,13 @@ $serviceCards = [
                 <?php foreach ($serviceCards as $card): ?>
                     <?php $isSelected = $selectedService === $card['key']; ?>
                     <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="dashboard-panel h-100 <?= $isSelected ? 'border border-primary' : '' ?>">
+                        <div class="dashboard-panel h-100 premium-service-card <?= $isSelected ? 'is-selected' : '' ?>">
                             <?php if ($isSelected): ?>
-                                <div class="text-center py-2 bg-primary text-white" style="border-radius: 4px 4px 0 0;">
+                                <div class="premium-service-ribbon">
                                     <small><i class="fas fa-star"></i> Selected service</small>
                                 </div>
+                            <?php else: ?>
+                                <div class="premium-service-ribbon premium-service-ribbon-placeholder" aria-hidden="true"></div>
                             <?php endif; ?>
                             <div class="panel-body p-4">
                                 <div class="mb-3 text-center">
@@ -133,7 +135,7 @@ $serviceCards = [
                 <?php if (empty($current_subscription) && isset($trial_days) && $trial_days > 0 && !$has_used_trial): ?>
                     <!-- Dedicated Free Trial Card -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="dashboard-panel h-100 border-primary shadow-sm premium-plan-card premium-trial-card" style="border: 2px dashed #007bff; background-color: #f8fbff;">
+                        <div class="dashboard-panel h-100 premium-plan-card premium-trial-card">
                             <div class="text-center py-2 bg-primary text-white premium-plan-ribbon">
                                 <small><i class="fas fa-gift"></i> Limited Time Offer</small>
                             </div>
@@ -267,7 +269,7 @@ document.querySelectorAll('.js-pay-btn').forEach(function(btn) {
                 name:        'HireMatrix',
                 description: planName,
                 order_id:    data.order_id,
-                theme:       { color: '#0d6efd' },
+                theme:       { color: '#1FB7B5' },
                 handler: function(response) {
                     // Step 3: verify payment on server
                     fetch('<?= base_url('payment/verify') ?>', {

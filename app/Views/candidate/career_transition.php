@@ -12,9 +12,9 @@ $taskCount = count($tasks ?? []);
 $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
 ?>
 
-<div class="career-transition-jobboard">
-    <section class="career-transition-content">
-        <div class="container">
+<div class="career-transition-jobboard career-transition-service-jobboard">
+    <section class="career-transition-content service-content-canvas">
+        <div class="container-fluid">
             <div class="page-board-header page-board-header-tight">
                 <div class="page-board-copy">
                     <span class="page-board-kicker"><i class="fas fa-map-signs"></i> Career learning path</span>

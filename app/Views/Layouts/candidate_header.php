@@ -471,19 +471,6 @@
         <!-- Bottom: utility actions -->
         <div class="cand-leftnav__bottom">
 
-            <div class="cand-leftnav__utils">
-                <div class="candidate-language-menu" id="candidateLanguageMenu">
-                    <button type="button" class="candidate-language-btn" id="candidateLanguageBtn" aria-haspopup="true" aria-expanded="false" title="Change language" aria-label="Change language">
-                        <i class="fas fa-globe"></i>
-                        <span>Language</span>
-                    </button>
-                    <div class="candidate-language-panel cand-leftnav__lang-panel" id="candidateLanguagePanel">
-                        <div class="candidate-language-title"><i class="fas fa-language"></i><span>Translate page</span></div>
-                        <?= view('components/google_translate_widget') ?>
-                    </div>
-                </div>
-            </div>
-
             <div class="cand-leftnav__user" id="candidateLeftnavUser">
                 <div class="cand-leftnav__user-dropdown" id="candidateLeftnavUserDropdown">
                     <a href="<?= base_url('candidate/profile') ?>"><i class="fas fa-user"></i><span>My Profile</span></a>

@@ -1,25 +1,23 @@
 <?= view('Layouts/candidate_header', ['title' => esc($module['title'] ?? 'Course Module')]) ?>
 
-<div class="course-content-jobboard">
+<div class="course-content-jobboard course-service-jobboard">
     <div class="offline-badge online" id="offlineStatus">Online</div>
 
-    <div class="container">
-        <div class="page-board-header page-board-header-tight">
-            <div class="page-board-copy">
-                <span class="page-board-kicker"><i class="fas fa-book-open"></i> Learning content</span>
-                <h1 class="page-board-title"><?= esc($module['title']) ?></h1>
-                <p class="page-board-subtitle">Read through the lessons, resources, and practice exercises for this module.</p>
+    <section class="course-service-canvas">
+        <div class="container-fluid">
+            <div class="page-board-header page-board-header-tight">
+                <div class="page-board-copy">
+                    <span class="page-board-kicker"><i class="fas fa-book-open"></i> Learning content</span>
+                    <h1 class="page-board-title"><?= esc($module['title']) ?></h1>
+                    <p class="page-board-subtitle">Read through the lessons, resources, and practice exercises for this module.</p>
+                </div>
+                <div class="page-board-actions">
+                    <a href="<?= base_url('career-transition/course') ?>" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left mr-1"></i> All Modules
+                    </a>
+                </div>
             </div>
-            <div class="page-board-actions">
-                <a href="<?= base_url('career-transition/course') ?>" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left mr-1"></i> All Modules
-                </a>
-            </div>
-        </div>
-    </div>
 
-    <section class="site-section pt-0 content-wrap">
-        <div class="container">
             <div class="course-header-card mb-4">
                 <div class="card-body d-flex justify-content-between align-items-start flex-wrap transition-header-row">
                     <div>

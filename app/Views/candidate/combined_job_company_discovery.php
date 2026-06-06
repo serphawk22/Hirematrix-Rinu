@@ -2,7 +2,7 @@
 
 <div class="companies-directory-jobboard">
     <div class="container">
-        <div class="page-board-header">
+        <div class="page-board-header page-board-header-tight">
             <div class="page-board-copy">
                 <span class="page-board-kicker"><i class="fas fa-search"></i> AI Discovery</span>
                 <h1 class="page-board-title">Company & Job Discovery</h1>
@@ -14,7 +14,7 @@
     <section class="site-section pt-0">
         <div class="container">
             <!-- Search Panel -->
-            <div class="companies-filter-card card mb-4">
+            <div class="companies-filter-card card">
                 <div class="card-body">
                     <form id="unifiedDiscoverySearchForm" method="get" action="<?= base_url('candidate/company-job-discovery') ?>">
                         <div class="row align-items-end">
@@ -65,8 +65,8 @@
 
             <!-- Company Directory Section (Paginated) -->
             <?php if (!$shouldAutoTriggerAiSearch): ?>
-                <div id="companyDirectorySection" class="mt-5">
-                    <div class="company-discovery-section-head d-flex align-items-center justify-content-between mb-4">
+                <div id="companyDirectorySection">
+                    <div class="company-discovery-section-head results-bar">
                         <div>
                             <h2 class="section-title mb-1">Registered Companies</h2>
                             <p class="section-subtitle mb-0">Browse companies actively hiring on our platform</p>
@@ -114,19 +114,19 @@
                                     <h3 class="job-card-title">
                                         <a href="<?= base_url('company/' . (int) $company['id']) ?>"><?= esc($companyName) ?></a>
                                     </h3>
-                                    <?php if (!empty($companyIndustry)): ?>
+                                    <?php if ($companyIndustry !== ''): ?>
                                         <p class="job-card-company"><?= esc($companyIndustry) ?></p>
                                     <?php endif; ?>
-                                    <div class="job-card-meta company-directory-meta">
-                                        <?php if (!empty($companyHq)): ?>
+                                    <?php if ($companyHq !== ''): ?>
+                                        <div class="job-card-meta company-directory-meta">
                                             <span><i class="fas fa-map-pin"></i> <?= esc($companyHq) ?></span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="job-card-tags company-directory-tags">
-                                        <?php if (!empty($companySize)): ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if ($companySize !== ''): ?>
+                                        <div class="job-card-tags company-directory-tags">
                                             <span class="badge badge-primary"><?= esc($companySize) ?></span>
-                                        <?php endif; ?>
-                                    </div>
+                                        </div>
+                                    <?php endif; ?>
                                     <div class="company-directory-actions">
                                         <a href="<?= base_url('jobs?company=' . urlencode($companyName)) ?>"
                                            class="company-directory-jobs-link">
