@@ -127,6 +127,8 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->get('applications/(:num)/slots', 'ApiApplicationsController::getAvailableSlots/$1');
     $routes->post('applications/book-slot', 'ApiApplicationsController::processBooking');
     $routes->get('applications/bookings/(:num)', 'ApiApplicationsController::getMyBookings/$1');
+    $routes->get('applications/(:num)/reschedule-info', 'ApiApplicationsController::getRescheduleInfo/$1');
+    $routes->post('applications/reschedule', 'ApiApplicationsController::processReschedule');
     
     // Notification API Routes
     $routes->get('notifications/(:num)', 'ApiNotificationController::getNotifications/$1');

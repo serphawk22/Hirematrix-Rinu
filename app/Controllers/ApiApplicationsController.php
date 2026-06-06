@@ -568,4 +568,123 @@ class ApiApplicationsController extends ResourceController
             'bookings' => $bookings
         ]);
     }
+
+    public function getRescheduleInfo($applicationId)
+    {
+        $applicationId = (int) $applicationId;
+        if ($applicationId <= 0) {
+            return $this->fail('Invalid Application ID');
+        }
+
+        $applicationModel = model('ApplicationModel');
+        $jobModel = model('JobModel');
+        $slotModel = model('InterviewSlotModel');
+        $bookingModel = model('InterviewBookingModel');
+        $rescheduleHistoryModel = model('RescheduleHistoryModel');
+
+        $application = $applicationModel->find($applicationId);
+        if (!$application) {
+            return $this->failNotFound('Application not found');
+        }
+
+        $job = $jobModel->find($application['job_id']);
+        if (!$job) {
+            return $this->failNotFound('Job not found');
+        }
+        $application['job_title'] = $job['title'] ?? null;
+
+        $booking = $bookingModel->getByApplicationId($applicationId);
+        if (!$booking) {
+            return $this->failNotFound('No booking found');
+        }
+
+        $canReschedule = $bookingModel->canReschedule($booking['id']);
+        $availableSlots = $slotModel->getAvailableSlots((int) $application['job_id']);
+        $history = $rescheduleHistoryModel->getBookingHistory($booking['id']);
+
+        return $this->respond([
+            'status' => 'success',
+            'application' => $application,
+            'booking' => $booking,
+            'available_slots' => $availableSlots,
+            'can_reschedule_info' => $canReschedule,
+            'history' => $history
+        ]);
+    }
+
+    public function processReschedule()
+    {
+        $rawBody = $this->request->getBody();
+        $inputData = json_decode($rawBody ?? '', true);
+
+        $applicationId = (int) ($inputData['application_id'] ?? 0);
+        $newSlotId = (int) ($inputData['slot_id'] ?? 0);
+        $candidateId = (int) ($inputData['candidate_id'] ?? 0);
+        $reason = trim((string) ($inputData['reason'] ?? ''));
+
+        if ($applicationId <= 0 || $newSlotId <= 0 || $candidateId <= 0) {
+            return $this->fail('Invalid arguments');
+        }
+
+        $applicationModel = model('ApplicationModel');
+        $bookingModel = model('InterviewBookingModel');
+        $notificationModel = model('NotificationModel');
+        $jobModel = model('JobModel');
+        $userModel = model('UserModel');
+
+        $candidate = $userModel->find($candidateId);
+        $candidateName = $candidate ? (string) ($candidate['name'] ?? 'A candidate') : 'A candidate';
+
+        $application = $applicationModel->find($applicationId);
+        if (!$application || $application['candidate_id'] != $candidateId) {
+            return $this->fail('Invalid application or ownership');
+        }
+
+        $booking = $bookingModel->getByApplicationId($applicationId);
+        if (!$booking) {
+            return $this->failNotFound('Booking not found');
+        }
+
+        $success = $bookingModel->rescheduleBooking($booking['id'], $newSlotId, $reason);
+
+        if ($success) {
+            $updatedBooking = $bookingModel->find($booking['id']);
+            $applicationModel->update($applicationId, [
+                'interview_slot' => $updatedBooking['slot_datetime']
+            ]);
+
+            $slotLabel = date('M d, Y h:i A', strtotime($updatedBooking['slot_datetime']));
+
+            $notificationModel->createNotification(
+                $candidateId,
+                (int) $applicationId,
+                'interview_rescheduled',
+                "Your interview has been rescheduled to {$slotLabel}.",
+                base_url('candidate/my-bookings'),
+                true
+            );
+
+            $job = $jobModel->find((int) ($application['job_id'] ?? 0));
+            if ($job && !empty($job['recruiter_id'])) {
+                $notificationModel->createNotification(
+                    (int) $job['recruiter_id'],
+                    (int) $applicationId,
+                    'interview_rescheduled',
+                    "{$candidateName} rescheduled the interview for {$job['title']} to {$slotLabel}.",
+                    base_url('recruiter/slots/bookings'),
+                    true
+                );
+            }
+
+            return $this->respond([
+                'status' => 'success',
+                'message' => 'Interview rescheduled successfully!'
+            ]);
+        } else {
+            return $this->respond([
+                'status' => 'error',
+                'message' => 'Failed to reschedule. Please check slot availability and limits.'
+            ]);
+        }
+    }
 }
