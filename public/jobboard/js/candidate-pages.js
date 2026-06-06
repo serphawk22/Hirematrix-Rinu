@@ -4,26 +4,8 @@
         return meta ? meta.getAttribute('content').replace(/\/$/, '') : window.location.origin;
     }
 
-    var candidateDarkThemeId = 'candidate-dark-theme-css';
-
-    function getAssetBaseUrl() {
-        return getBaseUrl().replace(/\/$/, '') + '/jobboard';
-    }
-
-    function loadCandidateDarkTheme() {
-        if (document.getElementById(candidateDarkThemeId)) {
-            return;
-        }
-
-        var link = document.createElement('link');
-        link.id = candidateDarkThemeId;
-        link.rel = 'stylesheet';
-        link.href = getAssetBaseUrl() + '/css/dark.css';
-        document.head.appendChild(link);
-    }
-
-    function removeCandidateDarkTheme() {
-        var link = document.getElementById(candidateDarkThemeId);
+    function removeLegacyCandidateDarkTheme() {
+        var link = document.getElementById('candidate-dark-theme-css');
         if (link) {
             link.remove();
         }
@@ -32,12 +14,7 @@
     function applyCandidateTheme(theme) {
         var isDark = theme === 'dark';
         document.body.classList.toggle('dark', isDark);
-
-        if (isDark) {
-            loadCandidateDarkTheme();
-        } else {
-            removeCandidateDarkTheme();
-        }
+        removeLegacyCandidateDarkTheme();
 
         document.querySelectorAll('input[name="theme-preference"]').forEach(function (input) {
             input.checked = input.value === theme;

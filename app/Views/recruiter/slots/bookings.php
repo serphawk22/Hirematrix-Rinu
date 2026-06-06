@@ -180,7 +180,7 @@
                                         </td>
                                         <td>
                                         <div class="job-actions-wrap recruiter-booking-actions">
-                                                <?php if ($isUpcoming && in_array($booking['booking_status'], ['confirmed', 'rescheduled'], true)): ?>
+                                                <?php if ($isUpcoming && in_array($booking['booking_status'], ['booked', 'confirmed', 'rescheduled'], true)): ?>
                                                     <a href="<?= base_url('recruiter/slots/reschedule/' . $booking['id']) ?>" class="btn btn-sm btn-warning btn-action" title="Reschedule">
                                                         <i class="fas fa-sync"></i> Reschedule
                                                     </a>

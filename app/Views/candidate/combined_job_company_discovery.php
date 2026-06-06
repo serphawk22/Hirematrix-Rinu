@@ -66,7 +66,7 @@
             <!-- Company Directory Section (Paginated) -->
             <?php if (!$shouldAutoTriggerAiSearch): ?>
                 <div id="companyDirectorySection" class="mt-5">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div class="company-discovery-section-head d-flex align-items-center justify-content-between mb-4">
                         <div>
                             <h2 class="section-title mb-1">Registered Companies</h2>
                             <p class="section-subtitle mb-0">Browse companies actively hiring on our platform</p>
