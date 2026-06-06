@@ -2,7 +2,1103 @@
     'title' => 'Job Detail Pipeline',
     'pageStyles' => [base_url('jobboard/css/recruiter-pipeline.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-pipeline.css'))],
 ]) ?>
+<style>
+/* ============================================================
+   RECRUITER PIPELINE PAGE — FULL THEME CSS
+   Light + Dark (body.dark) — no CSS variables, hard color codes
+   ============================================================ */
 
+/* ══════════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════════ */
+.btn-outline-primary {
+  background: transparent !important;
+  border: 1.5px solid #1FB7B5 !important;
+  color: #1FB7B5 !important;
+  padding: 8px 20px;
+  border-radius: 6px !important;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-decoration: none !important;
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background: #1FB7B5 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.btn-primary {
+  background: transparent !important;
+  border: 1.5px solid #1FB7B5 !important;
+  color: #1FB7B5 !important;
+  padding: 8px 20px;
+  border-radius: 6px !important;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background: #1FB7B5 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Dark mode buttons — same brand, unchanged */
+body.dark .btn-outline-primary,
+body.dark .btn-primary {
+  background: transparent !important;
+  border: 1.5px solid #1FB7B5 !important;
+  color: #1FB7B5 !important;
+}
+body.dark .btn-outline-primary:hover,
+body.dark .btn-outline-primary:focus,
+body.dark .btn-primary:hover,
+body.dark .btn-primary:focus {
+  background: #1FB7B5 !important;
+  color: #ffffff !important;
+}
+
+/* ── Outline secondary ── */
+.btn-outline-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: transparent !important;
+  color: #64748B !important;
+  border: 1px solid #D9ECE5 !important;
+  text-decoration: none !important;
+  transition: all 0.2s;
+}
+.btn-outline-secondary:hover {
+  background: #EDF8F5 !important;
+  color: #16212B !important;
+  border-color: #1FB7B5 !important;
+}
+body.dark .btn-outline-secondary {
+  color: #94A3B8 !important;
+  border: 1px solid #23343A !important;
+}
+body.dark .btn-outline-secondary:hover {
+  background: #1B2A2F !important;
+  color: #F8FAFC !important;
+  border-color: #1FB7B5 !important;
+}
+
+/* ── Outline success / danger / warning (bulk action bar) ── */
+.btn-outline-success {
+  background: transparent !important;
+  border: 1.5px solid #6EE7B7 !important;
+  color: #065F46 !important;
+  border-radius: 6px !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  transition: all 0.2s;
+}
+.btn-outline-success:hover {
+  background: #D1FAE5 !important;
+}
+body.dark .btn-outline-success {
+  border-color: #064E3B !important;
+  color: #6EE7B7 !important;
+}
+body.dark .btn-outline-success:hover {
+  background: rgba(6, 78, 59, 0.31) !important;
+}
+
+.btn-outline-danger {
+  background: transparent !important;
+  border: 1.5px solid #FCA5A5 !important;
+  color: #DC2626 !important;
+  border-radius: 6px !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  transition: all 0.2s;
+}
+.btn-outline-danger:hover {
+  background: #FEE2E2 !important;
+}
+body.dark .btn-outline-danger {
+  border-color: rgba(127, 29, 29, 0.38) !important;
+  color: #FCA5A5 !important;
+}
+body.dark .btn-outline-danger:hover {
+  background: rgba(127, 29, 29, 0.19) !important;
+}
+ .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: #16212b14;
+    color: #0D8A90;
+    border: none;
+    text-decoration: none !important;
+    white-space: nowrap;
+    cursor: pointer;
+}
+body.dark .status-pill {
+    background: #7a8b9650;
+    color: #0D8A90;
+}
+.btn-warning {
+  background: #FEF3C7 !important;
+  border: none !important;
+  color: #92400E !important;
+  border-radius: 6px !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 5px 12px;
+}
+body.dark .btn-warning {
+  background: rgba(120, 53, 15, 0.31) !important;
+  color: #FCD34D !important;
+}
+
+.btn-danger {
+  background: #FEE2E2 !important;
+  border: none !important;
+  color: #DC2626 !important;
+  border-radius: 6px !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 5px 12px;
+}
+body.dark .btn-danger {
+  background: rgba(127, 29, 29, 0.31) !important;
+  color: #FCA5A5 !important;
+}
+
+/* ══════════════════════════════════════════
+   PAGE WRAPPER & BASE
+══════════════════════════════════════════ */
+.recruiter-pipeline-page {
+  background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%) !important;
+  min-height: 100vh;
+}
+body.dark .recruiter-pipeline-page {
+  background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+}
+
+/* ══════════════════════════════════════════
+   PIPELINE SHELL
+══════════════════════════════════════════ */
+.pipeline-shell {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (max-width: 1200px) {
+  .pipeline-shell { padding: 0 1.5rem; }
+}
+@media (max-width: 768px) {
+  .pipeline-shell { padding: 0 1rem; }
+}
+
+/* ══════════════════════════════════════════
+   PAGE HEADER
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .page-board-header {
+  background: transparent !important;
+  border: none !important;
+  padding: 2rem 0 1.5rem;
+}
+.recruiter-pipeline-page .page-board-header.page-board-header-tight.recruiter-page-board-header,
+body.dark .recruiter-pipeline-page .page-board-header.page-board-header-tight.recruiter-page-board-header {
+  border: none !important;
+}
+
+.recruiter-pipeline-page .page-board-title {
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  color: #16212B !important;
+  margin: 0;
+}
+body.dark .recruiter-pipeline-page .page-board-title {
+  color: #F8FAFC !important;
+}
+
+.recruiter-pipeline-page .pipeline-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+.recruiter-pipeline-page .pipeline-meta span {
+  font-size: 0.85rem;
+  color: #64748B !important;
+}
+.recruiter-pipeline-page .pipeline-meta span::after {
+  content: '·';
+  margin-left: 0.5rem;
+  color: #D9ECE5;
+}
+.recruiter-pipeline-page .pipeline-meta span:last-child::after { content: ''; }
+body.dark .recruiter-pipeline-page .pipeline-meta span { color: #94A3B8 !important; }
+body.dark .recruiter-pipeline-page .pipeline-meta span::after { color: #23343A; }
+
+/* ══════════════════════════════════════════
+   HEADER ACTIONS
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .pipeline-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+@media (max-width: 768px) {
+  .recruiter-pipeline-page .pipeline-head-actions { width: 100%; }
+}
+
+/* ══════════════════════════════════════════
+   NAV TABS
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .pipeline-work-nav {
+  border-bottom: 2px solid #D9ECE5 !important;
+  margin-bottom: 1.25rem;
+  gap: 0;
+}
+body.dark .recruiter-pipeline-page .pipeline-work-nav,
+body.dark .nav.pipeline-work-nav {
+  border-bottom: 2px solid #23343A !important;
+  border: none !important;
+}
+
+.recruiter-pipeline-page .pipeline-work-nav .nav-link {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748B !important;
+  padding: 10px 20px;
+  border: none !important;
+  border-bottom: 3px solid transparent !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  transition: color 0.2s, border-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: -2px;
+  text-decoration: none !important;
+}
+.recruiter-pipeline-page .pipeline-work-nav .nav-link:hover {
+  color: #1FB7B5 !important;
+  border-bottom-color: #1FB7B5 !important;
+}
+.recruiter-pipeline-page .pipeline-work-nav .nav-link.active {
+  color: #1FB7B5 !important;
+  border-bottom-color: #1FB7B5 !important;
+  background: transparent !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-work-nav .nav-link {
+  color: #94A3B8 !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-work-nav .nav-link:hover,
+body.dark .recruiter-pipeline-page .pipeline-work-nav .nav-link.active {
+  color: #1FB7B5 !important;
+  border-bottom-color: #1FB7B5 !important;
+}
+
+/* ══════════════════════════════════════════
+   CARDS
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .card {
+  background: #FFFFFF !important;
+  border: 1px solid #D9ECE5 !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+body.dark .recruiter-pipeline-page .card {
+  background: #162327 !important;
+  border: 1px solid #23343A !important;
+}
+
+.recruiter-pipeline-page .card-header {
+  background: #EDF8F5 !important;
+  border-bottom: 1px solid #D9ECE5 !important;
+  border-radius: 12px 12px 0 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+body.dark .recruiter-pipeline-page .card-header {
+  background: #1B2A2F !important;
+  border-bottom: 1px solid #23343A !important;
+}
+
+.recruiter-pipeline-page .card-header h6,
+.recruiter-pipeline-page .card-header .font-weight-bold {
+  color: #16212B !important;
+  font-size: 1rem;
+  font-weight: 600;
+}
+body.dark .recruiter-pipeline-page .card-header h6,
+body.dark .recruiter-pipeline-page .card-header .font-weight-bold {
+  color: #94A3B8 !important;
+}
+
+.recruiter-pipeline-page .card-header .text-primary { color: #1FB7B5 !important; }
+
+/* Leaderboard gradient card header */
+.recruiter-pipeline-page .card-header.bg-gradient-primary {
+  background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%) !important;
+  border-bottom: none !important;
+}
+.recruiter-pipeline-page .card-header.bg-gradient-primary h6 { color: #ffffff !important; }
+
+.recruiter-pipeline-page .card-body {
+  background: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page .card-body {
+  background: #162327 !important;
+}
+
+/* ══════════════════════════════════════════
+   TABLE & TABLE CELLS
+══════════════════════════════════════════ */
+.recruiter-pipeline-page tr,
+.recruiter-pipeline-page td,
+.recruiter-pipeline-page th,
+.recruiter-pipeline-page .col-md-3 {
+  font-size: 1rem;
+  font-weight: 500 !important;
+  color: #16212B;
+  background: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page tr,
+body.dark .recruiter-pipeline-page td,
+body.dark .recruiter-pipeline-page th,
+body.dark .recruiter-pipeline-page .col-md-3 {
+  background: #1B2A2F !important;
+  color: #94A3B8 !important;
+  border-color: #23343A !important;
+}
+
+.recruiter-pipeline-page .table-secondary td,
+.recruiter-pipeline-page .table-secondary th,
+.recruiter-pipeline-page .table-secondary {
+  background: #EDF8F5 !important;
+}
+body.dark .recruiter-pipeline-page .table-secondary td,
+body.dark .recruiter-pipeline-page .table-secondary th,
+body.dark .recruiter-pipeline-page .table-secondary {
+  background: #162327 !important;
+}
+
+.recruiter-pipeline-page thead th {
+  background: #EDF8F5 !important;
+  color: #64748B !important;
+  border-color: #D9ECE5 !important;
+}
+body.dark .recruiter-pipeline-page thead th {
+  background: #162327 !important;
+  color: #94A3B8 !important;
+  border-color: #23343A !important;
+}
+
+.recruiter-pipeline-page .table {
+  border-color: #D9ECE5 !important;
+}
+body.dark .recruiter-pipeline-page .table {
+  border-color: #23343A !important;
+}
+
+.recruiter-pipeline-page .table-bordered td,
+.recruiter-pipeline-page .table-bordered th {
+  border-color: #D9ECE5 !important;
+}
+body.dark .recruiter-pipeline-page .table-bordered td,
+body.dark .recruiter-pipeline-page .table-bordered th {
+  border-color: #23343A !important;
+}
+
+/* ══════════════════════════════════════════
+   BULK ACTION BAR
+══════════════════════════════════════════ */
+.recruiter-pipeline-page #bulkActionBar {
+  border-radius: 8px !important;
+}
+.recruiter-pipeline-page #bulkActionBar .small {
+  font-size: 0.9rem;
+  color: #16212B !important;
+}
+body.dark .recruiter-pipeline-page #bulkActionBar .small { color: #F8FAFC !important; }
+.recruiter-pipeline-page #bulkActionBar #selectedCount {
+  color: #1FB7B5 !important;
+  font-weight: 700;
+}
+
+/* ══════════════════════════════════════════
+   PIPELINE SUMMARY BAR
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .pipeline-summary-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem 0 1rem;
+}
+.recruiter-pipeline-page .pipeline-summary-main {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #16212B !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-summary-main {
+  color: #7A8B96 !important;
+}
+
+.recruiter-pipeline-page .pipeline-hiring-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(22, 33, 43, 0.08);
+  color: #0D8A90;
+  border: none;
+  text-decoration: none !important;
+  white-space: nowrap;
+  cursor: pointer;
+}
+body.dark .recruiter-pipeline-page .pipeline-hiring-chip {
+  background: rgba(122, 139, 150, 0.31);
+  color: #0D8A90;
+}
+
+/* ══════════════════════════════════════════
+   STAGE RAIL
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .pipeline-stage-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+.recruiter-pipeline-page .stage-ajax-link {
+  background: transparent !important;
+  border: 1.5px solid #1FB7B5 !important;
+  color: #1FB7B5 !important;
+  padding: 8px 20px;
+  border-radius: 6px !important;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.recruiter-pipeline-page .stage-ajax-link:hover,
+.recruiter-pipeline-page .stage-ajax-link.active {
+  background: #1FB7B5 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+.recruiter-pipeline-page .stage-count {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* ══════════════════════════════════════════
+   PIPELINE TOOLBAR
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .pipeline-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+@media (max-width: 768px) {
+  .recruiter-pipeline-page .pipeline-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Search box */
+.recruiter-pipeline-page .pipeline-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFF !important;
+  border: 1px solid #D9ECE5 !important;
+  border-radius: 8px;
+  padding: 7px 14px;
+  flex: 1;
+  min-width: 200px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.recruiter-pipeline-page .pipeline-search:focus-within {
+  border-color: #0D8A90 !important;
+  box-shadow: none !important;
+}
+.recruiter-pipeline-page .pipeline-search i {
+  color: #7A8B96;
+  font-size: 0.85rem;
+}
+.recruiter-pipeline-page .pipeline-search input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  font-size: 0.95rem;
+  color: #16212B !important;
+  width: 100%;
+}
+.recruiter-pipeline-page .pipeline-search input::placeholder { color: #94A3B8 !important; }
+
+body.dark .recruiter-pipeline-page .pipeline-search {
+  background: #1B2A2F !important;
+  border: 1px solid #23343A !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-search:focus-within {
+  border-color: #0D8A90 !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-search i { color: #4A5C63 !important; }
+body.dark .recruiter-pipeline-page .pipeline-search input {
+  color: #F8FAFC !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-search input::placeholder { color: #4A5C63 !important; }
+
+@media (max-width: 768px) {
+  .recruiter-pipeline-page .pipeline-search { width: 100%; }
+}
+
+/* Tool button */
+.recruiter-pipeline-page .pipeline-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #EDF8F5 !important;
+  color: #64748B !important;
+  border: 1px solid #D9ECE5 !important;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.recruiter-pipeline-page .pipeline-tool-btn:hover,
+.recruiter-pipeline-page .pipeline-tool-btn.active {
+  border-color: #1FB7B5 !important;
+  color: #1FB7B5 !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-tool-btn {
+  background: #1B2A2F !important;
+  border: 1px solid #23343A !important;
+  color: #94A3B8 !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-tool-btn:hover,
+body.dark .recruiter-pipeline-page .pipeline-tool-btn.active {
+  border-color: #0D8A90 !important;
+  color: #1FB7B5 !important;
+}
+
+/* Bulk action select */
+.recruiter-pipeline-page .pipeline-bulk-controls { display: flex; gap: 6px; align-items: center; }
+.recruiter-pipeline-page .pipeline-bulk-controls select {
+  font-size: 0.875rem;
+  background: #FFFFFF !important;
+  color: #16212B !important;
+  border: 1px solid #D9ECE5 !important;
+  border-radius: 6px;
+  padding: 6px 12px;
+  transition: border-color 0.2s;
+}
+.recruiter-pipeline-page .pipeline-bulk-controls select:focus {
+  outline: none;
+  box-shadow: none !important;
+  border-color: #0D8A90 !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-bulk-controls select {
+  background: #1B2A2F !important;
+  border: 1px solid #23343A !important;
+  color: #F8FAFC !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-bulk-controls select:focus {
+  border-color: #0D8A90 !important;
+  box-shadow: none !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-bulk-controls select option {
+  background: #1B2A2F;
+  color: #F8FAFC;
+}
+
+/* ══════════════════════════════════════════
+   ADVANCED FILTER COLLAPSE
+══════════════════════════════════════════ */
+.recruiter-pipeline-page #advancedFilterCollapse .bg-light {
+  background: #EDF8F5 !important;
+  border-bottom: 1px solid #D9ECE5 !important;
+  border-radius: 0 0 8px 8px;
+}
+body.dark .recruiter-pipeline-page #advancedFilterCollapse .bg-light {
+  background: #1B2A2F !important;
+  border-bottom: 1px solid #23343A !important;
+}
+
+.recruiter-pipeline-page #advancedFilterCollapse label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748B !important;
+}
+body.dark .recruiter-pipeline-page #advancedFilterCollapse label { color: #94A3B8 !important; }
+
+.recruiter-pipeline-page #advancedFilterCollapse .form-control {
+  font-size: 0.9rem;
+  background: #FFFFFF !important;
+  color: #16212B !important;
+  border: 1px solid #D9ECE5 !important;
+  border-radius: 6px !important;
+  transition: border-color 0.2s;
+}
+.recruiter-pipeline-page #advancedFilterCollapse .form-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #0D8A90 !important;
+}
+.recruiter-pipeline-page #advancedFilterCollapse .form-control::placeholder { color: #94A3B8 !important; }
+body.dark .recruiter-pipeline-page #advancedFilterCollapse .form-control {
+  background: #1B2A2F !important;
+  color: #F8FAFC !important;
+  border: 1px solid #23343A !important;
+}
+body.dark .recruiter-pipeline-page #advancedFilterCollapse .form-control::placeholder { color: #4A5C63 !important; }
+
+/* ══════════════════════════════════════════
+   BADGES
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(22, 33, 43, 0.08);
+  color: #0D8A90;
+  border: none;
+  text-decoration: none !important;
+  white-space: nowrap;
+  cursor: pointer;
+}
+body.dark .recruiter-pipeline-page .badge {
+  background: rgba(122, 139, 150, 0.31);
+  color: #0D8A90;
+}
+
+.recruiter-pipeline-page .badge-primary   { background: #e1f5ee !important; color: #0f6e56 !important; }
+.recruiter-pipeline-page .badge-success   { background: #D1FAE5 !important; color: #065F46 !important; }
+.recruiter-pipeline-page .badge-info      { background: #DBEAFE !important; color: #1E40AF !important; }
+.recruiter-pipeline-page .badge-warning   { background: #FEF3C7 !important; color: #92400E !important; }
+.recruiter-pipeline-page .badge-danger    { background: #FEE2E2 !important; color: #991B1B !important; }
+.recruiter-pipeline-page .badge-secondary { background: #F1F5F9 !important; color: #475569 !important; }
+.recruiter-pipeline-page .badge-dark      { background: #1E293B  !important; color: #E2E8F0 !important; }
+.recruiter-pipeline-page .badge-light     { background: #EDF8F5  !important; color: #64748B  !important; }
+
+body.dark .recruiter-pipeline-page .badge-primary   { background: rgba(15, 110, 86, 0.25)  !important; color: #6EE7B7 !important; }
+body.dark .recruiter-pipeline-page .badge-success   { background: rgba(6, 78, 59, 0.31)    !important; color: #6EE7B7 !important; }
+body.dark .recruiter-pipeline-page .badge-info      { background: rgba(30, 58, 95, 0.31)   !important; color: #93C5FD !important; }
+body.dark .recruiter-pipeline-page .badge-warning   { background: rgba(120, 53, 15, 0.31)  !important; color: #FCD34D !important; }
+body.dark .recruiter-pipeline-page .badge-danger    { background: rgba(127, 29, 29, 0.31)  !important; color: #FCA5A5 !important; }
+body.dark .recruiter-pipeline-page .badge-secondary { background: #1E293B                  !important; color: #94A3B8 !important; }
+body.dark .recruiter-pipeline-page .badge-dark      { background: #0E1619                  !important; color: #94A3B8 !important; }
+body.dark .recruiter-pipeline-page .badge-light     { background: #1B2A2F                  !important; color: #94A3B8 !important; }
+
+/* ══════════════════════════════════════════
+   INTERVIEW SUMMARY CARD
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .recruiter-summary-card .recruiter-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.recruiter-pipeline-page .recruiter-summary-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748B !important;
+}
+body.dark .recruiter-pipeline-page .recruiter-summary-label { color: #94A3B8 !important; }
+
+.recruiter-pipeline-page .recruiter-summary-item strong {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #16212B !important;
+}
+body.dark .recruiter-pipeline-page .recruiter-summary-item strong { color: #F8FAFC !important; }
+
+/* ══════════════════════════════════════════
+   BOOKING PERSON CELL
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .recruiter-booking-person { display: flex; flex-direction: column; gap: 2px; }
+.recruiter-pipeline-page .recruiter-booking-person strong {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #16212B !important;
+}
+body.dark .recruiter-pipeline-page .recruiter-booking-person strong { color: #F8FAFC !important; }
+.recruiter-pipeline-page .recruiter-booking-person span {
+  font-size: 0.82rem;
+  color: #64748B !important;
+}
+body.dark .recruiter-pipeline-page .recruiter-booking-person span { color: #94A3B8 !important; }
+
+/* ══════════════════════════════════════════
+   ACTION WRAP (table row actions)
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .job-actions-wrap,
+.recruiter-pipeline-page .recruiter-booking-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+/* ══════════════════════════════════════════
+   LEADERBOARD — RANK BADGES
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .rank-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.recruiter-pipeline-page .rank-badge.gold   { background: #FEF3C7; color: #92400E; }
+.recruiter-pipeline-page .rank-badge.silver { background: #F1F5F9; color: #334155; }
+.recruiter-pipeline-page .rank-badge.bronze { background: #FEF3C7; color: #7C2D12; }
+.recruiter-pipeline-page .rank-number       { font-size: 0.95rem; font-weight: 700; color: #64748B; }
+
+body.dark .recruiter-pipeline-page .rank-badge.gold   { background: rgba(120, 53, 15, 0.31); color: #FCD34D; }
+body.dark .recruiter-pipeline-page .rank-badge.silver { background: #1E293B; color: #94A3B8; }
+body.dark .recruiter-pipeline-page .rank-badge.bronze { background: rgba(124, 45, 18, 0.31); color: #FCA5A5; }
+body.dark .recruiter-pipeline-page .rank-number       { color: #94A3B8; }
+
+/* Top performer row */
+.recruiter-pipeline-page .leaderboard-table tbody tr.top-performer {
+  background: rgba(31, 183, 181, 0.04) !important;
+}
+
+/* Score display */
+.recruiter-pipeline-page .score-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.recruiter-pipeline-page .score-value { font-size: 1rem; font-weight: 700; }
+.recruiter-pipeline-page .score-bar {
+  width: 60px;
+  height: 4px;
+  background: #D9ECE5;
+  border-radius: 2px;
+  overflow: hidden;
+}
+body.dark .recruiter-pipeline-page .score-bar { background: #23343A; }
+.recruiter-pipeline-page .score-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
+  border-radius: 2px;
+}
+
+/* Score colors */
+.recruiter-pipeline-page .text-success { color: #065F46 !important; }
+.recruiter-pipeline-page .text-warning { color: #92400E !important; }
+.recruiter-pipeline-page .text-danger  { color: #991B1B !important; }
+body.dark .recruiter-pipeline-page .text-success { color: #6EE7B7 !important; }
+body.dark .recruiter-pipeline-page .text-warning { color: #FCD34D !important; }
+body.dark .recruiter-pipeline-page .text-danger  { color: #FCA5A5 !important; }
+
+/* Overall rating */
+.recruiter-pipeline-page .overall-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.recruiter-pipeline-page .rating-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.recruiter-pipeline-page .rating-badge.badge-success { background: #D1FAE5; color: #065F46; }
+.recruiter-pipeline-page .rating-badge.badge-warning { background: #FEF3C7; color: #92400E; }
+.recruiter-pipeline-page .rating-badge.badge-danger  { background: #FEE2E2; color: #991B1B; }
+body.dark .recruiter-pipeline-page .rating-badge.badge-success { background: rgba(6, 78, 59, 0.31); color: #6EE7B7; }
+body.dark .recruiter-pipeline-page .rating-badge.badge-warning { background: rgba(120, 53, 15, 0.31); color: #FCD34D; }
+body.dark .recruiter-pipeline-page .rating-badge.badge-danger  { background: rgba(127, 29, 29, 0.31); color: #FCA5A5; }
+
+.recruiter-pipeline-page .rating-stars i { font-size: 0.72rem; }
+.recruiter-pipeline-page .rating-stars .text-warning { color: #F59E0B !important; }
+.recruiter-pipeline-page .rating-stars .text-muted   { color: #D9ECE5 !important; }
+body.dark .recruiter-pipeline-page .rating-stars .text-muted { color: #23343A !important; }
+
+/* Skill badges */
+.recruiter-pipeline-page .skill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 2px;
+}
+.recruiter-pipeline-page .skill-has {
+  background: #D1FAE5;
+  color: #065F46;
+  border: 1px solid #6EE7B7;
+}
+.recruiter-pipeline-page .skill-missing {
+  background: #FEE2E2;
+  color: #991B1B;
+  border: 1px solid #FCA5A5;
+}
+body.dark .recruiter-pipeline-page .skill-has {
+  background: rgba(6, 78, 59, 0.31);
+  color: #6EE7B7;
+  border-color: #064E3B;
+}
+body.dark .recruiter-pipeline-page .skill-missing {
+  background: rgba(127, 29, 29, 0.19);
+  color: #FCA5A5;
+  border-color: #7F1D1D;
+}
+
+/* Leaderboard alert */
+.recruiter-pipeline-page .alert-light {
+  background: #EDF8F5 !important;
+  border: 1px solid #D9ECE5 !important;
+  color: #64748B !important;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.recruiter-pipeline-page .alert-light strong { color: #16212B !important; }
+body.dark .recruiter-pipeline-page .alert-light {
+  background: #1B2A2F !important;
+  border: 1px solid #23343A !important;
+  color: #94A3B8 !important;
+}
+body.dark .recruiter-pipeline-page .alert-light strong { color: #F8FAFC !important; }
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .modal-content,
+.modal-content {
+  background: #FFFFFF !important;
+  border: 1px solid #D9ECE5 !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+body.dark .recruiter-pipeline-page .modal-content,
+body.dark .modal-content {
+  background: #162327 !important;
+  border: 1px solid #23343A !important;
+}
+
+.modal-header {
+  background: #EDF8F5 !important;
+  border-bottom: 1px solid #D9ECE5 !important;
+  border-radius: 12px 12px 0 0 !important;
+}
+body.dark .modal-header {
+  background: #1B2A2F !important;
+  border-bottom: 1px solid #23343A !important;
+}
+
+.modal-header .modal-title { color: #16212B !important; font-size: 1rem; font-weight: 600; }
+body.dark .modal-header .modal-title { color: #F8FAFC !important; }
+.modal-header .close { color: #64748B !important; opacity: 1; }
+body.dark .modal-header .close { color: #94A3B8 !important; }
+
+.modal-body { background: #FFFFFF !important; }
+body.dark .modal-body { background: #162327 !important; }
+
+.modal-body label { font-size: 0.9rem; font-weight: 600; color: #16212B !important; }
+body.dark .modal-body label { color: #F8FAFC !important; }
+
+.modal-body .form-control {
+  background: #FFFFFF !important;
+  color: #16212B !important;
+  border: 1px solid #D9ECE5 !important;
+  border-radius: 6px !important;
+  font-size: 1rem;
+}
+.modal-body .form-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #0D8A90 !important;
+}
+.modal-body .form-control::placeholder { color: #94A3B8 !important; }
+body.dark .modal-body .form-control {
+  background: #1B2A2F !important;
+  color: #F8FAFC !important;
+  border: 1px solid #23343A !important;
+}
+body.dark .modal-body .form-control::placeholder { color: #4A5C63 !important; }
+
+.modal-body .text-muted,
+.modal-body small.text-muted { color: #64748B !important; }
+body.dark .modal-body .text-muted,
+body.dark .modal-body small.text-muted { color: #94A3B8 !important; }
+
+.modal-body #emailRecipients {
+  background: #EDF8F5 !important;
+  border-color: #D9ECE5 !important;
+  color: #16212B !important;
+  border-radius: 6px;
+}
+body.dark .modal-body #emailRecipients {
+  background: #1B2A2F !important;
+  border-color: #23343A !important;
+  color: #F8FAFC !important;
+}
+
+.modal-footer {
+  background: #EDF8F5 !important;
+  border-top: 1px solid #D9ECE5 !important;
+  border-radius: 0 0 12px 12px !important;
+}
+body.dark .modal-footer {
+  background: #1B2A2F !important;
+  border-top: 1px solid #23343A !important;
+}
+
+.modal-footer .btn-secondary {
+  background: transparent !important;
+  border: 1px solid #D9ECE5 !important;
+  color: #64748B !important;
+  border-radius: 6px !important;
+  font-weight: 600;
+  padding: 7px 18px;
+}
+.modal-footer .btn-secondary:hover { background: #EDF8F5 !important; }
+body.dark .modal-footer .btn-secondary {
+  border: 1px solid #23343A !important;
+  color: #94A3B8 !important;
+}
+body.dark .modal-footer .btn-secondary:hover { background: #1B2A2F !important; }
+
+/* ══════════════════════════════════════════
+   ALERTS
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .alert-success {
+  background: #D1FAE5 !important;
+  border: 1px solid #6EE7B7 !important;
+  color: #065F46 !important;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.recruiter-pipeline-page .alert-danger {
+  background: #FEE2E2 !important;
+  border: 1px solid #FCA5A5 !important;
+  color: #991B1B !important;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+body.dark .recruiter-pipeline-page .alert-success {
+  background: rgba(6, 78, 59, 0.19) !important;
+  border-color: #064E3B !important;
+  color: #6EE7B7 !important;
+}
+body.dark .recruiter-pipeline-page .alert-danger {
+  background: rgba(127, 29, 29, 0.19) !important;
+  border-color: #7F1D1D !important;
+  color: #FCA5A5 !important;
+}
+
+/* ══════════════════════════════════════════
+   PAGINATION
+══════════════════════════════════════════ */
+.recruiter-pipeline-page ul.pagination li.page-item a.page-link,
+.recruiter-pipeline-page ul.pagination li.page-item span.page-link {
+  color: #1FB7B5 !important;
+  background-color: transparent !important;
+  border-color: #D9ECE5 !important;
+  font-size: 1rem;
+  text-decoration: none !important;
+}
+.recruiter-pipeline-page ul.pagination li.page-item a.page-link:hover {
+  color: #0D8A90 !important;
+  background-color: #EDF8F5 !important;
+  border-color: #1FB7B5 !important;
+}
+.recruiter-pipeline-page ul.pagination li.page-item.active .page-link {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%) !important;
+  border-color: #1FB7B5 !important;
+}
+.recruiter-pipeline-page ul.pagination li.page-item.disabled .page-link {
+  color: #94A3B8 !important;
+  border-color: #D9ECE5 !important;
+}
+
+body.dark .recruiter-pipeline-page ul.pagination li.page-item a.page-link,
+body.dark .recruiter-pipeline-page ul.pagination li.page-item span.page-link {
+  color: #1FB7B5 !important;
+  background-color: transparent !important;
+  border-color: #23343A !important;
+}
+body.dark .recruiter-pipeline-page ul.pagination li.page-item a.page-link:hover {
+  background-color: #1B2A2F !important;
+  border-color: #1FB7B5 !important;
+}
+body.dark .recruiter-pipeline-page ul.pagination li.page-item.disabled .page-link {
+  color: #4A5C63 !important;
+  border-color: #23343A !important;
+}
+
+/* ══════════════════════════════════════════
+   MISC TEXT HELPERS
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .text-muted { color: #64748B !important; }
+body.dark .recruiter-pipeline-page .text-muted { color: #94A3B8 !important; }
+.recruiter-pipeline-page .text-primary { color: #1FB7B5 !important; }
+.recruiter-pipeline-page small { color: #64748B; }
+body.dark .recruiter-pipeline-page small { color: #94A3B8; }
+
+/* ══════════════════════════════════════════
+   TABLE RESPONSIVE
+══════════════════════════════════════════ */
+.recruiter-pipeline-page .table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+</style>
 <?php
 $statusTones = [
     'applied' => 'neutral',
@@ -47,8 +1143,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
 >
 <div class="pipeline-shell">
     <div class="page-board-header page-board-header-tight recruiter-page-board-header pipeline-job-head">
-        <div class="page-board-copy">
-            <span class="page-board-kicker"><i class="fas fa-users-cog"></i> Recruiter pipeline</span>
+        <div class="page-board-copy"> 
             <h1 class="page-board-title"><?= esc($job['title']) ?></h1>
             <div class="pipeline-meta">
                 <?php foreach ($metaParts as $part): ?>
@@ -57,11 +1152,11 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
             </div>
         </div>
         <div class="page-board-actions pipeline-head-actions">
-            <a href="<?= base_url('recruiter/jobs') ?>" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to My Jobs
+            <a href="<?= base_url('recruiter/jobs') ?>" class="btn btn-outline-primary">
+                Back to My Jobs
             </a>
-            <a href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>" class="btn btn-outline-secondary"><i class="fas fa-edit"></i> Edit</a>
-            <a href="<?= base_url('recruiter/jobs/preview/' . $job['id']) ?>" class="btn btn-primary" target="_blank" rel="noopener"><i class="fas fa-eye"></i> Preview Job</a>
+            <a href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>" class="btn btn-outline-primary">  Edit</a>
+            <a href="<?= base_url('recruiter/jobs/preview/' . $job['id']) ?>" class="btn btn-outline-primary" target="_blank" rel="noopener">  Preview Job</a>
         </div>
     </div>
 
@@ -78,9 +1173,9 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                 <span id="selectedCount" class="font-weight-bold text-primary">0</span> candidates selected
             </div>
             <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="openBulkEmailModal()"><i class="fas fa-at mr-1"></i> Mail</button>
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="openBulkMessageModal()"><i class="fas fa-comments mr-1"></i> Message</button>
-                <button type="button" class="btn btn-sm btn-outline-success" onclick="executeBulkAction('shortlist')"><i class="fas fa-check-circle mr-1"></i> Shortlist</button>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="openBulkEmailModal()"> Mail</button>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="openBulkMessageModal()">  Message</button>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="executeBulkAction('shortlist')">  Shortlist</button>
                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="executeBulkAction('reject')"><i class="fas fa-times-circle mr-1"></i> Reject</button>
             </div>
         </div>
@@ -104,8 +1199,8 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="executeBulkAction('message')">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="executeBulkAction('message')">
                         <i class="fas fa-paper-plane mr-1"></i> Send Message
                     </button>
                 </div>
@@ -150,8 +1245,8 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="sendBulkEmail()">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="sendBulkEmail()">
                         <i class="fas fa-paper-plane mr-1"></i> Send Email
                     </button>
                 </div>
@@ -172,7 +1267,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
             <div class="pipeline-board">
                 <div class="pipeline-summary-bar">
                     <div class="pipeline-summary-main">
-                        <strong><?= $allApplicationsLabel ?> Candidates</strong>
+                        <?= $allApplicationsLabel ?> Candidates 
                         <span class="pipeline-hiring-chip"><i class="fas fa-users"></i> <?= max(0, $openings) ?> openings</span>
                         <span class="pipeline-hiring-chip"><i class="fas fa-bullseye"></i> <?= $avgMatch ?>% avg match</span>
                     </div>
@@ -197,8 +1292,8 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                         <i class="fas fa-search"></i>
                         <input type="search" id="candidatePipelineSearch" placeholder="Search candidates..." autocomplete="off">
                     </div>
-                    <button type="button" class="pipeline-tool-btn <?= $hasActiveFilters ? 'active' : '' ?>" data-toggle="collapse" data-target="#advancedFilterCollapse" aria-expanded="<?= $hasActiveFilters ? 'true' : 'false' ?>" aria-controls="advancedFilterCollapse">
-                        <i class="fas fa-filter"></i> Advanced Filters
+                    <button type="button" class="btn btn-outline-primary" data-toggle="collapse" data-target="#advancedFilterCollapse" aria-expanded="<?= $hasActiveFilters ? 'true' : 'false' ?>" aria-controls="advancedFilterCollapse">
+                        Advanced Filters
                         <?php if ($hasActiveFilters): ?>
                             <span class="badge badge-primary ml-1"><?= count(array_filter($advancedFilters, function($v) { return $v !== '' && $v !== null; })) ?></span>
                         <?php endif; ?>
@@ -211,8 +1306,8 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                             <option value="shortlist">Shortlist Selected</option>
                             <option value="reject">Reject Selected</option>
                         </select>
-                        <button type="button" class="btn btn-primary btn-sm" onclick="executeSelectedBulkAction()">
-                            <i class="fas fa-bolt"></i> Apply
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="executeSelectedBulkAction()">
+                             Apply
                         </button>
                     </div>
                 </div>
@@ -264,9 +1359,9 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                 </div>
                                 <div class="form-group col-md-3">
                                     <div class="d-flex" style="gap: 8px;">
-                                        <button type="submit" class="btn btn-primary btn-sm flex-grow-1 font-weight-bold">Apply Filters</button>
+                                        <button type="submit" class="btn btn-outline-primary btn-sm flex-grow-1 ">Apply Filters</button>
                                         <?php if ($hasActiveFilters): ?>
-                                            <a href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=' . $safeActiveStage) ?>" class="btn btn-outline-secondary btn-sm" title="Clear all filters">Clear</a>
+                                            <a href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=' . $safeActiveStage) ?>" class="btn btn-outline-primary btn-sm" title="Clear all filters">Clear</a>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -412,13 +1507,13 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                             <td>
                                                 <div class="job-actions-wrap recruiter-booking-actions">
                                                     <?php if ($isUpcoming && in_array($bookingStatus, ['confirmed', 'rescheduled'], true)): ?>
-                                                        <a href="<?= base_url('recruiter/slots/reschedule/' . $booking['id']) ?>" class="btn btn-sm btn-warning btn-action">
-                                                            <i class="fas fa-sync"></i> Reschedule
+                                                        <a href="<?= base_url('recruiter/slots/reschedule/' . $booking['id']) ?>" class="btn btn-sm btn-outline-primary btn-action">
+                                                            Reschedule
                                                         </a>
                                                     <?php endif; ?>
                                                     <?php if ($isPast || in_array($bookingStatus, ['completed', 'no_show', 'rescheduled'], true)): ?>
-                                                        <a href="<?= base_url('recruiter/slots/review/' . $booking['id']) ?>" class="btn btn-sm btn-primary btn-action">
-                                                            <i class="fas fa-clipboard-check"></i> <?= $hasReview ? 'Edit Review' : 'Review Interview' ?>
+                                                        <a href="<?= base_url('recruiter/slots/review/' . $booking['id']) ?>" class="btn btn-sm btn-outline-primary btn-action">
+                                                            <?= $hasReview ? 'Edit Review' : 'Review Interview' ?>
                                                         </a>
                                                     <?php else: ?>
                                                         <span class="text-muted">-</span>
@@ -437,8 +1532,8 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
             <div class="card shadow-sm recruiter-table-card">
                 <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <h6 class="m-0 font-weight-bold text-primary">Slot Capacity</h6>
-                    <a href="<?= base_url('recruiter/slots/create') ?>" class="btn btn-sm btn-outline-secondary">
-                        <i class="fas fa-calendar-alt"></i> Create New Slots
+                    <a href="<?= base_url('recruiter/slots/create') ?>" class="btn btn-sm btn-outline-primary">
+                  Create New Slots
                     </a>
                 </div>
                 <div class="card-body">
@@ -457,7 +1552,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                 </tr>
                                 <?php if (empty($interviewSlots)): ?>
                                     <tr>
-                                        <td colspan="6" class="text-center py-5">No booked slots found for this job</td>
+                                        <td colspan="8" class="text-center py-5">No booked slots found for this job</td>
                                     </tr>
                                 <?php else: ?>
                                     <?php foreach ($interviewSlots as $slot): ?>
@@ -485,7 +1580,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                             <td><?= esc($slot['created_by_name']) ?></td>
                                     <td>
                                         <?php if ($slot['booked_count'] == 0): ?>
-                                            <a href="<?= base_url('recruiter/slots/edit/' . $slot['id']) ?>" class="btn btn-sm btn-warning" title="Edit">
+                                            <a href="<?= base_url('recruiter/slots/edit/' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <a href="<?= base_url('recruiter/slots/delete/' . $slot['id']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this slot?')" title="Delete">
@@ -508,9 +1603,9 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
         <!-- Leaderboard Tab -->
         <div class="tab-pane fade" id="leaderboard" role="tabpanel">
             <div class="card shadow-sm recruiter-leaderboard-card">
-                <div class="card-header py-3 bg-gradient-primary text-white">
+                <div class="card-header ">
                     <h6 class="m-0 font-weight-bold">
-                        <i class="fas fa-crown"></i> Comparison View - <?= esc($job['title']) ?>
+                      Comparison View - <?= esc($job['title']) ?>
                     </h6>
                 </div>
                 <div class="card-body">
@@ -573,13 +1668,13 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                         <tr class="<?= $rank <= 3 ? 'top-performer' : '' ?>">
                                             <td class="rank-cell">
                                                 <?php if ($rank === 1): ?>
-                                                    <span class="rank-badge gold"><i class="fas fa-crown"></i> 1</span>
+                                                    <span  >  1</span>
                                                 <?php elseif ($rank === 2): ?>
-                                                    <span class="rank-badge silver"><i class="fas fa-medal"></i> 2</span>
+                                                    <span  >  2</span>
                                                 <?php elseif ($rank === 3): ?>
-                                                    <span class="rank-badge bronze"><i class="fas fa-medal"></i> 3</span>
+                                                    <span  > 3</span>
                                                 <?php else: ?>
-                                                    <span class="rank-number"><?= $rank ?></span>
+                                                    <span  ><?= $rank ?></span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
@@ -594,7 +1689,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                                 <div class="skills-display">
                                                     <?php if (!empty($requiredSkills)): ?>
                                                         <div class="skill-match-badge mb-2">
-                                                            <span class="badge badge-<?= ($candidate['skill_match'] ?? 0) >= 80 ? 'success' : (($candidate['skill_match'] ?? 0) >= 60 ? 'warning' : 'danger') ?>">
+                                                            <span class="status-pill">
                                                                 <?= (int) ($candidate['skill_match'] ?? 0) ?>% Match
                                                             </span>
                                                             <small class="text-muted">
@@ -604,7 +1699,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                                         <div class="required-skills">
                                                             <?php foreach ($requiredSkills as $requiredSkill): ?>
                                                                 <?php $hasSkill = in_array(strtolower($requiredSkill), $candidateSkillsLower, true); ?>
-                                                                <span class="skill-badge <?= $hasSkill ? 'skill-has' : 'skill-missing' ?>" title="<?= $hasSkill ? 'Candidate has this skill' : 'Candidate does not have this skill' ?>">
+                                                                <span class="status-pill" title="<?= $hasSkill ? 'Candidate has this skill' : 'Candidate does not have this skill' ?>">
                                                                     <?= esc($requiredSkill) ?>
                                                                     <i class="fas fa-<?= $hasSkill ? 'check' : 'times' ?>-circle <?= $hasSkill ? 'text-success' : 'text-danger' ?>"></i>
                                                                 </span>
@@ -620,10 +1715,10 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                                     <div class="skills-display">
                                                         <div class="required-skills">
                                                             <?php foreach (array_slice($candidate['github_stack'], 0, 6) as $language): ?>
-                                                                <span class="skill-badge skill-has"><?= esc($language) ?></span>
+                                                                <span class="status-pill"><?= esc($language) ?></span>
                                                             <?php endforeach; ?>
                                                             <?php if (count($candidate['github_stack']) > 6): ?>
-                                                                <span class="badge badge-light">+<?= count($candidate['github_stack']) - 6 ?></span>
+                                                                <span class="status-pill">+<?= count($candidate['github_stack']) - 6 ?></span>
                                                             <?php endif; ?>
                                                         </div>
                                                     </div>
@@ -649,15 +1744,10 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                             </td>
                                             <td class="text-center">
                                                 <div class="overall-rating">
-                                                    <span class="rating-badge badge-<?= $overallRating >= 80 ? 'success' : ($overallRating >= 60 ? 'warning' : 'danger') ?>">
+                                                    <span class="status-pill">
                                                         <?= number_format($overallRating, 1) ?>
                                                     </span>
-                                                    <div class="rating-stars">
-                                                        <?php $stars = round($overallRating / 20); ?>
-                                                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                                                            <i class="fas fa-star <?= $i <= $stars ? 'text-warning' : 'text-muted' ?>"></i>
-                                                        <?php endfor; ?>
-                                                    </div>
+                                                    
                                                 </div>
                                             </td>
                                             <td class="text-center">
@@ -670,13 +1760,13 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                <span class="badge badge-<?= $color ?>">
+                                                <span class="status-pill">
                                                     <?= esc($statuses[$status] ?? ucwords(str_replace('_', ' ', $status))) ?>
                                                 </span>
                                             </td>
                                             <td class="text-center">
-                                                <a href="<?= base_url('recruiter/candidate/' . $candidate['candidate_id'] . '?application_id=' . $candidate['id'] . '&job_id=' . $candidate['job_id']) ?>" class="btn btn-sm btn-outline-secondary">
-                                                    <i class="fas fa-eye"></i> View Application
+                                                <a href="<?= base_url('recruiter/candidate/' . $candidate['candidate_id'] . '?application_id=' . $candidate['id'] . '&job_id=' . $candidate['job_id']) ?>" class="btn btn-sm btn-outline-primary">
+                                                   View 
                                                 </a>
                                             </td>
                                         </tr>
@@ -695,5 +1785,3 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
 <?= view('Layouts/recruiter_footer', [
     'pageScripts' => [base_url('jobboard/js/recruiter-pipeline.js?v=' . @filemtime(FCPATH . 'jobboard/js/recruiter-pipeline.js'))],
 ]) ?>
-
-
