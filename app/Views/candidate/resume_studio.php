@@ -14,8 +14,8 @@ $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' 
 ?>
 
 <div class="resume-studio-jobboard">
-    <section class="content-wrap">
-        <div class="container">
+    <section class="content-wrap resume-studio-content-canvas">
+        <div class="container-fluid">
 
             <div class="page-board-header page-board-header-tight">
                 <div class="page-board-copy">

@@ -3,8 +3,8 @@
 <?php $activeTab = (string) (service('request')->getGet('tab') ?? 'visibility'); ?>
 
 <div class="settings-jobboard">
-    <section class="site-section pt-0 content-wrap">
-        <div class="container">
+    <section class="site-section pt-0 content-wrap settings-content-canvas">
+        <div class="container-fluid">
             <div class="page-board-header page-board-header-tight">
                 <div class="page-board-copy">
                     <span class="page-board-kicker"><i class="fas fa-cog"></i> Account settings</span>
@@ -55,6 +55,13 @@
                             <span>
                                 Appearance
                                 <small>Theme and display</small>
+                            </span>
+                        </a>
+                        <a href="#language" class="settings-nav-link <?= $activeTab === 'language' ? 'is-active' : '' ?>" data-settings-tab="language">
+                            <span><i class="fas fa-globe"></i></span>
+                            <span>
+                                Language
+                                <small>Page translation</small>
                             </span>
                         </a>
 
@@ -171,10 +178,92 @@
                             </div>
                         </div>
                     </section>
+
+                    <section class="settings-panel <?= $activeTab === 'language' ? 'is-active' : '' ?>" data-settings-panel="language">
+                        <div class="settings-panel-title">Language</div>
+                        <div class="settings-panel-copy">Choose a page translation language for the candidate portal.</div>
+
+                        <div class="settings-card settings-language-card">
+                            <div class="appearance-settings">
+                                <div class="appearance-option-item">
+                                    <div class="appearance-option-icon"><i class="fas fa-language"></i></div>
+                                    <div class="appearance-option-text">
+                                        <strong>Translate Page</strong>
+                                        <p>Select your preferred language from the available translation options.</p>
+                                    </div>
+                                </div>
+
+                                <div class="settings-language-widget">
+                                    <div class="settings-language-picker" id="settingsLanguagePicker">
+                                        <button type="button" class="settings-language-picker-btn" id="settingsLanguagePickerBtn" aria-haspopup="listbox" aria-expanded="false">
+                                            <span>Select Language</span>
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                        <div class="settings-language-picker-menu" role="listbox">
+                                            <button type="button" class="settings-language-picker-option" data-value="" role="option" aria-selected="true">Select Language</button>
+                                            <button type="button" class="settings-language-picker-option" data-value="bn" role="option">Bengali</button>
+                                            <button type="button" class="settings-language-picker-option" data-value="gu" role="option">Gujarati</button>
+                                            <button type="button" class="settings-language-picker-option" data-value="hi" role="option">Hindi</button>
+                                            <button type="button" class="settings-language-picker-option" data-value="kn" role="option">Kannada</button>
+                                            <button type="button" class="settings-language-picker-option" data-value="ml" role="option">Malayalam</button>
+                                            <button type="button" class="settings-language-picker-option" data-value="mr" role="option">Marathi</button>
+                                            <button type="button" class="settings-language-picker-option" data-value="pa" role="option">Punjabi (Gurmukhi)</button>
+                                            <button type="button" class="settings-language-picker-option" data-value="ta" role="option">Tamil</button>
+                                            <button type="button" class="settings-language-picker-option" data-value="te" role="option">Telugu</button>
+                                            <button type="button" class="settings-language-picker-option" data-value="en" role="option">English</button>
+                                        </div>
+                                    </div>
+                                    <div class="settings-language-engine" aria-hidden="true">
+                                        <?= view('components/google_translate_widget') ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
     </section>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const picker = document.getElementById('settingsLanguagePicker');
+    const button = document.getElementById('settingsLanguagePickerBtn');
+    if (!picker || !button) return;
+
+    function getGoogleSelect() {
+        return document.querySelector('.settings-language-engine .goog-te-combo');
+    }
+
+    button.addEventListener('click', function (event) {
+        event.stopPropagation();
+        const isOpen = picker.classList.toggle('is-open');
+        button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    picker.querySelectorAll('.settings-language-picker-option').forEach(function (option) {
+        option.addEventListener('click', function () {
+            const source = getGoogleSelect();
+            const value = option.dataset.value || '';
+            if (source) {
+                source.value = value;
+                source.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            button.querySelector('span').textContent = option.textContent;
+            picker.querySelectorAll('.settings-language-picker-option').forEach(function (node) {
+                node.setAttribute('aria-selected', node === option ? 'true' : 'false');
+            });
+            picker.classList.remove('is-open');
+            button.setAttribute('aria-expanded', 'false');
+        });
+    });
+
+    document.addEventListener('click', function () {
+        picker.classList.remove('is-open');
+        button.setAttribute('aria-expanded', 'false');
+    });
+});
+</script>
 
 <?= view('Layouts/candidate_footer') ?>

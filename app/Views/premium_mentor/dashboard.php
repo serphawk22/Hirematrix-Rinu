@@ -1,8 +1,8 @@
         <?= view('Layouts/candidate_header', ['title' => 'AI Career Mentor']) ?>
 
-<div class="career-transition-jobboard">
-    <section class="career-transition-content">
-        <div class="container">
+<div class="career-transition-jobboard premium-mentor-jobboard">
+    <section class="career-transition-content service-content-canvas">
+        <div class="container-fluid">
             <div class="page-board-header page-board-header-tight">
                 <div class="page-board-copy">
                     <span class="page-board-kicker"><i class="fas fa-crown"></i> <?= esc($subscription['plan_name']) ?></span>
