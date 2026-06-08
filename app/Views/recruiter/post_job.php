@@ -1,4 +1,113 @@
         <?= view('Layouts/recruiter_header', ['title' => 'Post Job']) ?>
+        <style>
+   
+.recruiter-post-jobboard{
+    background: linear-gradient(
+      135deg,
+      #F4FBFA 0%,
+      #EEF9F2 100%
+    ) !important;
+}
+body.dark .recruiter-post-jobboard,body.dark .form-contact.contact_form.recruiter-job-form,body.dark .recruiter-form-card{
+    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+}
+    .page-board-title{
+        font-size: 26px !important; 
+    font-weight: 700 !important;
+    color: var(--foreground) !important;
+    margin: 0;
+    }
+    body.dark .page-board-title{
+        font-size: 26px !important;
+    font-weight: 700 !important;
+    color: #F8FAFC !important;
+    margin: 0;
+    }
+
+    .btn-primary,.btn-outline-primary {  
+        background: transparent !important;
+    border: 1.5px solid #1FB7B5 !important;
+    color: #1FB7B5 !important;
+    padding: 8px 20px;
+    border-radius: 6px !important;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-outline-primary:focus, .btn-outline-primary:hover {
+ background:  #1FB7B5 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+
+}
+/* ── Input focus border ── */
+.recruiter-job-form .form-control:focus {
+    border-color: var(--primary-dark, #0D8A90) !important; 
+    outline: none !important;
+}
+
+.recruiter-job-form .form-control {
+    border: 1px solid var(--border, #D9ECE5);
+    border-radius: 6px;
+    transition: border-color .2s, box-shadow .2s;
+    background: #fff;
+    color: var(--foreground, #16212B);
+}
+body.dark .card,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
+ border: 1px solid #23343A !important;
+}
+body.dark .recruiter-job-form .form-control {
+    border: 1px solid #23343A !important;
+    border-radius: 6px;
+    transition: border-color .2s, box-shadow .2s;
+    background: #1B2A2F !important;
+    color: #F8FAFC !important;
+}
+/* ── Labels — match h6 style ── */
+.recruiter-job-form label {
+    font-size: 1rem;        /* same as Bootstrap h6 */
+    font-weight: 500 !important;       /* same as h6 */
+    color: var(--foreground, #16212B);
+    margin-bottom: 6px;
+    display: block;
+    line-height: 1.5;
+}
+body.dark .recruiter-tip-item{
+     background: #1B2A2F !important;
+    color: #7A8B96 !important;
+     border: 1px solid #23343A !important;
+      font-weight: 400 !important;   
+}
+ .recruiter-tip-item{ 
+      font-weight: 400 !important;   
+}
+body.dark .recruiter-job-form label, body.dark h6 {
+    font-size: 1rem;        /* same as Bootstrap h6 */
+    font-weight: 500 !important;   
+    margin-bottom: 6px;
+    display: block;
+    line-height: 1.5;
+    color:#94A3B8;;
+}
+/* ── Kill Bootstrap's orange/default focus first ── */
+/* ── Kill Bootstrap's orange/default focus first ── */
+.recruiter-job-form .form-control:focus,
+.recruiter-job-form select.form-control:focus,
+.recruiter-job-form textarea.form-control:focus {
+    outline: 0 !important;
+    box-shadow: none !important;   /* ← add this */
+    border-color: #0D8A90 !important; 
+}
+/* ── Also reset Bootstrap's base .form-control focus ── */
+.form-control:focus {
+    box-shadow: none !important;   /* ← already there, add !important */
+    border-color: #0D8A90;
+}
+body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
+    border:none !important;
+} 
+</style>
 <?php
 $questionnaireRows = old('questionnaire');
 if (!is_array($questionnaireRows)) {
@@ -30,8 +139,7 @@ $payrollType = old('payroll_type', '');
 <div class="recruiter-post-jobboard">
 <div class="container-fluid py-5">
     <div class="page-board-header page-board-header-tight recruiter-page-board-header">
-        <div class="page-board-copy">
-            <span class="page-board-kicker"><i class="fas fa-plus-circle"></i> Recruiter posting</span>
+        <div class="page-board-copy"> 
             <h1 class="page-board-title">Post a Job</h1>
             <p class="page-board-subtitle">Create a clear role listing and control how AI interview screening applies to applicants.</p>
         </div>
@@ -214,11 +322,11 @@ $payrollType = old('payroll_type', '');
                                             <small class="text-muted d-block">Add optional screening prompts. You can use this for a cover letter, notice period, motivation, or any short written response.</small>
                                         </div>
                                         <div class="d-flex flex-wrap" style="gap: 8px;">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" id="addCoverLetterQuestion">
-                                                <i class="fas fa-file-alt mr-1"></i> Add Cover Letter Prompt
+                                            <button type="button" class="btn btn-sm btn-outline-primary" id="addCoverLetterQuestion">
+                                                 Add Cover Letter Prompt
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-primary" id="addQuestionnaireRow">
-                                                <i class="fas fa-plus mr-1"></i> Add Question
+                                               Add Question
                                             </button>
                                         </div>
                                     </div>
@@ -230,7 +338,7 @@ $payrollType = old('payroll_type', '');
                             </div>
                         </div>
                         <div class="form-group mt-3">
-                            <button type="submit" class="button button-contactForm boxed-btn">Post Job</button>
+                            <button type="submit" class="btn btn-outline-primary">Post Job</button>
                         </div>
                     </form>
                 </div>

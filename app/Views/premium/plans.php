@@ -56,6 +56,7 @@ $serviceCards = [
                 </div>
             </div>
 
+            <div class="premium-plans-body">
             <?php if ($selectedService !== 'all'): ?>
                 <div class="alert alert-info border-0 shadow-sm mb-4">
                     You came here from <strong><?= esc(ucwords(str_replace('-', ' ', $selectedService))) ?></strong>.
@@ -224,6 +225,7 @@ $serviceCards = [
                 <p class="mt-3 text-muted">
                     One subscription unlocks all three services. Cancel anytime.
                 </p>
+            </div>
             </div>
         </div>
     </section>
