@@ -1,5 +1,187 @@
         <?= view('Layouts/recruiter_header', ['title' => 'Candidate Insights']) ?>
+<style>
+.btn-primary,.btn-outline-primary {  
+        background: transparent !important;
+    border: 1.5px solid #1FB7B5 !important;
+    color: #1FB7B5 !important;
+    padding: 8px 20px;
+    border-radius: 6px !important;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
 
+.btn-primary:hover, .btn-primary:focus, .btn-outline-primary:focus, .btn-outline-primary:hover {
+ background:  #1FB7B5 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+
+}
+
+    .page-board-title{
+        font-size: 26px !important; 
+    font-weight: 700 !important;
+    color: var(--foreground) !important;
+    margin: 0;
+    }
+    body.dark .page-board-title{
+        font-size: 26px !important;
+    font-weight: 700 !important;
+    color: #F8FAFC !important;
+    margin: 0;
+    }
+      .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: #16212b14;
+    color: #0D8A90;
+    border: none;
+    text-decoration: none !important;
+    white-space: nowrap;
+    cursor: pointer;
+}
+body.dark .status-pill {
+    background: #7a8b9650;
+    color: #0D8A90;
+}
+.page-board-header.page-board-header-tight.recruiter-page-board-header, body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
+    border : none !important;
+}
+tr, td, th, .col-md-3 {
+    font-size: 1rem;
+    font-weight: 500 !important;
+    color: var(--foreground, #16212B);
+    background: white !important;
+}
+
+/* Add these dark mode overrides */
+body.dark tr,
+body.dark td,
+body.dark th, body.dark .col-md-3  {
+  background: #1B2A2F !important;
+    color:#94A3B8 !important;
+    border-color: #23343A !important;
+}
+
+body.dark .table-secondary td,
+body.dark .table-secondary th,
+body.dark .table-secondary {
+   background:  #162327 !important; 
+}
+
+body.dark thead th {
+   background:  #162327 !important; 
+    color: #94A3B8 !important;
+}
+.hm-page-content,.recruiter-leaderboard-jobboard{
+         background: linear-gradient(
+      135deg,
+      #F4FBFA 0%,
+      #EEF9F2 100%
+    ) !important;
+}
+body.dark .hm-page-content,body.dark .recruiter-leaderboard-jobboard,body.dark .card-header,body.dark .recruiter-leaderboard-card, body.dark .recruiter-filter-card,body.dark .recruiter-alert, body.dark .alert-light{
+    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
+    border: 1px solid #23343A !important;
+} 
+body.dark .card-header, body.dark .recruiter-filter-card,body.dark .recruiter-alert,body.dark h6.m-0.font-weight-bold{
+    color:#94A3B8 !important;
+}
+.page-board-header.page-board-header-tight.recruiter-page-board-header, body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header,{
+      border: none !important;
+}
+/* ── Input focus border ── */
+.recruiter-job-form .form-control:focus {
+    border-color: var(--primary-dark, #0D8A90) !important; 
+    outline: none !important;
+}
+
+.recruiter-job-form .form-control {
+    border: 1px solid var(--border, #D9ECE5);
+    border-radius: 6px;
+    transition: border-color .2s, box-shadow .2s;
+    background: #fff;
+    color: var(--foreground, #16212B);
+} 
+body.dark .recruiter-job-form .form-control {
+    border: 1px solid #23343A !important;
+    border-radius: 6px;
+    transition: border-color .2s, box-shadow .2s;
+    background: #1B2A2F !important;
+    color: #F8FAFC !important;
+}
+/* ── Labels — match h6 style ── */
+.recruiter-job-form label {
+    font-size: 1rem;        /* same as Bootstrap h6 */
+    font-weight: 500 !important;       /* same as h6 */
+    color: var(--foreground, #16212B);
+    margin-bottom: 6px;
+    display: block;
+    line-height: 1.5;
+}
+body.dark .recruiter-tip-item{
+     background: #1B2A2F !important;
+    color: #7A8B96 !important;
+     border: 1px solid #23343A !important;
+      font-weight: 400 !important;   
+}
+ .recruiter-tip-item{ 
+      font-weight: 400 !important;   
+}
+body.dark .recruiter-job-form label, body.dark h6 {
+    font-size: 1rem;        /* same as Bootstrap h6 */
+    font-weight: 500 !important;   
+    margin-bottom: 6px;
+    display: block;
+    line-height: 1.5;
+    color:#94A3B8;;
+}
+/* ── Kill Bootstrap's orange/default focus first ── */
+/* ── Kill Bootstrap's orange/default focus first ── */
+.recruiter-job-form .form-control:focus,
+.recruiter-job-form select.form-control:focus,
+.recruiter-job-form textarea.form-control:focus {
+    outline: 0 !important;
+    box-shadow: none !important;   /* ← add this */
+    border-color: #0D8A90 !important; 
+}
+/* ── Also reset Bootstrap's base .form-control focus ── */
+.form-control:focus {
+    box-shadow: none !important;   /* ← already there, add !important */
+    border-color: #0D8A90;
+}
+/* ── Summary cards below leaderboard table ── */
+body.dark .card,
+body.dark .card.bg-light {
+    background: #1B2A2F !important;
+    border: 1px solid #23343A !important;
+}
+
+body.dark .card .card-body {
+    background: #1B2A2F !important;
+}
+
+body.dark .card .card-body h5.text-muted {
+    color: #7A8B96 !important;
+}
+
+body.dark .card .card-body h3.text-primary {
+    color: #1FB7B5 !important;
+}
+
+body.dark .card .card-body h3.text-info {
+    color: #38BDF8 !important;
+}
+
+body.dark .card .card-body h3.text-warning {
+    color: #FBBF24 !important;
+}
+</style>
 <div class="recruiter-leaderboard-jobboard">
 <div class="container-fluid py-5">
     <?php
@@ -15,21 +197,20 @@
     ?>
 
     <div class="page-board-header page-board-header-tight recruiter-page-board-header">
-        <div class="page-board-copy">
-            <span class="page-board-kicker"><i class="fas fa-trophy"></i> Recruiter insights</span>
+        <div class="page-board-copy"> 
             <h1 class="page-board-title">Candidate Insights Leaderboard</h1>
             <p class="page-board-subtitle">Compare applicants by fit, scores, and profile signals. Use this page for review, not bulk actions.</p>
         </div>
         <div class="page-board-actions recruiter-leaderboard-actions">
-            <a href="<?= base_url('recruiter/jobs') ?>" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to My Jobs
+            <a href="<?= base_url('recruiter/jobs') ?>" class="btn btn-outline-primary">
+                  Back to My Jobs
             </a>
             <?php if (!empty($selectedJob['id'])): ?>
-                <a href="<?= base_url('recruiter/jobs/' . $selectedJob['id'] . '/applications') ?>" class="btn btn-outline-secondary">
-                    <i class="fas fa-users-cog"></i> Open Candidate List
+                <a href="<?= base_url('recruiter/jobs/' . $selectedJob['id'] . '/applications') ?>" class="btn btn-outline-primary">
+                     Open Candidate List
                 </a>
             <?php endif; ?>
-            <a href="<?= base_url('recruiter/dashboard/export-excel?type=leaderboard') ?>" class="btn btn-primary">
+            <a href="<?= base_url('recruiter/dashboard/export-excel?type=leaderboard') ?>" class="btn btn-outline-primary">
                 <i class="fas fa-file-excel"></i> Export to Excel
             </a>
         </div>
@@ -46,7 +227,7 @@
                     <?= !empty($selectedJob['id']) ? 'Locked to one job' : 'Across all jobs' ?>
                 </div>
             </div>
-            <form method="get" action="<?= $leaderboardAction ?>" id="filterForm">
+            <form method="get" action="<?= $leaderboardAction ?>" id="filterForm" class="recruiter-job-form">
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
@@ -94,8 +275,8 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <i class="fas fa-filter"></i> Apply Filters
+                            <button type="submit" class="btn btn-outline-primary" btn-block">
+                                Apply Filters
                             </button>
                         </div>
                     </div>
@@ -108,22 +289,22 @@
         <div class="alert alert-info alert-dismissible fade show recruiter-alert" role="alert">
             <strong>Active Filters:</strong>
             <?php if (!empty($filters['sort_by'])): ?>
-                <span class="badge badge-primary">Sort: <?= ucwords(str_replace('_', ' ', $filters['sort_by'])) ?></span>
+                <span class="status-pill">Sort: <?= ucwords(str_replace('_', ' ', $filters['sort_by'])) ?></span>
             <?php endif; ?>
             <?php if (!empty($filters['skill'])): ?>
-                <span class="badge badge-primary">Skill: <?= esc($filters['skill']) ?></span>
+                <span class="status-pill">Skill: <?= esc($filters['skill']) ?></span>
             <?php endif; ?>
             <?php if (!empty($filters['job_id'])): ?>
-                <span class="badge badge-info">Job Selected</span>
+                <span class="status-pill">Job Selected</span>
             <?php endif; ?>
-            <a href="<?= $leaderboardAction ?>" class="btn btn-sm btn-outline-secondary ml-2">
+            <a href="<?= $leaderboardAction ?>" class="btn btn-sm btn-outline-primary ml-2">
                 Clear All
             </a>
         </div>
     <?php endif; ?>
 
     <div class="card shadow-sm recruiter-leaderboard-card">
-        <div class="card-header py-3 bg-gradient-primary text-white">
+        <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold">
                 <i class="fas fa-crown"></i> Comparison View - <?= ucwords(str_replace('_', ' ', $filters['sort_by'] ?? 'technical_score')) ?>
             </h6>
@@ -134,8 +315,7 @@
             </div>
 
             <?php if (empty($candidates)): ?>
-                <div class="text-center py-5">
-                    <i class="fas fa-trophy fa-3x text-muted mb-3"></i>
+                <div class="text-center py-5"> 
                     <p class="text-muted mb-0">No candidates found for this leaderboard</p>
                 </div>
             <?php else: ?>
@@ -161,11 +341,11 @@
                                 <tr class="<?= $candidate['rank'] <= 3 ? 'top-performer' : '' ?>">
                                     <td class="rank-cell">
                                         <?php if ($candidate['rank'] === 1): ?>
-                                            <span class="rank-badge gold"><i class="fas fa-crown"></i> 1</span>
+                                            <span ><i class="fas fa-crown"></i> 1</span>
                                         <?php elseif ($candidate['rank'] === 2): ?>
-                                            <span class="rank-badge silver"><i class="fas fa-medal"></i> 2</span>
+                                            <span  ><i class="fas fa-medal"></i> 2</span>
                                         <?php elseif ($candidate['rank'] === 3): ?>
-                                            <span class="rank-badge bronze"><i class="fas fa-medal"></i> 3</span>
+                                            <span ><i class="fas fa-medal"></i> 3</span>
                                         <?php else: ?>
                                             <span class="rank-number"><?= $candidate['rank'] ?></span>
                                         <?php endif; ?>
@@ -182,7 +362,7 @@
                                         <div class="skills-display">
                                             <?php if (!empty($candidate['required_skills'])): ?>
                                                 <div class="skill-match-badge mb-2">
-                                                    <span class="badge badge-<?= $candidate['skill_match'] >= 80 ? 'success' : ($candidate['skill_match'] >= 60 ? 'warning' : 'danger') ?>">
+                                                    <span class="status-pill">
                                                         <?= $candidate['skill_match'] ?>% Match
                                                     </span>
                                                     <small class="text-muted">
@@ -201,7 +381,7 @@
                                                     foreach ($candidate['required_skills'] as $requiredSkill):
                                                         $hasSkill = in_array(strtolower($requiredSkill), $candidateSkillsLower);
                                                     ?>
-                                                        <span class="skill-badge <?= $hasSkill ? 'skill-has' : 'skill-missing' ?>"
+                                                        <span class="status-pill"
                                                               title="<?= $hasSkill ? 'Candidate has this skill' : 'Candidate does not have this skill' ?>">
                                                             <?= esc($requiredSkill) ?>
                                                             <?php if ($hasSkill): ?>
@@ -225,10 +405,10 @@
                                                 </div>
                                                 <div class="required-skills">
                                                     <?php foreach (array_slice($candidate['github_stack'], 0, 6) as $language): ?>
-                                                        <span class="skill-badge skill-has"><?= esc($language) ?></span>
+                                                        <span class="status-pill"><?= esc($language) ?></span>
                                                     <?php endforeach; ?>
                                                     <?php if (count($candidate['github_stack']) > 6): ?>
-                                                        <span class="badge badge-light">+<?= count($candidate['github_stack']) - 6 ?></span>
+                                                        <span class="status-pill">+<?= count($candidate['github_stack']) - 6 ?></span>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
@@ -261,14 +441,6 @@
                                             <span class="rating-badge <?= $candidate['overall_rating'] >= 80 ? 'badge-success' : ($candidate['overall_rating'] >= 60 ? 'badge-warning' : 'badge-danger') ?>">
                                                 <?= number_format($candidate['overall_rating'] ?? 0, 1) ?>
                                             </span>
-                                            <div class="rating-stars">
-                                                <?php
-                                                $stars = round(($candidate['overall_rating'] ?? 0) / 20);
-                                                for ($i = 1; $i <= 5; $i++):
-                                                ?>
-                                                    <i class="fas fa-star <?= $i <= $stars ? 'text-warning' : 'text-muted' ?>"></i>
-                                                <?php endfor; ?>
-                                            </div>
                                         </div>
                                     </td>
                                     <td class="text-center">
@@ -278,7 +450,7 @@
                                                     <?= (int) $candidate['ats_score'] ?>
                                                 </span>
                                                 <div class="score-bar">
-                                                    <div class="score-fill" style="width: <?= (int) $candidate['ats_score'] ?>%"></div>
+                                                    <div class="score-fill" style="width: <?= (int) $candidate['ats_score'] ?>%" style="color:#0D8A90;"></div>
                                                 </div>
                                                 <small class="text-muted d-block mt-1">Fit signal</small>
                                             </div>
@@ -299,13 +471,13 @@
                                         ];
                                         $color = $statusColors[$candidate['status']] ?? 'secondary';
                                         ?>
-                                        <span class="badge badge-<?= $color ?>">
+                                        <span class="status-pill">
                                             <?= ucwords(str_replace('_', ' ', $candidate['status'])) ?>
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        <a href="<?= base_url('recruiter/candidate/' . $candidate['candidate_id'] . '?application_id=' . $candidate['id'] . '&job_id=' . $candidate['job_id']) ?>" class="btn btn-sm btn-outline-secondary">
-                                            <i class="fas fa-eye"></i> View Application
+                                        <a href="<?= base_url('recruiter/candidate/' . $candidate['candidate_id'] . '?application_id=' . $candidate['id'] . '&job_id=' . $candidate['job_id']) ?>" class="btn btn-sm btn-outline-primary">
+                                            View Application
                                         </a>
                                     </td>
                                 </tr>
@@ -342,8 +514,8 @@
 
                 <div class="row mt-4">
                     <div class="col-md-3">
-                        <div class="card bg-light">
-                            <div class="card-body text-center">
+                        <div class="card">
+                            <div class="card-body text-center crd">
                                 <h5 class="text-muted">Average Technical Score</h5>
                                 <h3 class="text-primary"><?= number_format($avgTech, 1) ?></h3>
                             </div>
