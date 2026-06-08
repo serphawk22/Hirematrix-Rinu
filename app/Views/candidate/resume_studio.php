@@ -69,7 +69,7 @@ $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' 
                         <form method="post" action="<?= base_url('candidate/resume/sync-transition') ?>" id="syncTransitionForm" style="display:none;">
                             <?= csrf_field() ?>
                         </form>
-                        <div class="dashboard-panel mb-4">
+                        <div class="dashboard-panel resume-transition-panel mb-4">
                             <div class="panel-header">
                                 <span class="page-board-kicker mb-1"><i class="fas fa-exchange-alt"></i> Active Transition</span>
                             </div>
@@ -165,7 +165,7 @@ $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' 
                 </div>
 
                 <aside class="resume-studio-side">
-                    <div class="dashboard-panel">
+                    <div class="dashboard-panel resume-how-panel">
                         <div class="panel-header">
                             <h3 class="section-title mb-0" style="font-size:1rem;">How It Works</h3>
                         </div>

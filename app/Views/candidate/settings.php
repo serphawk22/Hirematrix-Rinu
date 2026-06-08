@@ -7,7 +7,7 @@
         <div class="container-fluid">
             <div class="page-board-header page-board-header-tight">
                 <div class="page-board-copy">
-                    <span class="page-board-kicker"><i class="fas fa-cog"></i> Account settings</span>
+                    <span class="page-board-kicker"> Account settings</span>
                     <h1 class="page-board-title">Settings</h1>
                     <p class="page-board-subtitle">Control profile visibility, notifications, and account security from one compact panel.</p>
                 </div>

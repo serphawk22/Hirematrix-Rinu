@@ -8,11 +8,7 @@
                 <h1 class="page-board-title">My Interview Bookings</h1>
                 <p class="page-board-subtitle">Review upcoming interviews, track completed bookings, and reschedule when needed.</p>
             </div>
-            <div class="page-board-actions">
-                <a href="<?= base_url('candidate/dashboard') ?>" class="btn btn-outline-secondary">
-                    <i class="fas fa-home mr-1"></i> Dashboard
-                </a>
-            </div>
+            
         </div>
     </div>
 
