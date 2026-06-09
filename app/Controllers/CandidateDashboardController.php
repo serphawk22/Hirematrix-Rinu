@@ -1859,7 +1859,7 @@ class CandidateDashboardController extends BaseController
         }
 
         $viewAll = $this->request->getGet('view_all') === '1';
-        $companiesPerPage = $viewAll ? 500 : 9;
+        $companiesPerPage = $viewAll ? 500 : 16;
         $companies = $companiesBuilder->paginate($companiesPerPage);
 
         // Fetch open job counts for each company

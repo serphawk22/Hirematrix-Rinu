@@ -549,7 +549,7 @@ $formatExperienceDisplay = static function (int $months): string {
                                         <div class="profile-readonly-field is-empty mb-4">No resume uploaded</div>
                                     <?php endif; ?>
 
-                                    <div class="border rounded p-4 mt-4 bg-light">
+                                    <div class="border rounded p-4 mt-4">
                                         <div class="d-flex justify-content-between align-items-start flex-wrap candidate-flex-gap-12">
                                             <div>
                                                 <h6 class="mb-1"><i class="fas fa-magic"></i> AI Resume Studio</h6>

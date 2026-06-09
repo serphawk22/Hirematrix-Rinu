@@ -25,9 +25,6 @@
   <section class="auth-page-shell"> 
     <div class="auth-page-column auth-page-column--md">
       <div class="auth-page-head">
-       <div class="auth-page-brand"> 
-        <a class="auth-page-title" href="https://hirematrix.serphawk.in" style="font-size:22px;text-decoration:none;">Hire Matrix</a>
-        </div>
         <h1 class="auth-page-title" style="font-weight:normal;">Create Candidate Account</h1>
         <p class="auth-page-subtitle">Join HireMatrix and build your profile to start applying for jobs.</p>
       </div>

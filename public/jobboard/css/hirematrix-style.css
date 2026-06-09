@@ -1268,7 +1268,7 @@ a:hover {
 }
 
 .table thead th {
-  background: #f8fafc;
+ /* background: #f8fafc;*/
   font-weight: 700;
 }
 

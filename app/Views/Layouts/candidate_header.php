@@ -362,7 +362,7 @@
                 <img src="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>" alt="HireMatrix">
             </a>
             <div class="cand-leftnav__brand-text">
-                <span class="cand-leftnav__brand-name">HireMatrix</span>
+                <span class="cand-leftnav__brand-name">Hire<span>Matrix</span></span>
                 <span class="cand-leftnav__brand-tag">Candidate Portal</span>
             </div>
         </div>
@@ -518,7 +518,7 @@
     <header class="cand-topbar" id="candTopbar">
         <a href="<?= base_url('candidate/dashboard') ?>" class="cand-topbar__logo">
             <img src="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>" alt="HireMatrix" class="candidate-logo-sm">
-            <span>HireMatrix</span>
+            <span class="cand-topbar__brand-name">Hire<span>Matrix</span></span>
         </a>
         <div class="cand-topbar__actions">
             <button type="button" class="mobile-nav-icon" id="mobileSearchToggle" title="Search" aria-label="Search">

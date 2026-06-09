@@ -609,10 +609,6 @@ $formatCount = static function (int $count, string $fallback): string {
             transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
         }
 
-        .hm-job-card:hover {
-            background: rgba(234, 248, 247, 0.48);
-        }
-
         .hm-story-board {
             display: grid;
             gap: 0;
@@ -653,8 +649,7 @@ $formatCount = static function (int $count, string $fallback): string {
             background: var(--hm-soft);
         }
 
-        .hm-story-row h3,
-        .hm-job-card h3 {
+        .hm-story-row h3 {
             margin: 0 0 8px;
             color: var(--hm-ink);
             font-size: 18px;
@@ -662,8 +657,7 @@ $formatCount = static function (int $count, string $fallback): string {
             line-height: 1.25;
         }
 
-        .hm-story-row p,
-        .hm-job-card p {
+        .hm-story-row p {
             margin: 0;
             color: var(--hm-muted);
             font-size: 14px;
@@ -693,61 +687,141 @@ $formatCount = static function (int $count, string $fallback): string {
 
         .hm-jobs-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            border-top: 1px solid var(--hm-line);
-            border-bottom: 1px solid var(--hm-line);
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
         }
 
         .hm-job-card {
+            position: relative;
             display: grid;
-            grid-template-columns: minmax(0, 1.15fr) minmax(240px, 0.9fr) auto;
+            align-content: space-between;
             gap: 18px;
-            align-items: center;
-            padding: 18px 0;
-            transition: background 0.18s ease;
+            min-height: 300px;
+            padding: 22px;
+            overflow: hidden;
+            border: 1px solid var(--hm-line);
+            background: #fff;
+            transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
         }
 
-        .hm-job-card + .hm-job-card {
-            border-top: 1px solid var(--hm-line);
+        .hm-job-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(31, 183, 181, 0.12) 42%, transparent 72%);
+            opacity: 0;
+            transform: translateX(-100%);
+            pointer-events: none;
         }
 
-        .hm-job-card-head {
+        .hm-job-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(31, 183, 181, 0.42);
+            box-shadow: 0 18px 34px rgba(15, 47, 52, 0.08);
+        }
+
+        .hm-job-card:hover::before {
+            opacity: 1;
+            animation: hmCardScan 1.2s ease;
+        }
+
+        .hm-job-top {
+            position: relative;
+            z-index: 1;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 12px;
         }
 
+        .hm-job-card-head {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: 12px;
+            min-width: 0;
+        }
+
         .hm-job-card h3 {
-            margin: 0 0 4px;
+            margin: 0 0 6px;
+            color: var(--hm-ink);
+            font-size: 20px;
+            font-weight: 850;
+            line-height: 1.18;
+            letter-spacing: 0;
+        }
+
+        .hm-job-card p {
+            margin: 0;
+            color: var(--hm-muted);
+            font-size: 14px;
+        }
+
+        .hm-job-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            min-height: 30px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: #F2FBFA;
+            color: var(--hm-primary-dark);
+            font-size: 12px;
+            font-weight: 850;
+            white-space: nowrap;
+        }
+
+        .hm-job-badge i {
+            animation: hmPulseDot 1.8s ease-in-out infinite;
         }
 
         .hm-job-meta,
-        .hm-job-tags {
+        .hm-job-context {
+            position: relative;
+            z-index: 1;
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
         }
 
+        .hm-job-context {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
         .hm-job-meta span,
-        .hm-job-tags span {
+        .hm-job-context li {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             min-height: 28px;
             padding: 0 10px;
             border-radius: 999px;
-            background: #F2FBFA;
-            color: var(--hm-primary-dark);
+            background: #F7FAFA;
+            color: #48616A;
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 750;
         }
 
         .hm-job-link {
-            justify-self: end;
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
             color: var(--hm-primary-dark);
             font-weight: 850;
             text-decoration: none;
-            white-space: nowrap;
+        }
+
+        .hm-job-link i {
+            transition: transform 0.18s ease;
+        }
+
+        .hm-job-card:hover .hm-job-link i {
+            transform: translateX(4px);
         }
 
         .hm-cta-panel {
@@ -848,6 +922,27 @@ $formatCount = static function (int $count, string $fallback): string {
             }
         }
 
+        @keyframes hmCardScan {
+            from {
+                transform: translateX(-100%);
+            }
+            to {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes hmPulseDot {
+            0%,
+            100% {
+                opacity: 0.55;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.12);
+            }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             *,
             *::before,
@@ -889,7 +984,6 @@ $formatCount = static function (int $count, string $fallback): string {
             .hm-search-form,
             .hm-stats-grid,
             .hm-story-row,
-            .hm-jobs-grid,
             .hm-cta-panel {
                 grid-template-columns: 1fr;
             }
@@ -903,17 +997,12 @@ $formatCount = static function (int $count, string $fallback): string {
                 border-top: 1px solid var(--hm-line);
             }
 
-            .hm-job-card {
-                grid-template-columns: 1fr;
-                gap: 12px;
+            .hm-jobs-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .hm-story-row {
                 gap: 14px;
-            }
-
-            .hm-job-link {
-                justify-self: start;
             }
 
             .hm-hero-nav {
@@ -951,7 +1040,8 @@ $formatCount = static function (int $count, string $fallback): string {
             }
 
             .hm-match-card,
-            .hm-job-row {
+            .hm-job-row,
+            .hm-jobs-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -1140,80 +1230,68 @@ $formatCount = static function (int $count, string $fallback): string {
             <div class="hm-landing-rail">
                 <div class="hm-section-head">
                     <div>
-                        <span class="hm-kicker"><i class="fas fa-briefcase"></i> Open roles</span>
-                        <h2 class="hm-section-title">Start with a real opportunity.</h2>
+                        <span class="hm-kicker"><i class="fas fa-magic"></i> Live role signals</span>
+                        <h2 class="hm-section-title">Jobs with HireMatrix context built in.</h2>
                     </div>
                     <a href="<?= base_url('jobs') ?>" class="hm-cta-secondary">View all jobs <i class="fas fa-arrow-right"></i></a>
                 </div>
 
+                <?php
+                $fallbackJobs = [
+                    ['title' => 'Data Scientist', 'company' => 'AI Dynamics', 'location' => 'Remote', 'job_type' => 'Full-time', 'created_at' => null],
+                    ['title' => 'UI/UX Designer', 'company' => 'Design Studio Pro', 'location' => 'Bangalore', 'job_type' => 'Contract', 'created_at' => null],
+                    ['title' => 'Backend Engineer', 'company' => 'Cloud Systems Inc', 'location' => 'Hyderabad', 'job_type' => 'Full-time', 'created_at' => null],
+                    ['title' => 'Product Analyst', 'company' => 'GrowthWorks', 'location' => 'Pune', 'job_type' => 'Hybrid', 'created_at' => null],
+                    ['title' => 'Talent Partner', 'company' => 'PeopleOps Lab', 'location' => 'Remote', 'job_type' => 'Full-time', 'created_at' => null],
+                    ['title' => 'Cloud Project Lead', 'company' => 'OpsBridge', 'location' => 'Mumbai', 'job_type' => 'Full-time', 'created_at' => null],
+                ];
+                $signalLabels = ['Role signal', 'Company context', 'Resume angle', 'Interview path', 'Career move', 'Recruiter signal'];
+                $contextLabels = [
+                    ['Role snapshot', 'Skill themes'],
+                    ['Company view', 'Role cluster'],
+                    ['Resume Studio', 'Keyword hints'],
+                    ['Slot-ready', 'Status tracking'],
+                    ['Transition plan', 'Learning path'],
+                    ['Fresh lead', 'Hiring motion'],
+                ];
+                $jobPool = !empty($featuredJobs) ? array_values(array_slice($featuredJobs, 0, 6)) : $fallbackJobs;
+                ?>
                 <div class="hm-jobs-grid">
-                    <?php
-                    $publicJobActions = ['Check fit', 'View opening', 'Explore role', 'Open details', 'Review job', 'See role'];
-                    $publicJobLabels = ['Match after sign-in', 'Public opening', 'Hiring now', 'Role preview', 'Fresh listing', 'Open position'];
-                    ?>
-                    <?php if (!empty($featuredJobs)): ?>
-                        <?php foreach (array_slice($featuredJobs, 0, 6) as $jobIndex => $job): ?>
-                            <?php
-                            $title = (string) ($job['title'] ?? 'Untitled Role');
-                            $company = trim((string) ($job['company'] ?? 'Company'));
-                            $location = trim((string) ($job['location'] ?? 'N/A'));
-                            $postedAt = $formatAge($job['created_at'] ?? $job['posted_at'] ?? null);
-                            $jobType = trim((string) ($job['job_type'] ?? $job['type'] ?? 'Full-time'));
-                            $jobAction = $publicJobActions[$jobIndex % count($publicJobActions)];
-                            $jobLabel = $publicJobLabels[$jobIndex % count($publicJobLabels)];
-                            ?>
-                            <article class="hm-job-card">
-                                <div class="hm-job-card-head">
-                                    <span class="hm-job-icon"><i class="<?= esc($pickJobIcon($title)) ?>"></i></span>
-                                    <div>
-                                        <h3><?= esc($title) ?></h3>
-                                        <p><?= esc($company) ?></p>
-                                    </div>
-                                </div>
-                                <div class="hm-job-meta">
-                                    <span><i class="fas fa-map-marker-alt"></i> <?= esc($location) ?></span>
-                                    <span><i class="fas fa-clock"></i> <?= esc($postedAt) ?></span>
-                                </div>
-                                <div class="hm-job-tags">
-                                    <span><?= esc($jobLabel) ?></span>
-                                    <span><?= esc($jobType ?: 'Full-time') ?></span>
-                                </div>
-                                <a href="<?= base_url('login') ?>" class="hm-job-link"><?= esc($jobAction) ?></a>
-                            </article>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+                    <?php foreach ($jobPool as $jobIndex => $job): ?>
                         <?php
-                        $fallbackJobs = [
-                            ['Data Scientist', 'AI Dynamics', 'Remote', 'Full-time', 'fas fa-database'],
-                            ['UI/UX Designer', 'Design Studio Pro', 'Bangalore', 'Contract', 'fas fa-palette'],
-                            ['Backend Engineer', 'Cloud Systems Inc', 'Hyderabad', 'Full-time', 'fas fa-code'],
-                        ];
+                        $job = (array) $job;
+                        $title = (string) ($job['title'] ?? 'Untitled Role');
+                        $company = trim((string) ($job['company'] ?? 'Company'));
+                        $location = trim((string) ($job['location'] ?? 'N/A'));
+                        $postedAt = $formatAge($job['created_at'] ?? $job['posted_at'] ?? null);
+                        $jobType = trim((string) ($job['job_type'] ?? $job['type'] ?? 'Full-time'));
+                        $signalLabel = $signalLabels[$jobIndex % count($signalLabels)];
+                        $contextSet = $contextLabels[$jobIndex % count($contextLabels)];
                         ?>
-                        <?php foreach ($fallbackJobs as $jobIndex => $job): ?>
-                            <?php
-                            $jobAction = $publicJobActions[$jobIndex % count($publicJobActions)];
-                            $jobLabel = $publicJobLabels[$jobIndex % count($publicJobLabels)];
-                            ?>
-                            <article class="hm-job-card">
-                                <div class="hm-job-card-head">
-                                    <span class="hm-job-icon"><i class="<?= esc($job[4]) ?>"></i></span>
-                                    <div>
-                                        <h3><?= esc($job[0]) ?></h3>
-                                        <p><?= esc($job[1]) ?></p>
-                                    </div>
+                        <article class="hm-job-card">
+                            <div class="hm-job-top">
+                                <span class="hm-job-badge"><i class="fas fa-circle"></i> <?= esc($signalLabel) ?></span>
+                            </div>
+                            <div class="hm-job-card-head">
+                                <span class="hm-job-icon"><i class="<?= esc($pickJobIcon($title)) ?>"></i></span>
+                                <div>
+                                    <h3><?= esc($title) ?></h3>
+                                    <p><?= esc($company) ?></p>
                                 </div>
-                                <div class="hm-job-meta">
-                                    <span><i class="fas fa-map-marker-alt"></i> <?= esc($job[2]) ?></span>
-                                    <span><i class="fas fa-clock"></i> Recently</span>
-                                </div>
-                                <div class="hm-job-tags">
-                                    <span><?= esc($jobLabel) ?></span>
-                                    <span><?= esc($job[3]) ?></span>
-                                </div>
-                                <a href="<?= base_url('login') ?>" class="hm-job-link"><?= esc($jobAction) ?></a>
-                            </article>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                            </div>
+                            <div class="hm-job-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> <?= esc($location) ?></span>
+                                <span><i class="fas fa-clock"></i> <?= esc($postedAt) ?></span>
+                                <span><i class="fas fa-briefcase"></i> <?= esc($jobType ?: 'Full-time') ?></span>
+                            </div>
+                            <ul class="hm-job-context">
+                                <?php foreach ($contextSet as $context): ?>
+                                    <li><?= esc($context) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <a href="<?= base_url('login') ?>" class="hm-job-link">Open role signal <i class="fas fa-arrow-right"></i></a>
+                        </article>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </section>
