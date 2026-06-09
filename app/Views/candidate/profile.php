@@ -59,9 +59,9 @@ $formatExperienceDisplay = static function (int $months): string {
                         <h3 class="section-title mb-1">Keep your profile ready for matching jobs</h3>
                         <p class="section-subtitle mb-0">Complete your profile to improve matching accuracy and recruiter visibility.</p>
                     </div>
-                    <div class="d-flex align-items-center gap-3">
-                        <span style="font-size:2rem;font-weight:800;color:var(--candidate-accent)"><?= (int) $completion['percentage'] ?>%</span>
-                        <div class="text-muted" style="font-size:.82rem">complete</div>
+                    <div class="profile-health-score">
+                        <span><?= (int) $completion['percentage'] ?>%</span>
+                        <small>complete</small>
                     </div>
                 </div>
             </div>

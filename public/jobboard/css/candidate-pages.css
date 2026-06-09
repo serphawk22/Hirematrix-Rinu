@@ -17556,6 +17556,38 @@ body.candidate-app .jobs-page-jobboard .job-card-applied-badge i {
     font-size: 0.72rem !important;
 }
 
+body.candidate-app .jobs-page-jobboard .view-details.is-viewed,
+body.candidate-app .jobs-page-jobboard .view-details.is-unviewed {
+    align-items: center !important;
+    display: inline-flex !important;
+    gap: 8px !important;
+}
+
+body.candidate-app .jobs-page-jobboard .viewed-action-mark {
+    align-items: center !important;
+    background: rgba(100, 116, 139, 0.08) !important;
+    border: 1px solid rgba(100, 116, 139, 0.18) !important;
+    border-radius: 999px !important;
+    color: var(--candidate-muted, #64748b) !important;
+    display: inline-flex !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    gap: 5px !important;
+    line-height: 1 !important;
+    padding: 5px 8px !important;
+}
+
+body.candidate-app .jobs-page-jobboard .viewed-action-mark i {
+    color: inherit !important;
+    font-size: 0.72rem !important;
+}
+
+body.candidate-app .jobs-page-jobboard .viewed-action-mark.is-viewed {
+    background: rgba(13, 138, 144, 0.1) !important;
+    border-color: rgba(13, 138, 144, 0.28) !important;
+    color: var(--primary-dark, #0D8A90) !important;
+}
+
 /* Candidate primary buttons: outlined theme instead of gradient fill. */
 body.candidate-app .btn-primary,
 body.candidate-app .btn.btn-primary {
@@ -19844,6 +19876,180 @@ body.dark.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-save:focu
     background: var(--primary, #1FB7B5) !important;
     border-color: var(--primary, #1FB7B5) !important;
     color: #ffffff !important;
+}
+
+/* Saved Jobs: use the same card language as recommended jobs. */
+body.candidate-app .saved-jobs-jobboard .saved-job-card {
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 1px solid var(--candidate-line, #e8edf3) !important;
+    border-radius: 16px !important;
+    box-shadow: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 260px !important;
+    overflow: visible !important;
+    padding: 18px !important;
+    position: relative !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card:hover {
+    border-color: rgba(16, 185, 129, 0.38) !important;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08) !important;
+    transform: translateY(-2px) !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-icon {
+    background: var(--candidate-accent-soft, #e7f8f2) !important;
+    border: 1px solid rgba(16, 185, 129, 0.18) !important;
+    border-radius: 10px !important;
+    color: var(--candidate-accent-dark, #15803d) !important;
+    flex: none !important;
+    height: 44px !important;
+    margin-bottom: 12px !important;
+    width: 44px !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-logo,
+body.candidate-app .saved-jobs-jobboard .saved-job-card .saved-job-logo img {
+    height: 100% !important;
+    object-fit: contain !important;
+    width: 100% !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-body {
+    display: flex !important;
+    flex: 1 !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-title {
+    color: var(--candidate-ink, #0f172a) !important;
+    display: -webkit-box !important;
+    font-size: 0.98rem !important;
+    font-weight: 700 !important;
+    line-height: 1.35 !important;
+    margin: 0 42px 6px 0 !important;
+    min-height: 2.65em !important;
+    overflow: hidden !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-company {
+    color: var(--candidate-muted, #64748b) !important;
+    font-size: 0.82rem !important;
+    margin: 0 0 12px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-meta {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    margin: 0 0 8px !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-meta span {
+    background: transparent !important;
+    border: 0 !important;
+    color: var(--candidate-muted, #64748b) !important;
+    display: flex !important;
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
+    gap: 5px !important;
+    padding: 0 !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-tags {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+    margin: 0 0 10px !important;
+    max-height: 58px !important;
+    overflow: hidden !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .badge {
+    border-radius: 999px !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    padding: 5px 9px !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-tools-wrapper {
+    bottom: auto !important;
+    left: auto !important;
+    position: absolute !important;
+    right: 52px !important;
+    top: 14px !important;
+    z-index: 6 !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-save {
+    bottom: auto !important;
+    left: auto !important;
+    position: absolute !important;
+    right: 14px !important;
+    top: 14px !important;
+    z-index: 5 !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-save,
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-tools-toggle {
+    align-items: center !important;
+    background: transparent !important;
+    border: 1px solid var(--candidate-accent, #10b981) !important;
+    border-radius: 10px !important;
+    color: var(--candidate-accent-dark, #15803d) !important;
+    display: inline-flex !important;
+    height: 32px !important;
+    justify-content: center !important;
+    min-height: 32px !important;
+    min-width: 32px !important;
+    padding: 0 !important;
+    width: 32px !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-save:hover,
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-save:focus,
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-save.is-saved,
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-tools-toggle:hover,
+body.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-tools-toggle:focus {
+    background: transparent !important;
+    border-color: var(--candidate-accent, #10b981) !important;
+    color: var(--candidate-accent-dark, #15803d) !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .saved-job-card .view-details {
+    align-items: center !important;
+    background: transparent !important;
+    border: 0 !important;
+    bottom: auto !important;
+    color: var(--candidate-accent-dark, #15803d) !important;
+    display: inline-flex !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    left: auto !important;
+    line-height: 1.2 !important;
+    margin-top: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    position: static !important;
+    right: auto !important;
+    text-decoration: none !important;
+    width: fit-content !important;
+}
+
+body.dark.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-save,
+body.dark.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-save.is-saved,
+body.dark.candidate-app .saved-jobs-jobboard .saved-job-card .job-card-tools-toggle {
+    background: transparent !important;
+    border-color: rgba(120, 227, 221, 0.34) !important;
+    color: var(--primary, #1FB7B5) !important;
 }
 
 /* Job details: align with the shared candidate page structure and theme. */
@@ -23598,4 +23804,151 @@ body.candidate-app .applications-jobboard .application-detail-card-plain,
 body.dark.candidate-app .applications-jobboard .application-detail-card,
 body.dark.candidate-app .applications-jobboard .application-detail-card-plain {
     margin-top: 0 !important;
+}
+
+/* Profile health: keep completion score compact beside the header copy. */
+body.candidate-app .profile-jobboard .profile-health-score,
+body.dark.candidate-app .profile-jobboard .profile-health-score {
+    align-items: baseline !important;
+    display: inline-flex !important;
+    gap: 4px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+}
+
+body.candidate-app .profile-jobboard .profile-health-score span,
+body.dark.candidate-app .profile-jobboard .profile-health-score span {
+    color: var(--candidate-accent, #14B8A6) !important;
+    font-size: 1.35rem !important;
+    font-weight: 800 !important;
+}
+
+body.candidate-app .profile-jobboard .profile-health-score small,
+body.dark.candidate-app .profile-jobboard .profile-health-score small {
+    color: var(--candidate-muted, #64748B) !important;
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
+}
+
+/* Saved Jobs: final alignment with recommended jobs card rhythm. */
+body.candidate-app .saved-jobs-jobboard .recommended-job-grid.saved-job-grid {
+    display: grid !important;
+    gap: 16px !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    margin-bottom: 18px !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card {
+    border: 1px solid var(--candidate-line, #e8edf3) !important;
+    border-radius: 16px !important;
+    box-shadow: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 248px !important;
+    overflow: visible !important;
+    padding: 18px !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-icon {
+    height: 44px !important;
+    margin-bottom: 12px !important;
+    width: 44px !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-title {
+    font-size: 0.98rem !important;
+    line-height: 1.35 !important;
+    margin: 0 42px 8px 0 !important;
+    min-height: 2.65em !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-meta {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    margin: 0 0 10px !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-meta span {
+    align-items: center !important;
+    background: transparent !important;
+    border: 0 !important;
+    color: var(--candidate-muted, #64748b) !important;
+    font-size: 0.78rem !important;
+    line-height: 1.25 !important;
+    padding: 0 !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-tags {
+    gap: 5px !important;
+    margin-bottom: 8px !important;
+    max-height: 58px !important;
+    overflow: hidden !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .badge {
+    font-size: 0.72rem !important;
+    min-height: 24px !important;
+    padding: 5px 8px !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .saved-job-visited-note {
+    align-items: center !important;
+    color: var(--candidate-muted, #64748b) !important;
+    display: inline-flex !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    gap: 5px !important;
+    margin: -2px 0 8px !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .saved-job-visited-note i {
+    color: var(--candidate-accent-dark, #15803d) !important;
+    font-size: 0.76rem !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-tools-wrapper {
+    bottom: auto !important;
+    right: 52px !important;
+    top: 14px !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-save {
+    bottom: auto !important;
+    right: 14px !important;
+    top: 14px !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-save,
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-save:hover,
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-save:focus,
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-save.is-saved,
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-save.is-saved:hover,
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-save.is-saved:focus {
+    box-shadow: none !important;
+    outline: 0 !important;
+}
+
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .view-details {
+    margin-top: auto !important;
+    position: static !important;
+}
+
+@media (max-width: 1199.98px) {
+    body.candidate-app .saved-jobs-jobboard .recommended-job-grid.saved-job-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    body.candidate-app .saved-jobs-jobboard .recommended-job-grid.saved-job-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 520px) {
+    body.candidate-app .saved-jobs-jobboard .recommended-job-grid.saved-job-grid {
+        grid-template-columns: 1fr !important;
+    }
 }
