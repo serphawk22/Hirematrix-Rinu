@@ -25,9 +25,6 @@
   <section class="auth-page-shell"> 
     <div class="auth-page-column auth-page-column--sm">
       <div class="auth-page-head">
-       <div class="auth-page-brand"> 
-        <a class="auth-page-title" href="https://hirematrix.serphawk.in" style="font-size:22px;text-decoration:none;">Hire Matrix</a>
-        </div>
         <h1 class="auth-page-title" style="font-weight:normal;">Welcome Back</h1>
         <p class="auth-page-subtitle">Sign in to your account to continue</p>
       </div>

@@ -23,6 +23,7 @@ class Jobs extends BaseController
 
         $jobModel = new JobModel();
         $candidateId = (int) session()->get('user_id');
+        $db = \Config\Database::connect();
 
         // Get resume information for ATS analysis
         $hasBaseResume = false;
@@ -31,7 +32,7 @@ class Jobs extends BaseController
             $userProfile = (new UserModel())->findCandidateWithProfile($candidateId) ?? [];
             $hasBaseResume = !empty($userProfile['resume_path']);
             
-            if (\Config\Database::connect()->tableExists('candidate_resume_versions')) {
+            if ($db->tableExists('candidate_resume_versions')) {
                 $primary = (new CandidateResumeVersionModel())->where('candidate_id', $candidateId)->where('is_primary', 1)->first();
                 $primaryResumeId = (int) ($primary['id'] ?? 0);
             }
@@ -337,6 +338,7 @@ class Jobs extends BaseController
 
         $savedJobIds = [];
         $appliedJobMap = [];
+        $visitedJobIds = [];
         if ($candidateId > 0) {
             $displayJobIds = [];
             foreach ($jobs as $job) {
@@ -366,8 +368,41 @@ class Jobs extends BaseController
                 foreach ($appliedRows as $row) {
                     $appliedJobMap[(int) ($row['job_id'] ?? 0)] = (string) ($row['status'] ?? 'applied');
                 }
+
+                if ($this->ensureCandidateJobVisitsTable($db)) {
+                    $visitedRows = $db->table('candidate_job_visits')
+                        ->select('job_id')
+                        ->where('candidate_id', $candidateId)
+                        ->whereIn('job_id', $displayJobIds)
+                        ->get()
+                        ->getResultArray();
+                    $visitedJobIds = array_map('intval', array_column($visitedRows, 'job_id'));
+                }
             }
         }
+
+        $applyVisitedFlags = static function (array $jobSet) use ($visitedJobIds): array {
+            if (empty($visitedJobIds)) {
+                return $jobSet;
+            }
+
+            $visitedLookup = array_fill_keys($visitedJobIds, true);
+            foreach ($jobSet as $index => $job) {
+                $jobId = (int) ($job['id'] ?? 0);
+                if ($jobId > 0 && isset($visitedLookup[$jobId])) {
+                    $jobSet[$index]['visited_flag'] = 1;
+                }
+            }
+
+            return $jobSet;
+        };
+
+        $jobs = $applyVisitedFlags($jobs);
+        $suggestedJobs = $applyVisitedFlags($suggestedJobs);
+        $suggestedJobsByApplies = $applyVisitedFlags($suggestedJobsByApplies);
+        $suggestedJobsBySkills = $applyVisitedFlags($suggestedJobsBySkills);
+        $suggestedJobsByPreferences = $applyVisitedFlags($suggestedJobsByPreferences);
+        $suggestedJobsByAi = $applyVisitedFlags($suggestedJobsByAi);
 
         return view('candidate/smart_jobs', [
             'jobs' => $jobs,
@@ -622,6 +657,9 @@ class Jobs extends BaseController
                 ->with('error', 'Job not found');
         }
 
+        $this->markJobVisited((int) $id, $candidateId);
+        $job['visited_flag'] = 1;
+
         // Flag as expired for UI components
         $isExpired = false;
         if (!empty($job['application_deadline'])) {
@@ -691,6 +729,63 @@ class Jobs extends BaseController
             'application' => $application,
             'isExpired' => $isExpired,
         ]);
+    }
+
+    private function markJobVisited(int $jobId, int $candidateId): void
+    {
+        if ($jobId <= 0) {
+            return;
+        }
+
+        try {
+            $db = \Config\Database::connect();
+            if ($candidateId > 0 && $this->ensureCandidateJobVisitsTable($db)) {
+                $now = date('Y-m-d H:i:s');
+                $db->query(
+                    'INSERT INTO candidate_job_visits (candidate_id, job_id, visited_at, created_at, updated_at)
+                     VALUES (?, ?, ?, ?, ?)
+                     ON DUPLICATE KEY UPDATE visited_at = VALUES(visited_at), updated_at = VALUES(updated_at)',
+                    [$candidateId, $jobId, $now, $now, $now]
+                );
+            }
+
+            if ($db->fieldExists('visited_flag', 'jobs')) {
+                $db->table('jobs')
+                    ->where('id', $jobId)
+                    ->update(['visited_flag' => 1]);
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'Unable to mark job visited: ' . $e->getMessage());
+        }
+    }
+
+    private function ensureCandidateJobVisitsTable($db): bool
+    {
+        try {
+            if ($db->tableExists('candidate_job_visits')) {
+                return true;
+            }
+
+            $db->query(
+                'CREATE TABLE IF NOT EXISTS candidate_job_visits (
+                    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+                    candidate_id INT NOT NULL,
+                    job_id INT NOT NULL,
+                    visited_at DATETIME NOT NULL,
+                    created_at DATETIME NULL,
+                    updated_at DATETIME NULL,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY candidate_job_visits_candidate_job_unique (candidate_id, job_id),
+                    KEY candidate_job_visits_candidate_id_index (candidate_id),
+                    KEY candidate_job_visits_job_id_index (job_id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci'
+            );
+
+            return true;
+        } catch (\Throwable $e) {
+            log_message('error', 'Unable to ensure candidate job visits table: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**

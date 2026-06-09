@@ -362,7 +362,7 @@
                 <img src="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>" alt="HireMatrix">
             </a>
             <div class="cand-leftnav__brand-text">
-                <span class="cand-leftnav__brand-name">HireMatrix</span>
+                <span class="cand-leftnav__brand-name">Hire<span>Matrix</span></span>
                 <span class="cand-leftnav__brand-tag">Candidate Portal</span>
             </div>
         </div>
@@ -473,9 +473,22 @@
 
             <div class="cand-leftnav__user" id="candidateLeftnavUser">
                 <div class="cand-leftnav__user-dropdown" id="candidateLeftnavUserDropdown">
+                    <div class="cand-leftnav__dropdown-head">
+                        <span class="cand-leftnav__dropdown-avatar">
+                            <?php if ($candidatePhotoUrl !== ''): ?>
+                                <img src="<?= esc($candidatePhotoUrl) ?>" alt="<?= esc($candidateName) ?>">
+                            <?php else: ?>
+                                <?= esc($candidateInitial) ?>
+                            <?php endif; ?>
+                        </span>
+                        <span class="cand-leftnav__dropdown-user">
+                            <strong><?= esc($candidateName) ?></strong>
+                            <span><?= esc($profileHeadline ?? 'Candidate') ?></span>
+                        </span>
+                    </div>
                     <a href="<?= base_url('candidate/profile') ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
                     <a href="<?= base_url('candidate/settings') ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
-                    <a href="<?= base_url('premium/plans') ?>"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
+                    <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
                     <a href="<?= base_url('payment/history') ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
                     <a href="<?= base_url('logout') ?>" class="cand-leftnav__logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
                 </div>
@@ -505,7 +518,7 @@
     <header class="cand-topbar" id="candTopbar">
         <a href="<?= base_url('candidate/dashboard') ?>" class="cand-topbar__logo">
             <img src="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>" alt="HireMatrix" class="candidate-logo-sm">
-            <span>HireMatrix</span>
+            <span class="cand-topbar__brand-name">Hire<span>Matrix</span></span>
         </a>
         <div class="cand-topbar__actions">
             <button type="button" class="mobile-nav-icon" id="mobileSearchToggle" title="Search" aria-label="Search">
@@ -529,11 +542,24 @@
                     </div>
                 </button>
                 <div class="candidate-avatar-dropdown cand-topbar__user-dropdown" id="candidateAvatarDropdown">
+                    <div class="cand-leftnav__dropdown-head">
+                        <span class="cand-leftnav__dropdown-avatar">
+                            <?php if ($candidatePhotoUrl !== ''): ?>
+                                <img src="<?= esc($candidatePhotoUrl) ?>" alt="<?= esc($candidateName) ?>">
+                            <?php else: ?>
+                                <?= esc($candidateInitial) ?>
+                            <?php endif; ?>
+                        </span>
+                        <span class="cand-leftnav__dropdown-user">
+                            <strong><?= esc($candidateName) ?></strong>
+                            <span><?= esc($profileHeadline ?? 'Candidate') ?></span>
+                        </span>
+                    </div>
                     <a href="<?= base_url('candidate/profile') ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
                     <a href="<?= base_url('candidate/settings') ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
-                    <a href="<?= base_url('premium/plans') ?>"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
+                    <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
                     <a href="<?= base_url('payment/history') ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
-                    <a href="<?= base_url('logout') ?>"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                    <a href="<?= base_url('logout') ?>" class="cand-leftnav__logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
                 </div>
             </div>
             <a href="#" class="mobile-nav-hamburger" id="hmDrawerToggle" aria-label="Menu" aria-expanded="false">

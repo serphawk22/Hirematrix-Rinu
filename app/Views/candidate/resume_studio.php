@@ -35,6 +35,7 @@ $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' 
                 </div>
             </div>
 
+            <div class="resume-studio-body">
             <?php if (session()->getFlashdata('success')): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <?= esc(session()->getFlashdata('success')) ?>
@@ -262,6 +263,7 @@ $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' 
                         </div>
                     <?php endif; ?>
                 </div>
+            </div>
             </div>
 
         </div>

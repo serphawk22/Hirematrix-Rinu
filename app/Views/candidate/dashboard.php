@@ -99,7 +99,7 @@ $resolveAssetUrl = static function (string $path): string {
                     <h2 class="section-title">Jobs Matching Your Profile</h2>
                     <p class="section-subtitle">Based on your skills, target roles, and work preferences</p>
                 </div>
-                <a href="<?= base_url('jobs?tab=suggested') ?>" class="btn btn-ghost text-primary">View all jobs <i class="fas fa-arrow-right ms-2"></i></a>
+                <a href="<?= base_url('jobs?tab=suggested') ?>" class="btn btn-ghost text-primary">View all jobs</a>
             </div>
 
             <div class="dashboard-jobs-grid">
@@ -283,7 +283,7 @@ $resolveAssetUrl = static function (string $path): string {
             <?php if (!empty($topHiringCompanies)): ?>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="section-title mb-0">Top Companies Hiring Now</h2>
-                <a href="<?= base_url('candidate/company-job-discovery') ?>" class="btn btn-ghost text-primary">View all <i class="fas fa-arrow-right ms-1"></i></a>
+                <a href="<?= base_url('candidate/company-job-discovery') ?>" class="btn btn-ghost text-primary">View all</a>
             </div>
             <div class="top-companies-grid dashboard-tile-grid dashboard-company-grid">
                 <?php foreach (array_slice($topHiringCompanies, 0, 10) as $co): ?>
@@ -338,7 +338,7 @@ $resolveAssetUrl = static function (string $path): string {
                     <h2 class="section-title">Recent Applications</h2>
                     <p class="section-subtitle">Track your application status and next steps</p>
                 </div>
-                <a href="<?= base_url('candidate/applications') ?>" class="btn btn-ghost text-primary">View all applications <i class="fas fa-arrow-right ms-2"></i></a>
+                <a href="<?= base_url('candidate/applications') ?>" class="btn btn-ghost text-primary">View all applications</a>
             </div>
 
             <div class="dashboard-panel dashboard-table-wrap">
