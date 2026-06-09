@@ -5792,14 +5792,14 @@ main > .container {
   }
 }
 
-/* Recruiter theme: orange palette overrides */
+/* Recruiter theme: current brand palette overrides */
 .recruiter-jobboard {
-  --primary: var(--secondary);
-  --primary-dark: #e56a18;
-  --secondary: #ffb26b;
-  --secondary-dark: #ff9a3d;
-  --accent: #f59e0b;
-  --accent-dark: #d97706;
+  --primary: #1FB7B5;
+  --primary-dark: #0D8A90;
+  --secondary: #53B86C;
+  --secondary-dark: #3F9E58;
+  --accent: #B5D84E;
+  --accent-dark: #9DC23D;
 }
 
 .recruiter-jobboard .loader .spinner-border,
@@ -5808,7 +5808,7 @@ main > .container {
 }
 
 .recruiter-jobboard .loader .spinner-border.text-success {
-  color: #ffb26b !important;
+  color: var(--secondary) !important;
 }
 
 .recruiter-jobboard .btn-primary,
