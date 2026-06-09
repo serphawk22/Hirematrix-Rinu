@@ -1,5 +1,10 @@
 <?= view('Layouts/recruiter_header', ['title' => 'Candidate Profile']) ?>
 <style>
+ .container-fluid {
+    max-width: 100% !important;
+    padding-left: 34px !important;
+    padding-right: 34px !important;
+}
      .btn-outline-primary {
   background: transparent !important;
     border: 1.5px solid #1FB7B5 !important;
@@ -512,22 +517,24 @@ body.dark div{
             <?php endif; ?>
             
             <!-- Work Experience -->
-            <?php if (!empty($workExperiences)): ?>
-            <div class="card shadow-sm mb-3 candidate-profile-section">
-                <div class="card-body">
-                    <h6>  Work Experience</h6>
-                    <?php foreach($workExperiences as $exp): ?>
-                    <div class="border-bottom pb-3 mb-3">
-                        <h6 class="mb-1"><?= esc($exp['job_title']) ?></h6>
-                        <p class="mb-1 text-muted">  <?= esc($exp['company_name']) ?> • <?= esc($exp['employment_type']) ?></p>
-                        <p class="mb-1 text-muted"> <?= date('M Y', strtotime($exp['start_date'])) ?> - <?= $exp['is_current'] ? 'Present' : date('M Y', strtotime($exp['end_date'])) ?></p>
-                        <?php if($exp['location']): ?><p class="mb-1 text-muted">  <?= esc($exp['location']) ?></p><?php endif; ?>
-                        <?php if($exp['description']): ?><p class="mt-2"><?= nl2br(esc($exp['description'])) ?></p><?php endif; ?>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
+          <?php if (!empty($workExperiences)): ?>
+<div class="card shadow-sm mb-3 candidate-profile-section">
+    <div class="card-body">
+        <h6>Work Experience</h6>
+        <div style="max-height: 250px; overflow-y: auto;">
+            <?php foreach($workExperiences as $exp): ?>
+            <div class="border-bottom pb-3 mb-3">
+                <h6 class="mb-1"><?= esc($exp['job_title']) ?></h6>
+                <p class="mb-1 text-muted"><?= esc($exp['company_name']) ?> • <?= esc($exp['employment_type']) ?></p>
+                <p class="mb-1 text-muted"><?= date('M Y', strtotime($exp['start_date'])) ?> - <?= $exp['is_current'] ? 'Present' : date('M Y', strtotime($exp['end_date'])) ?></p>
+                <?php if($exp['location']): ?><p class="mb-1 text-muted"><?= esc($exp['location']) ?></p><?php endif; ?>
+                <?php if($exp['description']): ?><p class="mt-2"><?= nl2br(esc($exp['description'])) ?></p><?php endif; ?>
             </div>
-            <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
             <?php if (!empty($projects)): ?>
             <div class="card shadow-sm mb-3">
@@ -558,22 +565,26 @@ body.dark div{
             <?php endif; ?>
             
             <!-- Education -->
-            <?php if (!empty($education)): ?>
-            <div class="card shadow-sm mb-3 candidate-profile-section">
-                <div class="card-body">
-                    <h6> Education</h6>
-                    <?php foreach($education as $edu): ?>
-                    <div class="border-bottom pb-3 mb-3">
-                        <h6 class="mb-1"><?= esc($edu['degree']) ?></h6>
-                        <p class="mb-1 text-muted">  <?= esc($edu['institution']) ?></p>
-                        <p class="mb-1 text-muted"> <?= esc($edu['field_of_study']) ?></p>
-                        <p class="mb-1 text-muted">< <?= esc($edu['start_year']) ?> - <?= esc($edu['end_year']) ?></p>
-                        <?php if($edu['grade']): ?><p class="mb-1 text-muted">  Grade: <?= esc($edu['grade']) ?></p><?php endif; ?>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
+         <?php if (!empty($education)): ?>
+<div class="card shadow-sm mb-3 candidate-profile-section">
+    <div class="card-body">
+        <h6>Education</h6>
+        <div class="d-flex flex-nowrap overflow-auto gap-3 pb-2">
+            <?php foreach($education as $edu): ?>
+            <div style="min-width: 200px; flex: 0 0 auto;">
+                <h6 class="mb-1"><?= esc($edu['degree']) ?></h6>
+                <p class="mb-1 text-muted" style="font-size:13px;"><?= esc($edu['institution']) ?></p>
+                <p class="mb-1 text-muted" style="font-size:13px;"><?= esc($edu['field_of_study']) ?></p>
+                <p class="mb-1 text-muted" style="font-size:13px;"><?= esc($edu['start_year']) ?> - <?= esc($edu['end_year']) ?></p>
+                <?php if($edu['grade']): ?>
+                    <p class="mb-0 text-muted" style="font-size:13px;">Grade: <?= esc($edu['grade']) ?></p>
+                <?php endif; ?>
             </div>
-            <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
             
             <!-- Certifications -->
             <?php if (!empty($certifications)): ?>

@@ -133,6 +133,11 @@ body.dark .recruiter-review-summary-card, body.dark .recruiter-review-card, body
 body.dark .recruiter-summary-item,body.darl li, body.dark h6.m-0,body.dark .recruiter-summary-label{
      color:#94A3B8 !important;
 }
+ .container-fluid {
+    max-width: 100% !important;
+    padding-left: 34px !important;
+    padding-right: 34px !important;
+}
 </style>
 
 <div class="recruiter-slot-bookings-jobboard recruiter-slot-review-jobboard">
