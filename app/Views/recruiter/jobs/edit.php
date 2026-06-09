@@ -361,6 +361,11 @@ body.dark #editJobForm,body.dark .card-body{
     border: 1px solid #D9ECE5;
     border-radius:8px;
 }
+ .container-fluid {
+    max-width: 100% !important;
+    padding-left: 34px !important;
+    padding-right: 34px !important;
+}
 </style>
 <?php
 $existingQuestionnaire = [];

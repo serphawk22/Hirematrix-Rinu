@@ -3,6 +3,11 @@
     'pageStyles' => [base_url('jobboard/css/recruiter-pipeline.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-pipeline.css'))],
 ]) ?>
 <style>
+ .container-fluid {
+    max-width: 100% !important;
+    padding-left: 34px !important;
+    padding-right: 34px !important;
+}
 /* ============================================================
    RECRUITER PIPELINE PAGE — FULL THEME CSS
    Light + Dark (body.dark) — no CSS variables, hard color codes
@@ -1141,7 +1146,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
     data-csrf-name="<?= csrf_token() ?>"
     data-csrf-hash="<?= csrf_hash() ?>"
 >
-<div class="pipeline-shell">
+<div class="pipeline-shell container-fluid">
     <div class="page-board-header page-board-header-tight recruiter-page-board-header pipeline-job-head">
         <div class="page-board-copy"> 
             <h1 class="page-board-title"><?= esc($job['title']) ?></h1>

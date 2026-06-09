@@ -1,5 +1,10 @@
 <?= view('Layouts/recruiter_header', ['title' => 'Interview Slots']) ?>
 <style>
+ .container-fluid {
+    max-width: 100% !important;
+    padding-left: 34px !important;
+    padding-right: 34px !important;
+}
      .page-board-title{
         font-size: 26px !important; 
     font-weight: 700 !important;

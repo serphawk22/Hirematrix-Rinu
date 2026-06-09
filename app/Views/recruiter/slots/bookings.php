@@ -151,6 +151,11 @@ body.dark .m-0.font-weight-bold,body.dark .recruiter-summary-item{
     box-shadow: none !important;   /* ← already there, add !important */
     border-color: #0D8A90;
 }
+ .container-fluid {
+    max-width: 100% !important;
+    padding-left: 34px !important;
+    padding-right: 34px !important;
+}
 </style>
 <div class="recruiter-slot-bookings-jobboard">
     <div class="container-fluid py-5">

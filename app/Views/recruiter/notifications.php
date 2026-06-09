@@ -71,7 +71,24 @@ body.dark h5{
 .text-muted{
     color:#64748B !important;
 }
+/* ── Full-width page ── */
+.container-fluid {
+    max-width: 100% !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+}
+/* ── 2 notifications per row ── */
+.recruiter-notification-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+}
 
+@media (max-width: 768px) {
+    .recruiter-notification-list {
+        grid-template-columns: 1fr !important;
+    }
+}
 </style>
 <div class="recruiter-notifications-jobboard">
 <div class="container-fluid py-5">

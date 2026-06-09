@@ -139,7 +139,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
     margin-bottom: 6px;
     display: block;
     line-height: 1.5;
-    color:#94A3B8;;
+    color:#94A3B8;
 }
 /* ── Kill Bootstrap's orange/default focus first ── */
 /* ── Kill Bootstrap's orange/default focus first ── */
@@ -180,6 +180,11 @@ body.dark .card .card-body h3.text-info {
 
 body.dark .card .card-body h3.text-warning {
     color: #FBBF24 !important;
+}
+ .container-fluid {
+    max-width: 100% !important;
+    padding-left: 34px !important;
+    padding-right: 34px !important;
 }
 </style>
 <div class="recruiter-leaderboard-jobboard">

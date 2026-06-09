@@ -417,7 +417,11 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
- 
+ .container-fluid {
+    max-width: 100% !important;
+    padding-left: 34px !important;
+    padding-right: 34px !important;
+}
 </style> 
 
 <div
@@ -427,7 +431,7 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
     data-csrf-name="<?= csrf_token() ?>"
     data-csrf-hash="<?= csrf_hash() ?>"
 >
-<div class="container mt-4">
+<div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 font-weight-bold">Jobs Management</h1>
         <a href="<?= base_url('recruiter/post_job') ?>" class="btn btn-primary"> Post New Job</a>
