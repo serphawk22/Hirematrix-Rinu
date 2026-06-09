@@ -424,6 +424,11 @@ body.dark ul.pagination li.page-item a.page-link {
 body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
     border:none !important;
 }
+ .container-fluid {
+    max-width: 100% !important;
+    padding-left: 34px !important;
+    padding-right: 34px !important;
+}
 </style>
 <div class="recruiter-candidates-jobboard">
 <div class="container-fluid py-5">
@@ -436,7 +441,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
     <div class="page-board-header page-board-header-tight recruiter-page-board-header">
         <div class="page-board-copy"> 
             <h1 class="page-board-title">Candidate Database</h1>
-            <p class="page-board-subtitle">Search and discover candidates beyond direct applicants. Compare profiles and jump into the candidate workspace.</p>
+            <p class="page-board-subtitle">Search and discover candidates beyond direct applicants. Compare profiles and jump into the workspace.</p>
         </div>
     </div>
 

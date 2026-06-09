@@ -107,6 +107,12 @@ body.dark .recruiter-job-form label, body.dark h6 {
 body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
     border:none !important;
 } 
+/* ── Full-width page ── */
+.container-fluid {
+    max-width: 100% !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+}
 </style>
 <?php
 $questionnaireRows = old('questionnaire');
