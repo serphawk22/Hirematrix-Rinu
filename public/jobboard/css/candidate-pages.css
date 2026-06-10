@@ -155,8 +155,7 @@ body.dark {
 }
 
 /* Soft gradient surfaces */
-.dashboard-cta-banner,
-.dashboard-strategy-panel {
+.dashboard-cta-banner{
     background: var(--gradient-soft);
 }
 
@@ -173,8 +172,7 @@ body.dark {
 .candidate-app .dashboard-strategy-title,
 .candidate-app .strategy-title,
 .candidate-app .strategy-section-title,
-.candidate-app .booking-label,
-.candidate-app .dashboard-metric-value {
+.candidate-app .booking-label{
     font-weight: 650;
     letter-spacing: 0;
     line-height: 1.2;
@@ -889,68 +887,6 @@ body.dark {
     color: #fff !important;
 }
 
-.job-alerts-jobboard .switch-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 10px 0;
-}
-
-.job-alerts-jobboard .switch-copy {
-    flex: 1;
-}
-
-.job-alerts-jobboard .switch-toggle {
-    position: relative;
-    width: 42px;
-    height: 24px;
-    margin: 0;
-    flex-shrink: 0;
-}
-
-.job-alerts-jobboard .switch-toggle input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-    position: absolute;
-}
-
-.job-alerts-jobboard .switch-toggle-slider {
-    position: absolute;
-    inset: 0;
-    cursor: pointer;
-    background: #c7ced8;
-    border-radius: 999px;
-    transition: background .2s ease;
-}
-
-.job-alerts-jobboard .switch-toggle-slider::before {
-    content: '';
-    position: absolute;
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    top: 3px;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 1px 4px rgba(15, 23, 42, .25);
-    transition: transform .2s ease;
-}
-
-.job-alerts-jobboard .switch-toggle input:checked + .switch-toggle-slider {
-    background: #89ba16;
-}
-
-.job-alerts-jobboard .switch-toggle input:checked + .switch-toggle-slider::before {
-    transform: translateX(18px);
-}
-
-.job-alerts-jobboard .switch-toggle input:disabled + .switch-toggle-slider {
-    cursor: not-allowed;
-    opacity: .65;
-}
-
 .mock-interview-jobboard .mock-interview-shell {
     display: grid;
     grid-template-columns: 320px minmax(0, 1fr);
@@ -1125,785 +1061,6 @@ body.dark {
 .mock-interview-jobboard .mock-sidebar-actions {
     display: grid;
     gap: 10px;
-}
-
-.ai-interview-flow-jobboard {
-    background: linear-gradient(180deg, #f8fbff 0%, #ffffff 38%, #f6f8fc 100%);
-}
-
-.ai-interview-flow-jobboard .page-board-actions .btn {
-    border-radius: 999px;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-context {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-context-item {
-    border: 1px solid #e6edf9;
-    border-radius: 1rem;
-    background: #fff;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
-    padding: 0.8rem 0.9rem;
-    display: grid;
-    gap: 0.2rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-context-item span {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 800;
-    color: #6b7ca5;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-context-item strong {
-    color: #172554;
-    font-size: 0.95rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-shell {
-    display: grid;
-    grid-template-columns: 280px minmax(0, 1fr);
-    gap: 1rem;
-    align-items: start;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-rail {
-    display: grid;
-    gap: 1rem;
-    position: sticky;
-    top: 110px;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-rail-card,
-.ai-interview-flow-jobboard .ai-interview-flow-stage-card,
-.ai-interview-flow-jobboard .ai-interview-flow-media-card,
-.ai-interview-flow-jobboard .ai-interview-flow-recording-card {
-    border: 1px solid #e6edf9;
-    border-radius: 1.15rem;
-    background: #fff;
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
-    overflow: hidden;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-rail-card {
-    padding: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-rail-title {
-    font-size: 0.82rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 800;
-    color: #3b82f6;
-    margin-bottom: 0.85rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-rail-meta {
-    display: grid;
-    gap: 0.75rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-rail-meta div {
-    display: grid;
-    gap: 0.15rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-rail-meta strong {
-    color: #1f2f57;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-rail-meta span {
-    color: #4b5563;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-section-list {
-    display: grid;
-    gap: 0.7rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-section-card {
-    width: 100%;
-    border: 1px solid #e5ecfb;
-    border-radius: 1rem;
-    background: #fbfdff;
-    padding: 0.85rem 0.9rem;
-    text-align: left;
-    display: grid;
-    gap: 0.2rem;
-    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-section-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-section-card.is-active {
-    border-color: rgba(59, 130, 246, 0.45);
-    box-shadow: 0 10px 24px rgba(59, 130, 246, 0.12);
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-section-card.is-complete {
-    border-color: rgba(255, 123, 42, 0.28);
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-section-heading {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-section-step {
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #6b7ca5;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-section-card strong {
-    color: #172554;
-    font-size: 0.96rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-section-subtitle {
-    color: #64748b;
-    font-size: 0.88rem;
-    line-height: 1.45;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-section-count {
-    font-size: 0.76rem;
-    font-weight: 700;
-    color: #3b82f6;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-skill-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-skill-chip {
-    display: inline-flex;
-    align-items: center;
-    min-height: 1.8rem;
-    padding: 0.18rem 0.62rem;
-    border-radius: 999px;
-    background: rgba(59, 130, 246, 0.08);
-    border: 1px solid rgba(59, 130, 246, 0.14);
-    color: #2446a8;
-    font-size: 0.82rem;
-    font-weight: 700;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-summary {
-    margin: 0;
-    color: #64748b;
-    line-height: 1.55;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-main {
-    display: grid;
-    gap: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-stage-card .panel-header,
-.ai-interview-flow-jobboard .ai-interview-flow-stage-card .panel-body,
-.ai-interview-flow-jobboard .ai-interview-flow-media-card .panel-header,
-.ai-interview-flow-jobboard .ai-interview-flow-media-card .panel-body,
-.ai-interview-flow-jobboard .ai-interview-flow-recording-card .panel-header,
-.ai-interview-flow-jobboard .ai-interview-flow-recording-card .panel-body {
-    padding-left: 1.1rem;
-    padding-right: 1.1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-stage-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-stage-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    color: #3b82f6;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 0.75rem;
-    font-weight: 800;
-    margin-bottom: 0.25rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-timer {
-    min-width: 110px;
-    border-radius: 1rem;
-    background: #f8fbff;
-    border: 1px solid #e5ecfb;
-    padding: 0.72rem 0.85rem;
-    text-align: right;
-    display: grid;
-    gap: 0.08rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-timer-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #6b7ca5;
-    font-weight: 800;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-timer strong {
-    font-size: 1.45rem;
-    color: #172554;
-    line-height: 1;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-timer small {
-    color: #6b7ca5;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-status-strip {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-recording-state.is-recording {
-    background: rgba(255, 123, 42, 0.12);
-    color: #c2410c;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-recording-state.is-complete {
-    background: rgba(16, 185, 129, 0.12);
-    color: #047857;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-recording-state.is-warning {
-    background: rgba(245, 158, 11, 0.12);
-    color: #92400e;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-question-card {
-    border: 1px solid #e6edf9;
-    border-radius: 1rem;
-    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-    padding: 1.05rem 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-instructions {
-    display: grid;
-    gap: 0.8rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-instructions-title {
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: #172554;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-instructions-list {
-    margin: 0;
-    padding-left: 1.1rem;
-    color: #475569;
-    display: grid;
-    gap: 0.55rem;
-    line-height: 1.55;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-question {
-    font-size: clamp(1.1rem, 1.75vw, 1.45rem);
-    font-weight: 800;
-    line-height: 1.35;
-    color: #172554;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-question-hint {
-    margin: 0.55rem 0 0;
-    color: #64748b;
-    line-height: 1.55;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-stage-progress {
-    margin: 0.9rem 0 1rem;
-    padding: 0.8rem 0.9rem;
-    border: 1px solid rgba(59, 130, 246, 0.12);
-    border-radius: 0.95rem;
-    background: linear-gradient(180deg, rgba(248, 250, 255, 0.95) 0%, rgba(255, 255, 255, 1) 100%);
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-transition {
-    margin-top: 0.95rem;
-    padding: 1rem;
-    border-radius: 1rem;
-    border: 1px solid rgba(59, 130, 246, 0.14);
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(96, 165, 250, 0.04));
-    display: grid;
-    gap: 0.3rem;
-    text-align: center;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-transition-title {
-    font-size: 0.95rem;
-    font-weight: 800;
-    color: #1d4ed8;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-transition-countdown {
-    font-size: clamp(2rem, 4vw, 3rem);
-    line-height: 1;
-    font-weight: 900;
-    color: #172554;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-transition-note {
-    color: #64748b;
-    line-height: 1.5;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.65rem;
-    margin-top: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-controls .btn {
-    border-radius: 999px;
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-    gap: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-video-wrap {
-    position: relative;
-    min-height: 300px;
-    border-radius: 1rem;
-    overflow: hidden;
-    background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
-    border: 1px solid #e5ecfb;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-face-capture {
-    padding: 1rem;
-    border-top: 1px solid #e5ecfb;
-    background: #fafbff;
-}
-
-.ai-interview-flow-jobboard #manualFaceCaptureBtn {
-    width: 100%;
-    justify-content: center;
-    font-weight: 600;
-}
-
-.ai-interview-flow-jobboard #manualFaceCaptureBtn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.ai-interview-flow-jobboard .face-capture-status small {
-    font-weight: 600;
-}
-
-.ai-interview-flow-jobboard .face-preview-container {
-    text-align: center;
-}
-
-.ai-interview-flow-jobboard #facePreviewCanvas {
-    max-width: 100%;
-    height: auto;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-video-wrap video {
-    width: 100%;
-    height: 100%;
-    min-height: 300px;
-    object-fit: cover;
-    display: block;
-    background: #0f172a;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-video-placeholder {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    color: #64748b;
-    text-align: center;
-    padding: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-video-placeholder i {
-    font-size: 2rem;
-    color: #3b82f6;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-note {
-    margin-top: 0.9rem;
-    padding: 0.85rem 0.95rem;
-    border-radius: 1rem;
-    border: 1px solid rgba(59, 130, 246, 0.14);
-    background: rgba(59, 130, 246, 0.05);
-    color: #334155;
-    line-height: 1.5;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-summary {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-stat {
-    border: 1px solid #e5ecfb;
-    border-radius: 1rem;
-    padding: 0.9rem 1rem;
-    background: #fbfdff;
-    display: grid;
-    gap: 0.2rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-stat span {
-    font-size: 0.82rem;
-    color: #64748b;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-stat strong {
-    color: #172554;
-    font-size: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-list {
-    display: grid;
-    gap: 0.75rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-empty-progress {
-    min-height: 180px;
-    border: 1px dashed #cfe0ff;
-    border-radius: 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.6rem;
-    color: #64748b;
-    background: #fbfdff;
-    padding: 1.25rem;
-    text-align: center;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-empty-progress i {
-    font-size: 1.4rem;
-    color: #3b82f6;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-item {
-    border: 1px solid #e5ecfb;
-    border-radius: 1rem;
-    padding: 0.9rem 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    background: #fbfdff;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-copy {
-    display: grid;
-    gap: 0.15rem;
-    min-width: 0;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-copy strong {
-    color: #172554;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-copy span {
-    color: #64748b;
-    font-size: 0.9rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-meta {
-    width: 180px;
-    display: grid;
-    gap: 0.35rem;
-    flex-shrink: 0;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-bar {
-    width: 100%;
-    height: 0.45rem;
-    border-radius: 999px;
-    background: #e8eefc;
-    overflow: hidden;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-bar span {
-    display: block;
-    height: 100%;
-    width: 0;
-    border-radius: inherit;
-    background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
-    transition: width 180ms ease;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-progress-meta small {
-    color: #64748b;
-    text-align: right;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-banner {
-    margin: 1rem 0 0.4rem;
-    border-radius: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-session-banner {
-    margin: 0 0 1rem;
-    border-radius: 1rem;
-    border: 1px solid rgba(59, 130, 246, 0.18);
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
-}
-
-.ai-interview-flow-jobboard .dashboard-panel {
-    border-radius: 1rem;
-}
-
-/* Face Detection & Audio Monitoring Status */
-.ai-interview-flow-jobboard .ai-interview-flow-media-status {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-status-item {
-    border: 1px solid #e5ecfb;
-    border-radius: 0.9rem;
-    padding: 0.9rem;
-    background: #fbfdff;
-    display: grid;
-    gap: 0.5rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-status-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 700;
-    color: #6b7ca5;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-status-content {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-face-indicator {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    background: #f0f4f8;
-    border: 2px solid #e5ecfb;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-face-indicator.detected {
-    background: rgba(16, 185, 129, 0.1);
-    border-color: rgba(16, 185, 129, 0.3);
-    color: #10b981;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-face-indicator.not-detected {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.3);
-    color: #ef4444;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-face-text {
-    display: grid;
-    gap: 0.2rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-face-status {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #172554;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-face-count {
-    font-size: 0.75rem;
-    color: #64748b;
-}
-
-/* Audio Level Indicator */
-.ai-interview-flow-jobboard .ai-interview-flow-audio-indicator {
-    flex: 1;
-    display: grid;
-    gap: 0.4rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-audio-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-audio-level-label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #172554;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-audio-level-db {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #3b82f6;
-    min-width: 40px;
-    text-align: right;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-audio-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 0.25rem;
-    height: 2rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-audio-bar {
-    flex: 1;
-    height: 0.3rem;
-    background: #e5ecfb;
-    border-radius: 999px;
-    transition: all 60ms ease;
-    min-height: 0.3rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-audio-bar.active {
-    background: linear-gradient(180deg, #3b82f6 0%, #0ea5e9 100%);
-    height: 100%;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-audio-bar.warning {
-    background: linear-gradient(180deg, #f59e0b 0%, #f97316 100%);
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-audio-bar.critical {
-    background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
-}
-
-/* Noise Warning Banner */
-.ai-interview-flow-jobboard .ai-interview-flow-noise-warning {
-    margin-bottom: 1rem;
-    padding: 0.9rem 1rem;
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    border-radius: 0.9rem;
-    background: rgba(239, 68, 68, 0.05);
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-noise-warning-icon {
-    font-size: 1.2rem;
-    color: #ef4444;
-    flex-shrink: 0;
-    margin-top: 0.1rem;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-noise-warning-content {
-    display: grid;
-    gap: 0.2rem;
-    flex: 1;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-noise-warning-title {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #dc2626;
-}
-
-.ai-interview-flow-jobboard .ai-interview-flow-noise-warning-message {
-    font-size: 0.85rem;
-    color: #991b1b;
-    line-height: 1.4;
-}
-
-@media (max-width: 1199.98px) {
-    .ai-interview-flow-jobboard .ai-interview-flow-context {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .ai-interview-flow-jobboard .ai-interview-flow-shell {
-        grid-template-columns: 1fr;
-    }
-
-    .ai-interview-flow-jobboard .ai-interview-flow-rail {
-        position: static;
-    }
-
-    .ai-interview-flow-jobboard .ai-interview-flow-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 575.98px) {
-    .ai-interview-flow-jobboard .ai-interview-flow-context {
-        grid-template-columns: 1fr;
-    }
-
-    .ai-interview-flow-jobboard .ai-interview-flow-stage-header {
-        flex-direction: column;
-    }
-
-    .ai-interview-flow-jobboard .ai-interview-flow-timer {
-        text-align: left;
-        width: 100%;
-    }
-
-    .ai-interview-flow-jobboard .ai-interview-flow-progress-summary {
-        grid-template-columns: 1fr;
-    }
-
-    .ai-interview-flow-jobboard .ai-interview-flow-progress-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .ai-interview-flow-jobboard .ai-interview-flow-progress-meta {
-        width: 100%;
-    }
-
-    .ai-interview-flow-jobboard .ai-interview-flow-progress-meta small {
-        text-align: left;
-    }
 }
 
 .strategy-jobboard .strategy-shell {
@@ -3429,172 +2586,6 @@ body.dark {
     box-shadow: 0 10px 22px rgba(35, 54, 106, .08);
 }
 
-.job-alerts-jobboard {
-    background: #f8f9fa;
-}
-
-.job-alerts-jobboard .section-hero.inner-page {
-    min-height: 430px;
-}
-
-.job-alerts-jobboard .section-hero.inner-page .container {
-    padding-top: 120px;
-    padding-bottom: 72px;
-}
-
-.job-alerts-jobboard .content-wrap {
-    margin-top: 0;
-    position: relative;
-    z-index: 2;
-    padding-top: 34px !important;
-}
-
-.job-alerts-jobboard .job-alerts-hero-title {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    margin-top: 8px;
-}
-
-.job-alerts-jobboard .job-alerts-icon {
-    width: 58px;
-    height: 58px;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.16);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
-}
-
-.job-alerts-jobboard .job-alerts-hero-title h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 2.35rem;
-    font-weight: 800;
-    color: #fff;
-    margin-bottom: 10px;
-}
-
-.job-alerts-jobboard .job-alerts-hero-title p {
-    color: #dbe3f1;
-    font-size: 1rem;
-    line-height: 1.7;
-    margin-bottom: 0;
-    max-width: 620px;
-}
-
-.job-alerts-jobboard .job-alerts-hero-panel {
-    background: rgba(12, 18, 40, 0.48);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 16px;
-    padding: 20px;
-    color: #fff;
-    backdrop-filter: blur(6px);
-}
-
-.job-alerts-jobboard .job-alerts-hero-stat strong {
-    display: block;
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-}
-
-.job-alerts-jobboard .job-alerts-hero-stat span {
-    display: block;
-    color: #dbe3f1;
-    line-height: 1.6;
-    font-size: .95rem;
-}
-
-.job-alerts-jobboard .job-alerts-hero-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 14px;
-}
-
-.job-alerts-jobboard .job-alerts-hero-tags span {
-    display: inline-flex;
-    align-items: center;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    color: #fff;
-    font-size: .8rem;
-    font-weight: 600;
-}
-
-.job-alerts-jobboard .card {
-    border: 1px solid #e8edf8;
-    border-radius: 12px;
-    box-shadow: 0 10px 22px rgba(35, 54, 106, .08);
-}
-
-.job-alerts-jobboard .card-header {
-    background: #fff;
-    border-bottom: 1px solid #edf1fa;
-}
-
-@media (max-width: 991px) {
-    .applications-jobboard .content-wrap,
-    .profile-jobboard .content-wrap,
-    .career-transition-jobboard .content-wrap,
-    .career-history-jobboard .content-wrap,
-    .my-bookings-jobboard .content-wrap,
-    .book-slot-jobboard .content-wrap,
-    .reschedule-slot-jobboard .content-wrap,
-    .job-alerts-jobboard .content-wrap,
-    .course-modules-jobboard .content-wrap,
-    .course-content-jobboard .content-wrap {
-        padding-top: 22px !important;
-    }
-
-    .job-details-jobboard .content-wrap {
-        padding-top: 35px;
-    }
-
-    .my-bookings-jobboard .booking-actions-row .alert {
-        width: 100%;
-    }
-
-    .employer-branding-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 767px) {
-    .employer-branding-head,
-    .branding-gallery-head {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .branding-photo-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .job-alerts-jobboard .section-hero.inner-page {
-        min-height: 470px;
-    }
-
-    .job-alerts-jobboard .job-alerts-hero-title {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .job-alerts-jobboard .job-alerts-hero-title h1 {
-        font-size: 1.75rem;
-    }
-
-    .job-alerts-jobboard .job-alerts-hero-panel {
-        margin-top: 18px;
-    }
-}
-
 .course-modules-jobboard,
 .course-content-jobboard {
     background: #f8f9fa;
@@ -4498,7 +3489,6 @@ mark { background: #fef9c3; padding: 0 2px; border-radius: 3px; }
 .book-slot-jobboard,
 .reschedule-slot-jobboard,
 .job-details-jobboard,
-.job-alerts-jobboard,
 .course-modules-jobboard,
 .course-content-jobboard,
 .jobs-page-jobboard {
@@ -4791,37 +3781,12 @@ mark { background: #fef9c3; padding: 0 2px; border-radius: 3px; }
         grid-template-columns: 1fr;
     }
 }
-
-
-
-
-
-/* --- Naukri engagement banner strip --- */
-.naukri-banner-strip--inline { background: #f0f6ff; border: 1px solid #dbeafe; border-radius: 10px; padding: 0 14px; }
-.naukri-banner-strip--inline .naukri-banner-slider { display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 10px 0; }
-.naukri-banner-item { display: none; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-.naukri-banner-item.is-active { display: flex; }
-.naukri-banner-label { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; background: #dbeafe; color: #1d4ed8; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
-.naukri-banner-title { font-size: 0.88rem; font-weight: 600; color: #1e293b; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.naukri-banner-cta { display: inline-flex; align-items: center; gap: 5px; padding: 5px 14px; border-radius: 999px; background: #2563eb; color: #fff; font-size: 0.78rem; font-weight: 700; text-decoration: none; white-space: nowrap; flex-shrink: 0; transition: background 0.18s ease; }
-.naukri-banner-cta:hover { background: #1d4ed8; color: #fff; text-decoration: none; }
-.naukri-banner-dots { display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; }
-.naukri-banner-dot { width: 7px; height: 7px; border-radius: 999px; border: 0; background: rgba(148,163,184,0.5); padding: 0; cursor: pointer; transition: width 160ms ease, background 160ms ease; }
-.naukri-banner-dot.is-active { width: 18px; background: #2563eb; }
-@media (max-width: 575.98px) { .naukri-banner-title { display: none; } }
+@media (max-width: 575.98px) { }
 
 /* --- Dashboard fixed sidebar --- */
 .dashboard-jobboard .dashboard-hero { padding: 0 !important; background: none !important; }
 .naukri-dash-topbar { display: none !important; }
-.dashboard-jobboard .dashboard-layout { align-items: stretch; height: calc(100vh - 40px); overflow: hidden; padding-top: 20px; padding-bottom: 20px; gap: 20px; }
-.dashboard-jobboard .dashboard-sidebar { position: sticky; top: 0; height: 100%; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; scrollbar-width: none; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 1px 4px rgba(15,23,42,0.06); }
-.dashboard-jobboard .dashboard-sidebar::-webkit-scrollbar { display: none; }
-.dashboard-jobboard .dashboard-main { flex: 1; min-width: 0; height: 100%; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; border-radius: 14px; border: 1px solid #e2e8f0; background: #fff; box-shadow: 0 1px 4px rgba(15,23,42,0.06); padding-bottom: 60px; }
-.dashboard-jobboard .dashboard-main::-webkit-scrollbar { display: none; }
 .dashboard-jobboard .dashboard-section:first-child { padding-top: 1.5rem; }
-@media (max-width: 1100px) {
-    .dashboard-jobboard .dashboard-layout { height: auto; overflow: visible; padding: 16px 0 48px; }
-}
 
 /* --- Candidate pagination --- */
 .candidate-app .pagination-wrap {
@@ -5268,53 +4233,6 @@ mark { background: #fef9c3; padding: 0 2px; border-radius: 3px; }
     }
 }
 
-/* --- Pro upgrade ad banner (Naukri style) --- */
-.pro-ad-banner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 24px 28px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%);
-    position: relative;
-    overflow: hidden;
-}
-
-.pro-ad-banner::before {
-    content: '';
-    position: absolute;
-    top: -40px; right: -40px;
-    width: 180px; height: 180px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-}
-
-.pro-ad-left { flex: 1; min-width: 0; }
-
-.pro-ad-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.15);
-    color: #fbbf24;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-}
-
-.pro-ad-title {
-    font-size: clamp(1.1rem, 2vw, 1.4rem);
-    font-weight: 800;
-    color: #fff;
-    margin: 0 0 12px;
-    letter-spacing: -0.02em;
-}
-
 .pro-ad-features {
     list-style: none;
     padding: 0;
@@ -5338,96 +4256,8 @@ mark { background: #fef9c3; padding: 0 2px; border-radius: 3px; }
     flex-shrink: 0;
 }
 
-.pro-ad-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.pro-ad-btn-primary {
-    display: inline-flex;
-    align-items: center;
-    padding: 9px 22px;
-    border-radius: 999px;
-    background: #fbbf24;
-    color: #1e3a8a;
-    font-size: 0.88rem;
-    font-weight: 800;
-    text-decoration: none;
-    transition: background 0.18s ease, transform 0.18s ease;
-}
-
-.pro-ad-btn-primary:hover {
-    background: #f59e0b;
-    color: #1e3a8a;
-    text-decoration: none;
-    transform: translateY(-1px);
-}
-
-.pro-ad-btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    padding: 9px 22px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.3);
-    color: #fff;
-    font-size: 0.88rem;
-    font-weight: 700;
-    text-decoration: none;
-    transition: background 0.18s ease;
-}
-
-.pro-ad-btn-ghost:hover {
-    background: rgba(255,255,255,0.2);
-    color: #fff;
-    text-decoration: none;
-}
-
-.pro-ad-right {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
-}
-
-.pro-ad-orb {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.12);
-    border: 2px solid rgba(255,255,255,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.8rem;
-    color: #fbbf24;
-}
-
-.pro-ad-stat {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 10px;
-    padding: 6px 14px;
-    color: #fff;
-    font-size: 0.78rem;
-    font-weight: 600;
-    white-space: nowrap;
-    text-align: center;
-}
-
-.pro-ad-stat span {
-    font-size: 1rem;
-    font-weight: 800;
-    color: #fbbf24;
-    margin-right: 4px;
-}
-
 @media (max-width: 767.98px) {
-    .pro-ad-right { display: none; }
     .pro-ad-features { grid-template-columns: 1fr; }
-    .pro-ad-banner { padding: 18px 20px; }
 }
 
 /* Pro ad — 3 service columns layout */
@@ -5527,411 +4357,6 @@ mark { background: #fef9c3; padding: 0 2px; border-radius: 3px; }
     }
 }
 
-/* Professional Dedicated Interview Experience */
-.ai-interview-flow-jobboard.professional-mode {
-    background: linear-gradient(180deg, #0f172a 0%, #1a1f3a 50%, #0f172a 100%);
-    min-height: 100vh;
-    padding: 0;
-}
-
-.ai-interview-flow-jobboard.professional-mode .container {
-    max-width: 100%;
-    padding: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-.ai-interview-flow-professional-header {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-    padding: 1rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    backdrop-filter: blur(10px);
-}
-
-.ai-interview-flow-professional-title {
-    font-size: 1.35rem;
-    font-weight: 800;
-    color: #fff;
-    margin: 0;
-}
-
-.ai-interview-flow-professional-info {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    color: #cbd5e1;
-}
-
-.ai-interview-flow-professional-info-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-
-.ai-interview-flow-professional-info-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 700;
-    color: #94a3b8;
-}
-
-.ai-interview-flow-professional-info-value {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #f1f5f9;
-}
-
-.ai-interview-flow-professional-timer {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    padding: 0.75rem 1.25rem;
-    border-radius: 0.75rem;
-    color: #fca5a5;
-    font-weight: 700;
-}
-
-.ai-interview-flow-professional-timer.warning {
-    background: rgba(245, 158, 11, 0.1);
-    border-color: rgba(245, 158, 11, 0.3);
-    color: #fcd34d;
-}
-
-.ai-interview-flow-professional-content {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 0;
-    overflow: hidden;
-}
-
-.ai-interview-flow-professional-main {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    overflow-y: auto;
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
-    padding: 2rem;
-}
-
-.ai-interview-flow-professional-question-area {
-    display: grid;
-    gap: 2rem;
-    padding: 2rem;
-    background: rgba(30, 41, 59, 0.5);
-    border-radius: 1.25rem;
-    border: 1px solid rgba(59, 130, 246, 0.15);
-    margin-bottom: 1.5rem;
-}
-
-.ai-interview-flow-professional-question-label {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: #60a5fa;
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 700;
-}
-
-.ai-interview-flow-professional-question-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    background: rgba(59, 130, 246, 0.2);
-    border: 1px solid rgba(59, 130, 246, 0.4);
-    border-radius: 50%;
-    color: #60a5fa;
-    font-weight: 700;
-    font-size: 0.9rem;
-}
-
-.ai-interview-flow-professional-question-text {
-    font-size: clamp(1.4rem, 3vw, 2rem);
-    font-weight: 800;
-    color: #f1f5f9;
-    line-height: 1.4;
-    margin: 0;
-}
-
-.ai-interview-flow-professional-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    background: rgba(15, 23, 42, 0.8);
-    border-left: 1px solid rgba(59, 130, 246, 0.2);
-    overflow-y: auto;
-}
-
-.ai-interview-flow-professional-sidebar-section {
-    border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-    padding: 1.5rem;
-}
-
-.ai-interview-flow-professional-sidebar-section:last-child {
-    border-bottom: none;
-}
-
-.ai-interview-flow-professional-sidebar-title {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 700;
-    color: #60a5fa;
-    margin-bottom: 1rem;
-}
-
-.ai-interview-flow-professional-media-status {
-    display: grid;
-    gap: 1rem;
-}
-
-.ai-interview-flow-professional-status-badge {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.9rem;
-    background: rgba(30, 41, 59, 0.6);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 0.75rem;
-}
-
-.ai-interview-flow-professional-status-dot {
-    width: 0.75rem;
-    height: 0.75rem;
-    border-radius: 50%;
-    background: #60a5fa;
-    animation: pulse 2s infinite;
-}
-
-.ai-interview-flow-professional-status-dot.ok {
-    background: #10b981;
-}
-
-.ai-interview-flow-professional-status-dot.warning {
-    background: #f59e0b;
-    animation: pulse-warning 1s infinite;
-}
-
-.ai-interview-flow-professional-status-dot.error {
-    background: #ef4444;
-    animation: pulse-error 0.6s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
-@keyframes pulse-warning {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-@keyframes pulse-error {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
-}
-
-.ai-interview-flow-professional-status-text {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-    flex: 1;
-}
-
-.ai-interview-flow-professional-status-label {
-    font-size: 0.75rem;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.ai-interview-flow-professional-status-value {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #f1f5f9;
-}
-
-.ai-interview-flow-professional-violation-log {
-    display: grid;
-    gap: 0.75rem;
-}
-
-.ai-interview-flow-professional-violation-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    border-radius: 0.6rem;
-}
-
-.ai-interview-flow-professional-violation-icon {
-    flex-shrink: 0;
-    font-size: 1rem;
-    color: #fca5a5;
-    margin-top: 0.2rem;
-}
-
-.ai-interview-flow-professional-violation-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-    flex: 1;
-}
-
-.ai-interview-flow-professional-violation-type {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #fca5a5;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.ai-interview-flow-professional-violation-time {
-    font-size: 0.7rem;
-    color: #cbd5e1;
-}
-
-.ai-interview-flow-professional-empty-violations {
-    text-align: center;
-    padding: 1rem 0;
-    color: #64748b;
-    font-size: 0.85rem;
-}
-
-.ai-interview-flow-professional-progress {
-    background: rgba(30, 41, 59, 0.6);
-    border-top: 1px solid rgba(59, 130, 246, 0.15);
-    border-bottom: 1px solid rgba(59, 130, 246, 0.15);
-    padding: 1.5rem;
-}
-
-.ai-interview-flow-professional-progress-bar {
-    width: 100%;
-    height: 0.5rem;
-    background: rgba(59, 130, 246, 0.1);
-    border-radius: 999px;
-    overflow: hidden;
-    margin-bottom: 0.75rem;
-}
-
-.ai-interview-flow-professional-progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #3b82f6, #60a5fa);
-    transition: width 300ms ease;
-    border-radius: 999px;
-}
-
-.ai-interview-flow-professional-progress-text {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: #cbd5e1;
-}
-
-/* Violation Alert Banner */
-.ai-interview-flow-professional-violation-alert {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    border-radius: 0.75rem;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
-}
-
-.ai-interview-flow-professional-violation-alert-icon {
-    font-size: 1.25rem;
-    color: #fca5a5;
-    flex-shrink: 0;
-    margin-top: 0.1rem;
-}
-
-.ai-interview-flow-professional-violation-alert-content {
-    display: grid;
-    gap: 0.3rem;
-    flex: 1;
-}
-
-.ai-interview-flow-professional-violation-alert-title {
-    font-weight: 700;
-    color: #fca5a5;
-    font-size: 0.95rem;
-}
-
-.ai-interview-flow-professional-violation-alert-message {
-    font-size: 0.85rem;
-    color: #fed7aa;
-    line-height: 1.4;
-}
-
-@media (max-width: 1199.98px) {
-    .ai-interview-flow-professional-content {
-        grid-template-columns: 1fr;
-    }
-
-    .ai-interview-flow-professional-sidebar {
-        border-left: none;
-        border-top: 1px solid rgba(59, 130, 246, 0.2);
-        max-height: 200px;
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .ai-interview-flow-professional-sidebar-section {
-        border-bottom: none;
-        border-right: 1px solid rgba(59, 130, 246, 0.1);
-    }
-
-    .ai-interview-flow-professional-sidebar-section:last-child {
-        border-right: none;
-    }
-}
-
-@media (max-width: 575.98px) {
-    .ai-interview-flow-professional-header {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: flex-start;
-    }
-
-    .ai-interview-flow-professional-info {
-        width: 100%;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-
-    .ai-interview-flow-professional-main {
-        padding: 1rem;
-    }
-
-    .ai-interview-flow-professional-question-area {
-        padding: 1.5rem;
-    }
-
-    .ai-interview-flow-professional-sidebar {
-        grid-template-columns: 1fr;
-        max-height: none;
-    }
-
-    .ai-interview-flow-professional-sidebar-section {
-        border-right: none;
-        border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-    }
-}
 .disabled-link {
     pointer-events: none;
     opacity: 0.6;
@@ -7511,7 +5936,6 @@ body.candidate-app {
 
 .candidate-app .page-board-title,
 .candidate-app .section-title,
-.candidate-app .dashboard-summary-title,
 .candidate-app .dashboard-strategy-title,
 .candidate-app .strategy-title,
 .candidate-app .settings-panel-title,
@@ -8291,14 +6715,7 @@ body.candidate-app .cand-leftnav__pro {
     padding-left: 0 !important;
     padding-right: 0 !important;
 }
-
-.dashboard-summary-shell {
-    margin: 0 0 18px;
-}
-
-.dashboard-summary-hero,
 .dashboard-panel,
-.dashboard-metric-card,
 .job-card.dashboard-card,
 .top-company-card,
 .dashboard-strategy-banner,
@@ -8308,58 +6725,19 @@ body.candidate-app .cand-leftnav__pro {
     background: var(--card);
     box-shadow: none;
 }
-
-.dashboard-summary-hero {
-    padding: 28px;
-    background: var(--card);
-}
-
-.dashboard-summary-kicker,
-.ai-badge,
-.dashboard-strategy-kicker,
-.dashboard-cta-kicker {
-    color: var(--primary);
-    letter-spacing: .05em;
-}
-
-.dashboard-summary-title {
-    max-width: 820px;
-    font-size: clamp(1.7rem, 2.4vw, 2.35rem);
-    letter-spacing: -0.02em;
-    color: var(--foreground);
-}
-
-.dashboard-summary-text {
-    max-width: 760px;
-    color: var(--muted-foreground);
-}
-
-.dashboard-summary-inline-stats span {
-    background: var(--muted);
-    border: 0;
-    border-radius: 8px;
-    color: var(--muted-foreground);
-}
-
-.dashboard-summary-inline-stats strong,
-.dashboard-metric-value,
 .dashboard-jobboard .section-title,
 .dashboard-jobboard .job-card-title {
     color: var(--foreground);
 }
 
 .dashboard-jobboard .btn,
-.dashboard-jobboard .view-details,
-.dashboard-sidebar-cta-primary,
-.dashboard-sidebar-cta-secondary {
+.dashboard-jobboard .view-details{
     border-radius: 8px;
     box-shadow: none !important;
 }
 
 .dashboard-jobboard .btn-primary,
-.dashboard-summary-primary,
-.dashboard-strategy-btn,
-.dashboard-sidebar-view-profile {
+.dashboard-strategy-btn{
     background: transparent !important;
     background-image: none !important;
     border: 1.5px solid var(--primary) !important;
@@ -8372,43 +6750,25 @@ body.candidate-app .cand-leftnav__pro {
 }
 
 .dashboard-jobboard .btn-primary:hover,
-.dashboard-summary-primary:hover,
-.dashboard-strategy-btn:hover,
-.dashboard-sidebar-view-profile:hover {
+.dashboard-strategy-btn:hover{
     background: var(--primary) !important;
     background-image: none !important;
     border-color: var(--primary) !important;
     color: #ffffff !important;
     transform: translateY(-1px);
 }
-
-.dashboard-summary-secondary,
 .dashboard-jobboard .btn-light,
 .dashboard-jobboard .btn-ghost {
     background: var(--muted) !important;
     border: 0 !important;
     color: var(--foreground) !important;
 }
-
-.dashboard-metric-grid,
 .top-companies-grid,
 .dashboard-jobboard .row {
     row-gap: 18px;
 }
-
-.dashboard-metric-grid,
-.top-companies-grid {
-    gap: 18px;
-}
-
-.dashboard-metric-card {
-    padding: 18px;
-}
-
-.dashboard-metric-label,
 .dashboard-jobboard .section-subtitle,
-.dashboard-jobboard .job-card-company,
-.dashboard-metric-note {
+.dashboard-jobboard .job-card-company{
     color: var(--muted-foreground);
 }
 
@@ -8421,8 +6781,7 @@ body.candidate-app .cand-leftnav__pro {
 }
 
 .job-card.dashboard-card:hover,
-.top-company-card:hover,
-.dashboard-metric-card:hover {
+.top-company-card:hover{
     transform: translateY(-1px);
     box-shadow: none;
 }
@@ -8476,10 +6835,6 @@ body.candidate-app .cand-leftnav__pro {
     }.dashboard-jobboard .container-fluid {
         padding-left: 16px !important;
         padding-right: 16px !important;
-    }
-
-    .dashboard-summary-hero {
-        padding: 22px;
     }
 }
 
@@ -9317,26 +7672,6 @@ body.candidate-app,
     line-height:1.55;
 }
 
-.candidate-app h1,
-.candidate-app h2,
-.candidate-app h3,
-.candidate-app h4,
-.candidate-app h5,
-.candidate-app h6,
-.candidate-app .page-board-title,
-.candidate-app .section-title,
-.candidate-app .job-card-title,
-.candidate-app .settings-panel-title,
-.candidate-app .dashboard-summary-title,
-.candidate-app .dashboard-metric-value,
-.candidate-app .strategy-title,
-.candidate-app .strategy-section-title{
-    color:var(--candidate-ink)!important;
-    font-weight:650;
-    letter-spacing:0;
-    line-height:1.25;
-}
-
 .candidate-app h4,
 .candidate-app h5,
 .candidate-app h6,
@@ -9347,24 +7682,9 @@ body.candidate-app,
     font-weight:600;
 }
 
-.candidate-app p,
-.candidate-app .text-muted,
-.candidate-app .page-board-subtitle,
-.candidate-app .section-subtitle,
-.candidate-app .job-card-company,
-.candidate-app .dashboard-metric-note,
-.candidate-app .settings-summary-text,
-.candidate-app .strategy-summary,
-.candidate-app .candidate-message-meta{
-    color:var(--candidate-muted)!important;
-}
-
 .candidate-app a,
 .candidate-app .text-primary,
 .candidate-app .page-board-kicker,
-.candidate-app .dashboard-summary-kicker,
-.candidate-app .dashboard-strategy-kicker,
-.candidate-app .dashboard-cta-kicker,
 .candidate-app .ai-badge,
 .candidate-app .view-details,
 .candidate-app .dashboard-blog-card .view-details,
@@ -9385,8 +7705,6 @@ body.candidate-app,
 
 .candidate-app .card,
 .candidate-app .dashboard-panel,
-.candidate-app .dashboard-summary-hero,
-.candidate-app .dashboard-metric-card,
 .candidate-app .job-card,
 .candidate-app .top-company-card,
 .candidate-app .application-card,
@@ -9410,8 +7728,6 @@ body.candidate-app,
     border-radius:var(--candidate-radius)!important;
     box-shadow:none!important;
 }
-
-.candidate-app .dashboard-metric-card,
 .candidate-app .job-card,
 .candidate-app .top-company-card,
 .candidate-app .application-card,
@@ -9467,9 +7783,7 @@ body.candidate-app,
 .candidate-app .boxed-btn,
 .candidate-app .button-contactForm.boxed-btn,
 .candidate-app .card-apply-btn,
-.candidate-app .dashboard-summary-primary,
 .candidate-app .dashboard-strategy-btn,
-.candidate-app .dashboard-sidebar-view-profile,
 .candidate-app .mobile-search-submit,
 .candidate-app .mobile-filter-apply,
 .candidate-app .candidate-primary-link,
@@ -9490,9 +7804,7 @@ body.candidate-app,
 .candidate-app .boxed-btn:hover,
 .candidate-app .button-contactForm.boxed-btn:hover,
 .candidate-app .card-apply-btn:hover,
-.candidate-app .dashboard-summary-primary:hover,
 .candidate-app .dashboard-strategy-btn:hover,
-.candidate-app .dashboard-sidebar-view-profile:hover,
 .candidate-app .mobile-search-submit:hover,
 .candidate-app .mobile-filter-apply:hover,
 .candidate-app .candidate-primary-link:hover,
@@ -9502,31 +7814,6 @@ body.candidate-app,
     border-color: var(--primary) !important;
     color: #ffffff !important;
     transform: translateY(-1px);
-}
-
-.candidate-app .btn-light,
-.candidate-app .btn-ghost,
-.candidate-app .btn-outline-primary,
-.candidate-app .btn-outline-secondary,
-.candidate-app .mobile-filter-clear,
-.candidate-app .dashboard-summary-secondary,
-.candidate-app .dashboard-sidebar-cta-secondary{
-    /*background:var(--candidate-accent-softer)!important;*/
-    border-color:var(--candidate-line)!important;
-    color:var(--candidate-ink)!important;
-    box-shadow:none!important;
-}
-
-.candidate-app .btn-light:hover,
-.candidate-app .btn-ghost:hover,
-.candidate-app .btn-outline-primary:hover,
-.candidate-app .btn-outline-secondary:hover,
-.candidate-app .mobile-filter-clear:hover,
-.candidate-app .dashboard-summary-secondary:hover,
-.candidate-app .dashboard-sidebar-cta-secondary:hover{
-    background:var(--candidate-accent-soft)!important;
-    border-color:#c8d8ee!important;
-    color:var(--candidate-accent-dark)!important;
 }
 
 .candidate-app .badge-primary,
@@ -9539,7 +7826,6 @@ body.candidate-app,
 .candidate-app .profile-chip,
 .candidate-app .pipeline-mini-chip,
 .candidate-app .skill-badge,
-.candidate-app .dashboard-summary-inline-stats span,
 .candidate-app .dashboard-jobboard .badge,
 .candidate-app .dashboard-jobboard .job-card-tags .badge{
     background:var(--candidate-accent-soft)!important;
@@ -9578,24 +7864,6 @@ body.candidate-app,
 
 .candidate-app .text-danger{
     color:var(--candidate-danger)!important;
-}
-
-.candidate-app .progress,
-.candidate-app .detail-progress,
-.candidate-app .dashboard-sidebar-progress-bar,
-.candidate-app .onboarding-progress-track{
-    background:#edf2f7!important;
-}
-
-.candidate-app .progress-bar,
-.candidate-app .progress-bar-custom,
-.candidate-app .settings-progress-bar,
-.candidate-app .profile-progress-bar,
-.candidate-app .onboarding-progress-fill,
-.candidate-app .detail-progress-bar,
-.candidate-app .dashboard-sidebar-progress-bar>div,
-.candidate-app .dashboard-sidebar-profile-progress>div{
-    background:var(--candidate-accent)!important;
 }
 
 .candidate-app .candidate-workbar__title span,
@@ -9653,14 +7921,6 @@ body.candidate-app,
 .candidate-app .hm-drawer-pro{
     background:var(--candidate-accent-soft)!important;
     color:var(--candidate-accent-dark)!important;
-}
-
-.candidate-app .cand-leftnav__avatar,
-.candidate-app .hm-drawer-avatar,
-.candidate-app .dashboard-sidebar-profile-pic{
-    background:var(--candidate-accent)!important;
-    border-color:#c8d8ee!important;
-    color:#fff!important;
 }
 
 .candidate-app .cand-topbar{
@@ -9979,89 +8239,6 @@ body.candidate-app{
     padding:0!important;
 }
 
-.candidate-app .dashboard-summary-shell{
-    margin:0 0 16px!important;
-}
-
-.candidate-app .dashboard-summary-hero{
-    min-height:0;
-    padding:30px!important;
-    border:1px solid var(--candidate-line)!important;
-    border-radius:8px!important;
-    background:var(--candidate-surface)!important;
-}
-
-.candidate-app .dashboard-summary-title{
-    max-width:760px;
-    margin-bottom:10px;
-    font-size:clamp(1.85rem,2.45vw,2.55rem);
-    line-height:1.12;
-}
-
-.candidate-app .dashboard-summary-text{
-    max-width:720px;
-    margin-bottom:16px;
-}
-
-.candidate-app .dashboard-summary-inline-stats{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    margin-bottom:18px;
-}
-
-.candidate-app .dashboard-summary-inline-stats span{
-    margin:0!important;
-    padding:7px 12px!important;
-    border-radius:8px!important;
-}
-
-.candidate-app .dashboard-summary-actions{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-}
-
-.candidate-app .dashboard-summary-actions .btn{
-    min-height:42px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    padding:0 16px;
-}
-
-.candidate-app .dashboard-metric-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:16px!important;
-}
-
-.candidate-app .dashboard-metric-card{
-    min-height:150px;
-    padding:20px 18px!important;
-    border-left:4px solid var(--candidate-accent)!important;
-    border-radius:8px!important;
-    text-decoration:none!important;
-}
-
-.candidate-app .dashboard-metric-label{
-    margin-bottom:8px;
-    font-size:.72rem;
-    letter-spacing:.06em;
-    text-transform:uppercase;
-}
-
-.candidate-app .dashboard-metric-value{
-    margin-bottom:6px;
-    font-size:1.6rem;
-}
-
-.candidate-app .dashboard-metric-note{
-    max-width:190px;
-    margin:0;
-    line-height:1.5;
-}
-
 .candidate-app .dashboard-section:not(:first-child)>.container-fluid{
     padding:22px!important;
     border:0!important;
@@ -10101,9 +8278,6 @@ body.candidate-app{
 }
 
 @media (max-width:1199.98px){
-    .candidate-app .dashboard-metric-grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-    }
 }
 
 @media (max-width:1100px){
@@ -10115,19 +8289,12 @@ body.candidate-app{
         grid-template-columns:1fr;
         gap:18px;
     }
-
-    .candidate-app .dashboard-summary-hero,
     .candidate-app .dashboard-section:not(:first-child)>.container-fluid{
         padding:18px!important;
     }
 }
 
 @media (max-width:575.98px){
-    .candidate-app .dashboard-metric-grid{
-        grid-template-columns:1fr;
-    }
-
-    .candidate-app .dashboard-summary-actions .btn,
     .candidate-app .dashboard-section .btn{
         width:100%;
     }
@@ -10334,7 +8501,6 @@ body.candidate-app{
 .candidate-app .applications-page-header,
 .candidate-app .profile-summary-card,
 .candidate-app .settings-summary-card,
-.candidate-app .dashboard-summary-hero,
 .candidate-app .dashboard-section > .container-fluid,
 .candidate-app .candidate-workbar {
     border: 0 !important;
@@ -10364,61 +8530,6 @@ body.candidate-app{
     font-size: .94rem;
     line-height: 1.6;
 }
-
-.candidate-app .page-board-kicker,
-.candidate-app .ai-badge,
-.candidate-app .dashboard-summary-kicker,
-.candidate-app .dashboard-strategy-kicker,
-.candidate-app .dashboard-cta-kicker {
-    font-size: .72rem;
-    font-weight: 650;
-    letter-spacing: .05em;
-    text-transform: uppercase;
-}
-
-.candidate-app .page-board-metrics,
-.candidate-app .profile-summary-metrics,
-.candidate-app .settings-summary-metrics,
-.candidate-app .dashboard-summary-inline-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.candidate-app .hero-stat-chip,
-.candidate-app .summary-chip,
-.candidate-app .meta-chip,
-.candidate-app .profile-chip,
-.candidate-app .skill-badge,
-.candidate-app .dashboard-summary-inline-stats span {
-    min-height: 38px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px !important;
-    border: 0 !important;
-    border-radius: var(--candidate-radius) !important;
-    font-size: .82rem;
-    font-weight: 500;
-}
-
-.candidate-app .hero-stat-chip strong,
-.candidate-app .summary-chip strong,
-.candidate-app .meta-chip strong,
-.candidate-app .dashboard-summary-inline-stats strong {
-    font-weight: 650;
-}
-
-.candidate-app .dashboard-metric-grid,
-.candidate-app .top-companies-grid,
-.candidate-app .application-activity-grid,
-.candidate-app .detail-score-grid,
-.candidate-app .profile-summary-grid,
-.candidate-app .settings-summary-grid {
-    gap: 16px !important;
-}
-
-.candidate-app .dashboard-metric-card,
 .candidate-app .top-company-card,
 .candidate-app .job-card,
 .candidate-app .application-section-card,
@@ -10435,13 +8546,6 @@ body.candidate-app{
     border-radius: var(--candidate-radius) !important;
     background: var(--candidate-surface) !important;
     box-shadow: none !important;
-}
-
-.candidate-app .dashboard-metric-card,
-.candidate-app .application-section-card,
-.candidate-app .settings-card,
-.candidate-app .profile-jobboard .card {
-    padding: 18px !important;
 }
 
 .candidate-app .job-card.dashboard-card {
@@ -10515,8 +8619,6 @@ body.candidate-app{
 .candidate-app .page-board-header {
     box-shadow: 0 12px 28px rgba(15, 23, 42, 0.035) !important;
 }
-
-.candidate-app .dashboard-metric-card,
 .candidate-app .top-company-card,
 .candidate-app .job-card,
 .candidate-app .application-section-card,
@@ -10534,7 +8636,6 @@ body.candidate-app{
 }
 
 .candidate-app .dashboard-panel,
-.candidate-app .dashboard-metric-card,
 .candidate-app .dashboard-strategy-banner,
 .candidate-app .dashboard-cta-banner,
 .candidate-app .top-company-card,
@@ -10633,10 +8734,6 @@ body.candidate-app{
 
 .candidate-app .dashboard-cta-art {
     display: none !important;
-}
-
-.candidate-app .dashboard-cta-kicker {
-    margin-bottom: 8px !important;
 }
 
 .candidate-app .dashboard-cta-title {
@@ -10774,8 +8871,7 @@ body.candidate-app{
 }
 
 .candidate-app .job-card.dashboard-card:hover,
-.candidate-app .top-company-card:hover,
-.candidate-app .dashboard-metric-card:hover {
+.candidate-app .top-company-card:hover{
     transform: translateY(-1px);
     box-shadow: 0 14px 30px rgba(15, 23, 42, 0.055) !important;
 }
@@ -10787,20 +8883,6 @@ body.candidate-app{
     font-size: .98rem;
     font-weight: 600;
     line-height: 1.35;
-}
-
-.candidate-app .dashboard-metric-label,
-.candidate-app .application-detail-kicker,
-.candidate-app .application-section-title {
-    font-size: .76rem;
-    font-weight: 600;
-    letter-spacing: .04em;
-}
-
-.candidate-app .dashboard-metric-value,
-.candidate-app .application-activity-value {
-    font-size: 1.55rem;
-    font-weight: 650;
 }
 
 .candidate-app .profile-quick-actions,
@@ -10942,12 +9024,10 @@ body.candidate-app{
 .candidate-app .job-card,
 .candidate-app .candidate-card,
 .candidate-app .dashboard-panel,
-.candidate-app .dashboard-metric-card,
 .candidate-app .top-company-card,
 .candidate-app .dashboard-strategy-banner,
 .candidate-app .dashboard-cta-banner,
 .candidate-app .dashboard-blog-card,
-.candidate-app .dashboard-strategy-panel,
 .candidate-app .application-section-card,
 .candidate-app .application-status-summary,
 .candidate-app .application-activity-item,
@@ -11242,8 +9322,6 @@ body.candidate-app{
 /* ── Candidate pages: unified rounded edges ── */
 .candidate-app .card,
 .candidate-app .dashboard-panel,
-.candidate-app .dashboard-metric-card,
-.candidate-app .dashboard-summary-hero,
 .candidate-app .dashboard-strategy-banner,
 .candidate-app .dashboard-cta-banner,
 .candidate-app .settings-side,
@@ -11305,8 +9383,6 @@ body.candidate-app{
 .candidate-app .course-lesson-card,
 .candidate-app .course-module-card,
 .candidate-app .feedback-card,
-.candidate-app .naukri-banner-strip--inline,
-.candidate-app .job-alerts-jobboard .card,
 .candidate-app .blog-sidebar-card,
 .candidate-app .blog-hero-panel,
 .candidate-app .blog-article-card,
@@ -11315,15 +9391,6 @@ body.candidate-app{
 .candidate-app .local-company-intro,
 .candidate-app .local-company-stat,
 .candidate-app .local-company-search,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-rail-card,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-stage-card,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-media-card,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-recording-card,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-progress-item,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-progress-stat,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-status-item,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-section-card,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-context-item,
 .candidate-app .career-history-jobboard .history-panel,
 .candidate-app .career-history-jobboard .history-info-box,
 .candidate-app .job-invite-banner,
@@ -11604,11 +9671,6 @@ body.candidate-app{
     border-radius: 16px !important;
 }
 
-/* Job alerts */
-.candidate-app .job-alerts-jobboard .card,
-.candidate-app .job-alerts-jobboard .job-alerts-hero-panel {
-    border-radius: 16px !important;
-}
 
 /* Courses */
 .candidate-app .course-header-panel,
@@ -11627,19 +9689,6 @@ body.candidate-app{
 .candidate-app .local-company-intro,
 .candidate-app .local-company-stat,
 .candidate-app .local-company-search {
-    border-radius: 16px !important;
-}
-
-/* AI interview flow */
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-rail-card,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-stage-card,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-media-card,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-recording-card,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-progress-item,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-progress-stat,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-status-item,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-section-card,
-.candidate-app .ai-interview-flow-jobboard .ai-interview-flow-context-item {
     border-radius: 16px !important;
 }
 
@@ -11768,7 +9817,6 @@ body.candidate-app{
 .candidate-app main > .career-transition-jobboard > .container,
 .candidate-app main > .career-history-jobboard > .container,
 .candidate-app main > .notifications-jobboard > .container,
-.candidate-app main > .job-alerts-jobboard > .container,
 .candidate-app main > .book-slot-jobboard > .container,
 .candidate-app main > .reschedule-slot-jobboard > .container,
 .candidate-app main > .course-modules-jobboard > .container,
@@ -11793,14 +9841,12 @@ body.candidate-app{
 .candidate-app main > .career-transition-jobboard,
 .candidate-app main > .career-history-jobboard,
 .candidate-app main > .notifications-jobboard,
-.candidate-app main > .job-alerts-jobboard,
 .candidate-app main > .course-modules-jobboard,
 .candidate-app main > .course-content-jobboard,
 .candidate-app main > .jobs-page-jobboard,
 .candidate-app main > .strategy-jobboard,
 .candidate-app main > .mock-interview-jobboard,
-.candidate-app main > .onboarding-jobboard,
-.candidate-app main > .ai-interview-flow-jobboard {
+.candidate-app main > .onboarding-jobboard {
     display: contents; /* let their children participate directly in main's flex flow */
 }
 
@@ -11963,12 +10009,10 @@ body.candidate-app{
 .candidate-app .career-transition-jobboard,
 .candidate-app .career-history-jobboard,
 .candidate-app .notifications-jobboard,
-.candidate-app .job-alerts-jobboard,
 .candidate-app .jobs-page-jobboard,
 .candidate-app .strategy-jobboard,
 .candidate-app .mock-interview-jobboard,
 .candidate-app .onboarding-jobboard,
-.candidate-app .ai-interview-flow-jobboard,
 .candidate-app .course-modules-jobboard,
 .candidate-app .course-content-jobboard {
     width: 100%;
@@ -18135,9 +16179,6 @@ body.dark.candidate-app .dashboard-section,
 body.dark.candidate-app .dashboard-panel,
 body.dark.candidate-app .dashboard-main,
 body.dark.candidate-app .dashboard-card,
-body.dark.candidate-app .dashboard-metric-card,
-body.dark.candidate-app .dashboard-summary-shell,
-body.dark.candidate-app .dashboard-strategy-panel,
 body.dark.candidate-app .dashboard-cta-banner,
 body.dark.candidate-app .dashboard-cta-banner-inner,
 body.dark.candidate-app .job-card,
@@ -18168,7 +16209,6 @@ body.dark.candidate-app .local-company-search {
 }
 
 body.dark.candidate-app .dashboard-section:nth-child(even),
-body.dark.candidate-app .dashboard-strategy-panel,
 body.dark.candidate-app .settings-card,
 body.dark.candidate-app .candidate-workbar__field,
 body.dark.candidate-app .jobs-filter-select__button,
@@ -18197,20 +16237,6 @@ body.dark.candidate-app .settings-panel-title {
     color: var(--candidate-ink) !important;
 }
 
-body.dark.candidate-app p,
-body.dark.candidate-app li,
-body.dark.candidate-app label,
-body.dark.candidate-app small,
-body.dark.candidate-app .text-muted,
-body.dark.candidate-app .page-board-subtitle,
-body.dark.candidate-app .section-subtitle,
-body.dark.candidate-app .job-card-meta,
-body.dark.candidate-app .dashboard-metric-note,
-body.dark.candidate-app .dashboard-strategy-summary,
-body.dark.candidate-app .settings-panel-copy {
-    color: var(--candidate-muted) !important;
-}
-
 body.dark.candidate-app a,
 body.dark.candidate-app .page-board-kicker,
 body.dark.candidate-app .section-kicker,
@@ -18220,7 +16246,6 @@ body.dark.candidate-app .view-all-link {
 }
 
 body.dark.candidate-app .btn-primary,
-body.dark.candidate-app .dashboard-summary-primary,
 body.dark.candidate-app .dashboard-strategy-btn,
 body.dark.candidate-app .dashboard-cta-btn {
     background: transparent !important;
@@ -18231,8 +16256,6 @@ body.dark.candidate-app .dashboard-cta-btn {
 
 body.dark.candidate-app .btn-primary:hover,
 body.dark.candidate-app .btn-primary:focus,
-body.dark.candidate-app .dashboard-summary-primary:hover,
-body.dark.candidate-app .dashboard-summary-primary:focus,
 body.dark.candidate-app .dashboard-strategy-btn:hover,
 body.dark.candidate-app .dashboard-strategy-btn:focus,
 body.dark.candidate-app .dashboard-cta-btn:hover,
@@ -24797,64 +22820,56 @@ body.candidate-app .companies-directory-jobboard .company-directory-card-arrow:f
    GITHUB-STYLE DARK MODE: candidate-app variable overrides
    These override ALL --candidate-* and CSS vars for dark mode
 ===================================================== */
+
+
+/* =====================================================
+   DARK MODE � GitHub-style black theme for candidate-app
+   Single consolidated block. Keep this at the END of file.
+===================================================== */
+
+/* 1. CSS variable overrides */
 body.dark.candidate-app,
 body.dark .candidate-app {
-    --background:           #0d1117;
-    --foreground:           #e6edf3;
-    --card:                 #161b22;
-    --muted:                #21262d;
-    --muted-foreground:     #8b949e;
-    --border:               #30363d;
-    --text-light:           #6e7681;
-    --gradient-soft:        linear-gradient(135deg, #161b22 0%, #21262d 100%);
+    --background:             #0d1117;
+    --foreground:             #e6edf3;
+    --card:                   #161b22;
+    --muted:                  #21262d;
+    --muted-foreground:       #8b949e;
+    --border:                 #30363d;
+    --text-light:             #6e7681;
+    --gradient-soft:          linear-gradient(135deg, #161b22 0%, #21262d 100%);
 
-    /* candidate-specific aliases */
-    --candidate-bg:             #0d1117;
-    --candidate-surface:        #161b22;
-    --candidate-surface-soft:   #21262d;
-    --candidate-ink:            #e6edf3;
-    --candidate-muted:          #8b949e;
-    --candidate-line:           #30363d;
-    --candidate-border:         #30363d;
-    --candidate-accent-soft:    #21262d;
-}
+    --candidate-bg:           #0d1117;
+    --candidate-surface:      #161b22;
+    --candidate-surface-soft: #21262d;
+    --candidate-ink:          #e6edf3;
+    --candidate-muted:        #8b949e;
+    --candidate-line:         #30363d;
+    --candidate-border:       #30363d;
+    --candidate-accent-soft:  #21262d;
+    --candidate-accent-softer:#161b22;
 
-body.dark.candidate-app,
-body.dark .candidate-app {
+    --candidate-nav-grad:     linear-gradient(135deg, #1FB7B5, #1FB7B5);
+    --candidate-nav-surface:  #161b22;
+    --candidate-nav-text:     #e6edf3;
+    --candidate-nav-muted:    #8b949e;
+    --candidate-nav-light:    #6e7681;
+    --candidate-nav-border:   #30363d;
+    --candidate-nav-active:   rgba(31,183,181,0.12);
+    --candidate-nav-hover:    rgba(31,183,181,0.08);
+
     background: #0d1117;
     color: #e6edf3;
 }
 
-/* Topbar in dark */
-body.dark.candidate-app .cand-topbar {
-    background: #161b22 !important;
-    border-bottom: 1px solid #30363d !important;
-    box-shadow: none !important;
+/* Also override on * to beat fallback values in var(--x, #hardcoded) */
+body.dark.candidate-app * {
+    --candidate-accent-soft:  #21262d;
+    --candidate-accent-softer:#161b22;
+    --muted:                  #21262d;
 }
 
-/* Left nav in dark */
-body.dark.candidate-app .cand-leftnav {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-}
-
-body.dark.candidate-app .cand-leftnav__brand,
-body.dark.candidate-app .cand-leftnav__bottom {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-}
-
-body.dark.candidate-app .cand-leftnav__link {
-    color: #8b949e !important;
-}
-
-body.dark.candidate-app .cand-leftnav__link:hover,
-body.dark.candidate-app .cand-leftnav__link.is-active {
-    background: rgba(31,183,181,0.12) !important;
-    color: #e6edf3 !important;
-}
-
-/* All jobboard page wrappers */
+/* 2. Page wrappers */
 body.dark.candidate-app .dashboard-jobboard,
 body.dark.candidate-app .applications-jobboard,
 body.dark.candidate-app .profile-jobboard,
@@ -24866,7 +22881,6 @@ body.dark.candidate-app .my-bookings-jobboard,
 body.dark.candidate-app .book-slot-jobboard,
 body.dark.candidate-app .reschedule-slot-jobboard,
 body.dark.candidate-app .job-details-jobboard,
-body.dark.candidate-app .job-alerts-jobboard,
 body.dark.candidate-app .course-modules-jobboard,
 body.dark.candidate-app .course-content-jobboard,
 body.dark.candidate-app .strategy-jobboard,
@@ -24874,12 +22888,9 @@ body.dark.candidate-app .onboarding-jobboard,
 body.dark.candidate-app .mock-interview-jobboard,
 body.dark.candidate-app .companies-directory-jobboard,
 body.dark.candidate-app .saved-jobs-jobboard,
-body.dark.candidate-app .local-company-page {
-    background-color: #0d1117 !important;
-    color: #e6edf3 !important;
-}
+body.dark.candidate-app .local-company-page { background-color: #0d1117 !important; color: #e6edf3 !important; }
 
-/* Cards / panels */
+/* 3. Cards / panels */
 body.dark.candidate-app .card,
 body.dark.candidate-app .dashboard-panel,
 body.dark.candidate-app .settings-side,
@@ -24895,324 +22906,133 @@ body.dark.candidate-app .onboarding-content,
 body.dark.candidate-app .notification-card,
 body.dark.candidate-app .applications-sidebar,
 body.dark.candidate-app .application-detail-card-plain,
-body.dark.candidate-app .application-section-card {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-    box-shadow: none !important;
-}
+body.dark.candidate-app .application-section-card { background: #161b22 !important; border-color: #30363d !important; box-shadow: none !important; }
 
 body.dark.candidate-app .card-header,
-body.dark.candidate-app .card-footer {
-    background: #21262d !important;
-    border-color: #30363d !important;
-}
+body.dark.candidate-app .card-footer { background: #21262d !important; border-color: #30363d !important; }
 
-/* Headings and text */
-body.dark.candidate-app h1,
-body.dark.candidate-app h2,
-body.dark.candidate-app h3,
-body.dark.candidate-app h4,
-body.dark.candidate-app h5,
-body.dark.candidate-app h6 {
-    color: #e6edf3 !important;
-}
-
+/* 4. Typography */
+body.dark.candidate-app h1, body.dark.candidate-app h2,
+body.dark.candidate-app h3, body.dark.candidate-app h4,
+body.dark.candidate-app h5, body.dark.candidate-app h6 { color: #e6edf3 !important; }
 body.dark.candidate-app p,
-body.dark.candidate-app .text-muted {
-    color: #8b949e !important;
-}
+body.dark.candidate-app .text-muted { color: #8b949e !important; }
 
-/* Inputs */
+/* 5. Forms */
 body.dark.candidate-app input,
 body.dark.candidate-app textarea,
 body.dark.candidate-app select,
-body.dark.candidate-app .form-control {
-    background: #0d1117 !important;
-    border-color: #30363d !important;
-    color: #e6edf3 !important;
-}
-
+body.dark.candidate-app .form-control { background: #0d1117 !important; border-color: #30363d !important; color: #e6edf3 !important; }
 body.dark.candidate-app input:focus,
 body.dark.candidate-app textarea:focus,
 body.dark.candidate-app select:focus,
-body.dark.candidate-app .form-control:focus {
-    border-color: #1FB7B5 !important;
-    box-shadow: 0 0 0 3px rgba(31,183,181,0.15) !important;
-    background: #161b22 !important;
-}
+body.dark.candidate-app .form-control:focus { border-color: #1FB7B5 !important; box-shadow: 0 0 0 3px rgba(31,183,181,0.15) !important; background: #161b22 !important; }
 
-/* Workbar */
-body.dark.candidate-app .candidate-workbar {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-}
+/* 6. Topbar */
+body.dark.candidate-app .cand-topbar { background: #161b22 !important; border-bottom: 1px solid #30363d !important; box-shadow: none !important; }
 
-body.dark.candidate-app .candidate-workbar__field {
-    background: #21262d !important;
-    border-color: #30363d !important;
-}
-
-body.dark.candidate-app .candidate-workbar__title strong { color: #e6edf3 !important; }
-body.dark.candidate-app .candidate-workbar__title span   { color: #8b949e !important; }
-
-/* Application list items */
-body.dark.candidate-app .application-list-item-plain {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-    color: #e6edf3 !important;
-}
-
-body.dark.candidate-app .application-list-item-plain:hover,
-body.dark.candidate-app .application-list-item-plain.is-active {
-    background: #21262d !important;
-    border-left-color: #1FB7B5 !important;
-}
-
-body.dark.candidate-app .application-list-title    { color: #e6edf3 !important; }
-body.dark.candidate-app .application-list-company  { color: #8b949e !important; }
-body.dark.candidate-app .application-list-meta,
-body.dark.candidate-app .application-list-footnote { color: #6e7681 !important; }
-
-body.dark.candidate-app .application-detail-kicker { color: #1FB7B5 !important; }
-
-/* Settings nav */
-body.dark.candidate-app .settings-nav-link {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-    color: #e6edf3 !important;
-}
-
-body.dark.candidate-app .settings-nav-link:hover,
-body.dark.candidate-app .settings-nav-link.is-active {
-    background: #1FB7B5 !important;
-    border-color: #1FB7B5 !important;
-    color: #fff !important;
-}
-
-/* Page board headers */
-body.dark.candidate-app .page-board-header    { background: transparent !important; border: 0 !important; box-shadow: none !important; }
-body.dark.candidate-app .page-board-title     { color: #e6edf3 !important; }
-body.dark.candidate-app .page-board-subtitle  { color: #8b949e !important; }
-body.dark.candidate-app .page-board-kicker    { color: #1FB7B5 !important; }
-
-/* Resume studio page header box */
-body.dark.candidate-app .resume-studio-jobboard .page-board-header,
-body.dark.candidate-app .premium-plans-jobboard .page-board-header {
-    background: #161b22 !important;
-}
-
-/* Dashboard main panel */
-body.dark.candidate-app .dashboard-jobboard .dashboard-main {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-}
-
-body.dark.candidate-app .dashboard-jobboard .dashboard-sidebar {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-}
-
-/* Saved jobs cards */
-body.dark.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-}
-
-/* Local company page */
-body.dark.candidate-app .local-company-intro,
-body.dark.candidate-app .local-company-stat,
-body.dark.candidate-app .local-company-search,
-body.dark.candidate-app .local-company-card {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-}
-
-/* Company directory cards */
-body.dark.candidate-app .companies-directory-jobboard .company-directory-card {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-}
-
-body.dark.candidate-app .companies-directory-jobboard .company-directory-card .company-directory-logo,
-body.dark.candidate-app .companies-directory-jobboard .company-directory-card .job-card-icon {
-    background: #21262d !important;
-    border-color: #30363d !important;
-}
-
-body.dark.candidate-app .companies-directory-jobboard .company-directory-meta span {
-    background: #21262d !important;
-    border-color: #30363d !important;
-    color: #8b949e !important;
-}
-
-body.dark.candidate-app .companies-directory-jobboard .company-directory-card-arrow {
-    background: #21262d !important;
-    border-color: #30363d !important;
-    color: #e6edf3 !important;
-}
-
-/* Reschedule slot */
-body.dark.candidate-app .reschedule-slot-jobboard .current-booking-card,
-body.dark.candidate-app .reschedule-slot-jobboard .slot-day-card,
-body.dark.candidate-app .reschedule-slot-jobboard .reschedule-history-card {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-}
-
-body.dark.candidate-app .reschedule-slot-jobboard .slot-day-head {
-    background: #21262d !important;
-    border-color: #30363d !important;
-    color: #e6edf3 !important;
-}
-
-body.dark.candidate-app .reschedule-slot-jobboard .slot-label {
-    background: #21262d !important;
-    border-color: #30363d !important;
-}
-
-/* Modals */
-body.dark.candidate-app .modal-content  { background: #161b22 !important; border-color: #30363d !important; }
-body.dark.candidate-app .modal-header   { background: #21262d !important; border-color: #30363d !important; }
-body.dark.candidate-app .modal-footer   { background: #21262d !important; border-color: #30363d !important; }
-
-/* Scrollbar */
-body.dark.candidate-app ::-webkit-scrollbar       { width: 8px; height: 8px; }
-body.dark.candidate-app ::-webkit-scrollbar-track { background: #0d1117; }
-body.dark.candidate-app ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
-body.dark.candidate-app ::-webkit-scrollbar-thumb:hover { background: #1FB7B5; }
-
-
-/* =====================================================
-   DARK MODE: left nav badge/pill visibility fix
-===================================================== */
-body.dark.candidate-app .cand-leftnav__pill,
-body.dark.candidate-app .cand-leftnav__pill--accent,
-body.dark .candidate-app .cand-leftnav__pill,
-body.dark .candidate-app .cand-leftnav__pill--accent {
-    background: #1FB7B5 !important;
-    color: #ffffff !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    font-weight: 800 !important;
-    font-size: 0.68rem !important;
-}
-
-body.dark.candidate-app .cand-leftnav__badge,
-body.dark .candidate-app .cand-leftnav__badge {
-    background: #ff3b30 !important;
-    color: #ffffff !important;
-    border: 2px solid #0d1117 !important;
-}
-
-
-/* Notification badge: match pill color in dark mode */
-body.dark.candidate-app .cand-leftnav__badge,
-body.dark .candidate-app .cand-leftnav__badge {
-    background: #1FB7B5 !important;
-    color: #ffffff !important;
-    border: 0 !important;
-    box-shadow: none !important;
-}
-
-
-/* =====================================================
-   DARK MODE: fix remaining greenish hover/nav variables
-===================================================== */
-body.dark.candidate-app {
-    --candidate-nav-grad:    linear-gradient(135deg, #1FB7B5 0%, #1FB7B5 100%);
-    --candidate-nav-surface: #161b22;
-    --candidate-nav-text:    #e6edf3;
-    --candidate-nav-muted:   #8b949e;
-    --candidate-nav-light:   #6e7681;
-    --candidate-nav-border:  #30363d;
-    --candidate-nav-active:  rgba(31,183,181,0.12);
-    --candidate-nav-hover:   rgba(31,183,181,0.08);
-}
-
-/* Workbar submit hover: remove greenish gradient */
-body.dark.candidate-app .candidate-workbar__submit:hover,
-body.dark.candidate-app .candidate-workbar__submit:focus {
-    background: #0D8A90 !important;
-}
-
-/* Left nav link hover/active: no green gradient */
+/* 7. Left nav */
+body.dark.candidate-app .cand-leftnav { background: #161b22 !important; border-color: #30363d !important; }
+body.dark.candidate-app .cand-leftnav__brand,
+body.dark.candidate-app .cand-leftnav__bottom { background: #161b22 !important; border-color: #30363d !important; }
+body.dark.candidate-app .cand-leftnav__link { color: #8b949e !important; }
 body.dark.candidate-app .cand-leftnav__link:hover,
-body.dark.candidate-app .cand-leftnav__link.is-active {
-    background: rgba(31,183,181,0.12) !important;
-    color: #e6edf3 !important;
-}
-
-/* User dropdown hover */
+body.dark.candidate-app .cand-leftnav__link:hover:not(.is-active),
+body.dark.candidate-app .cand-leftnav__link.is-active { background: rgba(31,183,181,0.12) !important; color: #e6edf3 !important; }
 body.dark.candidate-app .cand-leftnav__user-btn:hover,
 body.dark.candidate-app .cand-leftnav__utils .candidate-language-btn:hover,
 body.dark.candidate-app .cand-leftnav__utils .candidate-language-btn.is-active,
-body.dark.candidate-app .cand-leftnav__user-dropdown a:hover {
-    background: #21262d !important;
-    color: #1FB7B5 !important;
-}
+body.dark.candidate-app .cand-leftnav__user-dropdown a:hover { background: #21262d !important; color: #1FB7B5 !important; }
 
-/* Company card top accent bar: remove green gradient */
-body.dark.candidate-app .companies-directory-jobboard .company-directory-card::before {
-    background: #1FB7B5 !important;
-}
+/* 8. Nav pills / badges */
+body.dark.candidate-app .cand-leftnav__pill,
+body.dark.candidate-app .cand-leftnav__pill--accent,
+body.dark .candidate-app .cand-leftnav__pill,
+body.dark .candidate-app .cand-leftnav__pill--accent { background: #1FB7B5 !important; color: #fff !important; border: 0 !important; box-shadow: none !important; font-weight: 800 !important; font-size: 0.68rem !important; }
+body.dark.candidate-app .cand-leftnav__badge,
+body.dark .candidate-app .cand-leftnav__badge { background: #1FB7B5 !important; color: #fff !important; border: 0 !important; box-shadow: none !important; }
 
-/* btn-light / btn-ghost / btn-outline-primary hover: no green */
-body.dark.candidate-app .btn-light:hover,
-body.dark.candidate-app .btn-ghost:hover,
-body.dark.candidate-app .btn-outline-primary:hover {
-    background: #21262d !important;
-    border-color: #1FB7B5 !important;
-    color: #1FB7B5 !important;
-}
+/* 9. Workbar */
+body.dark.candidate-app .candidate-workbar { background: #161b22 !important; border-color: #30363d !important; }
+body.dark.candidate-app .candidate-workbar__field { background: #21262d !important; border-color: #30363d !important; }
+body.dark.candidate-app .candidate-workbar__title strong { color: #e6edf3 !important; }
+body.dark.candidate-app .candidate-workbar__title span { color: #8b949e !important; }
+body.dark.candidate-app .candidate-workbar__submit:hover,
+body.dark.candidate-app .candidate-workbar__submit:focus { background: #0D8A90 !important; }
 
-/* gradient-soft fallback: ensure no greenish tint */
-body.dark.candidate-app .dashboard-cta-banner,
-body.dark.candidate-app .dashboard-strategy-panel {
-    background: #161b22 !important;
-}
-
-
-/* =====================================================
-   DARK MODE: FINAL override — kill ALL greenish hover tints
-   Must be last to win specificity
-===================================================== */
-body.dark.candidate-app,
-body.dark.candidate-app *,
-html body.dark.candidate-app {
-    --candidate-accent-soft:    #21262d !important;
-    --candidate-accent-softer:  #161b22 !important;
-    --candidate-nav-hover:      rgba(31,183,181,0.10) !important;
-    --candidate-nav-active:     rgba(31,183,181,0.14) !important;
-    --candidate-nav-surface:    #161b22 !important;
-    --muted:                    #21262d !important;
-}
-
-/* Left nav hover/active: explicit override beats all var() chains */
-body.dark.candidate-app .cand-leftnav__link:hover,
-body.dark.candidate-app .cand-leftnav__link:hover:not(.is-active),
-body.dark.candidate-app .cand-leftnav__link.is-active {
-    background: rgba(31,183,181,0.12) !important;
-    color: #e6edf3 !important;
-}
-
-/* Job cards + recommendation cards hover */
+/* 10. Job / recommendation cards hover */
 body.dark.candidate-app .job-card:hover,
 body.dark.candidate-app .recommended-job-card:hover,
 body.dark.candidate-app .saved-job-card:hover,
 body.dark.candidate-app .dashboard-card:hover,
-body.dark.candidate-app .top-company-card:hover,
-body.dark.candidate-app .dashboard-metric-card:hover {
-    background: #21262d !important;
-    border-color: #1FB7B5 !important;
-    box-shadow: none !important;
-}
+body.dark.candidate-app .top-company-card:hover{ background: #21262d !important; border-color: #1FB7B5 !important; box-shadow: none !important; }
 
-/* Any element using candidate-accent-soft as background in dark mode */
-body.dark.candidate-app [style*="candidate-accent-soft"],
+/* 11. Application list */
+body.dark.candidate-app .application-list-item-plain { background: #161b22 !important; border-color: #30363d !important; color: #e6edf3 !important; }
 body.dark.candidate-app .application-list-item-plain:hover,
-body.dark.candidate-app .application-list-item-plain.is-active,
-body.dark.candidate-app .local-company-suggestion:hover,
-body.dark.candidate-app .hm-drawer-link:hover,
-body.dark.candidate-app .settings-nav-link:hover {
-    background: #21262d !important;
-}
+body.dark.candidate-app .application-list-item-plain.is-active { background: #21262d !important; border-left-color: #1FB7B5 !important; }
+body.dark.candidate-app .application-list-title { color: #e6edf3 !important; }
+body.dark.candidate-app .application-list-company { color: #8b949e !important; }
+body.dark.candidate-app .application-list-meta,
+body.dark.candidate-app .application-list-footnote { color: #6e7681 !important; }
+body.dark.candidate-app .application-detail-kicker { color: #1FB7B5 !important; }
+
+/* 12. Settings nav */
+body.dark.candidate-app .settings-nav-link { background: #161b22 !important; border-color: #30363d !important; color: #e6edf3 !important; }
+body.dark.candidate-app .settings-nav-link:hover,
+body.dark.candidate-app .settings-nav-link.is-active { background: #1FB7B5 !important; border-color: #1FB7B5 !important; color: #fff !important; }
+
+/* 13. Page board headers */
+body.dark.candidate-app .page-board-header { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+body.dark.candidate-app .page-board-title { color: #e6edf3 !important; }
+body.dark.candidate-app .page-board-subtitle { color: #8b949e !important; }
+body.dark.candidate-app .page-board-kicker { color: #1FB7B5 !important; }
+body.dark.candidate-app .resume-studio-jobboard .page-board-header,
+body.dark.candidate-app .premium-plans-jobboard .page-board-header { background: #161b22 !important; }
+
+/* 14. Dashboard panels */
+body.dark.candidate-app .dashboard-cta-banner{ background: #161b22 !important; }
+
+/* 15. Saved jobs */
+body.dark.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card { background: #161b22 !important; border-color: #30363d !important; }
+
+/* 16. Local company */
+body.dark.candidate-app .local-company-intro,
+body.dark.candidate-app .local-company-stat,
+body.dark.candidate-app .local-company-search,
+body.dark.candidate-app .local-company-card { background: #161b22 !important; border-color: #30363d !important; }
+body.dark.candidate-app .local-company-suggestion:hover { background: #21262d !important; }
+
+/* 17. Company directory */
+body.dark.candidate-app .companies-directory-jobboard .company-directory-card { background: #161b22 !important; border-color: #30363d !important; }
+body.dark.candidate-app .companies-directory-jobboard .company-directory-card::before { background: #1FB7B5 !important; }
+body.dark.candidate-app .companies-directory-jobboard .company-directory-card .company-directory-logo,
+body.dark.candidate-app .companies-directory-jobboard .company-directory-card .job-card-icon { background: #21262d !important; border-color: #30363d !important; }
+body.dark.candidate-app .companies-directory-jobboard .company-directory-meta span { background: #21262d !important; border-color: #30363d !important; color: #8b949e !important; }
+body.dark.candidate-app .companies-directory-jobboard .company-directory-card-arrow { background: #21262d !important; border-color: #30363d !important; color: #e6edf3 !important; }
+
+/* 18. Reschedule slot */
+body.dark.candidate-app .reschedule-slot-jobboard .current-booking-card,
+body.dark.candidate-app .reschedule-slot-jobboard .slot-day-card,
+body.dark.candidate-app .reschedule-slot-jobboard .reschedule-history-card { background: #161b22 !important; border-color: #30363d !important; }
+body.dark.candidate-app .reschedule-slot-jobboard .slot-day-head { background: #21262d !important; border-color: #30363d !important; color: #e6edf3 !important; }
+body.dark.candidate-app .reschedule-slot-jobboard .slot-label { background: #21262d !important; border-color: #30363d !important; }
+
+/* 19. Modals */
+body.dark.candidate-app .modal-content { background: #161b22 !important; border-color: #30363d !important; }
+body.dark.candidate-app .modal-header { background: #21262d !important; border-color: #30363d !important; }
+body.dark.candidate-app .modal-footer { background: #21262d !important; border-color: #30363d !important; }
+
+/* 20. Buttons */
+body.dark.candidate-app .btn-light:hover,
+body.dark.candidate-app .btn-ghost:hover,
+body.dark.candidate-app .btn-outline-primary:hover { background: #21262d !important; border-color: #1FB7B5 !important; color: #1FB7B5 !important; }
+
+/* 21. Misc hover states using accent-soft */
+body.dark.candidate-app .hm-drawer-link:hover { background: #21262d !important; }
+
+/* 22. Scrollbar */
+body.dark.candidate-app ::-webkit-scrollbar { width: 8px; height: 8px; }
+body.dark.candidate-app ::-webkit-scrollbar-track { background: #0d1117; }
+body.dark.candidate-app ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+body.dark.candidate-app ::-webkit-scrollbar-thumb:hover { background: #1FB7B5; }
