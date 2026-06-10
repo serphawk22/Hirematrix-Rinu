@@ -226,7 +226,7 @@
             </div>
 
             <div class="hm-drawer-body">
-                <div class="hm-drawer-cta-card">
+                <!-- <div class="hm-drawer-cta-card">
                     <div class="hm-drawer-cta-kicker">For You</div>
                     <h3><?= esc($recommendationTitle) ?></h3>
                     <p><?= esc($recommendationText) ?></p>
@@ -234,7 +234,7 @@
                         <a href="<?= esc($recommendationUrl) ?>" class="hm-drawer-cta-primary"><?= esc($recommendationCta) ?></a>
                         <a href="<?= esc($profilePromptUrl) ?>" class="hm-drawer-cta-secondary"><?= esc($profilePromptCta) ?></a>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Section: My Activity -->
                 <div class="hm-drawer-section">
@@ -269,10 +269,6 @@
                 <!-- Section: Jobs -->
                 <div class="hm-drawer-section">
                     <div class="hm-drawer-section-title">Jobs</div>
-                    <a href="<?= base_url('jobs') ?>" class="hm-drawer-link">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-search"></i></span>
-                        <span>Browse All Jobs</span>
-                    </a>
                     <a href="<?= base_url('jobs?tab=suggested') ?>" class="hm-drawer-link">
                         <span class="hm-drawer-link-icon"><i class="fas fa-fire"></i></span>
                         <span>Recommended Jobs</span>
