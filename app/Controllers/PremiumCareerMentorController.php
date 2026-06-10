@@ -145,7 +145,7 @@ class PremiumCareerMentorController extends BaseController
         ]);
     }
 
-    private function processPremiumCareerChat($message, $userId, $sessionId)
+    protected function processPremiumCareerChat($message, $userId, $sessionId)
     {
         $subscription = $this->subscriptionModel->getUserActiveSubscription($userId);
         $userProfile = $this->getUserCareerProfile($userId);
@@ -315,7 +315,7 @@ class PremiumCareerMentorController extends BaseController
         return $features;
     }
 
-    private function checkUsageLimit($userId)
+    protected function checkUsageLimit($userId)
     {
         $subscription = $this->subscriptionModel->getUserActiveSubscription($userId);
         
@@ -339,7 +339,7 @@ class PremiumCareerMentorController extends BaseController
         return ['allowed' => true];
     }
 
-    private function getUserCareerProfile($userId)
+    protected function getUserCareerProfile($userId)
     {
         $db = \Config\Database::connect();
 
@@ -478,7 +478,7 @@ class PremiumCareerMentorController extends BaseController
         return redirect()->back()->with('error', 'Failed to activate subscription');
     }
 
-    private function generateCareerResponse($messages)
+    protected function generateCareerResponse($messages)
     {
         // Use the existing CareerTransitionAI library's OpenAI integration
         $apiKey = getenv('OPENAI_API_KEY');
@@ -527,7 +527,7 @@ class PremiumCareerMentorController extends BaseController
         return $data['choices'][0]['message']['content'] ?? 'I apologize, but I couldn\'t generate a response. Please try rephrasing your question.';
     }
 
-    private function getConversationHistory($userId)
+    protected function getConversationHistory($userId)
     {
         if (!$this->canUseMentorMemory()) {
             return [];
@@ -1007,7 +1007,7 @@ class PremiumCareerMentorController extends BaseController
         return $current; // No change if AI fails to parse, prevents false progress inflation
     }
 
-    private function hydrateSessionProgress($sessions, $userId)
+    protected function hydrateSessionProgress($sessions, $userId)
     {
         if (!is_array($sessions)) {
             return [];
