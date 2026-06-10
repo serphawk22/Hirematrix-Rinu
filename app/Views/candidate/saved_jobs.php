@@ -140,6 +140,18 @@ $pickRequiredSkillBadges = static function (array $job, int $limit = 3) use ($fo
 
 <div class="jobs-page-jobboard saved-jobs-jobboard">
     <div class="container">
+        <div class="page-board-header page-board-header-tight">
+            <div class="page-board-copy">
+                <span class="page-board-kicker"><i class="fas fa-bookmark"></i> Your shortlist</span>
+                <h1 class="page-board-title">Saved Jobs</h1>
+                <p class="page-board-subtitle">Jobs you bookmarked for later. Open a card to review the details or remove it from your saved list.</p>
+            </div>
+            <div class="job-details-header-actions">
+                <a href="<?= base_url('jobs') ?>" class="btn btn-primary">
+                    <i class="fas fa-search mr-1"></i> Browse Jobs
+                </a>
+            </div>
+        </div>
         <div class="results-bar saved-jobs-summary-bar">
             <span class="results-count">
                 <i class="fas fa-bookmark"></i>

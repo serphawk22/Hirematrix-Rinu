@@ -22389,7 +22389,7 @@ body.dark.candidate-app .course-service-jobboard .course-header-card,
 body.dark.candidate-app .course-service-jobboard .course-module-card,
 body.dark.candidate-app .course-service-jobboard .course-lesson-card {
     background: var(--candidate-surface, #142427) !important;
-    border-color: var(--candidate-line, #2E4A50) !important;
+    /* border-color: var(--candidate-line, #2E4A50) !important; */
 }
 
 @media (max-width: 1199.98px) {
@@ -23025,7 +23025,7 @@ body.dark.candidate-app .settings-jobboard .page-board-header,
 body.dark.candidate-app .strategy-jobboard .page-board-header {
     align-items: center !important;
     background: var(--candidate-surface, #ffffff) !important;
-    border: 1px solid var(--candidate-border, #D7E4EF) !important;
+    /* border: 1px solid var(--candidate-border, #D7E4EF) !important; */
     border-radius: 12px !important;
     box-shadow: none !important;
     display: flex !important;
