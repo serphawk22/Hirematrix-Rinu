@@ -191,15 +191,7 @@ $resolveAssetUrl = static function (string $path): string {
                         Open Full Strategy <i class="fas fa-arrow-right ms-2"></i>
                     </a>
                 </div>
-                <div class="dashboard-strategy-panel">
-                    <span class="dashboard-strategy-badge"><?= esc($dashboardStrategyBadge) ?></span>
-                    <div class="dashboard-strategy-panel-label">Target Roles</div>
-                    <div class="dashboard-strategy-role-list">
-                        <?php foreach ($dashboardStrategyRoles as $role): ?>
-                            <span class="dashboard-strategy-role-pill"><?= esc($role) ?></span>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </section>

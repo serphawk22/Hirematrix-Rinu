@@ -37,19 +37,19 @@ body.dark {
     --accent: #B5D84E;
     --accent-dark: #9DC23D;
 
-    --background: #0E1619;
-    --foreground: #F8FAFC;
+    --background: #0d1117;
+    --foreground: #e6edf3;
 
-    --card: #162327;
+    --card: #161b22;
 
-    --muted: #1B2A2F;
-    --muted-foreground: #94A3B8;
+    --muted: #21262d;
+    --muted-foreground: #8b949e;
 
-    --border: #23343A;
-    --text-light: #7A8B96;
+    --border: #30363d;
+    --text-light: #6e7681;
 
     --gradient-primary: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
-    --gradient-soft: linear-gradient(135deg, #162327 0%, #1B2A2F 100%);
+    --gradient-soft: linear-gradient(135deg, #161b22 0%, #21262d 100%);
 }
 
 /* Main CTA buttons use the outlined candidate primary treatment. */
@@ -10558,7 +10558,7 @@ body.candidate-app{
 
 .candidate-app .dashboard-jobboard .job-card.dashboard-card {
     align-items: stretch;
-    border: 1px solid #e3ebf5 !important;
+    /* border: 1px solid #e3ebf5 !important; */
     border-radius: 8px !important;
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04) !important;
     text-align: left;
@@ -13912,7 +13912,7 @@ body.candidate-app .cand-leftnav__user-dropdown a.cand-leftnav__logout i {
 }
 
 body.candidate-app .cand-leftnav__user-dropdown a.cand-leftnav__logout:hover {
-    background: #fff1f1 !important;
+    /* background: #fff1f1 !important; */
     color: #b91c1c !important;
 }
 
@@ -18417,7 +18417,7 @@ body.dark.candidate-app .table,
 body.dark.candidate-app .modal-content {
     background-color: var(--candidate-surface) !important;
     background-image: none !important;
-    border-color: var(--candidate-line) !important;
+    /* border-color: var(--candidate-line) !important; */
     color: var(--candidate-ink) !important;
     box-shadow: none !important;
 }
@@ -23130,7 +23130,7 @@ body.candidate-app .premium-mentor-jobboard .page-board-header,
 body.dark.candidate-app .premium-mentor-jobboard .page-board-header {
     align-items: center !important;
     background: var(--candidate-surface, #ffffff) !important;
-    border: 1px solid var(--candidate-border, #D7E4EF) !important;
+    /* border: 1px solid var(--candidate-border, #D7E4EF) !important; */
     border-radius: 12px !important;
     box-shadow: none !important;
     display: flex !important;
@@ -24790,4 +24790,429 @@ body.candidate-app .companies-directory-jobboard .company-directory-card-arrow:f
     body.candidate-app .companies-directory-jobboard .company-directory-card-arrow {
         right: 14px !important;
     }
+}
+
+
+/* =====================================================
+   GITHUB-STYLE DARK MODE: candidate-app variable overrides
+   These override ALL --candidate-* and CSS vars for dark mode
+===================================================== */
+body.dark.candidate-app,
+body.dark .candidate-app {
+    --background:           #0d1117;
+    --foreground:           #e6edf3;
+    --card:                 #161b22;
+    --muted:                #21262d;
+    --muted-foreground:     #8b949e;
+    --border:               #30363d;
+    --text-light:           #6e7681;
+    --gradient-soft:        linear-gradient(135deg, #161b22 0%, #21262d 100%);
+
+    /* candidate-specific aliases */
+    --candidate-bg:             #0d1117;
+    --candidate-surface:        #161b22;
+    --candidate-surface-soft:   #21262d;
+    --candidate-ink:            #e6edf3;
+    --candidate-muted:          #8b949e;
+    --candidate-line:           #30363d;
+    --candidate-border:         #30363d;
+    --candidate-accent-soft:    #21262d;
+}
+
+body.dark.candidate-app,
+body.dark .candidate-app {
+    background: #0d1117;
+    color: #e6edf3;
+}
+
+/* Topbar in dark */
+body.dark.candidate-app .cand-topbar {
+    background: #161b22 !important;
+    border-bottom: 1px solid #30363d !important;
+    box-shadow: none !important;
+}
+
+/* Left nav in dark */
+body.dark.candidate-app .cand-leftnav {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .cand-leftnav__brand,
+body.dark.candidate-app .cand-leftnav__bottom {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .cand-leftnav__link {
+    color: #8b949e !important;
+}
+
+body.dark.candidate-app .cand-leftnav__link:hover,
+body.dark.candidate-app .cand-leftnav__link.is-active {
+    background: rgba(31,183,181,0.12) !important;
+    color: #e6edf3 !important;
+}
+
+/* All jobboard page wrappers */
+body.dark.candidate-app .dashboard-jobboard,
+body.dark.candidate-app .applications-jobboard,
+body.dark.candidate-app .profile-jobboard,
+body.dark.candidate-app .career-transition-jobboard,
+body.dark.candidate-app .settings-jobboard,
+body.dark.candidate-app .notifications-jobboard,
+body.dark.candidate-app .jobs-page-jobboard,
+body.dark.candidate-app .my-bookings-jobboard,
+body.dark.candidate-app .book-slot-jobboard,
+body.dark.candidate-app .reschedule-slot-jobboard,
+body.dark.candidate-app .job-details-jobboard,
+body.dark.candidate-app .job-alerts-jobboard,
+body.dark.candidate-app .course-modules-jobboard,
+body.dark.candidate-app .course-content-jobboard,
+body.dark.candidate-app .strategy-jobboard,
+body.dark.candidate-app .onboarding-jobboard,
+body.dark.candidate-app .mock-interview-jobboard,
+body.dark.candidate-app .companies-directory-jobboard,
+body.dark.candidate-app .saved-jobs-jobboard,
+body.dark.candidate-app .local-company-page {
+    background-color: #0d1117 !important;
+    color: #e6edf3 !important;
+}
+
+/* Cards / panels */
+body.dark.candidate-app .card,
+body.dark.candidate-app .dashboard-panel,
+body.dark.candidate-app .settings-side,
+body.dark.candidate-app .settings-content,
+body.dark.candidate-app .settings-summary-card,
+body.dark.candidate-app .settings-card,
+body.dark.candidate-app .mock-card,
+body.dark.candidate-app .mock-sidebar,
+body.dark.candidate-app .strategy-card,
+body.dark.candidate-app .strategy-sidebar,
+body.dark.candidate-app .onboarding-side,
+body.dark.candidate-app .onboarding-content,
+body.dark.candidate-app .notification-card,
+body.dark.candidate-app .applications-sidebar,
+body.dark.candidate-app .application-detail-card-plain,
+body.dark.candidate-app .application-section-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+    box-shadow: none !important;
+}
+
+body.dark.candidate-app .card-header,
+body.dark.candidate-app .card-footer {
+    background: #21262d !important;
+    border-color: #30363d !important;
+}
+
+/* Headings and text */
+body.dark.candidate-app h1,
+body.dark.candidate-app h2,
+body.dark.candidate-app h3,
+body.dark.candidate-app h4,
+body.dark.candidate-app h5,
+body.dark.candidate-app h6 {
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app p,
+body.dark.candidate-app .text-muted {
+    color: #8b949e !important;
+}
+
+/* Inputs */
+body.dark.candidate-app input,
+body.dark.candidate-app textarea,
+body.dark.candidate-app select,
+body.dark.candidate-app .form-control {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app input:focus,
+body.dark.candidate-app textarea:focus,
+body.dark.candidate-app select:focus,
+body.dark.candidate-app .form-control:focus {
+    border-color: #1FB7B5 !important;
+    box-shadow: 0 0 0 3px rgba(31,183,181,0.15) !important;
+    background: #161b22 !important;
+}
+
+/* Workbar */
+body.dark.candidate-app .candidate-workbar {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .candidate-workbar__field {
+    background: #21262d !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .candidate-workbar__title strong { color: #e6edf3 !important; }
+body.dark.candidate-app .candidate-workbar__title span   { color: #8b949e !important; }
+
+/* Application list items */
+body.dark.candidate-app .application-list-item-plain {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .application-list-item-plain:hover,
+body.dark.candidate-app .application-list-item-plain.is-active {
+    background: #21262d !important;
+    border-left-color: #1FB7B5 !important;
+}
+
+body.dark.candidate-app .application-list-title    { color: #e6edf3 !important; }
+body.dark.candidate-app .application-list-company  { color: #8b949e !important; }
+body.dark.candidate-app .application-list-meta,
+body.dark.candidate-app .application-list-footnote { color: #6e7681 !important; }
+
+body.dark.candidate-app .application-detail-kicker { color: #1FB7B5 !important; }
+
+/* Settings nav */
+body.dark.candidate-app .settings-nav-link {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .settings-nav-link:hover,
+body.dark.candidate-app .settings-nav-link.is-active {
+    background: #1FB7B5 !important;
+    border-color: #1FB7B5 !important;
+    color: #fff !important;
+}
+
+/* Page board headers */
+body.dark.candidate-app .page-board-header    { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+body.dark.candidate-app .page-board-title     { color: #e6edf3 !important; }
+body.dark.candidate-app .page-board-subtitle  { color: #8b949e !important; }
+body.dark.candidate-app .page-board-kicker    { color: #1FB7B5 !important; }
+
+/* Resume studio page header box */
+body.dark.candidate-app .resume-studio-jobboard .page-board-header,
+body.dark.candidate-app .premium-plans-jobboard .page-board-header {
+    background: #161b22 !important;
+}
+
+/* Dashboard main panel */
+body.dark.candidate-app .dashboard-jobboard .dashboard-main {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-sidebar {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+}
+
+/* Saved jobs cards */
+body.dark.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+}
+
+/* Local company page */
+body.dark.candidate-app .local-company-intro,
+body.dark.candidate-app .local-company-stat,
+body.dark.candidate-app .local-company-search,
+body.dark.candidate-app .local-company-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+}
+
+/* Company directory cards */
+body.dark.candidate-app .companies-directory-jobboard .company-directory-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .companies-directory-jobboard .company-directory-card .company-directory-logo,
+body.dark.candidate-app .companies-directory-jobboard .company-directory-card .job-card-icon {
+    background: #21262d !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .companies-directory-jobboard .company-directory-meta span {
+    background: #21262d !important;
+    border-color: #30363d !important;
+    color: #8b949e !important;
+}
+
+body.dark.candidate-app .companies-directory-jobboard .company-directory-card-arrow {
+    background: #21262d !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+/* Reschedule slot */
+body.dark.candidate-app .reschedule-slot-jobboard .current-booking-card,
+body.dark.candidate-app .reschedule-slot-jobboard .slot-day-card,
+body.dark.candidate-app .reschedule-slot-jobboard .reschedule-history-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard .slot-day-head {
+    background: #21262d !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard .slot-label {
+    background: #21262d !important;
+    border-color: #30363d !important;
+}
+
+/* Modals */
+body.dark.candidate-app .modal-content  { background: #161b22 !important; border-color: #30363d !important; }
+body.dark.candidate-app .modal-header   { background: #21262d !important; border-color: #30363d !important; }
+body.dark.candidate-app .modal-footer   { background: #21262d !important; border-color: #30363d !important; }
+
+/* Scrollbar */
+body.dark.candidate-app ::-webkit-scrollbar       { width: 8px; height: 8px; }
+body.dark.candidate-app ::-webkit-scrollbar-track { background: #0d1117; }
+body.dark.candidate-app ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+body.dark.candidate-app ::-webkit-scrollbar-thumb:hover { background: #1FB7B5; }
+
+
+/* =====================================================
+   DARK MODE: left nav badge/pill visibility fix
+===================================================== */
+body.dark.candidate-app .cand-leftnav__pill,
+body.dark.candidate-app .cand-leftnav__pill--accent,
+body.dark .candidate-app .cand-leftnav__pill,
+body.dark .candidate-app .cand-leftnav__pill--accent {
+    background: #1FB7B5 !important;
+    color: #ffffff !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    font-weight: 800 !important;
+    font-size: 0.68rem !important;
+}
+
+body.dark.candidate-app .cand-leftnav__badge,
+body.dark .candidate-app .cand-leftnav__badge {
+    background: #ff3b30 !important;
+    color: #ffffff !important;
+    border: 2px solid #0d1117 !important;
+}
+
+
+/* Notification badge: match pill color in dark mode */
+body.dark.candidate-app .cand-leftnav__badge,
+body.dark .candidate-app .cand-leftnav__badge {
+    background: #1FB7B5 !important;
+    color: #ffffff !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+
+/* =====================================================
+   DARK MODE: fix remaining greenish hover/nav variables
+===================================================== */
+body.dark.candidate-app {
+    --candidate-nav-grad:    linear-gradient(135deg, #1FB7B5 0%, #1FB7B5 100%);
+    --candidate-nav-surface: #161b22;
+    --candidate-nav-text:    #e6edf3;
+    --candidate-nav-muted:   #8b949e;
+    --candidate-nav-light:   #6e7681;
+    --candidate-nav-border:  #30363d;
+    --candidate-nav-active:  rgba(31,183,181,0.12);
+    --candidate-nav-hover:   rgba(31,183,181,0.08);
+}
+
+/* Workbar submit hover: remove greenish gradient */
+body.dark.candidate-app .candidate-workbar__submit:hover,
+body.dark.candidate-app .candidate-workbar__submit:focus {
+    background: #0D8A90 !important;
+}
+
+/* Left nav link hover/active: no green gradient */
+body.dark.candidate-app .cand-leftnav__link:hover,
+body.dark.candidate-app .cand-leftnav__link.is-active {
+    background: rgba(31,183,181,0.12) !important;
+    color: #e6edf3 !important;
+}
+
+/* User dropdown hover */
+body.dark.candidate-app .cand-leftnav__user-btn:hover,
+body.dark.candidate-app .cand-leftnav__utils .candidate-language-btn:hover,
+body.dark.candidate-app .cand-leftnav__utils .candidate-language-btn.is-active,
+body.dark.candidate-app .cand-leftnav__user-dropdown a:hover {
+    background: #21262d !important;
+    color: #1FB7B5 !important;
+}
+
+/* Company card top accent bar: remove green gradient */
+body.dark.candidate-app .companies-directory-jobboard .company-directory-card::before {
+    background: #1FB7B5 !important;
+}
+
+/* btn-light / btn-ghost / btn-outline-primary hover: no green */
+body.dark.candidate-app .btn-light:hover,
+body.dark.candidate-app .btn-ghost:hover,
+body.dark.candidate-app .btn-outline-primary:hover {
+    background: #21262d !important;
+    border-color: #1FB7B5 !important;
+    color: #1FB7B5 !important;
+}
+
+/* gradient-soft fallback: ensure no greenish tint */
+body.dark.candidate-app .dashboard-cta-banner,
+body.dark.candidate-app .dashboard-strategy-panel {
+    background: #161b22 !important;
+}
+
+
+/* =====================================================
+   DARK MODE: FINAL override — kill ALL greenish hover tints
+   Must be last to win specificity
+===================================================== */
+body.dark.candidate-app,
+body.dark.candidate-app *,
+html body.dark.candidate-app {
+    --candidate-accent-soft:    #21262d !important;
+    --candidate-accent-softer:  #161b22 !important;
+    --candidate-nav-hover:      rgba(31,183,181,0.10) !important;
+    --candidate-nav-active:     rgba(31,183,181,0.14) !important;
+    --candidate-nav-surface:    #161b22 !important;
+    --muted:                    #21262d !important;
+}
+
+/* Left nav hover/active: explicit override beats all var() chains */
+body.dark.candidate-app .cand-leftnav__link:hover,
+body.dark.candidate-app .cand-leftnav__link:hover:not(.is-active),
+body.dark.candidate-app .cand-leftnav__link.is-active {
+    background: rgba(31,183,181,0.12) !important;
+    color: #e6edf3 !important;
+}
+
+/* Job cards + recommendation cards hover */
+body.dark.candidate-app .job-card:hover,
+body.dark.candidate-app .recommended-job-card:hover,
+body.dark.candidate-app .saved-job-card:hover,
+body.dark.candidate-app .dashboard-card:hover,
+body.dark.candidate-app .top-company-card:hover,
+body.dark.candidate-app .dashboard-metric-card:hover {
+    background: #21262d !important;
+    border-color: #1FB7B5 !important;
+    box-shadow: none !important;
+}
+
+/* Any element using candidate-accent-soft as background in dark mode */
+body.dark.candidate-app [style*="candidate-accent-soft"],
+body.dark.candidate-app .application-list-item-plain:hover,
+body.dark.candidate-app .application-list-item-plain.is-active,
+body.dark.candidate-app .local-company-suggestion:hover,
+body.dark.candidate-app .hm-drawer-link:hover,
+body.dark.candidate-app .settings-nav-link:hover {
+    background: #21262d !important;
 }
