@@ -45,8 +45,9 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #111111 !important;
     color: #0D8A90;
+    border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
 .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
     border: none !important;
@@ -63,7 +64,7 @@ body.dark .m-0.font-weight-bold{
     ) !important;
 }
 body.dark .hm-page-content,body.dark .recruiter-slot-bookings-jobboard, body.dark .recruiter-summary-card, body.dark .recruiter-filter-card,body.dark .recruiter-table-card,body.dark .card-header,body.dark .table.table-bordered.table-hover.recruiter-bookings-table{
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
+    background: #111111 !important;
     border: 1px solid #23343A !important;
 } 
 /* Replace your existing tr,td,th block with this: */
@@ -86,11 +87,11 @@ body.dark th {
 body.dark .table-secondary td,
 body.dark .table-secondary th,
 body.dark .table-secondary {
-   background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
+   background: #111111 !important;
 }
 
 body.dark thead th {
-   background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
+   background: #111111 !important;
     color: #94A3B8 !important;
 }
  body.dark .recruiter-summary-card{
@@ -113,7 +114,7 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #1B2A2F !important;
+    background:#111111 !important;
     color: #F8FAFC !important;
 }
 /* ── Labels — match h6 style ── */
@@ -336,7 +337,7 @@ body.dark .m-0.font-weight-bold,body.dark .recruiter-summary-item{
                                         </td>
                                         <td>
                                         <div class="job-actions-wrap recruiter-booking-actions">
-                                                <?php if ($isUpcoming && in_array($booking['booking_status'], ['confirmed', 'rescheduled'], true)): ?>
+                                                <?php if ($isUpcoming && in_array($booking['booking_status'], ['booked', 'confirmed', 'rescheduled'], true)): ?>
                                                     <a href="<?= base_url('recruiter/slots/reschedule/' . $booking['id']) ?>" class="btn btn-sm btn-warning btn-action" title="Reschedule">
                                                         <i class="fas fa-sync"></i> Reschedule
                                                     </a>

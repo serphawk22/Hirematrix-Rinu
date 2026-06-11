@@ -7,8 +7,9 @@
     background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%) !important;
     min-height: 100vh;
 }
-body.dark .recruiter-edit-jobboard {
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+body.dark .recruiter-edit-jobboard,body.dark .card-body {
+   background: #111111 !important;
+    border: 1px solid #23343A !important;
 }
 
 /* ══════════════════════════════════════════
@@ -78,8 +79,8 @@ body.dark .recruiter-edit-jobboard .page-board-subtitle {
 }
 body.dark .recruiter-edit-jobboard .card,
 body.dark .recruiter-edit-jobboard .recruiter-form-card {
-    background: #1B2A2F !important;
-    border-color: #23343A !important;
+background: #111111 !important;
+    border: 1px solid #23343A !important; 
     box-shadow: none !important;
 }
 
@@ -124,7 +125,7 @@ body.dark .recruiter-edit-jobboard .small.text-muted {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 body.dark .recruiter-edit-jobboard .form-control {
-    background: #162327 !important;
+ background: #111111 !important; 
     color: #E2E8F0 !important;
     border-color: #2E4A52 !important;
 }
@@ -188,8 +189,8 @@ body.dark .recruiter-edit-jobboard small.text-muted {
     margin-bottom: 0.75rem !important;
 }
 body.dark .recruiter-edit-jobboard .questionnaire-row {
-    background: #162327 !important;
-    border-color: #23343A !important;
+ background: #111111 !important;
+    border: 1px solid #23343A !important;  
 }
 
 /* Checkbox labels inside questionnaire */
@@ -327,8 +328,8 @@ body.dark .recruiter-edit-jobboard .recruiter-form-side h6 {
     line-height: 1.5;
 }
 body.dark .recruiter-edit-jobboard .recruiter-tip-item {
-    background: #162327 !important;
-    border-color: #23343A !important;
+    background: #111111 !important;
+    border: 1px solid #23343A !important;  
     color: #7A8B96 !important;
 }
 
@@ -351,11 +352,7 @@ body.dark .recruiter-edit-jobboard .alert-danger {
    background: white !important; 
 }
 body.dark #editJobForm,body.dark .card-body{
-   background: linear-gradient(
-      135deg,
-      #162327 0%,
-      #1B2A2F 100%
-    ) !important;
+   background: #111111 !important;
 }
 .card-body{
     border: 1px solid #D9ECE5;

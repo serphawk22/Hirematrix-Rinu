@@ -1,51 +1,12 @@
 <?php
 $bodyClass = trim('hirematrix-app public-header-page ' . ($body_class ?? ''));
-?> 
+?>
 <style>
- /* ===============================
-   NAVBAR — FULLY TRANSPARENT
-================================= */
 /* ===============================
-   CONTENT BLUR BEHIND NAVBAR
-================================= */
-header.site-navbar.landing-header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
-    -webkit-mask-image: linear-gradient(
-        to bottom,
-        rgba(0,0,0,1) 0%,
-        rgba(0,0,0,0.6) 60%,
-        rgba(0,0,0,0) 100%
-    );
-    mask-image: linear-gradient(
-        to bottom,
-        rgba(0,0,0,1) 0%,
-        rgba(0,0,0,0.6) 60%,
-        rgba(0,0,0,0) 100%
-    );
-    pointer-events: none;
-    z-index: -1;
-    transition: backdrop-filter 0.3s ease;
-}
-header.site-navbar.landing-header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    backdrop-filter: var(--navbar-blur, blur(0px));
-    -webkit-backdrop-filter: var(--navbar-blur, blur(0px));
-    pointer-events: none;
-    z-index: -1;
-    transition: backdrop-filter 0.3s ease;
-}
-/* ===============================
-   NAVBAR BASE
+   NAVBAR BASE — FULL WIDTH, TRANSPARENT
 ================================= */
 header.site-navbar.landing-header {
     background: transparent !important;
-    background-color: transparent !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-bottom: none !important;
@@ -56,95 +17,67 @@ header.site-navbar.landing-header {
     right: 0 !important;
     width: 100% !important;
     z-index: 1050 !important;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease !important;
-}
-
-header.site-navbar.landing-header .container-fluid,
-header.site-navbar.landing-header .row.landing-header-row {
-    background: transparent !important;
-    background-color: transparent !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    border: none !important;
-    box-shadow: none !important;
+    transition: background-color 0.3s ease, backdrop-filter 0.3s ease !important;
 }
 
 /* ===============================
-   NAVBAR SCROLLED — must come
-   AFTER the base rule so it wins
-================================= */
-header.site-navbar.landing-header.navbar-scrolled {
-    background: rgba(255, 255, 255, 0.88) !important;
-    background-color: rgba(255, 255, 255, 0.88) !important;
-    backdrop-filter: blur(18px) !important;
-    -webkit-backdrop-filter: blur(18px) !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08) !important;
-}
- 
-/* ===============================
-   NAVBAR — SPREAD LOGO & ACTIONS
+   FULL-WIDTH INNER ROW — no rail constraints
 ================================= */
 header.site-navbar.landing-header .container-fluid {
-    padding-left: 232px !important;
-    padding-right: 232px !important;
-    max-width: 98% !important;
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+    max-width: 100% !important;
+    width: 100% !important;
 }
 
 header.site-navbar.landing-header .row.landing-header-row {
     width: 100% !important;
     justify-content: space-between !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
-/* Logo — flush left */
+/* ===============================
+   SCROLLED STATE — frosted glass
+================================= */
+header.site-navbar.landing-header.navbar-scrolled {
+    background: rgba(255, 255, 255, 0.88) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* ===============================
+   LOGO & ACTIONS — flush to edges
+================================= */
 header.site-navbar.landing-header .site-logo {
     padding-left: 0 !important;
     margin-left: 0 !important;
 }
 
-/* Actions — flush right */
 header.site-navbar.landing-header .landing-header-actions {
     padding-right: 0 !important;
     margin-right: 0 !important;
 }
 
-/* Nav in middle — centered */
 header.site-navbar.landing-header .site-navigation {
     display: flex !important;
     justify-content: center !important;
 }
 
-header.site-navbar.landing-header,
-header.site-navbar.landing-header.site-navbar-target,
-.site-wrap header.landing-header {
-    background: transparent !important;
-    background-color: transparent !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    border-bottom: none !important;
-    box-shadow: none !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    z-index: 1050 !important;
+/* ===============================
+   LOGO TEXT
+================================= */
+header.site-navbar.landing-header .landing-header-logo-text {
+    color: #16212B !important;
+    font-size:1.3rem;
+     font-weight: 500 !important;   
 }
-
-/* The inner row — also transparent */
-header.site-navbar.landing-header .container-fluid,
-header.site-navbar.landing-header .row.landing-header-row {
-    background: transparent !important;
-    background-color: transparent !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    border: none !important;
-    box-shadow: none !important;
-}
- 
 
 /* ===============================
-   PUSH CONTENT BELOW FIXED NAVBAR
+   PUSH CONTENT BELOW NAVBAR
 ================================= */
 .site-wrap > .auth-page-shell,
 .site-wrap > section:first-of-type {
@@ -152,14 +85,7 @@ header.site-navbar.landing-header .row.landing-header-row {
 }
 
 /* ===============================
-   LOGO TEXT COLORS
-================================= */
-header.site-navbar.landing-header .landing-header-logo-text {
-    color: #16212B !important;
-}
- 
-/* ===============================
-   HEADER ACTIONS ROW
+   ACTIONS ROW
 ================================= */
 .landing-header-actions {
     overflow: visible !important;
@@ -173,10 +99,10 @@ header.site-navbar.landing-header .landing-header-logo-text {
 }
 
 /* ===============================
-   SIGN IN + REGISTER — LINK STYLE
+   SIGN IN BUTTON
 ================================= */
- .btn-outline-primary {
-background: transparent !important;
+.btn-outline-primary {
+    background: transparent !important;
     border: 1.5px solid #1FB7B5 !important;
     color: #1FB7B5 !important;
     padding: 8px 20px;
@@ -187,16 +113,16 @@ background: transparent !important;
 }
 
 .btn-outline-primary:hover {
- background:  #1FB7B5 !important;
+    background: #1FB7B5 !important;
     color: #ffffff !important;
     transform: translateY(-1px);
-
 }
+
 /* ===============================
-   REGISTER DROPDOWN TOGGLE
+   REGISTER BUTTON
 ================================= */
 .btn-primary {
-background: transparent !important;
+    background: transparent !important;
     border: 1.5px solid #1FB7B5 !important;
     color: #1FB7B5 !important;
     padding: 8px 20px;
@@ -207,24 +133,21 @@ background: transparent !important;
 }
 
 .btn-primary:hover {
- background:  #1FB7B5 !important;
+    background: #1FB7B5 !important;
     color: #ffffff !important;
     transform: translateY(-1px);
-
-}
-.register-dropdown-toggle {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 5px !important;
-    background: none !important;
-    border: none !important;
-    padding: 0 !important;
-    cursor: pointer !important;
-    font-family: inherit !important;
-    line-height: inherit !important;
 }
 
-/* Chevron */
+/* ===============================
+   REGISTER DROPDOWN WRAPPER
+================================= */
+.register-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    overflow: visible !important;
+}
+
 .reg-chevron {
     display: inline-block;
     width: 0;
@@ -242,16 +165,6 @@ background: transparent !important;
 }
 
 /* ===============================
-   REGISTER DROPDOWN WRAPPER
-================================= */
-.register-dropdown {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    overflow: visible !important;
-}
-
-/* ===============================
    DROPDOWN PANEL
 ================================= */
 .register-dropdown-menu {
@@ -260,20 +173,12 @@ background: transparent !important;
     top: calc(100% + 6px);
     right: 0;
     left: auto;
-    min-width: 140px; 
-    background:  linear-gradient(
-      135deg,
-      #F4FBFA 0%,
-      #EEF9F2 100%
-    );
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid #D9ECE5;;
+    min-width: 140px;
+    background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%);
+    border: 1px solid #D9ECE5;
     border-radius: 4px;
     padding: 4px;
     z-index: 9999;
-    overflow: visible;
-
     animation: dropFadeIn 0.16s ease both;
 }
 
@@ -298,15 +203,23 @@ background: transparent !important;
     text-decoration: none !important;
     transition: background 0.15s;
     white-space: nowrap;
-    color:#1FB7B5;
+    color: #1FB7B5;
 }
 
 .register-dropdown-menu a:hover {
-     color: #0D8A90;
-    font-weight: 600; 
+    color: #0D8A90;
+    font-weight: 600;
 }
- 
-    </style>
+ .landing-header-logo-image{
+            width: 40px;
+            height: 40px;
+            border-radius: 0;
+            object-fit: contain;
+            background: transparent;
+            border: 0;
+        }
+</style>
+
 <body id="top" class="<?= esc($bodyClass) ?>">
 <div id="overlayer"></div>
 <div class="loader">
@@ -326,46 +239,22 @@ background: transparent !important;
     <header class="site-navbar site-navbar-target landing-header">
         <div class="container-fluid">
             <div class="row align-items-center landing-header-row">
+                <!-- Logo -->
                 <div class="site-logo col-auto">
                     <a href="<?= site_url('/') ?>" class="d-inline-flex align-items-center landing-header-logo-link" aria-label="Go to landing page">
-                        <img src="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>" alt="HireMatrix Logo" class="landing-header-logo-image">
-                        <span class="landing-header-logo-text" style="text-transform: none;">Hire<span style="color:#3F9E58;">Matrix</span></span>
+                        <img src="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>" alt="HireMatrix Logo" class="landing-header-logo-image" >
+                        <span class="landing-header-logo-text" style="text-transform: none;">HireMatrix</span> 
                     </a>
                 </div>
-                <!-- Desktop Nav -->
+
+                <!-- Desktop Nav (empty, kept for structure) -->
                 <nav class="mx-auto site-navigation col-xl">
-                    <ul class="site-menu js-clone-nav d-none d-lg-flex ml-0 pl-0 landing-header-nav">
-                    </ul>
+                    <ul class="site-menu js-clone-nav d-none d-lg-flex ml-0 pl-0 landing-header-nav"></ul>
                 </nav>
+
                 <!-- Right Actions -->
                 <div class="right-cta-menu text-right d-flex justify-content-end align-items-center col-auto landing-header-actions">
-                     <!-- Sign In -->
-    <a href="<?= site_url('login') ?>"
-      class="btn btn-outline-primary"
-       role="button">
-        Sign In
-    </a>
-
-    <!-- Register Dropdown -->
-     <div class="register-dropdown d-none d-lg-inline-flex"
-                         style="overflow: visible;">
-                        <button class="btn btn-primary"
-                                aria-haspopup="true"
-                                aria-expanded="false"
-                                type="button">
-                            Register
-                            <span class="reg-chevron"></span>
-                        </button>
-                        <div class="register-dropdown-menu" role="menu">
-                            <a href="<?= base_url('register') ?>" role="menuitem">
-                                Candidate
-                            </a>
-                            <a href="<?= base_url('recruiter/register') ?>" role="menuitem">
-                                  Recruiter
-                            </a>
-                        </div>
-                    </div>
-
+                    <a href="<?= site_url('login') ?>" class="btn btn-outline-primary" role="button">Sign In</a> 
                     <a href="#" class="site-menu-toggle js-menu-toggle d-inline-block d-lg-none mt-lg-2 ml-3">
                         <span class="icon-menu h3 m-0 p-0 mt-2"></span>
                     </a>
@@ -373,84 +262,69 @@ background: transparent !important;
             </div>
         </div>
     </header>
- 
-   <script>
- 
-/* ===============================
-   REGISTER DROPDOWN
-   Hover on desktop, click on touch
-================================= */
-document.querySelectorAll('.register-dropdown').forEach(function (dropdown) {
-    const btn = dropdown.querySelector('.register-dropdown-toggle');
-    let closeTimer = null;
 
-    /* Open on mouseenter */
-    dropdown.addEventListener('mouseenter', function () {
-        clearTimeout(closeTimer);
-        dropdown.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
-    });
+    <script>
+    (function () {
+        const navbar = document.querySelector('header.site-navbar.landing-header');
+        if (!navbar) return;
+        function onScroll() {
+            if (window.scrollY > 10) {
+                navbar.classList.add('navbar-scrolled');
+            } else {
+                navbar.classList.remove('navbar-scrolled');
+            }
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+    })();
+    </script>
 
-    /* Small delay on mouseleave so cursor can move into the panel */
-    dropdown.addEventListener('mouseleave', function () {
-        closeTimer = setTimeout(function () {
-            dropdown.classList.remove('open');
-            btn.setAttribute('aria-expanded', 'false');
-        }, 100);
-    });
+    <script>
+    document.querySelectorAll('.register-dropdown').forEach(function (dropdown) {
+        const btn = dropdown.querySelector('.btn-primary');
+        let closeTimer = null;
 
-    /* Click toggle — for touch devices */
-    btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        const isOpen = dropdown.classList.contains('open');
-
-        document.querySelectorAll('.register-dropdown.open').forEach(function (el) {
-            el.classList.remove('open');
-            el.querySelector('.register-dropdown-toggle')
-              ?.setAttribute('aria-expanded', 'false');
+        dropdown.addEventListener('mouseenter', function () {
+            clearTimeout(closeTimer);
+            dropdown.classList.add('open');
+            if (btn) btn.setAttribute('aria-expanded', 'true');
         });
 
-        if (!isOpen) {
-            dropdown.classList.add('open');
-            btn.setAttribute('aria-expanded', 'true');
+        dropdown.addEventListener('mouseleave', function () {
+            closeTimer = setTimeout(function () {
+                dropdown.classList.remove('open');
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+            }, 100);
+        });
+
+        if (btn) {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const isOpen = dropdown.classList.contains('open');
+                document.querySelectorAll('.register-dropdown.open').forEach(function (el) {
+                    el.classList.remove('open');
+                    el.querySelector('.btn-primary')?.setAttribute('aria-expanded', 'false');
+                });
+                if (!isOpen) {
+                    dropdown.classList.add('open');
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+            });
         }
     });
-});
 
-/* Close on outside click */
-document.addEventListener('click', function () {
-    document.querySelectorAll('.register-dropdown.open').forEach(function (el) {
-        el.classList.remove('open');
-        el.querySelector('.register-dropdown-toggle')
-          ?.setAttribute('aria-expanded', 'false');
+    document.addEventListener('click', function () {
+        document.querySelectorAll('.register-dropdown.open').forEach(function (el) {
+            el.classList.remove('open');
+            el.querySelector('.btn-primary')?.setAttribute('aria-expanded', 'false');
+        });
     });
-});
 
-/* Close on Escape */
-document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Escape') return;
-    document.querySelectorAll('.register-dropdown.open').forEach(function (el) {
-        el.classList.remove('open');
-        el.querySelector('.register-dropdown-toggle')
-          ?.setAttribute('aria-expanded', 'false');
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        document.querySelectorAll('.register-dropdown.open').forEach(function (el) {
+            el.classList.remove('open');
+            el.querySelector('.btn-primary')?.setAttribute('aria-expanded', 'false');
+        });
     });
-});
-</script>
-     <script>
-(function () {
-    const navbar = document.querySelector('header.site-navbar.landing-header');
-    if (!navbar) return;
-
-    function onScroll() {
-        const pseudo = navbar; 
-        if (window.scrollY > 10) {
-            navbar.style.setProperty('--navbar-blur', 'blur(14px)');
-        } else {
-            navbar.style.setProperty('--navbar-blur', 'blur(0px)');
-        }
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-})();
-        </script>
+    </script>

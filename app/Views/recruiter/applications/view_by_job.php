@@ -14,7 +14,7 @@
 }
 
 body.dark .ai-modal-content {
-  background: #162327 !important;
+  background: #111111 !important;
   border: 1px solid #23343A !important;
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.3);
 }
@@ -30,7 +30,7 @@ body.dark .ai-modal-content {
 }
 
 body.dark .ai-header {
-  background: #162327 !important;
+  background: #111111 !important;
   border-bottom: 1px solid #23343A !important;
 }
 
@@ -100,18 +100,18 @@ body.dark .ai-close:hover {
 }
 
 body.dark .ai-body {
-  background: #162327 !important;
+  background: #111111 !important;
   color: #94A3B8 !important;
 }
 
 /* Cards inside modal */
 body.dark #aiReportContent .card {
-  background: #1B2A2F !important;
+  background: #111111 !important;
   border: 1px solid #23343A !important;
 }
 
 body.dark #aiReportContent .card-header {
-  background: #1B2A2F !important;
+  background: #111111 !important;
   border-bottom: 1px solid #23343A !important;
 }
 
@@ -129,7 +129,7 @@ body.dark #aiReportContent small.text-muted {
 
 body.dark #aiReportContent table th,
 body.dark #aiReportContent table td {
-  background: #1B2A2F !important;
+  background: #111111 !important;
   color: #94A3B8 !important;
   border-color: #23343A !important;
 }
@@ -236,8 +236,9 @@ body.dark .ai-error {
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #111111 !important;
     color: #0D8A90;
+    border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
 .page-board-header.page-board-header-tight.recruiter-page-board-header, body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
     border : none !important;
@@ -253,7 +254,7 @@ tr, td, th {
 body.dark tr,
 body.dark td,
 body.dark th {
-  background:  #162327 !important; 
+  background:  #111111 !important;
     color:#94A3B8 !important;
     border-color: #23343A !important;
 }
@@ -261,11 +262,11 @@ body.dark th {
 body.dark .table-secondary td,
 body.dark .table-secondary th,
 body.dark .table-secondary {
-   background:  #162327 !important; 
+   background:  #111111 !important;
 }
 
 body.dark thead th {
-   background:  #162327 !important; 
+   background: #111111 !important;
     color: #94A3B8 !important;
 }
 .hm-page-content,.recruiter-applications-jobboard{
@@ -276,7 +277,7 @@ body.dark thead th {
     ) !important;
 }
 body.dark .hm-page-content,body.dark .recruiter-applications-jobboard,body.dark .recruiter-job-summary-card,body.dark .recruiter-filter-card,body.dark .recruiter-alert, body.dark .recruiter-table-card{
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
+    background: #111111 !important;
     border: 1px solid #23343A !important;
 } 
 body.dark .recruiter-job-summary-card h5.mb-1, body.dark .recruiter-filter-card,body.dark .recruiter-alert{
@@ -302,7 +303,7 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #1B2A2F !important;
+    background: #111111 !important;
     color: #F8FAFC !important;
 }
 /* ── Labels — match h6 style ── */
@@ -315,7 +316,7 @@ body.dark .recruiter-job-form .form-control {
     line-height: 1.5;
 }
 body.dark .recruiter-tip-item{
-     background: #1B2A2F !important;
+     background:#111111 !important;
     color: #7A8B96 !important;
      border: 1px solid #23343A !important;
       font-weight: 400 !important;   

@@ -21,6 +21,9 @@
     ?>
 
     <style>
+    body.dark h4{
+        color:white !important;
+    }
         /* ══════════════════════════════════════════════
            RESET & BASE
         ══════════════════════════════════════════════ */
@@ -32,7 +35,7 @@
 
         body.dark .recruiter-dashboard-jobboard,
         body.dark .hm-page-content {
-            background: linear-gradient(135deg, #0F1C20 0%, #162327 100%) !important;
+            background:  #111111 !important;
         }
 
         /* ── Full-width container ── */
@@ -62,8 +65,8 @@
         body.dark .recruiter-pipeline-card,
         body.dark .recruiter-stat-card,
         body.dark .recruiter-action-center-empty {
-            background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
-            border: 1px solid #23343A !important;
+               background: #111111 !important;
+    border: 1px solid #2E2E2E !important;
         }
 
         /* ── Card headers ── */
@@ -79,7 +82,7 @@
 
         body.dark .card-header,
         body.dark .recruiter-section-header {
-            background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+            background: #111111 !important;
             border-bottom: 1px solid #23343A !important;
         }
 
@@ -317,14 +320,15 @@
 
         body.dark .thead-light th,
         body.dark thead th {
-            background: #162327 !important;
+            background: #111111 !important;
             color: #7A8B96 !important;
             border-color: #23343A !important;
         }
 
         body.dark .table-hover tbody tr:hover td {
-            background: rgba(31, 183, 181, 0.04) !important;
-        }
+    background: #162327 !important;
+    color: #F8FAFC !important;
+}
 
         /* ══════════════════════════════════════════════
            STATUS PILL
@@ -344,7 +348,7 @@
         }
 
         body.dark .status-pill {
-            background: rgba(31, 183, 181, 0.08);
+            background: #111111 !important;
             color: #1FB7B5;
             border-color: rgba(31, 183, 181, 0.15);
         }
@@ -450,7 +454,7 @@
         }
 
         body.dark .conversion-summary-card {
-            background: #1B2A2F !important;
+            background: #111111 !important;
             border-color: #23343A !important;
         }
 
@@ -494,7 +498,7 @@
         }
 
         body.dark .conversion-table thead th {
-            background: #162327 !important;
+            background: #111111 !important;
             color: #7A8B96 !important;
             border-color: #23343A !important;
         }
@@ -542,7 +546,7 @@
         body.dark .recruiter-filter-card,
         body.dark .recruiter-alert,
         body.dark .alert-light {
-            background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+            background: #111111 !important;
             border: 1px solid #23343A !important;
         }
 

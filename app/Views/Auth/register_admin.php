@@ -28,11 +28,7 @@
     overflow: hidden;
 
     /* Same colors, calmer angle + tighter spread = no glow */
-    background: linear-gradient(
-      135deg,
-      #F4FBFA 0%,
-      #EEF9F2 100%
-    );
+    background:white !important;
 
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -49,7 +45,7 @@
     position: relative;
     z-index: 2;
 
-    background: #F4FBFA;
+    background: #ffffff !important;
 
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -83,9 +79,6 @@
   <section class="auth-page-shell"> 
     <div class="auth-page-column auth-page-column--md">
       <div class="auth-page-head">
-        <div class="auth-page-brand"> 
-        <a class="auth-page-title" href="https://hirematrix.serphawk.in" style="font-size:22px;text-decoration:none;">Hire Matrix</a>
-        </div>
         <h1 class="auth-page-title" style="font-weight:normal;">Create Recruiter Account</h1>
         <p class="auth-page-subtitle">Create your recruiter account to post jobs and manage applications.</p>
       </div>
