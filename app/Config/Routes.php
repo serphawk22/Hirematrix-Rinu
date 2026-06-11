@@ -140,8 +140,6 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->get('messages/thread', 'ApiMessagesController::getThread');
     $routes->post('messages/reply', 'ApiMessagesController::sendReply');
     
-<<<<<<< Updated upstream
-=======
     // Mobile Recruiter API Routes
     $routes->group('mobile', function($routes) {
         $routes->get('test', function() {
@@ -197,8 +195,6 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         $routes->get('interview_bookings', 'API_InterviewController::getBookings');
         $routes->post('interviews/reschedule', 'API_InterviewController::rescheduleBooking');
     });
-
->>>>>>> Stashed changes
     // Career Transition AI API Routes
     $routes->get('career-transition/(:num)', 'ApiCareerTransitionController::getTransition/$1');
     $routes->post('career-transition/create', 'ApiCareerTransitionController::create');
