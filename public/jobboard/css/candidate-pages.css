@@ -3491,9 +3491,284 @@ mark { background: #fef9c3; padding: 0 2px; border-radius: 3px; }
 .job-details-jobboard,
 .course-modules-jobboard,
 .course-content-jobboard,
-.jobs-page-jobboard {
+.jobs-page-jobboard,
+.company-profile-jobboard {
     background-color: #f8f9fa !important;
 }
+
+/* ===== Company Profile Page ===== */
+
+.company-profile-jobboard .company-profile-header {
+    margin-bottom: 0;
+}
+
+.company-profile-jobboard .company-profile-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.company-profile-jobboard .company-profile-actions .btn {
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.company-profile-jobboard .content-wrap {
+    margin-top: 0;
+    position: relative;
+    z-index: 2;
+    padding-top: 34px !important;
+}
+
+.company-profile-jobboard .company-profile-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 24px;
+    align-items: start;
+}
+
+.company-profile-jobboard .company-profile-main {
+    display: grid;
+    gap: 20px;
+}
+
+.company-profile-jobboard .company-profile-side {
+    display: grid;
+    gap: 20px;
+    position: sticky;
+    top: 18px;
+}
+
+.company-profile-jobboard .company-overview-top {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.company-profile-jobboard .company-overview-logo {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    background: #eef4ff;
+    border: 1px solid #dce7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #2f57bd;
+}
+
+.company-profile-jobboard .company-overview-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.company-profile-jobboard .company-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #edf2f7;
+}
+
+.company-profile-jobboard .company-overview-grid > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.company-profile-jobboard .company-overview-grid strong {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.company-profile-jobboard .company-overview-grid span {
+    font-size: 0.95rem;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.company-social-card {
+    border: 1px solid #e8edf8;
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at top right, rgba(79, 109, 202, 0.07), transparent 38%),
+        linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.045);
+}
+
+.company-social-card .detail-card-title {
+    margin-bottom: 1rem;
+}
+
+.company-social-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.company-social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.7rem 1rem;
+    border-radius: 999px;
+    border: 1px solid #dce5fb;
+    background: #fff;
+    color: #2446c0;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    box-shadow: 0 6px 18px rgba(36, 70, 192, 0.06);
+}
+
+.company-social-link i { font-size: 1rem; }
+
+.company-social-link:hover {
+    transform: translateY(-1px);
+    border-color: #b8c9f8;
+    box-shadow: 0 10px 24px rgba(36, 70, 192, 0.12);
+    text-decoration: none;
+    color: #1f3ea8;
+}
+
+.company-social-link--linkedin  { color: #0a66c2; border-color: rgba(10, 102, 194, 0.18); }
+.company-social-link--twitter   { color: #111827; border-color: rgba(17, 24, 39, 0.12); }
+.company-social-link--facebook  { color: #1877f2; border-color: rgba(24, 119, 242, 0.18); }
+.company-social-link--instagram { color: #c13584; border-color: rgba(193, 53, 132, 0.18); }
+.company-social-link--youtube   { color: #ff0000; border-color: rgba(255, 0, 0, 0.18); }
+.company-social-link--linkedin:hover,
+.company-social-link--twitter:hover,
+.company-social-link--facebook:hover,
+.company-social-link--instagram:hover,
+.company-social-link--youtube:hover { color: inherit; }
+
+.company-branding-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 6px;
+}
+
+.company-branding-panel {
+    border: 1px solid #e6ebf3;
+    border-radius: 14px;
+    padding: 16px 18px;
+    background: #f8fbff;
+}
+
+.company-branding-panel h4 {
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+
+.company-benefit-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.company-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.company-photo-tile {
+    display: block;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #e8edf8;
+    min-height: 120px;
+}
+
+.company-photo-tile img {
+    width: 100%;
+    height: 100%;
+    min-height: 120px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.company-photo-tile:hover img { transform: scale(1.03); }
+
+.company-open-job-list { display: grid; gap: 8px; }
+
+.company-open-job-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 14px;
+    border: 1px solid #e6ebf3;
+    border-radius: 12px;
+    background: #f8fbff;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.company-open-job-item:hover {
+    border-color: rgba(31, 183, 181, 0.4);
+    background: #f0faf9;
+    text-decoration: none;
+    color: inherit;
+}
+
+.company-open-job-item h6 {
+    margin: 0 0 3px;
+    font-size: 0.94rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.company-open-job-item span {
+    font-size: 0.82rem;
+    color: #64748b;
+}
+
+.company-open-job-item i { color: #1FB7B5; flex-shrink: 0; }
+
+@media (max-width: 991.98px) {
+    .company-profile-jobboard .company-profile-layout {
+        grid-template-columns: 1fr;
+    }
+    .company-profile-jobboard .company-profile-actions {
+        justify-content: flex-start;
+    }
+    .company-profile-jobboard .company-profile-side {
+        position: static;
+    }
+    .company-branding-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 575px) {
+    .company-profile-jobboard .company-profile-actions {
+        width: 100%;
+    }
+    .company-profile-jobboard .company-profile-actions .btn {
+        flex: 1 1 100%;
+    }
+    .company-social-grid { gap: 0.6rem; }
+    .company-social-link { width: 100%; justify-content: center; }
+    .company-photo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* ===== End Company Profile Page ===== */
 
 .companies-directory-hero-stats {
     display: grid;
@@ -7660,6 +7935,7 @@ body.candidate-app,
 .candidate-app .job-details-jobboard,
 .candidate-app .saved-jobs-jobboard,
 .candidate-app .company-jobs-jobboard,
+.candidate-app .company-profile-jobboard,
 .candidate-app .mock-interview-jobboard,
 .candidate-app .book-slot-jobboard,
 .candidate-app .reschedule-slot-jobboard{
@@ -8401,6 +8677,7 @@ body.candidate-app{
 .candidate-app .job-details-jobboard,
 .candidate-app .saved-jobs-jobboard,
 .candidate-app .company-jobs-jobboard,
+.candidate-app .company-profile-jobboard,
 .candidate-app .mock-interview-jobboard,
 .candidate-app .book-slot-jobboard,
 .candidate-app .reschedule-slot-jobboard,
@@ -16316,7 +16593,7 @@ body.dark.candidate-app .dashboard-jobboard .dashboard-jobs-grid .job-card.dashb
 body.dark.candidate-app .dashboard-jobboard .dashboard-tile-grid .top-company-card,
 body.dark.candidate-app .dashboard-jobboard .top-companies-grid .top-company-card,
 body.dark.candidate-app .dashboard-jobboard .top-company-card {
-    background: var(--candidate-surface-soft) !important;
+    /* background: var(--candidate-surface-soft) !important; */
     border: 1px solid var(--candidate-line) !important;
     color: var(--candidate-ink) !important;
     box-shadow: none !important;
@@ -16416,15 +16693,15 @@ body.dark.candidate-app [class*="-jobboard"] .container-fluid {
 
 body.dark.candidate-app .page-board-header,
 body.dark.candidate-app [class*="-hero-card"],
-body.dark.candidate-app [class*="-summary"],
+/* body.dark.candidate-app [class*="-summary"], */
 body.dark.candidate-app [class*="-overview"],
 body.dark.candidate-app [class*="-shell"],
 body.dark.candidate-app [class*="-layout"],
-body.dark.candidate-app [class*="-main"],
+/* body.dark.candidate-app [class*="-main"], */
 body.dark.candidate-app [class*="-side"],
 body.dark.candidate-app [class*="-sidebar"],
 body.dark.candidate-app [class*="-panel"],
-body.dark.candidate-app [class*="-card"],
+/* body.dark.candidate-app [class*="-card"], */
 body.dark.candidate-app [class*="-banner"],
 body.dark.candidate-app [class*="-box"],
 body.dark.candidate-app [class*="-item"],
@@ -16465,7 +16742,7 @@ body.dark.candidate-app .profile-jobboard .profile-section,
 body.dark.candidate-app .job-details-jobboard .job-detail-card,
 body.dark.candidate-app .course-modules-jobboard .course-module-card,
 body.dark.candidate-app .course-content-jobboard .course-lesson-card {
-    background-color: var(--candidate-surface) !important;
+    /* background-color: var(--candidate-surface) !important; */
     background-image: none !important;
     border-color: var(--candidate-line) !important;
     color: var(--candidate-ink) !important;
@@ -16478,12 +16755,12 @@ body.dark.candidate-app .career-transition-jobboard .career-transition-note,
 body.dark.candidate-app .resume-studio-jobboard .generation-mode-card,
 body.dark.candidate-app .resume-studio-jobboard .template-card,
 body.dark.candidate-app .resume-studio-jobboard .template-preview,
-body.dark.candidate-app .dashboard-jobboard .dashboard-jobs-grid .job-card.dashboard-card,
+/* body.dark.candidate-app .dashboard-jobboard .dashboard-jobs-grid .job-card.dashboard-card, */
 body.dark.candidate-app .dashboard-jobboard .dashboard-tile-grid .top-company-card,
 body.dark.candidate-app .jobs-page-jobboard .job-card,
 body.dark.candidate-app .jobs-page-jobboard .recommended-job-card,
 body.dark.candidate-app .applications-jobboard .application-list-item,
-body.dark.candidate-app .applications-jobboard .application-section-card,
+/* body.dark.candidate-app .applications-jobboard .application-section-card, */
 body.dark.candidate-app .settings-jobboard .settings-nav-link,
 body.dark.candidate-app .settings-jobboard .settings-card {
     background-color: var(--candidate-surface-soft) !important;
@@ -22823,7 +23100,7 @@ body.candidate-app .companies-directory-jobboard .company-directory-card-arrow:f
 
 
 /* =====================================================
-   DARK MODE — GitHub-style black theme for candidate-app
+   DARK MODE ï¿½ GitHub-style black theme for candidate-app
    Single consolidated block. Keep this at the END of file.
 ===================================================== */
 
@@ -22888,6 +23165,7 @@ body.dark.candidate-app .onboarding-jobboard,
 body.dark.candidate-app .mock-interview-jobboard,
 body.dark.candidate-app .companies-directory-jobboard,
 body.dark.candidate-app .saved-jobs-jobboard,
+body.dark.candidate-app .company-profile-jobboard,
 body.dark.candidate-app .local-company-page { background-color: #0d1117 !important; color: #e6edf3 !important; }
 
 /* 3. Cards / panels */
@@ -23036,3 +23314,288 @@ body.dark.candidate-app ::-webkit-scrollbar { width: 8px; height: 8px; }
 body.dark.candidate-app ::-webkit-scrollbar-track { background: #0d1117; }
 body.dark.candidate-app ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
 body.dark.candidate-app ::-webkit-scrollbar-thumb:hover { background: #1FB7B5; }
+
+/* Career Transition: keep dark-mode header on the same rail as the content. */
+body.dark.candidate-app .career-transition-service-jobboard .career-transition-content.service-content-canvas {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.dark.candidate-app .career-transition-service-jobboard .career-transition-content.service-content-canvas > .container-fluid {
+    box-sizing: border-box !important;
+    display: grid !important;
+    gap: 26px !important;
+    max-width: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.dark.candidate-app .career-transition-service-jobboard .page-board-header {
+    align-items: center !important;
+    background: #161b22 !important;
+    border: 0 !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    gap: 18px !important;
+    justify-content: space-between !important;
+    margin: 0 !important;
+    min-height: 140px !important;
+    padding: 24px 28px !important;
+    width: 100% !important;
+}
+
+body.dark.candidate-app .career-transition-service-jobboard .page-board-header .page-board-copy {
+    margin: 0 !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+}
+
+body.dark.candidate-app .career-transition-service-jobboard .page-board-actions {
+    align-items: center !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    justify-content: flex-end !important;
+    margin-left: auto !important;
+}
+
+@media (max-width: 767.98px) {
+    body.dark.candidate-app .career-transition-service-jobboard .career-transition-content.service-content-canvas > .container-fluid {
+        gap: 20px !important;
+    }
+
+    body.dark.candidate-app .career-transition-service-jobboard .page-board-header {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        padding: 20px !important;
+    }
+
+    body.dark.candidate-app .career-transition-service-jobboard .page-board-actions {
+        justify-content: flex-start !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+/* Company profile: align to candidate canvas rhythm. */
+body.candidate-app .company-profile-jobboard {
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+body.candidate-app .company-profile-jobboard .company-profile-content-canvas {
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 0 !important;
+    border-radius: 14px !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .company-profile-jobboard .company-profile-content-canvas > .container-fluid {
+    box-sizing: border-box !important;
+    display: grid !important;
+    gap: 26px !important;
+    max-width: none !important;
+    padding: 26px 28px !important;
+    width: 100% !important;
+}
+
+body.candidate-app .company-profile-jobboard .company-profile-header,
+body.dark.candidate-app .company-profile-jobboard .company-profile-header {
+    align-items: flex-start !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.candidate-app .company-profile-jobboard .company-profile-header .page-board-copy,
+body.dark.candidate-app .company-profile-jobboard .company-profile-header .page-board-copy {
+    margin: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+}
+
+body.candidate-app .company-profile-jobboard .company-profile-layout {
+    gap: 24px !important;
+    margin: 0 !important;
+}
+
+body.candidate-app .company-profile-jobboard .detail-card,
+body.candidate-app .company-profile-jobboard .summary-card {
+    border: 1px solid var(--candidate-border, #D7E4EF) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .company-profile-jobboard .company-overview-grid > div,
+body.candidate-app .company-profile-jobboard .company-branding-panel,
+body.candidate-app .company-profile-jobboard .office-tour-card,
+body.candidate-app .company-profile-jobboard .company-review-item,
+body.candidate-app .company-profile-jobboard .company-open-job-item,
+body.candidate-app .company-profile-jobboard .company-photo-tile {
+    border: 1px solid var(--candidate-border, #D7E4EF) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .company-profile-jobboard .company-overview-grid > div,
+body.candidate-app .company-profile-jobboard .company-branding-panel,
+body.candidate-app .company-profile-jobboard .office-tour-card,
+body.candidate-app .company-profile-jobboard .company-review-item,
+body.candidate-app .company-profile-jobboard .company-open-job-item {
+    background: var(--candidate-surface-soft, #F8FBFC) !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-profile-content-canvas,
+body.dark.candidate-app .company-profile-jobboard .detail-card,
+body.dark.candidate-app .company-profile-jobboard .summary-card,
+body.dark.candidate-app .company-profile-jobboard .company-social-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+    box-shadow: none !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-overview-grid {
+    border-top-color: #30363d !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-overview-grid > div,
+body.dark.candidate-app .company-profile-jobboard .company-branding-panel,
+body.dark.candidate-app .company-profile-jobboard .office-tour-card,
+body.dark.candidate-app .company-profile-jobboard .company-review-item,
+body.dark.candidate-app .company-profile-jobboard .company-open-job-item,
+body.dark.candidate-app .company-profile-jobboard .company-photo-tile,
+body.dark.candidate-app .company-profile-jobboard .company-social-link {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+    box-shadow: none !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-overview-grid strong,
+body.dark.candidate-app .company-profile-jobboard label,
+body.dark.candidate-app .company-profile-jobboard small,
+body.dark.candidate-app .company-profile-jobboard .company-open-job-item span,
+body.dark.candidate-app .company-profile-jobboard .office-tour-summary {
+    color: #8b949e !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-overview-grid span,
+body.dark.candidate-app .company-profile-jobboard .company-open-job-item h6,
+body.dark.candidate-app .company-profile-jobboard .company-branding-panel h4 {
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-overview-logo,
+body.dark.candidate-app .company-profile-jobboard .detail-card-icon {
+    background: #21262d !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .summary-chip,
+body.dark.candidate-app .company-profile-jobboard .badge {
+    background: #21262d !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .form-control {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+@media (max-width: 991.98px) {
+    body.candidate-app .company-profile-jobboard .company-profile-content-canvas > .container-fluid {
+        gap: 20px !important;
+        padding: 20px !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    body.candidate-app .company-profile-jobboard .company-profile-content-canvas {
+        border-radius: 12px !important;
+    }
+
+    body.candidate-app .company-profile-jobboard .company-profile-content-canvas > .container-fluid {
+        gap: 14px !important;
+        padding: 14px !important;
+    }
+
+    body.candidate-app .company-profile-jobboard .company-profile-actions .btn {
+        justify-content: center !important;
+        width: 100% !important;
+    }
+}
+
+/* Company profile: header is a separate candidate page box. */
+body.candidate-app .company-profile-jobboard {
+    display: grid !important;
+    gap: 26px !important;
+}
+
+body.candidate-app .company-profile-jobboard .company-profile-header-rail,
+body.dark.candidate-app .company-profile-jobboard .company-profile-header-rail {
+    box-sizing: border-box !important;
+    max-width: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .company-profile-jobboard .company-profile-header,
+body.dark.candidate-app .company-profile-jobboard .company-profile-header {
+    align-items: center !important;
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 0 !important;
+    border-radius: 14px !important;
+    box-shadow: none !important;
+    display: flex !important;
+    gap: 18px !important;
+    justify-content: space-between !important;
+    margin: 0 !important;
+    min-height: 140px !important;
+    padding: 24px 28px !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-profile-header {
+    background: #161b22 !important;
+    color: #e6edf3 !important;
+}
+
+body.candidate-app .company-profile-jobboard .company-profile-content-canvas {
+    margin: 0 !important;
+}
+
+@media (max-width: 767.98px) {
+    body.candidate-app .company-profile-jobboard {
+        gap: 20px !important;
+    }
+
+    body.candidate-app .company-profile-jobboard .company-profile-header {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        padding: 20px !important;
+    }
+
+    body.candidate-app .company-profile-jobboard .company-profile-actions {
+        justify-content: flex-start !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
