@@ -140,6 +140,65 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->get('messages/thread', 'ApiMessagesController::getThread');
     $routes->post('messages/reply', 'ApiMessagesController::sendReply');
     
+<<<<<<< Updated upstream
+=======
+    // Mobile Recruiter API Routes
+    $routes->group('mobile', function($routes) {
+        $routes->get('test', function() {
+            try {
+                $db = \Config\Database::connect();
+                $db->connect();
+                return service('response')->setJSON([
+                    'success' => true,
+                    'message' => 'Connection successful',
+                    'database' => $db->getDatabase()
+                ]);
+            } catch (\Exception $e) {
+                return service('response')->setJSON([
+                    'success' => true,
+                    'message' => 'Server reached, but DB error: ' . $e->getMessage()
+                ]);
+            }
+        });
+        $routes->post('login', 'ApiAuthController::login');
+        $routes->post('validate_session', 'ApiAuthController::validateSession');
+        $routes->post('forgot_password', 'ApiAuthController::forgotPassword');
+        $routes->post('reset_password', 'ApiAuthController::resetPassword');
+        $routes->post('resend_verification', 'ApiAuthController::resendVerification');
+        $routes->post('signup', 'ApiAuthController::register');
+        $routes->post('change-password', 'ApiAuthController::changePassword');
+        $routes->get('dashboard', 'API_RecruiterController::getDashboard');
+        $routes->get('dashboard/leaderboard', 'API_RecruiterController::getLeaderboard');
+        $routes->get('jobs', 'API_RecruiterController::getJobs');
+        $routes->post('jobs/add', 'API_RecruiterController::addJob');
+        $routes->get('applications', 'API_RecruiterController::getApplications');
+        $routes->get('interviews', 'API_RecruiterController::getInterviews');
+        $routes->get('notifications', 'API_RecruiterController::getNotifications');
+        $routes->post('notifications/mark_read', 'API_RecruiterController::markNotificationRead');
+        $routes->get('company', 'API_RecruiterController::getCompany');
+        $routes->post('company/update', 'API_RecruiterController::updateCompanyProfile');
+        $routes->post('company/upload_photo', 'API_RecruiterController::uploadCompanyImage');
+        $routes->post('company/delete_photo', 'API_RecruiterController::deleteCompanyImage');
+        $routes->post('support/chat', 'API_SupportController::chat');
+        $routes->get('profile', 'API_RecruiterController::getProfile');
+        $routes->post('profile/update', 'API_RecruiterController::updateProfile');
+        $routes->get('settings', 'API_RecruiterController::getSettings');
+        $routes->post('settings/update', 'API_RecruiterController::updateSettings');
+        $routes->get('activity', 'API_RecruiterController::getActivity');
+        $routes->get('team', 'API_RecruiterController::getTeam');
+        $routes->post('team/invite', 'API_RecruiterController::inviteMember');
+        $routes->post('applications/update_status', 'API_RecruiterController::updateApplicationStatus');
+        $routes->post('update_fcm_token', 'API_RecruiterController::updateFcmToken');
+
+        // Interview Management
+        $routes->get('interview_slots', 'API_InterviewController::getSlots');
+        $routes->post('interview_slots/add', 'API_InterviewController::addSlot');
+        $routes->post('interview_slots/delete', 'API_InterviewController::deleteSlot');
+        $routes->get('interview_bookings', 'API_InterviewController::getBookings');
+        $routes->post('interviews/reschedule', 'API_InterviewController::rescheduleBooking');
+    });
+
+>>>>>>> Stashed changes
     // Career Transition AI API Routes
     $routes->get('career-transition/(:num)', 'ApiCareerTransitionController::getTransition/$1');
     $routes->post('career-transition/create', 'ApiCareerTransitionController::create');

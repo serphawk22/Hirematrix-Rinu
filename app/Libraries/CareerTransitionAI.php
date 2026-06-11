@@ -82,6 +82,88 @@ Make content practical and specific to {$targetRole}. Assume learner has {$curre
         return $data;
     }
 
+<<<<<<< Updated upstream
+=======
+    public function generateSupportResponse(string $message, array $context = []): string
+    {
+        $recruiterName = trim((string) ($context['recruiter_name'] ?? 'Recruiter'));
+        $companyName = trim((string) ($context['company_name'] ?? 'HireMatrix'));
+
+        $prompt = "You are the HireMatrix recruiter support assistant. Respond helpfully, clearly, and professionally to recruiter questions. " .
+            "Use the company context when available, but do not disclose internal system details. " .
+            "If the user asks about processes, account settings, or support, answer directly and keep the reply concise.";
+        if ($recruiterName !== '') {
+            $prompt .= "\n\nRecruiter: {$recruiterName}";
+        }
+        if ($companyName !== '') {
+            $prompt .= "\nCompany: {$companyName}";
+        }
+        $prompt .= "\n\nUser: {$message}\n\nSupport Response:";
+
+        return $this->callOpenAIText($prompt);
+    }
+
+    private function callOpenAIText(string $prompt): string
+    {
+        $apiKey = getenv('OPENAI_API_KEY');
+        if (empty($apiKey)) {
+            log_message('error', 'OpenAI API key missing from .env');
+            return 'Support chat is temporarily unavailable.';
+        }
+
+        $data = [
+            'model' => 'gpt-4o-mini',
+            'messages' => [[
+                'role' => 'system',
+                'content' => 'You are a helpful customer support assistant for a recruiter platform.'
+            ], [
+                'role' => 'user',
+                'content' => $prompt
+            ]],
+            'temperature' => 0.7,
+            'max_tokens' => 800,
+            'stream' => false
+        ];
+
+        $ch = curl_init('https://api.openai.com/v1/chat/completions');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . trim($apiKey),
+            ],
+            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_TIMEOUT => 90,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+        ]);
+
+        $response = curl_exec($ch);
+        $curlError = curl_error($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($response === false || !empty($curlError)) {
+            log_message('error', 'OpenAI cURL error: ' . $curlError);
+            return 'Support chat is temporarily unavailable.';
+        }
+
+        if ($httpCode !== 200) {
+            log_message('error', 'OpenAI API Error: HTTP ' . $httpCode . ' - ' . substr($response, 0, 500));
+            return 'Support chat is temporarily unavailable.';
+        }
+
+        $data = json_decode($response, true);
+        if (!isset($data['choices'][0]['message']['content'])) {
+            log_message('error', 'OpenAI response missing content. Response: ' . substr($response, 0, 500));
+            return 'Support chat is temporarily unavailable.';
+        }
+
+        return trim($data['choices'][0]['message']['content']);
+    }
+
+>>>>>>> Stashed changes
     private function getFallbackCourse($currentRole, $targetRole, $skillGaps)
     {
         $skills = is_array($skillGaps) ? implode(', ', $skillGaps) : $skillGaps;
@@ -274,7 +356,9 @@ Make content practical and specific to {$targetRole}. Assume learner has {$curre
                 'Authorization: Bearer ' . trim($apiKey),
             ],
             CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_TIMEOUT => 90
+            CURLOPT_TIMEOUT => 90,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
         ]);
 
         $response = curl_exec($ch);
