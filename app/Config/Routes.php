@@ -170,6 +170,13 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         $routes->get('jobs', 'API_RecruiterController::getJobs');
         $routes->post('jobs/add', 'API_RecruiterController::addJob');
         $routes->get('applications', 'API_RecruiterController::getApplications');
+        $routes->get('candidates', 'API_RecruiterController::getCandidateDatabase');
+        $routes->post('candidates/invite', 'API_RecruiterController::inviteCandidate');
+        $routes->get('candidates/(:num)', 'API_RecruiterController::getCandidateProfile/$1');
+        $routes->post('candidates/(:num)/action', 'API_RecruiterController::logCandidateAction/$1');
+        $routes->post('candidates/(:num)/message', 'API_RecruiterController::sendCandidateMessage/$1');
+        $routes->post('candidates/(:num)/notes', 'API_RecruiterController::saveCandidateNotes/$1');
+        $routes->get('candidates/(:num)/resume', 'API_RecruiterController::downloadCandidateResume/$1');
         $routes->get('interviews', 'API_RecruiterController::getInterviews');
         $routes->get('notifications', 'API_RecruiterController::getNotifications');
         $routes->post('notifications/mark_read', 'API_RecruiterController::markNotificationRead');
