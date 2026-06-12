@@ -5,10 +5,13 @@ $bodyClass = trim('hirematrix-app public-header-page ' . ($body_class ?? ''));
 /* ===============================
    NAVBAR BASE — FULL WIDTH, TRANSPARENT
 ================================= */
-header.site-navbar.landing-header {
+header.site-navbar.landing-header,
+header.site-navbar.landing-header.navbar-scrolled,
+header.site-navbar.landing-header.site-navbar-target {
     background: transparent !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    border: none !important;
     border-bottom: none !important;
     box-shadow: none !important;
     position: fixed !important;
@@ -17,11 +20,11 @@ header.site-navbar.landing-header {
     right: 0 !important;
     width: 100% !important;
     z-index: 1050 !important;
-    transition: background-color 0.3s ease, backdrop-filter 0.3s ease !important;
+    transition: background-color 0.3s ease !important;
 }
 
 /* ===============================
-   FULL-WIDTH INNER ROW — no rail constraints
+   FULL-WIDTH INNER ROW
 ================================= */
 header.site-navbar.landing-header .container-fluid {
     padding-left: 40px !important;
@@ -36,17 +39,6 @@ header.site-navbar.landing-header .row.landing-header-row {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
-}
-
-/* ===============================
-   SCROLLED STATE — frosted glass
-================================= */
-header.site-navbar.landing-header.navbar-scrolled {
-    background: rgba(255, 255, 255, 0.88) !important;
-    backdrop-filter: blur(18px) !important;
-    -webkit-backdrop-filter: blur(18px) !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.02) !important;
 }
 
 /* ===============================
@@ -72,8 +64,8 @@ header.site-navbar.landing-header .site-navigation {
 ================================= */
 header.site-navbar.landing-header .landing-header-logo-text {
     color: #16212B !important;
-    font-size:1.3rem;
-     font-weight: 500 !important;   
+    font-size: 1.3rem;
+    font-weight: 500 !important;
 }
 
 /* ===============================
@@ -210,14 +202,82 @@ header.site-navbar.landing-header .landing-header-logo-text {
     color: #0D8A90;
     font-weight: 600;
 }
- .landing-header-logo-image{
-            width: 40px;
-            height: 40px;
-            border-radius: 0;
-            object-fit: contain;
-            background: transparent;
-            border: 0;
-        }
+
+.landing-header-logo-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 0;
+    object-fit: contain;
+    background: transparent;
+    border: 0;
+}
+
+/* ===============================
+   DARK MODE
+================================= */
+@media (prefers-color-scheme: dark) {
+
+    body {
+        background: #111111 !important;
+    }
+
+    /* ── Navbar always transparent ── */
+    header.site-navbar.landing-header,
+    header.site-navbar.landing-header.navbar-scrolled,
+    header.site-navbar.landing-header.site-navbar-target {
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border: none !important;
+        border-bottom: none !important;
+        box-shadow: none !important;
+    }
+
+    /* ── Logo text ── */
+    header.site-navbar.landing-header .landing-header-logo-text {
+        color: #F8FAFC !important;
+    }
+
+    /* ── Sign In button ── */
+    .btn-outline-primary {
+        background: transparent !important;
+        border: 1.5px solid #1FB7B5 !important;
+        color: #1FB7B5 !important;
+    }
+    .btn-outline-primary:hover {
+        background: #1FB7B5 !important;
+        color: #ffffff !important;
+    }
+
+    /* ── Primary button ── */
+    .btn-primary {
+        background: transparent !important;
+        border: 1.5px solid #1FB7B5 !important;
+        color: #1FB7B5 !important;
+    }
+    .btn-primary:hover {
+        background: #1FB7B5 !important;
+        color: #ffffff !important;
+    }
+
+    /* ── Dropdown panel ── */
+    .register-dropdown-menu {
+        background: #111111 !important;
+        border-color: #23343A !important;
+    }
+    .register-dropdown-menu a {
+        color: #1FB7B5 !important;
+    }
+    .register-dropdown-menu a:hover {
+        background: #1B2A2F !important;
+        color: #ffffff !important;
+    }
+
+    /* ── Mobile hamburger icon ── */
+    .icon-menu {
+        color: #F8FAFC !important;
+    }
+}
 </style>
 
 <body id="top" class="<?= esc($bodyClass) ?>">
@@ -239,11 +299,12 @@ header.site-navbar.landing-header .landing-header-logo-text {
     <header class="site-navbar site-navbar-target landing-header">
         <div class="container-fluid">
             <div class="row align-items-center landing-header-row">
+
                 <!-- Logo -->
                 <div class="site-logo col-auto">
                     <a href="<?= site_url('/') ?>" class="d-inline-flex align-items-center landing-header-logo-link" aria-label="Go to landing page">
-                        <img src="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>" alt="HireMatrix Logo" class="landing-header-logo-image" >
-                        <span class="landing-header-logo-text" style="text-transform: none;">HireMatrix</span> 
+                        <img src="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>" alt="HireMatrix Logo" class="landing-header-logo-image">
+                        <span class="landing-header-logo-text" style="text-transform: none;">HireMatrix</span>
                     </a>
                 </div>
 
@@ -254,11 +315,12 @@ header.site-navbar.landing-header .landing-header-logo-text {
 
                 <!-- Right Actions -->
                 <div class="right-cta-menu text-right d-flex justify-content-end align-items-center col-auto landing-header-actions">
-                    <a href="<?= site_url('login') ?>" class="btn btn-outline-primary" role="button">Sign In</a> 
+                    <a href="<?= site_url('login') ?>" class="btn btn-outline-primary" role="button">Sign In</a>
                     <a href="#" class="site-menu-toggle js-menu-toggle d-inline-block d-lg-none mt-lg-2 ml-3">
                         <span class="icon-menu h3 m-0 p-0 mt-2"></span>
                     </a>
                 </div>
+
             </div>
         </div>
     </header>

@@ -177,7 +177,7 @@ body.dark .recruiter-job-form .form-control {
 
     <div class="company-edit-layout">
         <div class="company-edit-main">
-            <div class="card shadow-sm company-edit-card">
+            <div class="card shadow-sm company-edit-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <form method="post" action="<?= base_url('recruiter/company-profile') ?>" enctype="multipart/form-data" class="recruiter-job-form">
                         <?= csrf_field() ?>
@@ -365,7 +365,7 @@ body.dark .recruiter-job-form .form-control {
         </div>
 
         <div class="company-edit-side">
-            <div class="card shadow-sm company-edit-card">
+            <div class="card shadow-sm company-edit-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body text-center">
                     <div class="company-edit-logo mb-3">
                         <?php if ($companyLogo !== ''): ?>
@@ -382,7 +382,7 @@ body.dark .recruiter-job-form .form-control {
                 </div>
             </div>
 
-            <div class="card shadow-sm company-edit-card">
+            <div class="card shadow-sm company-edit-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6 class="mb-3"> Profile checklist</h6>
                     <div class="recruiter-checklist">

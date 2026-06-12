@@ -99,12 +99,12 @@ $resolveAssetUrl = static function (string $path): string {
                     <h2 class="section-title">Jobs Matching Your Profile</h2>
                     <p class="section-subtitle">Based on your skills, target roles, and work preferences</p>
                 </div>
-                <a href="<?= base_url('jobs?tab=suggested') ?>" class="btn btn-ghost text-primary">View all jobs <i class="fas fa-arrow-right ms-2"></i></a>
+                <a href="<?= base_url('jobs?tab=suggested') ?>" class="btn btn-ghost text-primary">View all jobs</a>
             </div>
 
             <div class="dashboard-jobs-grid">
                 <?php if (!empty($topSuggestedJobs)): ?>
-                    <?php foreach (array_slice($topSuggestedJobs, 0, 6) as $job): ?>
+                    <?php foreach (array_slice($topSuggestedJobs, 0, 4) as $job): ?>
                         <?php
                         $score = (int) round((float) ($job['match_score'] ?? 0));
                         $title = (string) ($job['title'] ?? 'Untitled Role');
@@ -213,7 +213,7 @@ $resolveAssetUrl = static function (string $path): string {
                         <h2 class="dashboard-cta-title">Unlock all AI career tools</h2>
                         <div class="pro-ad-services">
                             <div class="pro-ad-service">
-                                <div class="pro-ad-service-title"><i class="fas fa-route"></i> Career Transition AI</div>
+                                <div class="pro-ad-service-title"><i class="fas fa-map-signs"></i> Career Transition AI</div>
                                 <ul class="pro-ad-features">
                                     <li>Personalized roadmap</li>
                                     <li>Skill gap analysis</li>
@@ -234,7 +234,7 @@ $resolveAssetUrl = static function (string $path): string {
                                 </ul>
                             </div>
                         </div>
-                        <a href="<?= base_url('premium/plans') ?>" class="btn btn-primary dashboard-strategy-btn mt-3">
+                        <a href="<?= base_url('premium/plans') ?>" class="btn btn-primary dashboard-cta-btn">
                             View Plans <i class="fas fa-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -258,8 +258,8 @@ $resolveAssetUrl = static function (string $path): string {
                     <p class="section-subtitle mb-0">Quickly find openings in your preferred specialized domains.</p>
                 </div>
             </div>
-            <div class="top-companies-grid mb-5">
-                <?php foreach ($jobCategories as $category): ?>
+            <div class="top-companies-grid dashboard-tile-grid dashboard-role-grid mb-5">
+                <?php foreach (array_slice($jobCategories, 0, 10) as $category): ?>
                     <a href="<?= base_url('jobs?category=' . urlencode((string)($category['name'] ?? ''))) ?>" class="top-company-card">
                         <div class="top-company-logo">
                             <i class="<?= esc((string)($category['icon'] ?? 'fas fa-briefcase')) ?> text-primary candidate-icon-lg"></i>
@@ -283,10 +283,10 @@ $resolveAssetUrl = static function (string $path): string {
             <?php if (!empty($topHiringCompanies)): ?>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="section-title mb-0">Top Companies Hiring Now</h2>
-                <a href="<?= base_url('candidate/company-job-discovery') ?>" class="btn btn-ghost text-primary">View all <i class="fas fa-arrow-right ms-1"></i></a>
+                <a href="<?= base_url('candidate/company-job-discovery') ?>" class="btn btn-ghost text-primary">View all</a>
             </div>
-            <div class="top-companies-grid">
-                <?php foreach ($topHiringCompanies as $co): ?>
+            <div class="top-companies-grid dashboard-tile-grid dashboard-company-grid">
+                <?php foreach (array_slice($topHiringCompanies, 0, 10) as $co): ?>
                     <?php
                     $coName    = trim((string) ($co['name'] ?? 'Company'));
                     $dbLogo    = trim((string) ($co['logo'] ?? ''));
@@ -338,7 +338,7 @@ $resolveAssetUrl = static function (string $path): string {
                     <h2 class="section-title">Recent Applications</h2>
                     <p class="section-subtitle">Track your application status and next steps</p>
                 </div>
-                <a href="<?= base_url('candidate/applications') ?>" class="btn btn-ghost text-primary">View all applications <i class="fas fa-arrow-right ms-2"></i></a>
+                <a href="<?= base_url('candidate/applications') ?>" class="btn btn-ghost text-primary">View all applications</a>
             </div>
 
             <div class="dashboard-panel dashboard-table-wrap">
@@ -366,7 +366,7 @@ $resolveAssetUrl = static function (string $path): string {
                                     <?php foreach ($recentApps as $application): ?>
                                         <tr>
                                             <td><strong><?= esc($application['job_title'] ?? '-') ?></strong></td>
-                                            <td><?= esc($application['company_name'] ?? '-') ?></td>
+                                            <td><?= esc($application['company'] ?? $application['company_name'] ?? '-') ?></td>
                                             <td><?= !empty($application['applied_at']) ? $formatDate($application['applied_at']) : '-' ?></td>
                                             <td>
                                                 <span class="badge badge-primary">
@@ -374,8 +374,8 @@ $resolveAssetUrl = static function (string $path): string {
                                                 </span>
                                             </td>
                                             <td>
-                                                <a href="<?= base_url('job/' . (int) ($application['job_id'] ?? 0)) ?>" class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-eye me-1"></i> View
+                                                <a href="<?= base_url('job/' . (int) ($application['job_id'] ?? 0)) ?>" class="dashboard-table-link dashboard-table-icon-link" aria-label="View <?= esc((string) ($application['job_title'] ?? 'application'), 'attr') ?>">
+                                                    <i class="fas fa-eye" aria-hidden="true"></i>
                                                 </a>
                                             </td>
                                         </tr>

@@ -23,6 +23,7 @@ $categories                 = $categories ?? [];
 $experienceLevels           = $experienceLevels ?? [];
 $employmentTypes            = $employmentTypes ?? [];
 $savedJobIds                = $savedJobIds ?? [];
+$appliedJobMap              = $appliedJobMap ?? [];
 $salaryRanges = [
     '' => 'Any Salary',
     'under_3' => 'Under 3 LPA',
@@ -107,11 +108,101 @@ $formatPostedMeta = static function (?string $createdAt): ?string {
     }
 };
 
+$formatBadgeText = static function (string $value, int $limit = 22): string {
+    $value = trim(preg_replace('/\s+/', ' ', strip_tags($value)) ?? '');
+    if ($value === '') {
+        return '';
+    }
+
+    return strlen($value) > $limit ? rtrim(substr($value, 0, $limit - 3)) . '...' : $value;
+};
+
+$normaliseBadgeText = static function (string $value): string {
+    return trim(preg_replace('/[^a-z0-9]+/', ' ', strtolower(strip_tags($value))) ?? '');
+};
+
+$isRemoteJob = static function (array $job): bool {
+    $remoteText = strtolower(trim(implode(' ', [
+        (string) ($job['location'] ?? ''),
+        (string) ($job['work_mode'] ?? ''),
+        (string) ($job['remote'] ?? ''),
+        (string) ($job['employment_type'] ?? ''),
+    ])));
+
+    return (bool) preg_match('/\b(remote|work from home|wfh|anywhere|distributed)\b/', $remoteText);
+};
+
+$pickRequiredSkillBadges = static function (array $job, int $limit = 3) use ($formatBadgeText, $normaliseBadgeText): array {
+    $skillSource = trim((string) ($job['required_skills'] ?? $job['skills_required'] ?? $job['skills'] ?? ''));
+    $descriptionSource = trim((string) ($job['description'] ?? $job['job_description'] ?? $job['requirements'] ?? ''));
+    $parts = $skillSource !== '' ? (preg_split('/[,|\/;]+/', $skillSource) ?: []) : [];
+
+    if ($descriptionSource !== '') {
+        $descriptionKey = ' ' . $normaliseBadgeText($descriptionSource) . ' ';
+        $knownSkills = [
+            'PHP', 'Laravel', 'CodeIgniter', 'JavaScript', 'TypeScript', 'React', 'Vue', 'Angular', 'Node.js',
+            'Python', 'Django', 'Flask', 'Java', 'Spring Boot', 'Kotlin', 'Swift', 'SQL', 'MySQL', 'PostgreSQL',
+            'MongoDB', 'Redis', 'AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'Git', 'REST API', 'GraphQL',
+            'HTML', 'CSS', 'Tailwind', 'Bootstrap', 'Figma', 'Excel', 'ETL', 'Data Analysis', 'Machine Learning',
+            'Communication', 'Project Management', 'Customer Support', 'Salesforce', 'SEO'
+        ];
+
+        foreach ($knownSkills as $knownSkill) {
+            $knownSkillKey = $normaliseBadgeText($knownSkill);
+            if ($knownSkillKey !== '' && str_contains($descriptionKey, ' ' . $knownSkillKey . ' ')) {
+                $parts[] = $knownSkill;
+            }
+        }
+    }
+
+    if (empty($parts)) {
+        return [];
+    }
+
+    $titleKey = $normaliseBadgeText((string) ($job['title'] ?? ''));
+    $badges = [];
+    $seen = [];
+
+    foreach ($parts as $part) {
+        $badge = $formatBadgeText((string) $part, 20);
+        $badgeKey = $normaliseBadgeText($badge);
+
+        if ($badgeKey === '' || isset($seen[$badgeKey])) {
+            continue;
+        }
+
+        if (
+            preg_match('#(?:https?://|www\.|[a-z0-9-]+\.(?:com|in|org|net|io|co|ai|dev|careers|jobs)\b)#i', $badge)
+            || str_contains($badgeKey, 'careers ')
+            || str_contains($badgeKey, 'career ')
+        ) {
+            continue;
+        }
+
+        if ($titleKey !== '' && (str_contains($titleKey, $badgeKey) || str_contains($badgeKey, $titleKey))) {
+            continue;
+        }
+
+        if (preg_match('/^\?+/', $badge) || strlen($badgeKey) < 2) {
+            continue;
+        }
+
+        $seen[$badgeKey] = true;
+        $badges[] = $badge;
+
+        if (count($badges) >= $limit) {
+            break;
+        }
+    }
+
+    return $badges;
+};
+
 $renderRecommendedPane = static function (
     string $recType,
     array $jobs,
     string $tabLabel
-) use ($recommendationType, $formatPostedMeta, $savedJobIds, $resolveAssetUrl, $hasBaseResume, $primaryResumeId, $loadedRecommendationTypes): string {
+) use ($recommendationType, $formatPostedMeta, $pickRequiredSkillBadges, $isRemoteJob, $savedJobIds, $appliedJobMap, $resolveAssetUrl, $hasBaseResume, $primaryResumeId, $loadedRecommendationTypes): string {
     ob_start();
     $isActivePane = $recommendationType === $recType;
     $isLoadedPane = in_array($recType, (array) $loadedRecommendationTypes, true);
@@ -127,6 +218,7 @@ $renderRecommendedPane = static function (
                     $location = (string) ($job['location'] ?? 'N/A');
                     $postedMeta = $formatPostedMeta($job['created_at'] ?? null);
                     $isSaved = in_array((int) ($job['id'] ?? 0), $savedJobIds, true);
+                    $appliedStatus = $appliedJobMap[(int) ($job['id'] ?? 0)] ?? null;
                     $type = strtolower((string) ($job['employment_type'] ?? ''));
                     $typeBadge = str_contains($type, 'part') ? 'badge-secondary' : 'badge-primary';
                     $matchPct = max(10, min(100, (int) round($score)));
@@ -136,8 +228,10 @@ $renderRecommendedPane = static function (
                     $isExternalJob = (int) ($job['is_external'] ?? 0) === 1;
                     $externalSource = trim((string) ($job['external_source'] ?? ''));
                     $isVisited = (int)($job['visited_flag'] ?? 0) === 1;
+                    $requiredSkillBadges = $pickRequiredSkillBadges($job);
+                    $showRemoteBadge = $isRemoteJob($job);
                 ?>
-                <article class="job-card recommended-job-card">
+                <article class="job-card recommended-job-card <?= $appliedStatus !== null ? 'is-applied' : '' ?>">
                     
                     <div class="job-card-icon">
                         <?php
@@ -168,14 +262,15 @@ $renderRecommendedPane = static function (
                         </div>
                         <div class="job-card-tags">
                             <span class="badge <?= $typeBadge ?>"><?= esc($job['employment_type'] ?: 'Full Time') ?></span>
-                            <?php if ($isExternalJob): ?>
+                            <?php if ($showRemoteBadge): ?>
                                 <span class="badge badge-warning">Remote</span>
                             <?php endif; ?>
-                            <span class="badge badge-secondary"><?= esc(substr($title, 0, 15) ?: 'Role') ?></span>
-                            <?php if ($isVisited): ?>
-                                     <span class="badge badge-success">
-         Visited
-    </span>  <?php endif; ?>
+                            <?php foreach ($requiredSkillBadges as $requiredSkillBadge): ?>
+                                <span class="badge badge-secondary"><?= esc($requiredSkillBadge) ?></span>
+                            <?php endforeach; ?>
+                            <?php if ($appliedStatus !== null): ?>
+                                <span class="badge job-card-applied-badge"><i class="fas fa-check-circle"></i> Applied</span>
+                            <?php endif; ?>
                         </div>
                         <?php if (!empty($job['match_reason'])): ?>
                             <div class="small text-muted mb-2"><?= esc($job['match_reason']) ?></div>
@@ -187,7 +282,6 @@ $renderRecommendedPane = static function (
                             </div>
                             <span class="progress-label"><?= $matchPct ?>% match</span>
                         </div>
-
                         <div class="job-card-tools-wrapper">
                             <button type="button" class="btn btn-sm btn-outline-secondary job-card-tools-toggle" title="Tools">
                                 <i class="fas fa-ellipsis-v"></i>
@@ -209,10 +303,14 @@ $renderRecommendedPane = static function (
                         <a href="<?= $isExternalJob && !empty($job['external_apply_url']) 
         ? esc($job['external_apply_url']) 
         : base_url('job/' . $job['id']) ?>" 
-   class="view-details js-mark-visited" 
+   class="view-details js-mark-visited <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>"
    data-job-id="<?= (int) $job['id'] ?>"
    <?= $isExternalJob ? 'target="_blank"' : '' ?>>
-   View Details &rarr;
+   <span class="viewed-action-mark <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>">
+       <i class="<?= $isVisited ? 'fas fa-eye' : 'far fa-eye' ?>"></i>
+       <?= $isVisited ? 'Viewed' : 'Not viewed' ?>
+   </span>
+   <span>View Details &rarr;</span>
 </a>
                     </div>
                     <button
@@ -314,7 +412,7 @@ $activeFilterCount = count($activeFilterChips);
 <div class="container">
     <div class="page-board-header page-board-header-tight">
         <div class="page-board-copy">
-            <span class="page-board-kicker"><i class="fas fa-sparkles"></i> AI-powered matching</span>
+            <span class="page-board-kicker"><i class="fas fa-magic"></i> AI-powered matching</span>
             <h1 class="page-board-title"><?= esc($jobsHeroTitle) ?></h1>
             <p class="page-board-subtitle"><?= esc($jobsHeroSubtitle) ?></p>
             <?php if ($showFilters): ?>
@@ -435,7 +533,10 @@ $activeFilterCount = count($activeFilterChips);
             <?php endif; ?>
 
             <?php
-            $uniqueEmploymentTypes = array_values(array_unique(array_column($employmentTypes, 'employment_type')));
+            $uniqueEmploymentTypes = array_values(array_filter(
+                array_unique(array_map(static fn($row) => trim((string) ($row['employment_type'] ?? '')), $employmentTypes)),
+                static fn($type) => $type !== ''
+            ));
             ?>
             <?php if (count($uniqueEmploymentTypes) > 1): ?>
             <div class="filter-section">
@@ -602,48 +703,38 @@ $activeFilterCount = count($activeFilterChips);
                 </div>
                 <?php endif; ?>
 
-                <?php if ($activeFilterCount > 0): ?>
-                <div class="jobs-search-feedback">
-                    <div class="jobs-search-feedback-copy">
-                        <div class="jobs-search-feedback-kicker">Search feedback</div>
-                        <p class="jobs-search-feedback-title">
-                            <?= $activeFilterCount . ' active filter' . ($activeFilterCount === 1 ? '' : 's') . ' applied' ?>
-                        </p>
-                        <p class="jobs-search-feedback-text">
+                <div class="jobs-results-summary">
+                    <div class="jobs-results-summary-copy">
+                        <div class="jobs-results-summary-kicker">Browse jobs</div>
+                        <h2 class="jobs-results-summary-title">
                             <?php if (!empty($filters['search'])): ?>
-                                Showing results for <strong>"<?= esc($filters['search']) ?>"</strong>.
+                                Results for "<?= esc($filters['search']) ?>"
                             <?php else: ?>
-                                Narrow by role, location, salary, and work mode to refine the list.
+                                <?= $activeFilterCount > 0 ? 'Filtered jobs' : 'All jobs' ?>
                             <?php endif; ?>
+                        </h2>
+                        <p class="jobs-results-summary-text">
+                            <strong><?= $totalJobs ?></strong> job<?= $totalJobs != 1 ? 's' : '' ?> found<?= $activeFilterCount > 0 ? ' with ' . $activeFilterCount . ' active filter' . ($activeFilterCount === 1 ? '' : 's') : '' ?>.
                         </p>
                     </div>
-                    <div class="jobs-search-feedback-actions">
-                        <?php
-                        $clearAllUrl = !empty($filters['company'])
-                            ? base_url('jobs?company=' . urlencode($filters['company']))
-                            : base_url('jobs?tab=all');
-                        ?>
-                        <a href="<?= esc($clearAllUrl) ?>" class="btn btn-outline-secondary btn-sm" data-jobs-filter-link="1">Clear all filters</a>
-                    </div>
-                </div>
-
-                <div class="active-filter-chips">
-                    <?php foreach ($activeFilterChips as $chip): ?>
-                        <a href="<?= esc($chip['url']) ?>" class="active-filter-chip" data-jobs-filter-link="1">
-                            <span><?= esc($chip['label']) ?></span>
-                            <i class="fas fa-times"></i>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-                <?php endif; ?>
-
-                <div class="results-bar">
-                    <span class="results-count">
-                        <?php if (!empty($filters['search'])): ?>
-                            Results for <strong>"<?= esc($filters['search']) ?>"</strong> -
-                        <?php endif; ?>
-                        <strong><?= $totalJobs ?></strong> job<?= $totalJobs != 1 ? 's' : '' ?> found
-                    </span>
+                    <?php
+                    $clearAllUrl = !empty($filters['company'])
+                        ? base_url('jobs?company=' . urlencode($filters['company']))
+                        : base_url('jobs?tab=all');
+                    ?>
+                    <?php if ($activeFilterCount > 0): ?>
+                        <a href="<?= esc($clearAllUrl) ?>" class="btn btn-outline-secondary btn-sm jobs-results-clear" data-jobs-filter-link="1">Clear all filters</a>
+                    <?php endif; ?>
+                    <?php if ($activeFilterCount > 0): ?>
+                        <div class="active-filter-chips">
+                            <?php foreach ($activeFilterChips as $chip): ?>
+                                <a href="<?= esc($chip['url']) ?>" class="active-filter-chip" data-jobs-filter-link="1">
+                                    <span><?= esc($chip['label']) ?></span>
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <?php if (!empty($jobs)): ?>
@@ -655,6 +746,7 @@ $activeFilterCount = count($activeFilterChips);
                             $location = (string) ($job['location'] ?? 'N/A');
                             $postedMeta = $formatPostedMeta($job['created_at'] ?? null);
                             $isSaved = in_array((int) ($job['id'] ?? 0), $savedJobIds, true);
+                            $appliedStatus = $appliedJobMap[(int) ($job['id'] ?? 0)] ?? null;
                             $type = strtolower((string) ($job['employment_type'] ?? ''));
                             $typeBadge = str_contains($type, 'part') ? 'badge-secondary' : 'badge-primary';
                             $companyInitial = strtoupper(substr($company, 0, 1) ?: 'C');
@@ -665,9 +757,11 @@ $activeFilterCount = count($activeFilterChips);
                             $isExternalJob = (int) ($job['is_external'] ?? 0) === 1;
                             $externalSource = trim((string) ($job['external_source'] ?? ''));
                             $isVisited = (int)($job['visited_flag'] ?? 0) === 1;
+                            $requiredSkillBadges = $pickRequiredSkillBadges($job);
+                            $showRemoteBadge = $isRemoteJob($job);
                         ?>
                         <div class="col-12">
-                            <div class="job-card">
+                            <div class="job-card <?= $appliedStatus !== null ? 'is-applied' : '' ?>">
                                 
                                 <div class="job-card-icon">
                                     <?php
@@ -698,15 +792,16 @@ $activeFilterCount = count($activeFilterChips);
                                     </div>
                                     <div class="job-card-tags">
                                         <span class="badge <?= $typeBadge ?>"><?= esc($job['employment_type'] ?: 'Full Time') ?></span>
-                                        <?php if ($isExternalJob): ?>
+                                        <?php if ($showRemoteBadge): ?>
                                             <span class="badge badge-warning">Remote</span>
                                         <?php endif; ?>
-                                        <span class="badge badge-secondary"><?= esc(substr($title, 0, 15) ?: 'Role') ?></span>
-                                         <?php if ($isVisited): ?>       <span class="badge badge-success">
-         Visited
-    </span>  <?php endif; ?>
+                                        <?php foreach ($requiredSkillBadges as $requiredSkillBadge): ?>
+                                            <span class="badge badge-secondary"><?= esc($requiredSkillBadge) ?></span>
+                                        <?php endforeach; ?>
+                                        <?php if ($appliedStatus !== null): ?>
+                                            <span class="badge job-card-applied-badge"><i class="fas fa-check-circle"></i> Applied</span>
+                                        <?php endif; ?>
                                     </div>
-                                    
                                     <div class="job-card-tools-wrapper">
                                         <button type="button" class="btn btn-sm btn-outline-secondary job-card-tools-toggle" title="Tools">
                                             <i class="fas fa-ellipsis-v"></i>
@@ -729,10 +824,14 @@ $activeFilterCount = count($activeFilterChips);
                                     <a href="<?= $isExternalJob && !empty($job['external_apply_url']) 
         ? esc($job['external_apply_url']) 
         : base_url('job/' . $job['id']) ?>" 
-   class="view-details js-mark-visited" 
+   class="view-details js-mark-visited <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>"
    data-job-id="<?= (int) $job['id'] ?>"
    <?= $isExternalJob ? 'target="_blank"' : '' ?>>
-   View Details &rarr;
+   <span class="viewed-action-mark <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>">
+       <i class="<?= $isVisited ? 'fas fa-eye' : 'far fa-eye' ?>"></i>
+       <?= $isVisited ? 'Viewed' : 'Not viewed' ?>
+   </span>
+   <span>View Details &rarr;</span>
 </a>
                                 </div>
                                 <button
@@ -1072,22 +1171,29 @@ document.addEventListener('click', function (e) {
     .then(res => res.json())
     .then(data => {
         console.log("Visited saved:", data);
-
-        // ✅ Add badge instantly
-        const card = link.closest('.job-card');
-        if (card) {
-            const tagsDiv = card.querySelector('.job-card-tags');
-            if (tagsDiv && !tagsDiv.querySelector('.badge-success')) {
-                const badge = document.createElement('span');
-                badge.className = 'badge badge-success';
-                badge.innerHTML = 'Visited';
-                tagsDiv.appendChild(badge);
+        if (data && data.csrf) {
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            if (csrfMeta) {
+                csrfMeta.setAttribute('content', data.csrf);
             }
+        }
+
+        if (!data || data.success !== true) {
+            return;
+        }
+
+        link.classList.remove('is-unviewed');
+        link.classList.add('is-viewed');
+
+        const viewedMark = link.querySelector('.viewed-action-mark');
+        if (viewedMark) {
+            viewedMark.classList.remove('is-unviewed');
+            viewedMark.classList.add('is-viewed');
+            viewedMark.innerHTML = '<i class="fas fa-eye"></i> Viewed';
         }
     })
     .catch(err => console.error(err))
     .finally(() => {
-        // ✅ navigate AFTER API call
         if (link.target === "_blank") {
             window.open(url, "_blank");
         } else {

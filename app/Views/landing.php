@@ -533,7 +533,157 @@ text-decoration:none !important;
         font-size:34px;
     }
 
+} 
+@media (prefers-color-scheme: dark) {
+
+    /* ── Base ── */
+    body, html {
+        background: #111111 !important;
+    }
+
+    /* ── Hero ── */
+    .hero {
+        background: #111111 !important;
+    }
+    .hero-h1 {
+        color: #F8FAFC !important;
+    }
+    .hero-sub {
+        color: #94A3B8 !important;
+    }
+    .hero-hint {
+        color: #7A8B96 !important;
+    }
+    .hero-search {
+        background: #111111 !important;
+        border-color: #23343A !important;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+    }
+    .hero-search:focus-within {
+        border-color: #1FB7B5 !important;
+        box-shadow: 0 0 0 3px rgba(31,183,181,.12) !important;
+    }
+    .search-field input {
+        color: #F8FAFC !important;
+    }
+    .search-field input::placeholder {
+        color: #7A8B96 !important;
+    }
+    .search-field:focus-within {
+        background: #1B2A2F !important;
+    }
+    .search-divider {
+        background: #23343A !important;
+    }
+
+    /* ── Wave section ── */
+    .wave-section {
+        background: #111111 !important;
+    }
+    .wave-section::before {
+        background: linear-gradient(to right, #111111, transparent) !important;
+    }
+    .wave-section::after {
+        background: linear-gradient(to left, #111111, transparent) !important;
+    }
+    .bubble-circle {
+        background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+        border-color: #23343A !important;
+        color: #1FB7B5 !important;
+    }
+    .bubble-label {
+        color: #1FB7B5 !important;
+    }
+
+    /* ── Featured Jobs ── */
+    .featured-jobs-section {
+        background: #111111 !important;
+    }
+    .featured-jobs-section .section-head-title {
+        color: #F8FAFC !important;
+    }
+    .featured-jobs-section .section-head-sub {
+        color: #94A3B8 !important;
+    }
+    .fj-card {
+        background: #111111 !important;
+        border-color: #23343A !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
+    }
+    .fj-card:hover {
+        border-color: #1FB7B5 !important;
+        box-shadow: none !important;
+    }
+    .fj-title {
+        color: #F8FAFC !important;
+    }
+    .fj-company {
+        color: #94A3B8 !important;
+    }
+    .fj-meta-item {
+        color: #7A8B96 !important;
+    }
+    .fj-salary {
+        color: #F8FAFC !important;
+    }
+    .fj-tag {
+        background: rgba(31,183,181,.08) !important;
+        border-color: #23343A !important;
+        color: #1FB7B5 !important;
+    }
+    .badge-featured {
+        background: rgba(31,183,181,.12) !important;
+        border-color: #23343A !important;
+        color: #1FB7B5 !important;
+    }
+
+    /* ── Career Transition ── */
+    .landing-career-transition {
+        background:
+            #111111 !important;
+    }
+    .career-title {
+        color: #F8FAFC !important;
+    }
+    .career-description {
+        color: #94A3B8 !important;
+    }
+    .career-badge {
+        background: rgba(31,183,181,.08) !important;
+        color: #1FB7B5 !important;
+    }
+
+    /* ── Get Started / Choices ── */
+    .landing-choices {
+        background: #111111 !important;
+    }
+    .choices-title {
+        color: #F8FAFC !important;
+    }
+    .choices-subtitle {
+        color: #94A3B8 !important;
+    }
+    .choices-label {
+        background: rgba(31,183,181,.08) !important;
+        color: #1FB7B5 !important;
+    }
+    .choice-card {
+        background: #111111 !important;
+        border-color: #23343A !important;
+        box-shadow: none !important;
+    }
+    .choice-card:hover {
+        border-color: #1FB7B5 !important;
+        box-shadow: none !important;
+    }
+    .choice-content h3 {
+        color: #F8FAFC !important;
+    }
+    .choice-content p {
+        color: #94A3B8 !important;
+    }
 }
+
 </style>
 </head>
 <?= view('Layouts/public_header', ['body_class' => 'landing-page']) ?>
@@ -806,7 +956,7 @@ text-decoration:none !important;
     {icon:'fa-clock',          label:'Full-time'},
     {icon:'fa-database',       label:'Data & AI'},
     {icon:'fa-users',          label:'HR'},
-    {icon:'fa-palette',        label:'Design'},
+    {icon:'fa-cube',        label:'Design'},
     {icon:'fa-chart-line',     label:'Finance'},
     {icon:'fa-handshake',      label:'Sales'},
     {icon:'fa-heartbeat',      label:'Healthcare'},

@@ -164,7 +164,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
         <?php endif; ?>
 
         <div class="recruiter-form-layout recruiter-slot-reschedule-layout">
-            <div class="recruiter-form-card">
+            <div class="recruiter-form-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card shadow-sm mb-4 recruiter-info-card">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Current Booking Details</h6>
@@ -209,7 +209,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
                     </div>
                 </div>
 
-                <div class="card shadow-sm recruiter-form-card">
+                <div class="card shadow-sm recruiter-form-card" style="border-radius: 20px !important;overflow: hidden;">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Select New Slot</h6>
                     </div>
@@ -297,7 +297,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
             </div>
 
             <div class="recruiter-side-rail">
-                <div class="card shadow-sm recruiter-help-card mb-4">
+                <div class="card shadow-sm recruiter-help-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Important</h6>
                     </div>
@@ -311,7 +311,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
                     </div>
                 </div>
 
-                <div class="card shadow-sm recruiter-help-card">
+                <div class="card shadow-sm recruiter-help-card" style="border-radius: 20px !important;overflow: hidden;">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Quick Notes</h6>
                     </div>

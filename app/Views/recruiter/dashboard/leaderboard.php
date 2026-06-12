@@ -87,14 +87,14 @@ border: 1px solid #23343A !important;
       #EEF9F2 100%
     ) !important;
 }
-body.dark .hm-page-content,body.dark .recruiter-leaderboard-jobboard,body.dark .card-header,body.dark .recruiter-leaderboard-card,body.dark .recruiter-alert, body.dark .alert-light,body.dark .card-body{
+body.dark .hm-page-content,body.dark .recruiter-leaderboard-jobboard,body.dark .card-header,body.dark .recruiter-leaderboard-card,body.dark .recruiter-alert, body.dark .alert-light{
   background: #111111 !important;
-    border: 1px solid #23343A !important;
+    border: none !important;
 } 
 body.dark .card-header, body.dark .recruiter-filter-card,body.dark .recruiter-alert,body.dark h6.m-0.font-weight-bold{
     color:#94A3B8 !important;
 }
-.page-board-header.page-board-header-tight.recruiter-page-board-header, body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header,{
+.page-board-header.page-board-header-tight.recruiter-page-board-header, body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .card-body,body.dark .row mt-4,body.dark .col-md-3{
       border: none !important;
 }
 /* ── Input focus border ── */
@@ -231,7 +231,7 @@ body.dark .card .card-body h3.text-warning {
         </div>
     </div>
 
-    <div class="card shadow-sm recruiter-filter-card mb-4">
+    <div class="card shadow-sm recruiter-filter-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-body">
             <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
                 <div>
@@ -290,7 +290,7 @@ body.dark .card .card-body h3.text-warning {
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-outline-primary" btn-block">
+                            <button type="submit" class="btn btn-outline-primary btn-block">
                                 Apply Filters
                             </button>
                         </div>
@@ -318,7 +318,7 @@ body.dark .card .card-body h3.text-warning {
         </div>
     <?php endif; ?>
 
-    <div class="card shadow-sm recruiter-leaderboard-card">
+    <div class="card shadow-sm recruiter-leaderboard-card" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold">
                 <i class="fas fa-crown"></i> Comparison View - <?= ucwords(str_replace('_', ' ', $filters['sort_by'] ?? 'technical_score')) ?>
@@ -529,15 +529,15 @@ body.dark .card .card-body h3.text-warning {
 
                 <div class="row mt-4">
                     <div class="col-md-3">
-                        <div class="card">
-                            <div class="card-body text-center crd">
+                        <div class="card" style="border-radius: 20px !important;overflow: hidden;">
+                            <div class="card-body text-center crd" >
                                 <h5 class="text-muted">Average Technical Score</h5>
                                 <h3 class="text-primary"><?= number_format($avgTech, 1) ?></h3>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card bg-light">
+                        <div class="card" style="border-radius: 20px !important;overflow: hidden;">
                             <div class="card-body text-center">
                                 <h5 class="text-muted">Average Communication Score</h5>
                                 <h3 class="text-info"><?= number_format($avgComm, 1) ?></h3>
@@ -545,7 +545,7 @@ body.dark .card .card-body h3.text-warning {
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card bg-light">
+                        <div class="card" style="border-radius: 20px !important;overflow: hidden;">
                             <div class="card-body text-center">
                                 <h5 class="text-muted">Average Overall Rating</h5>
                                 <h3 class="text-warning"><?= number_format($avgOverall, 1) ?></h3>
@@ -553,7 +553,7 @@ body.dark .card .card-body h3.text-warning {
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card bg-light">
+                        <div class="card" style="border-radius: 20px !important;overflow: hidden;">
                             <div class="card-body text-center">
                                 <h5 class="text-muted">Average ATS Score</h5>
                                 <h3 class="text-info"><?= $avgAts !== null ? number_format($avgAts, 1) : 'N/A' ?></h3>

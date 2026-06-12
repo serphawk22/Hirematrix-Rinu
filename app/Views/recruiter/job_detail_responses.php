@@ -1405,7 +1405,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
             $interviewBookings = $interviewBookings ?? [];
             $interviewSlots = $interviewSlots ?? [];
             ?>
-            <div class="card shadow-sm recruiter-summary-card mb-4">
+            <div class="card shadow-sm recruiter-summary-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
@@ -1436,7 +1436,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                 </div>
             </div>
 
-            <div class="card shadow-sm recruiter-table-card mb-4">
+            <div class="card shadow-sm recruiter-table-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <h6 class="m-0 font-weight-bold text-primary">Booked Interviews for This Job</h6>
                     
@@ -1542,14 +1542,14 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                 </div>
             </div>
 
-            <div class="card shadow-sm recruiter-table-card">
+            <div class="card shadow-sm recruiter-table-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <h6 class="m-0 font-weight-bold text-primary">Slot Capacity</h6>
                     <a href="<?= base_url('recruiter/slots/create') ?>" class="btn btn-sm btn-outline-primary">
                   Create New Slots
                     </a>
                 </div>
-                <div class="card-body">
+                <div class="card-body" >
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover recruiter-slots-table">
                             <thead class="thead-light">
@@ -1615,7 +1615,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
 
         <!-- Leaderboard Tab -->
         <div class="tab-pane fade" id="leaderboard" role="tabpanel">
-            <div class="card shadow-sm recruiter-leaderboard-card">
+            <div class="card shadow-sm recruiter-leaderboard-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-header ">
                     <h6 class="m-0 font-weight-bold">
                       Comparison View - <?= esc($job['title']) ?>

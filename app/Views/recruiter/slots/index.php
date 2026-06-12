@@ -691,7 +691,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
 
     <div class="row mb-4">
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card recruiter-stat-card recruiter-stat-applications shadow h-100">
+            <div class="card recruiter-stat-card recruiter-stat-applications shadow h-100" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -707,7 +707,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
         </div>
 
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card recruiter-stat-card recruiter-stat-openjobs shadow h-100">
+            <div class="card recruiter-stat-card recruiter-stat-openjobs shadow h-100" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -723,7 +723,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
         </div>
 
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card recruiter-stat-card recruiter-stat-conversion shadow h-100">
+            <div class="card recruiter-stat-card recruiter-stat-conversion shadow h-100" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -739,7 +739,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
         </div>
 
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card recruiter-stat-card recruiter-stat-bookings shadow h-100">
+            <div class="card recruiter-stat-card recruiter-stat-bookings shadow h-100" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -755,7 +755,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
         </div>
     </div>
 
-    <div class="card shadow-sm recruiter-filter-card mb-4">
+    <div class="card shadow-sm recruiter-filter-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-body">
             <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
                 <div>
@@ -811,7 +811,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
         </div>
     </div>
 
-    <div class="card shadow-sm recruiter-table-card">
+    <div class="card shadow-sm recruiter-table-card" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Interview Slots</h6>
         </div>

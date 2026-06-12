@@ -253,3 +253,68 @@ body.dark .public-auth-page select.auth-input option {
 .public-auth-page .auth-google-gap .auth-divider-line {
   height: 1px;
 }
+
+/* Auth pages: keep form focus states on the current HireMatrix theme. */
+.public-auth-page .auth-page-brand {
+  display: none !important;
+}
+
+.public-auth-page ::selection {
+  background: rgba(31, 183, 181, 0.24);
+  color: #0F172A;
+}
+
+.public-auth-page .auth-field-wrap:focus-within .auth-field-icon,
+.public-auth-page .auth-password-toggle:hover,
+.public-auth-page .auth-password-toggle:focus {
+  color: #0D8A90 !important;
+}
+
+.public-auth-page .auth-input,
+.public-auth-page .form-control,
+.public-auth-page .custom-select {
+  border-color: #D7E4EF !important;
+  box-shadow: none !important;
+  caret-color: #0D8A90;
+}
+
+.public-auth-page .auth-input:focus,
+.public-auth-page .form-control:focus,
+.public-auth-page .custom-select:focus,
+.public-auth-page select.auth-input:focus,
+.public-auth-page textarea.form-control:focus {
+  border-color: #1FB7B5 !important;
+  /* box-shadow: 0 0 0 0.18rem rgba(31, 183, 181, 0.14) !important; */
+  outline: 0 !important;
+}
+
+.public-auth-page .auth-input::selection,
+.public-auth-page .form-control::selection {
+  background: rgba(31, 183, 181, 0.24);
+  color: #0F172A;
+}
+
+.public-auth-page .form-check-input:checked,
+.public-auth-page .custom-control-input:checked ~ .custom-control-label::before {
+  background-color: #1FB7B5 !important;
+  border-color: #1FB7B5 !important;
+}
+
+.public-auth-page .form-check-input:focus,
+.public-auth-page .custom-control-input:focus ~ .custom-control-label::before {
+  border-color: #1FB7B5 !important;
+  box-shadow: 0 0 0 0.18rem rgba(31, 183, 181, 0.14) !important;
+}
+
+.public-auth-page .form-check-input:focus:not(:checked),
+.public-auth-page .custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
+  border-color: #1FB7B5 !important;
+}
+
+.public-auth-page input:-webkit-autofill,
+.public-auth-page input:-webkit-autofill:hover,
+.public-auth-page input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0F172A;
+  /* box-shadow: 0 0 0 1000px #FFFFFF inset, 0 0 0 0.18rem rgba(31, 183, 181, 0.14) !important; */
+  caret-color: #0D8A90;
+}

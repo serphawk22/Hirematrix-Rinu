@@ -680,6 +680,7 @@ class SlotManagementController extends BaseController
         $bookingModel->update($bookingId, [
             'slot_id' => $newSlotId,
             'slot_datetime' => $newSlot['slot_datetime'],
+            'booking_status' => 'rescheduled',
             'last_rescheduled_at' => date('Y-m-d H:i:s')
         ]);
 

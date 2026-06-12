@@ -156,7 +156,7 @@ body.dark .recruiter-summary-card{
 
     <div class="recruiter-form-layout recruiter-slot-create-layout">
         <div class="recruiter-form-main">
-            <div class="card shadow-sm recruiter-form-card">
+            <div class="card shadow-sm recruiter-form-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <form method="post" action="<?= base_url('recruiter/slots/store') ?>" id="slotForm" class="recruiter-job-form">
                         <?= csrf_field() ?>
@@ -239,7 +239,7 @@ body.dark .recruiter-summary-card{
         </div>
 
         <div class="recruiter-form-side">
-            <div class="card shadow-sm recruiter-form-card">
+            <div class="card shadow-sm recruiter-form-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6 class="mb-3"><i class="fas fa-question-circle"></i> How it works</h6>
                     <ul class="recruiter-help-list mb-0">
@@ -253,7 +253,7 @@ body.dark .recruiter-summary-card{
                 </div>
             </div>
 
-            <div class="card shadow-sm recruiter-form-card">
+            <div class="card shadow-sm recruiter-form-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6 class="mb-3"><i class="fas fa-lightbulb"></i> Scheduling tip</h6>
                     <p class="text-muted mb-0">Create fewer, higher-quality slots if you want easier coordination and lower no-show risk.</p>
