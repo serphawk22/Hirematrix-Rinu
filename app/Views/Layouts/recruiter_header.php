@@ -615,7 +615,7 @@
 
 :root.dark .hm-sidebar,
 body.dark .hm-sidebar {
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%);
+  background: #111111 !important;
     border-right-color: #23343A;
 }
 
@@ -696,7 +696,7 @@ body.dark .hm-sidebar .sb-tooltip::before {
 
 /* ── Profile submenu ── */
 body.dark .hm-sidebar .hm-sb-profile-sub {
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+  background: #111111 !important;
     border-top-color: #23343A;
 }
 body.dark .hm-sidebar .hm-sb-profile-sub a {
@@ -752,7 +752,7 @@ body.dark .hm-sb-translate-row select:hover {
 
 /* ── Profile card (bottom) ── */
 body.dark .hm-sidebar .hm-sb-profile {
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+   background: #111111 !important;
     border-top-color: #23343A;
 }
 body.dark .hm-sidebar .hm-sb-profile:hover {

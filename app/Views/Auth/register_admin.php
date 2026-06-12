@@ -28,11 +28,7 @@
     overflow: hidden;
 
     /* Same colors, calmer angle + tighter spread = no glow */
-    background: linear-gradient(
-      135deg,
-      #F4FBFA 0%,
-      #EEF9F2 100%
-    );
+    background:white !important;
 
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -49,7 +45,7 @@
     position: relative;
     z-index: 2;
 
-    background: #F4FBFA;
+    background: #ffffff !important;
 
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);

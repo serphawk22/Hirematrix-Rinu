@@ -19,8 +19,11 @@
       #EEF9F2 100%
     ) !important;
 }
-body.dark .hm-page-content,body.dark .recruiter-notifications-jobboard,body.dark .recruiter-notification-card{
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
+body.dark .hm-page-content,body.dark .recruiter-notifications-jobboard {
+    background: #111111 !important; 
+} 
+body.dark .recruiter-notification-card{
+    background: #111111 !important;
     border: 1px solid #23343A; !important;
 } 
 .status-pill {
@@ -39,8 +42,9 @@ body.dark .hm-page-content,body.dark .recruiter-notifications-jobboard,body.dark
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #111111 !important;
     color: #0D8A90;
+      border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
    .btn-primary,.btn-outline-primary {  
         background: transparent !important;

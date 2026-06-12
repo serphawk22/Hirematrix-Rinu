@@ -33,8 +33,9 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #111111 !important;
     color: #0D8A90;
+    border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
     .btn-primary,.btn-outline-primary {
   background: transparent !important;
@@ -61,7 +62,7 @@ body.dark .status-pill {
     ) !important;
 }
 body.dark .hm-page-content,body.dark .recruiter-slot-create-jobboard, body.dark .recruiter-form-card,body.dark .checklist-item{
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
+    background: #111111 !important;
     border: 1px solid #23343A; !important;
 } 
 .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
@@ -87,7 +88,7 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #1B2A2F !important;
+    background: #111111 !important;
     color: #F8FAFC !important;
 }
 /* ── Labels — match h6 style ── */
@@ -125,11 +126,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
     border:none !important;
 }
 body.dark .recruiter-summary-card{
-    background: linear-gradient(
-      135deg,
-      #162327 0%,
-      #1B2A2F 100%
-    );
+    background: #111111 !important;
     color:#94A3B8;
     border:1px solid #23343A;
 }

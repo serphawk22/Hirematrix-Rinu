@@ -158,8 +158,9 @@ body.dark .btn-outline-danger:hover {
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #111111 !important;
     color: #0D8A90;
+    border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
 .btn-warning {
   background: #FEF3C7 !important;
@@ -197,7 +198,7 @@ body.dark .btn-danger {
   min-height: 100vh;
 }
 body.dark .recruiter-pipeline-page {
-  background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+  background: #111111 !important;
 }
 
 /* ══════════════════════════════════════════
@@ -345,7 +346,7 @@ body.dark .recruiter-pipeline-page .card {
   gap: 0.5rem;
 }
 body.dark .recruiter-pipeline-page .card-header {
-  background: #1B2A2F !important;
+  background: #111111 !important;
   border-bottom: 1px solid #23343A !important;
 }
 
@@ -373,7 +374,7 @@ body.dark .recruiter-pipeline-page .card-header .font-weight-bold {
   background: #FFFFFF !important;
 }
 body.dark .recruiter-pipeline-page .card-body {
-  background: #162327 !important;
+  background: #111111 !important;
 }
 
 /* ══════════════════════════════════════════
@@ -392,7 +393,7 @@ body.dark .recruiter-pipeline-page tr,
 body.dark .recruiter-pipeline-page td,
 body.dark .recruiter-pipeline-page th,
 body.dark .recruiter-pipeline-page .col-md-3 {
-  background: #1B2A2F !important;
+  background: #111111 !important;
   color: #94A3B8 !important;
   border-color: #23343A !important;
 }
@@ -405,7 +406,7 @@ body.dark .recruiter-pipeline-page .col-md-3 {
 body.dark .recruiter-pipeline-page .table-secondary td,
 body.dark .recruiter-pipeline-page .table-secondary th,
 body.dark .recruiter-pipeline-page .table-secondary {
-  background: #162327 !important;
+  background: #111111 !important;
 }
 
 .recruiter-pipeline-page thead th {
@@ -414,7 +415,7 @@ body.dark .recruiter-pipeline-page .table-secondary {
   border-color: #D9ECE5 !important;
 }
 body.dark .recruiter-pipeline-page thead th {
-  background: #162327 !important;
+  background: #111111 !important;
   color: #94A3B8 !important;
   border-color: #23343A !important;
 }
@@ -491,10 +492,16 @@ body.dark .recruiter-pipeline-page .pipeline-summary-main {
   cursor: pointer;
 }
 body.dark .recruiter-pipeline-page .pipeline-hiring-chip {
-  background: rgba(122, 139, 150, 0.31);
-  color: #0D8A90;
+ background: #111111 !important;
+    color: #0D8A90;
+    border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
-
+body.dark #pipelineBulkAction:focus { border-color: #0D8A90; }
+body.dark #pipelineBulkAction:hover { border-color: #1FB7B5; }
+body.dark #pipelineBulkAction option {
+    background: #111111 !important;
+    color: #F8FAFC;
+}
 /* ══════════════════════════════════════════
    STAGE RAIL
 ══════════════════════════════════════════ */
@@ -578,7 +585,7 @@ body.dark .recruiter-pipeline-page .pipeline-hiring-chip {
 .recruiter-pipeline-page .pipeline-search input::placeholder { color: #94A3B8 !important; }
 
 body.dark .recruiter-pipeline-page .pipeline-search {
-  background: #1B2A2F !important;
+  background: #111111 !important;
   border: 1px solid #23343A !important;
 }
 body.dark .recruiter-pipeline-page .pipeline-search:focus-within {
@@ -642,7 +649,7 @@ body.dark .recruiter-pipeline-page .pipeline-tool-btn.active {
   border-color: #0D8A90 !important;
 }
 body.dark .recruiter-pipeline-page .pipeline-bulk-controls select {
-  background: #1B2A2F !important;
+  background: #111111 !important;
   border: 1px solid #23343A !important;
   color: #F8FAFC !important;
 }
@@ -745,6 +752,7 @@ body.dark .recruiter-pipeline-page .badge-light     { background: #1B2A2F       
   flex-direction: column;
   gap: 4px;
 }
+
 .recruiter-pipeline-page .recruiter-summary-label {
   font-size: 0.78rem;
   font-weight: 600;
@@ -833,7 +841,7 @@ body.dark .recruiter-pipeline-page .rank-number       { color: #94A3B8; }
 body.dark .recruiter-pipeline-page .score-bar { background: #23343A; }
 .recruiter-pipeline-page .score-fill {
   height: 100%;
-  background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
+  background: #111111 !important;
   border-radius: 2px;
 }
 

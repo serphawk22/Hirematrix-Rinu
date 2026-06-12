@@ -50,8 +50,9 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #111111 !important;
     color: #0D8A90;
+    border: 1px solid rgba(31, 183, 181, 0.6) !important;
 }
 .page-board-header.page-board-header-tight.recruiter-page-board-header,.border-bottom,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .border-bottom,body.dark .candidate-summary-fallback{
     border:none !important;
@@ -64,7 +65,7 @@ body.dark .status-pill {
     ) !important;
 }
 body.dark .hm-page-content,body.dark .recruiter-candidate-profile-jobboard, body.dark .candidate-profile-rail-card, body.dark .candidate-profile-section,body.dark .candidate-detail-item,body.dark .card.shadow-sm.mb-3{
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
+    background: #111111 !important;
     border: 1px solid #23343A !important;
 } 
 body.dark .candidate-detail-item div,body.dark .card-body p,body.dark .candidate-meta p,body.dark .h6.mb-0{
@@ -103,7 +104,7 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #1B2A2F !important;
+    background: #111111 !important;
     color: #F8FAFC !important;
 }
 /* ── Labels — match h6 style ── */
@@ -190,7 +191,7 @@ body.dark div{
                 </a>
             <?php endif; ?>
             <?php if ($candidate['resume_path']): ?>
-                <a href="<?= $resumeUrl ?>" class="btn btn-primary">
+                <a href="<?= $resumeUrl ?>" class="btn btn-outline-primary">
                    Download Resume
                 </a>
             <?php endif; ?>

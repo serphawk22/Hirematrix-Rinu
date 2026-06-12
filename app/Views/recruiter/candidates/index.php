@@ -71,7 +71,7 @@ body.dark .card.shadow-sm.recruiter-table-card,
 body.dark .hm-page-content,
 body.dark .card.shadow-sm.recruiter-filter-card,
 body.dark .card-header {
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+    background: #111111 !important;
 }
 
 /* ── Page title ── */
@@ -121,7 +121,7 @@ body.dark .recruiter-filter-card {
     background: transparent !important;
 }
 body.dark .recruiter-candidates-table thead tr {
-    background: #1B2A2F !important;
+    background: #111111 !important;
     border-bottom-color: #23343A !important;
 }
 body.dark .recruiter-candidates-table thead th {
@@ -237,14 +237,10 @@ body.dark .badge-resume-no {
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #111111 !important;
     color: #0D8A90;
-}
-.status-pill:hover {
-    opacity: 0.85;
-    color: #0D8A90;
-    text-decoration: none !important;
-}
+    border: 1px solid rgba(31, 183, 181, 0.15) !important;
+} 
 
 /* ── Primary button (Search, View in AI table) ── */
 .btn-primary {
@@ -320,20 +316,7 @@ body.dark .title{
     font-weight: 600 !important;
     text-decoration:none !important;
     backdrop-filter: blur(10px);
-}
-body.dark .status-pill{
-     display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #7a8b9650 !important;
-    color: #0D8A90 !important;
-    padding: 6px 14px;
-    border-radius: 50px;
-    font-size: 13px;
-    font-weight: 600 !important;
-    text-decoration:none !important;
-    backdrop-filter: blur(10px);
-}
+} 
 /* ── Labels — match h6 style ── */
 .recruiter-candidate-filter-form label {
     font-size: 1rem;        /* same as Bootstrap h6 */
@@ -363,7 +346,7 @@ body.dark .recruiter-candidate-filter-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #1B2A2F !important;
+    background: #111111 !important;
     color: #F8FAFC !important;
 }
 /* ── Kill Bootstrap's orange/default focus first ── */
