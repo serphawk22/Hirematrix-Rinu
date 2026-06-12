@@ -10,6 +10,52 @@ $backLabel = $isRecruiter ? 'Back to Dashboard' : 'Back to Profile';
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Change Password | HireMatrix</title>
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('theme') === 'dark') {
+                    document.documentElement.classList.add('hm-dark-preload');
+                }
+            } catch (error) {}
+        })();
+
+        (function () {
+            try {
+                var role = <?= json_encode($role) ?>;
+                var keys = role === 'recruiter'
+                    ? ['hm_theme', 'recruiter-theme', 'theme']
+                    : ['theme', 'hm_theme', 'recruiter-theme'];
+                var theme = 'light';
+
+                for (var i = 0; i < keys.length; i += 1) {
+                    var value = localStorage.getItem(keys[i]);
+                    if (value === 'dark' || value === 'light') {
+                        theme = value;
+                        break;
+                    }
+                }
+
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark', 'hm-auth-dark', 'hm-dark-preload');
+                }
+            } catch (error) {}
+        })();
+    </script>
+    <style>
+        html.hm-dark-preload,
+        html.hm-dark-preload body {
+            background: #0d1117 !important;
+        }
+
+        html.hm-dark-preload #overlayer {
+            background: #0d1117 !important;
+        }
+
+        html.hm-dark-preload .loader .spinner-border,
+        html.hm-dark-preload .loader .spinner-border.text-primary {
+            color: #1FB7B5 !important;
+        }
+    </style>
     <link rel="icon" type="image/png" href="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>">
 
     <link rel="stylesheet" href="<?= base_url('jobboard/css/custom-bs.css') ?>">
@@ -43,7 +89,7 @@ $backLabel = $isRecruiter ? 'Back to Dashboard' : 'Back to Profile';
     transform: translateY(-1px);
 
 }
-@media (prefers-color-scheme: dark) {
+@media not all {
     .auth-page-shell {
         background: #111111 !important;
     }
@@ -161,7 +207,7 @@ $backLabel = $isRecruiter ? 'Back to Dashboard' : 'Back to Profile';
 }
     </style>
 </head>
-<?= view('Layouts/auth_header', ['body_class' => 'public-auth-page']) ?>
+<?= view('Layouts/auth_header', ['body_class' => 'public-auth-page change-password-auth-page']) ?>
 
 <section class="auth-page-shell">
     <div class="auth-page-column auth-page-column--md">

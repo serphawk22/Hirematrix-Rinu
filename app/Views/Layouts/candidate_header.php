@@ -7,6 +7,15 @@
     <meta name="csrf-token" content="<?= csrf_hash() ?>">
     <meta name="csrf-name" content="<?= csrf_token() ?>">
     <title><?= esc($title ?? 'Candidate Portal') ?></title>
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('theme') === 'dark') {
+                    document.documentElement.classList.add('hm-dark-preload');
+                }
+            } catch (error) {}
+        })();
+    </script>
     <!-- Inside the <head> tag -->
     <link rel="icon" type="image/png" href="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>">
 
@@ -51,6 +60,21 @@
         <!-- CSS Circle Progress (Required for visual ATS Score) -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/css-percentage-circle/0.0.3/css/circle.min.css">
     <?php endif; ?>
+    <style>
+        html.hm-dark-preload,
+        html.hm-dark-preload body,
+        body.dark.candidate-app {
+            background: #0d1117;
+        }
+        html.hm-dark-preload #overlayer,
+        body.dark.candidate-app #overlayer {
+            background: #0d1117 !important;
+        }
+        html.hm-dark-preload .loader .spinner-border,
+        body.dark.candidate-app .loader .spinner-border {
+            color: #1FB7B5 !important;
+        }
+    </style>
 </head>
 <body id="top" class="hirematrix-app candidate-app">
 

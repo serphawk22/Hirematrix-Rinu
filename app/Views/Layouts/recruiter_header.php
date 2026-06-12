@@ -5,7 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="base-url" content="<?= base_url() ?>">
     <title><?= esc($title ?? 'Recruiter Portal') ?></title>
-
+    <script>
+        (function () {
+            try {
+                var darkTheme = localStorage.getItem('hm_theme') === 'dark'
+                    || localStorage.getItem('recruiter-theme') === 'dark';
+                if (darkTheme) {
+                    document.documentElement.classList.add('hm-dark-preload');
+                }
+            } catch (error) {}
+        })();
+    </script>
+    <link rel="icon" type="image/png" href="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/custom-bs.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/jquery.fancybox.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/bootstrap-select.min.css') ?>">
@@ -846,6 +857,27 @@ body.dark .hm-knob {
 .hm-tp-sun  { color: #F59E0B; }
 .hm-tp-moon { color: #7A8B96; }
 body.dark .hm-tp-moon { color: #94A3B8; }
+
+/* Keep the global recruiter loader on the HireMatrix teal theme. */
+html.hm-dark-preload,
+html.hm-dark-preload body,
+body.recruiter-jobboard.dark,
+body.recruiter-jobboard.dark-mode {
+    background: #0d1117;
+}
+
+html.hm-dark-preload #overlayer,
+body.recruiter-jobboard.dark #overlayer,
+body.recruiter-jobboard.dark-mode #overlayer {
+    background: #0d1117 !important;
+}
+
+body.recruiter-jobboard .loader .spinner-border,
+body.recruiter-jobboard .loader .spinner-border.text-primary,
+body.recruiter-jobboard .loader .spinner-border.text-success,
+html.hm-dark-preload .loader .spinner-border {
+    color: var(--hm-primary, #1FB7B5) !important;
+}
 
     </style>
 </head>

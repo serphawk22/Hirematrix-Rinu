@@ -2180,7 +2180,7 @@ section.py-5#jobs {
 }
 
 .table thead th {
- /* background: #f8fafc;*/
+  background: #f8fafc;
   font-weight: 700;
 }
 
@@ -6770,7 +6770,7 @@ main > .container {
   }
 }
 
-/* Recruiter theme: current brand palette overrides */
+/* Recruiter theme: orange palette overrides */
 .recruiter-jobboard {
   --primary: #ff7b2a;
   --primary-dark: #e56a18;
@@ -6786,7 +6786,7 @@ main > .container {
 }
 
 .recruiter-jobboard .loader .spinner-border.text-success {
-  color: var(--secondary) !important;
+  color: #ffb26b !important;
 }
 
 .recruiter-jobboard .btn-primary,

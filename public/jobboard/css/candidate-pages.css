@@ -16907,6 +16907,51 @@ body.dark.candidate-app .dashboard-jobboard .text-primary {
     color: var(--primary-dark) !important;
 }
 
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table-responsive,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table {
+    background: var(--candidate-surface) !important;
+    color: var(--candidate-ink) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table thead,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table thead tr,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table thead th {
+    background: var(--candidate-surface-soft) !important;
+    background-color: var(--candidate-surface-soft) !important;
+    border-color: var(--candidate-line) !important;
+    color: var(--candidate-muted) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table tbody tr,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table tbody td,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table > :not(caption) > * > * {
+    background: transparent !important;
+    background-color: transparent !important;
+    border-color: var(--candidate-line) !important;
+    color: var(--candidate-muted) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table tbody td strong {
+    color: var(--candidate-ink) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table tbody tr:hover {
+    background: rgba(31, 183, 181, 0.08) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .dashboard-table-icon-link {
+    background: rgba(31, 183, 181, 0.08) !important;
+    border-color: rgba(31, 183, 181, 0.36) !important;
+    color: var(--primary, #1FB7B5) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .dashboard-table-icon-link:hover,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .dashboard-table-icon-link:focus {
+    background: rgba(31, 183, 181, 0.16) !important;
+    border-color: var(--primary, #1FB7B5) !important;
+}
+
 body.dark.candidate-app .candidate-workbar {
     background: var(--candidate-surface) !important;
     border: 1px solid var(--candidate-line) !important;

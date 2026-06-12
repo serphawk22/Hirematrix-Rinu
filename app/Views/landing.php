@@ -39,6 +39,7 @@ $formatAge = static function ($value): string {
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>HireMatrix | Home</title>
+    <link rel="icon" type="image/png" href="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>">
     <meta name="description" content="AI Job Portal home page">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/custom-bs.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/jquery.fancybox.min.css') ?>">
@@ -686,8 +687,7 @@ text-decoration:none !important;
 
 </style>
 </head>
-<body id="top" class="hirematrix-app landing-page landing-redesign">
-<div class="site-wrap">
+<?= view('Layouts/public_header', ['body_class' => 'landing-page']) ?>
 
 <!-- ═══════════════ HERO ═══════════════ -->
 <section class="hero py-5">
@@ -844,8 +844,6 @@ text-decoration:none !important;
                     </p>
 
                 </div>
-            </div>
-        </section>
 
                
             </a>
