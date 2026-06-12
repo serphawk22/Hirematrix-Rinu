@@ -382,6 +382,24 @@ class API_RecruiterController extends ResourceController
                 }
             }
             $company['workplace_photos_urls'] = $workplacePhotos;
+
+            // Map database fields to keys expected by the mobile client:
+            $company['company_name'] = $company['name'] ?? '';
+            $company['careers_page_url'] = $company['career_page'] ?? '';
+            $company['company_size'] = $company['size'] ?? '';
+            $company['hq_location'] = $company['hq'] ?? '';
+            $company['branch_locations'] = $company['branches'] ?? '';
+            $company['about_company'] = $company['what_we_do'] ?? '';
+            $company['linkedin_url'] = $company['linkedin'] ?? '';
+            $company['twitter_url'] = $company['twitter'] ?? '';
+            $company['facebook_url'] = $company['facebook'] ?? '';
+            $company['instagram_url'] = $company['instagram'] ?? '';
+            $company['youtube_url'] = $company['youtube'] ?? '';
+            $company['culture_environment'] = $company['culture_summary'] ?? '';
+            $company['hr_support_email'] = $company['contact_email'] ?? '';
+            $company['recruiter_phone'] = $company['contact_phone'] ?? '';
+            $company['public_contact_visibility'] = $company['contact_public'] ?? 0;
+            $company['company_id'] = $company['id'];
         }
 
         return $this->respond([
@@ -692,36 +710,74 @@ class API_RecruiterController extends ResourceController
         if (!$recruiterId || !$companyId) return $this->fail('Recruiter and Company ID required');
 
         $companyModel = new CompanyModel();
+
+        // Support both old keys and new keys (exact DB columns)
+        $name = $this->request->getVar('name') ?? $this->request->getVar('company_name');
+        $website = $this->request->getVar('website');
+        $careerPage = $this->request->getVar('career_page') ?? $this->request->getVar('careers_page_url');
+        $industry = $this->request->getVar('industry');
+        $size = $this->request->getVar('size') ?? $this->request->getVar('company_size');
+        $hq = $this->request->getVar('hq') ?? $this->request->getVar('hq_location');
+        $branches = $this->request->getVar('branches') ?? $this->request->getVar('branch_locations');
+        $shortDescription = $this->request->getVar('short_description');
+        $whatWeDo = $this->request->getVar('what_we_do') ?? $this->request->getVar('about_company');
+        $linkedin = $this->request->getVar('linkedin') ?? $this->request->getVar('linkedin_url');
+        $twitter = $this->request->getVar('twitter') ?? $this->request->getVar('twitter_url');
+        $facebook = $this->request->getVar('facebook') ?? $this->request->getVar('facebook_url');
+        $instagram = $this->request->getVar('instagram') ?? $this->request->getVar('instagram_url');
+        $youtube = $this->request->getVar('youtube') ?? $this->request->getVar('youtube_url');
+        $missionValues = $this->request->getVar('mission_values') ?? $this->request->getVar('mission');
+        $cultureSummary = $this->request->getVar('culture_summary') ?? $this->request->getVar('culture_environment') ?? $this->request->getVar('culture');
+        $employeeBenefits = $this->request->getVar('employee_benefits') ?? $this->request->getVar('benefits');
+        $officeTourTitle = $this->request->getVar('office_tour_title');
+        $officeTourUrl = $this->request->getVar('office_tour_url');
+        $officeTourSummary = $this->request->getVar('office_tour_summary');
+        $contactEmail = $this->request->getVar('contact_email') ?? $this->request->getVar('hr_support_email') ?? $this->request->getVar('hr_email');
+        $contactPhone = $this->request->getVar('contact_phone') ?? $this->request->getVar('recruiter_phone') ?? $this->request->getVar('phone');
+        $contactPublic = $this->request->getVar('contact_public') ?? $this->request->getVar('public_contact_visibility');
+
         $data = [
-            'name'                      => $this->request->getVar('company_name'),
-            'website'                   => $this->request->getVar('website'),
-            'careers_page_url'          => $this->request->getVar('careers_page_url'),
-            'industry'                  => $this->request->getVar('industry'),
-            'company_size'              => $this->request->getVar('company_size'),
-            'hq'                        => $this->request->getVar('hq_location'),
-            'branch_locations'          => $this->request->getVar('branch_locations'),
-            'short_description'         => $this->request->getVar('short_description'),
-            'about'                     => $this->request->getVar('about_company'),
-            'linkedin_url'              => $this->request->getVar('linkedin_url'),
-            'twitter_url'               => $this->request->getVar('twitter_url'),
-            'facebook_url'              => $this->request->getVar('facebook_url'),
-            'instagram_url'             => $this->request->getVar('instagram_url'),
-            'youtube_url'               => $this->request->getVar('youtube_url'),
-            'mission'                   => $this->request->getVar('mission_values'),
-            'culture'                   => $this->request->getVar('culture_environment'),
-            'benefits'                  => $this->request->getVar('employee_benefits'),
-            'office_tour_title'         => $this->request->getVar('office_tour_title'),
-            'office_tour_url'           => $this->request->getVar('office_tour_url'),
-            'office_tour_summary'       => $this->request->getVar('office_tour_summary'),
-            'hr_email'                  => $this->request->getVar('hr_support_email'),
-            'phone'                     => $this->request->getVar('recruiter_phone'),
-            'public_contact_visibility' => $this->request->getVar('public_contact_visibility'),
+            'name'                => $name,
+            'website'             => $website,
+            'career_page'         => $careerPage,
+            'industry'            => $industry,
+            'size'                => $size,
+            'hq'                  => $hq,
+            'branches'            => $branches,
+            'short_description'   => $shortDescription,
+            'what_we_do'          => $whatWeDo,
+            'linkedin'            => $linkedin,
+            'twitter'             => $twitter,
+            'facebook'            => $facebook,
+            'instagram'           => $instagram,
+            'youtube'             => $youtube,
+            'mission_values'      => $missionValues,
+            'culture_summary'     => $cultureSummary,
+            'employee_benefits'   => $employeeBenefits,
+            'office_tour_title'   => $officeTourTitle,
+            'office_tour_url'     => $officeTourUrl,
+            'office_tour_summary' => $officeTourSummary,
+            'contact_email'       => $contactEmail,
+            'contact_phone'       => $contactPhone,
+            'contact_public'      => $contactPublic !== null ? ($contactPublic ? 1 : 0) : null,
         ];
 
         // Filtering out null values to prevent overwriting with null
         $data = array_filter($data, fn($v) => !is_null($v));
 
         if ($companyModel->update($companyId, $data)) {
+            // Sync company name to recruiter profile and jobs if name was updated
+            if (!empty($data['name'])) {
+                $userModel = new UserModel();
+                $userModel->upsertRecruiterProfile((int)$recruiterId, [
+                    'company_name' => $data['name'],
+                ]);
+                model('JobModel')
+                    ->where('recruiter_id', $recruiterId)
+                    ->set(['company' => $data['name']])
+                    ->update();
+            }
+
             return $this->respond([
                 'success' => true,
                 'message' => 'Company profile updated successfully'
