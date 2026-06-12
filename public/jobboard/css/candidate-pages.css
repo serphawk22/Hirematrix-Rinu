@@ -1254,7 +1254,7 @@ body.dark {
     margin-bottom: 10px;
 }
 
-.strategy-jobboard .strategy-mini-timeline {
+/* .strategy-jobboard .strategy-mini-timeline {
     display: grid;
     gap: 12px;
 }
@@ -1295,7 +1295,7 @@ body.dark {
     color: #64748b;
     font-size: .88rem;
     line-height: 1.55;
-}
+} 
 
 .strategy-jobboard .strategy-mini-items {
     margin: 0;
@@ -1307,7 +1307,7 @@ body.dark {
 
 .strategy-jobboard .strategy-mini-items li + li {
     margin-top: 4px;
-}
+}*/
 
 .strategy-jobboard .strategy-hero-card {
     position: relative;
@@ -1337,7 +1337,7 @@ body.dark {
     font-weight: 700;
 }
 
-.strategy-jobboard .strategy-metric-grid {
+/* .strategy-jobboard .strategy-metric-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
@@ -1350,7 +1350,7 @@ body.dark {
     border-radius: 14px;
     background: #fff;
     box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
-}
+} 
 
 .strategy-jobboard .strategy-metric-label {
     display: block;
@@ -1375,7 +1375,7 @@ body.dark {
     color: #64748b;
     font-size: .88rem;
     line-height: 1.5;
-}
+}*/
 
 .strategy-jobboard .strategy-section {
     display: grid;
@@ -20962,6 +20962,340 @@ body.dark.candidate-app .resume-studio-jobboard .resume-version-fade {
     background: linear-gradient(180deg, rgba(22, 27, 34, 0), #161b22) !important;
 }
 
+/* Candidate blog detail: align with the shared candidate page shell. */
+body.candidate-app .blog-detail-jobboard {
+    background: transparent !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-detail-content-canvas {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-detail-content-canvas > .container-fluid {
+    display: grid !important;
+    gap: 18px !important;
+    max-width: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-detail-header {
+    align-items: center !important;
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 0 !important;
+    border-radius: var(--candidate-section-radius, 30px) !important;
+    box-shadow: none !important;
+    display: flex !important;
+    gap: 18px !important;
+    justify-content: space-between !important;
+    margin: 0 !important;
+    min-height: 140px !important;
+    padding: 24px 28px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .page-board-copy {
+    margin: 0 !important;
+    max-width: 920px !important;
+    min-width: 0 !important;
+}
+
+body.candidate-app .blog-detail-jobboard .page-board-title {
+    font-size: clamp(1.8rem, 2.2vw, 2.6rem) !important;
+    line-height: 1.15 !important;
+    margin: 8px 0 10px !important;
+    max-width: 880px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .page-board-subtitle {
+    max-width: 760px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-back-link {
+    align-items: center !important;
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    display: inline-flex !important;
+    font-size: .88rem !important;
+    font-weight: 800 !important;
+    gap: 8px !important;
+    margin: 0 0 14px !important;
+    text-decoration: none !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-back-link:hover,
+body.candidate-app .blog-detail-jobboard .blog-back-link:focus {
+    color: var(--candidate-accent, #1FB7B5) !important;
+    text-decoration: none !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-meta-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin: 16px 0 0 !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-meta-row span {
+    align-items: center !important;
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: 999px !important;
+    color: var(--candidate-ink, #142033) !important;
+    display: inline-flex !important;
+    font-size: .82rem !important;
+    font-weight: 800 !important;
+    gap: 7px !important;
+    min-height: 34px !important;
+    padding: 6px 12px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-meta-row i {
+    color: var(--candidate-accent, #1FB7B5) !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-detail-layout {
+    align-items: start !important;
+    display: grid !important;
+    gap: 18px !important;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px) !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-article-card,
+body.candidate-app .blog-detail-jobboard .blog-sidebar-card {
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: var(--candidate-card-radius, 22px) !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-featured-image {
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border-bottom: 1px solid var(--candidate-line, #dfe6ee) !important;
+    height: auto !important;
+    margin: 0 !important;
+    max-height: 360px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-featured-image img {
+    display: block !important;
+    height: 100% !important;
+    max-height: 360px !important;
+    object-fit: cover !important;
+    width: 100% !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-article-body {
+    color: var(--candidate-muted, #647184) !important;
+    font-size: 1rem !important;
+    line-height: 1.75 !important;
+    padding: 24px 28px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-article-body h1,
+body.candidate-app .blog-detail-jobboard .blog-article-body h2,
+body.candidate-app .blog-detail-jobboard .blog-article-body h3,
+body.candidate-app .blog-detail-jobboard .blog-article-body h4 {
+    color: var(--candidate-ink, #142033) !important;
+    font-weight: 800 !important;
+    letter-spacing: 0 !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-article-body a,
+body.candidate-app .blog-detail-jobboard .related-post-item span {
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-detail-sidebar {
+    display: grid !important;
+    gap: 14px !important;
+    position: sticky !important;
+    top: 82px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-sidebar-card {
+    padding: 18px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-sidebar-card h3,
+body.candidate-app .blog-detail-jobboard .blog-sidebar-card h4,
+body.candidate-app .blog-detail-jobboard .blog-sidebar-head {
+    color: var(--candidate-ink, #142033) !important;
+    font-weight: 800 !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-sidebar-card p,
+body.candidate-app .blog-detail-jobboard .related-post-item small {
+    color: var(--candidate-muted, #647184) !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-sidebar-card-icon,
+body.candidate-app .blog-detail-jobboard .blog-hero-panel-icon {
+    align-items: center !important;
+    background: var(--candidate-accent-soft, #E8F7F7) !important;
+    border: 1px solid rgba(31, 183, 181, .22) !important;
+    border-radius: var(--candidate-radius, 8px) !important;
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    display: inline-flex !important;
+    height: 42px !important;
+    justify-content: center !important;
+    margin: 0 0 14px !important;
+    width: 42px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .related-post-list {
+    display: grid !important;
+    gap: 10px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .related-post-item {
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: var(--candidate-inner-radius, 16px) !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    padding: 14px !important;
+    text-decoration: none !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-sidebar-cta {
+    background: var(--candidate-surface, #ffffff) !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-secondary-action {
+    align-items: center !important;
+    background: transparent !important;
+    border: 1.5px solid var(--candidate-accent, #1FB7B5) !important;
+    border-radius: var(--candidate-radius, 8px) !important;
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    display: inline-flex !important;
+    font-weight: 800 !important;
+    gap: 8px !important;
+    min-height: 40px !important;
+    padding: 8px 14px !important;
+    text-decoration: none !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-secondary-action:hover,
+body.candidate-app .blog-detail-jobboard .blog-secondary-action:focus {
+    background: var(--candidate-accent, #1FB7B5) !important;
+    color: #ffffff !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-detail-header,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-card,
+body.dark.candidate-app .blog-detail-jobboard .blog-sidebar-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-meta-row span,
+body.dark.candidate-app .blog-detail-jobboard .related-post-item,
+body.dark.candidate-app .blog-detail-jobboard .blog-featured-image {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body,
+body.dark.candidate-app .blog-detail-jobboard .blog-sidebar-card p,
+body.dark.candidate-app .blog-detail-jobboard .related-post-item small {
+    color: #8b949e !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body > div,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body > section,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body > article,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body [style*="background"],
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body [style*="background-color"] {
+    background: #161b22 !important;
+    background-color: #161b22 !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body p,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body li,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body span,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body strong,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body b {
+    color: #8b949e !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body strong,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body b {
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body hr,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body table,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body th,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body td {
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body blockquote,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body pre,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body code {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body h1,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body h2,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body h3,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body h4,
+body.dark.candidate-app .blog-detail-jobboard .blog-sidebar-card h3,
+body.dark.candidate-app .blog-detail-jobboard .blog-sidebar-card h4,
+body.dark.candidate-app .blog-detail-jobboard .blog-sidebar-head,
+body.dark.candidate-app .blog-detail-jobboard .blog-meta-row span {
+    color: #e6edf3 !important;
+}
+
+@media (max-width: 991.98px) {
+    body.candidate-app .blog-detail-jobboard .blog-detail-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    body.candidate-app .blog-detail-jobboard .blog-detail-sidebar {
+        position: static !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    body.candidate-app .blog-detail-jobboard .blog-detail-content-canvas > .container-fluid {
+        gap: 14px !important;
+    }
+
+    body.candidate-app .blog-detail-jobboard .blog-detail-header {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        padding: 20px !important;
+    }
+
+    body.candidate-app .blog-detail-jobboard .page-board-actions {
+        justify-content: flex-start !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    body.candidate-app .blog-detail-jobboard .page-board-actions .btn {
+        width: 100% !important;
+    }
+
+    body.candidate-app .blog-detail-jobboard .blog-article-body {
+        padding: 20px !important;
+    }
+}
+
 @media (max-width: 1199.98px) {
     body.candidate-app .premium-mentor-jobboard .career-transition-simple-layout,
     body.candidate-app .resume-studio-jobboard .resume-studio-layout {
@@ -23740,6 +24074,281 @@ body.dark.candidate-app .jobs-page-jobboard .job-card-tools-item:focus {
 
 body.dark.candidate-app .jobs-page-jobboard .job-card-tools-item + .job-card-tools-item {
     border-top: 1px solid #30363d !important;
+}
+
+/* Onboarding: candidate shell alignment and teal form focus. */
+body.candidate-app .onboarding-jobboard {
+    background: transparent !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-content-canvas {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-content-canvas > .container-fluid {
+    display: grid !important;
+    gap: 18px !important;
+    max-width: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .onboarding-jobboard .page-board-header {
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 0 !important;
+    border-radius: var(--candidate-section-radius, 30px) !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 24px 28px !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-wrap {
+    align-items: start !important;
+    display: grid !important;
+    gap: 18px !important;
+    grid-template-columns: minmax(240px, 300px) minmax(0, 1fr) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-side,
+body.candidate-app .onboarding-jobboard .onboarding-content,
+body.candidate-app .onboarding-jobboard .onboarding-card,
+body.candidate-app .onboarding-jobboard .repeatable-item,
+body.candidate-app .onboarding-jobboard .onboarding-summary-card {
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-side,
+body.candidate-app .onboarding-jobboard .onboarding-content {
+    border-radius: var(--candidate-card-radius, 22px) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-side {
+    padding: 22px !important;
+    position: sticky !important;
+    top: 82px !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-content {
+    padding: 28px 30px !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-card,
+body.candidate-app .onboarding-jobboard .repeatable-item,
+body.candidate-app .onboarding-jobboard .onboarding-summary-card {
+    border-radius: var(--candidate-inner-radius, 16px) !important;
+}
+
+body.candidate-app .onboarding-jobboard .candidate-dashed-card,
+body.candidate-app .onboarding-jobboard .onboarding-card.bg-light.border-primary {
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border: 1px solid rgba(31, 183, 181, .32) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-progress-bar {
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-progress-fill {
+    background: var(--candidate-accent, #1FB7B5) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-step-item {
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: var(--candidate-inner-radius, 16px) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-step-item.is-active {
+    background: var(--candidate-accent, #1FB7B5) !important;
+    border-color: var(--candidate-accent, #1FB7B5) !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-step-item.is-done {
+    background: var(--candidate-accent-soft, #E8F7F7) !important;
+    border-color: rgba(31, 183, 181, .28) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-header {
+    border-bottom: 1px solid var(--candidate-line, #dfe6ee) !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 18px !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-header h2,
+body.candidate-app .onboarding-jobboard .repeatable-item-title {
+    color: var(--candidate-ink, #142033) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-header p {
+    color: var(--candidate-muted, #647184) !important;
+    margin-bottom: 0 !important;
+}
+
+body.candidate-app .onboarding-jobboard label {
+    color: var(--candidate-ink, #142033) !important;
+    font-weight: 700 !important;
+}
+
+body.candidate-app .onboarding-jobboard .form-control,
+body.candidate-app .onboarding-jobboard .custom-file-label {
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: var(--candidate-radius, 8px) !important;
+    color: var(--candidate-ink, #142033) !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .onboarding-jobboard .form-control:focus,
+body.candidate-app .onboarding-jobboard .custom-file-input:focus ~ .custom-file-label,
+body.candidate-app .onboarding-jobboard .custom-file-input:focus-visible ~ .custom-file-label {
+    border-color: var(--candidate-accent, #1FB7B5) !important;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, .15) !important;
+    outline: 0 !important;
+}
+
+body.candidate-app .onboarding-jobboard .form-control.is-invalid,
+body.candidate-app .onboarding-jobboard .form-control:invalid:not(:placeholder-shown),
+body.candidate-app .onboarding-jobboard .was-validated .form-control:invalid {
+    border-color: var(--candidate-danger, #c03636) !important;
+    box-shadow: 0 0 0 3px rgba(192, 54, 54, .12) !important;
+}
+
+body.candidate-app .onboarding-jobboard .invalid-feedback,
+body.candidate-app .onboarding-jobboard .invalid-tooltip,
+body.candidate-app .onboarding-jobboard .validation-error,
+body.candidate-app .onboarding-jobboard .validation-message,
+body.candidate-app .onboarding-jobboard .field-error,
+body.candidate-app .onboarding-jobboard .error,
+body.candidate-app .onboarding-jobboard .help-block,
+body.candidate-app .onboarding-jobboard .form-control.is-invalid + small,
+body.candidate-app .onboarding-jobboard .form-control:invalid:not(:placeholder-shown) + small {
+    color: var(--candidate-danger, #c03636) !important;
+    font-weight: 700 !important;
+}
+
+body.candidate-app .onboarding-jobboard .custom-file-label::after {
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border-left-color: var(--candidate-line, #dfe6ee) !important;
+    color: var(--candidate-ink, #142033) !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard,
+body.dark.candidate-app .onboarding-jobboard .onboarding-content-canvas {
+    background: transparent !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .page-board-header,
+body.dark.candidate-app .onboarding-jobboard .onboarding-side,
+body.dark.candidate-app .onboarding-jobboard .onboarding-content,
+body.dark.candidate-app .onboarding-jobboard .onboarding-card,
+body.dark.candidate-app .onboarding-jobboard .repeatable-item,
+body.dark.candidate-app .onboarding-jobboard .onboarding-summary-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .candidate-dashed-card,
+body.dark.candidate-app .onboarding-jobboard .onboarding-card.bg-light.border-primary,
+body.dark.candidate-app .onboarding-jobboard .onboarding-step-item,
+body.dark.candidate-app .onboarding-jobboard .onboarding-progress-bar,
+body.dark.candidate-app .onboarding-jobboard .custom-file-label::after {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .onboarding-step-item.is-active {
+    background: #1FB7B5 !important;
+    border-color: #1FB7B5 !important;
+    color: #ffffff !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .onboarding-step-item.is-done {
+    background: #21262d !important;
+    border-color: rgba(31, 183, 181, .32) !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard label,
+body.dark.candidate-app .onboarding-jobboard .onboarding-header h2,
+body.dark.candidate-app .onboarding-jobboard .repeatable-item-title {
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .onboarding-header {
+    border-bottom-color: #30363d !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .form-control,
+body.dark.candidate-app .onboarding-jobboard .custom-file-label {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .form-control:focus,
+body.dark.candidate-app .onboarding-jobboard .custom-file-input:focus ~ .custom-file-label,
+body.dark.candidate-app .onboarding-jobboard .custom-file-input:focus-visible ~ .custom-file-label {
+    background: #161b22 !important;
+    border-color: #1FB7B5 !important;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, .16) !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .form-control.is-invalid,
+body.dark.candidate-app .onboarding-jobboard .form-control:invalid:not(:placeholder-shown),
+body.dark.candidate-app .onboarding-jobboard .was-validated .form-control:invalid {
+    border-color: #f87171 !important;
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, .14) !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .invalid-feedback,
+body.dark.candidate-app .onboarding-jobboard .invalid-tooltip,
+body.dark.candidate-app .onboarding-jobboard .validation-error,
+body.dark.candidate-app .onboarding-jobboard .validation-message,
+body.dark.candidate-app .onboarding-jobboard .field-error,
+body.dark.candidate-app .onboarding-jobboard .error,
+body.dark.candidate-app .onboarding-jobboard .help-block,
+body.dark.candidate-app .onboarding-jobboard .form-control.is-invalid + small,
+body.dark.candidate-app .onboarding-jobboard .form-control:invalid:not(:placeholder-shown) + small {
+    color: #f87171 !important;
+}
+
+@media (max-width: 991.98px) {
+    body.candidate-app .onboarding-jobboard .onboarding-wrap {
+        grid-template-columns: 1fr !important;
+    }
+
+    body.candidate-app .onboarding-jobboard .onboarding-side {
+        position: static !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    body.candidate-app .onboarding-jobboard .onboarding-content-canvas > .container-fluid {
+        gap: 14px !important;
+    }
+
+    body.candidate-app .onboarding-jobboard .page-board-header {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+        padding: 20px !important;
+    }
+
+    body.candidate-app .onboarding-jobboard .onboarding-content {
+        padding: 20px !important;
+    }
 }
 
 /* 20. Buttons */

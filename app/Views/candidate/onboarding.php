@@ -86,30 +86,27 @@ $renderSelectOptions = static function (array $options, string $selected, string
 </datalist>
 
 <div class="onboarding-jobboard">
-<div class="container">
-    <div class="page-board-header page-board-header-tight">
-        <div class="page-board-copy">
-            <span class="page-board-kicker"><i class="fas fa-user-plus"></i> Onboarding</span>
-            <h1 class="page-board-title">Complete Your Candidate Profile</h1>
-            <p class="page-board-subtitle">Follow the step-by-step setup flow to finish your profile and enter the portal fully prepared.</p>
-            <div class="company-profile-meta">
-                <span class="meta-chip"><strong><?= (int) $progressPercent ?>%</strong> Complete</span>
-                <span class="meta-chip"><strong><?= esc($currentStepTitle) ?></strong> Current step</span>
+<section class="content-wrap onboarding-content-canvas">
+    <div class="container-fluid">
+        <div class="page-board-header page-board-header-tight">
+            <div class="page-board-copy">
+                <span class="page-board-kicker"><i class="fas fa-user-plus"></i> Onboarding</span>
+                <h1 class="page-board-title">Complete Your Candidate Profile</h1>
+                <p class="page-board-subtitle">Follow the step-by-step setup flow to finish your profile and enter the portal fully prepared.</p>
+                <div class="company-profile-meta">
+                    <span class="meta-chip"><strong><?= (int) $progressPercent ?>%</strong> Complete</span>
+                    <span class="meta-chip"><strong><?= esc($currentStepTitle) ?></strong> Current step</span>
+                </div>
+            </div>
+            <div class="page-board-actions">
+                <?php if (!empty($user['resume_path'])): ?>
+                    <a href="<?= base_url('candidate/download-resume') ?>" class="btn btn-outline-secondary">
+                        <i class="fas fa-download mr-1"></i> Download Resume
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
-        <div class="page-board-actions">
-            <?php if (!empty($user['resume_path'])): ?>
-                <a href="<?= base_url('candidate/download-resume') ?>" class="btn btn-outline-secondary">
-                    <i class="fas fa-download mr-1"></i> Download Resume
-                </a>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
 
-<div class="onboarding-jobboard">
-<section class="site-section pt-0 content-wrap">
-    <div class="container pt-4">
         <?php if (session()->getFlashdata('success')): ?>
             <div class="alert alert-success"><?= esc(session()->getFlashdata('success')) ?></div>
         <?php endif; ?>
@@ -367,7 +364,6 @@ $renderSelectOptions = static function (array $options, string $selected, string
         </div>
     </div>
 </section>
-</div>
 </div>
 
 <script>
