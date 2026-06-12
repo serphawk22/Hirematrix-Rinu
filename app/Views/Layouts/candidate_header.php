@@ -250,15 +250,6 @@
             </div>
 
             <div class="hm-drawer-body">
-                <!-- <div class="hm-drawer-cta-card">
-                    <div class="hm-drawer-cta-kicker">For You</div>
-                    <h3><?= esc($recommendationTitle) ?></h3>
-                    <p><?= esc($recommendationText) ?></p>
-                    <div class="hm-drawer-cta-actions">
-                        <a href="<?= esc($recommendationUrl) ?>" class="hm-drawer-cta-primary"><?= esc($recommendationCta) ?></a>
-                        <a href="<?= esc($profilePromptUrl) ?>" class="hm-drawer-cta-secondary"><?= esc($profilePromptCta) ?></a>
-                    </div>
-                </div> -->
 
                 <!-- Section: My Activity -->
                 <div class="hm-drawer-section">
@@ -306,11 +297,7 @@
                         <span class="hm-drawer-link-icon"><i class="fas fa-search-plus"></i></span>
                         <span>Company & Job Discovery</span>
                     </a>
-                    <a href="<?= base_url('candidate/job-alerts') ?>" class="hm-drawer-link">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-bell"></i></span>
-                        <span>Job Alerts</span>
-                        <span class="hm-drawer-pill hm-drawer-pill-muted"><?= esc($formatCompactCount($jobAlertsCount)) ?></span>
-                    </a>
+                    
                 </div>
 
                 <!-- Section: Career Tools & Interview Prep -->
@@ -544,12 +531,12 @@
             <button type="button" class="mobile-nav-icon" id="mobileSearchToggle" title="Search" aria-label="Search">
                 <span class="icon-search"></span>
             </button>
-            <a href="<?= base_url('notifications') ?>" class="mobile-nav-icon <?= $unreadNotificationCount > 0 ? 'has-unread' : '' ?>" title="Notifications">
+            <!-- <a href="<?= base_url('notifications') ?>" class="mobile-nav-icon <?= $unreadNotificationCount > 0 ? 'has-unread' : '' ?>" title="Notifications">
                 <span class="icon-bell"></span>
                 <?php if ($unreadNotificationCount > 0): ?>
                     <span class="mobile-nav-badge js-notification-badge" data-unread-count="<?= $unreadNotificationCount ?>"><?= $unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount ?></span>
                 <?php endif; ?>
-            </a>
+            </a> -->
             <!-- Avatar dropdown -->
             <div class="cand-topbar__avatar-menu" id="candidateAvatarMenu">
                 <button type="button" class="cand-topbar__avatar-btn" id="candidateAvatarBtn" aria-haspopup="true" aria-expanded="false">

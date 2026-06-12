@@ -118,6 +118,88 @@ header.site-navbar.landing-header .landing-header-logo-text {
     overflow: visible !important;
 }
 
+@media (max-width: 767.98px) {
+    header.site-navbar.landing-header {
+        min-height: 64px !important;
+    }
+
+    header.site-navbar.landing-header .container-fluid {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+
+    header.site-navbar.landing-header .row.landing-header-row {
+        display: flex !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        min-height: 64px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    header.site-navbar.landing-header .site-logo {
+        flex: 1 1 auto !important;
+        max-width: calc(100% - 104px) !important;
+        min-width: 0 !important;
+    }
+
+    header.site-navbar.landing-header .landing-header-logo-link,
+    header.site-navbar.landing-header .site-logo a {
+        max-width: 100% !important;
+    }
+
+    header.site-navbar.landing-header .landing-header-logo-text {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    header.site-navbar.landing-header .site-navigation {
+        display: none !important;
+    }
+
+    header.site-navbar.landing-header .landing-header-actions {
+        flex: 0 0 auto !important;
+        margin-left: auto !important;
+        padding-left: 8px !important;
+        text-align: right !important;
+    }
+
+    header.site-navbar.landing-header .landing-header-actions .btn,
+    header.site-navbar.landing-header .landing-header-actions .btn-outline-primary,
+    header.site-navbar.landing-header .landing-header-actions .btn-primary {
+        min-width: 86px !important;
+        padding: 8px 14px !important;
+        line-height: 1.2 !important;
+        white-space: nowrap !important;
+    }
+
+    .site-wrap > .auth-page-shell,
+    .site-wrap > section:first-of-type {
+        padding-top: 104px !important;
+    }
+
+    body.public-auth-page header.site-navbar.landing-header {
+        background: #ffffff !important;
+        border-bottom: 1px solid #D9ECE5 !important;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06) !important;
+        position: sticky !important;
+        top: 0 !important;
+    }
+
+    body.public-auth-page .site-wrap > .auth-page-shell,
+    body.public-auth-page .site-wrap > section:first-of-type {
+        padding-top: 24px !important;
+    }
+
+    html.hm-system-dark-preload body.public-auth-page header.site-navbar.landing-header,
+    html.hm-dark-preload body.public-auth-page header.site-navbar.landing-header {
+        background: #0d1117 !important;
+        border-bottom-color: #23343A !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28) !important;
+    }
+}
+
 /* ===============================
    SIGN IN BUTTON
 ================================= */
