@@ -1,7 +1,35 @@
 <?php
 $bodyClass = trim('hirematrix-app public-header-page ' . ($body_class ?? ''));
 ?> 
+<script>
+    (function () {
+        try {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('hm-system-dark-preload', 'hm-dark-preload');
+            }
+        } catch (error) {}
+    })();
+</script>
 <style>
+html.hm-system-dark-preload,
+html.hm-system-dark-preload body,
+html.hm-dark-preload,
+html.hm-dark-preload body {
+    background: #0d1117 !important;
+}
+
+html.hm-system-dark-preload #overlayer,
+html.hm-dark-preload #overlayer {
+    background: #0d1117 !important;
+}
+
+html.hm-system-dark-preload .loader .spinner-border,
+html.hm-system-dark-preload .loader .spinner-border.text-primary,
+html.hm-dark-preload .loader .spinner-border,
+html.hm-dark-preload .loader .spinner-border.text-primary {
+    color: #1FB7B5 !important;
+}
+
  /* ===============================
    NAVBAR — FULLY TRANSPARENT
 ================================= */
