@@ -158,6 +158,7 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
                 ]);
             }
         });
+        
         $routes->post('login', 'ApiAuthController::login');
         $routes->post('validate_session', 'ApiAuthController::validateSession');
         $routes->post('forgot_password', 'ApiAuthController::forgotPassword');

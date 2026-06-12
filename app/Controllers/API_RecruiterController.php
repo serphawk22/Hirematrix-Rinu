@@ -2004,6 +2004,7 @@ class API_RecruiterController extends ResourceController
         ]);
     }
 
+    
     private function normalizeTags(string $rawTags): string
     {
         if ($rawTags === '') return '';
