@@ -568,7 +568,7 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
         <strong>No candidates found in this stage.</strong>
     </div>
 <?php else: ?>
-    <div class="pipeline-table-wrap">
+    <div class="pipeline-table-wrap" style="border-radius: 20px !important;overflow: hidden;">
         <table class="pipeline-table" id="candidatePipelineTable">
             <thead>
                 <tr>

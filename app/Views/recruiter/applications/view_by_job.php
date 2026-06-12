@@ -390,7 +390,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
 
     <div id="recruiterAjaxAlert"></div>
 
-    <div class="card shadow-sm recruiter-job-summary-card mb-4">
+    <div class="card shadow-sm recruiter-job-summary-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-body">
             <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
                 <div>
@@ -407,7 +407,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
         </div>
     </div>
 
-    <div class="card shadow-sm recruiter-filter-card mb-4">
+    <div class="card shadow-sm recruiter-filter-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-body">
             <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
                 <div>
@@ -504,7 +504,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
             <strong>Decision workspace:</strong> bulk actions and per-candidate decisions are handled here. The leaderboard is kept read-focused for comparison only.
         </div>
 
-        <div class="card shadow-sm recruiter-table-card">
+        <div class="card shadow-sm recruiter-table-card" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-body">
                 <form method="post" action="<?= base_url('recruiter/jobs/' . $job['id'] . '/applications/bulk') ?>" id="bulkActionForm" class="mb-3 recruiter-job-form">
                     <?= csrf_field() ?>
@@ -674,7 +674,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
             </div>
         </div>
     <?php else: ?>
-        <div class="card shadow-sm recruiter-empty-state">
+        <div class="card shadow-sm recruiter-empty-state" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-body text-center py-5">
                 <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                 <h5>No applications yet</h5>
@@ -683,7 +683,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
         </div>
     <?php endif; ?>
 </div>
-<div class="modal fade ai-modal" id="aiReportModal" tabindex="-1">
+<div class="modal fade ai-modal" id="aiReportModal" tabindex="-1" style="border-radius: 20px !important;overflow: hidden;">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content ai-modal-content">
 

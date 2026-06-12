@@ -8,6 +8,11 @@
       #EEF9F2 100%
     ) !important;
 }
+ .recruiter-form-card,
+.recruiter-form-card.card {
+    border-radius: 20px !important;
+    overflow: hidden;
+}
 body.dark .recruiter-post-jobboard,body.dark .form-contact.contact_form.recruiter-job-form,body.dark .recruiter-form-card{
     background: #111111 !important;
 }

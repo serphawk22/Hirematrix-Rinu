@@ -7222,13 +7222,7 @@ body.candidate-app .cand-leftnav__pro {
 .dashboard-jobboard .job-card-company{
     color: var(--muted-foreground);
 }
-
 .job-card.dashboard-card {
-    display: block;
-    height: 100%;
-    padding: 18px;
-    margin-bottom: 0;
-    transition: border-color .16s ease, transform .16s ease;
 }
 
 .job-card.dashboard-card:hover,

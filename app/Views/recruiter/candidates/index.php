@@ -435,7 +435,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
         <div class="alert alert-danger recruiter-alert"><?= session()->getFlashdata('error') ?></div>
     <?php endif; ?>
 
-    <div class="card shadow-sm recruiter-filter-card mb-4">
+    <div class="card shadow-sm recruiter-filter-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-body">
             <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
                 <div>
@@ -444,7 +444,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
                 </div>
             </div>
 
-            <form method="get" action="<?= base_url('recruiter/candidates') ?>" class="recruiter-candidate-filter-form">
+            <form method="get" action="<?= base_url('recruiter/candidates') ?>" class="recruiter-candidate-filter-form" >
                 <div class="row">
                     <div class="col-md-3">
                         <label class="small text-muted mb-1">Keyword</label>
@@ -497,11 +497,11 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
     </div>
 
     <?php if (!empty($selectedJob)): ?>
-        <div class="card shadow-sm recruiter-ai-suggestions-card mb-4">
+        <div class="card shadow-sm recruiter-ai-suggestions-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-header py-3 bg-gradient-primary text-white">
                 <h6 class="title mb-3"> AI Candidate Suggestions for <?= esc($selectedJob['title'] ?? 'Selected Job') ?></h6>
             </div>
-            <div class="card-body">
+            <div class="card-body" >
                 <?php if (empty($aiSuggestions)): ?>
                     <p class="text-muted mb-0">No suitable candidates found for this role.</p>
                 <?php else: ?>
@@ -547,7 +547,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
 
     <?php $aiModeForJob = !empty($selectedJob); ?>
     <?php if (!$aiModeForJob): ?>
-        <div class="card shadow-sm recruiter-table-card">
+        <div class="card shadow-sm recruiter-table-card" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-header py-3">
                 <h6 class="title mb-3">  Candidates (<?= count($candidates ?? []) ?> on this page)</h6>
             </div>

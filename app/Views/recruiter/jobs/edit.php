@@ -414,7 +414,7 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
 
     <div class="recruiter-form-layout recruiter-edit-layout">
         <div class="recruiter-form-main">
-            <div class="card shadow-sm recruiter-form-card">
+            <div class="card shadow-sm recruiter-form-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <?php if (session()->getFlashdata('error')): ?>
                         <div class="alert alert-danger" role="alert">
@@ -592,7 +592,7 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
         </div>
 
         <div class="recruiter-form-side">
-            <div class="card shadow-sm recruiter-form-card">
+            <div class="card shadow-sm recruiter-form-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6 class="mb-3"> Quick notes</h6>
                     <div class="recruiter-tip-list">

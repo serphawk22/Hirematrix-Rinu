@@ -162,7 +162,7 @@ body.dark .alert.alert-info{
         </div>
 
         <!-- Summary Strip -->
-        <div class="card shadow-sm recruiter-review-summary-card mb-4">
+        <div class="card shadow-sm recruiter-review-summary-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-body py-3">
                 <div class="row">
                     <div class="col-md-4 mb-3 mb-md-0">
@@ -192,7 +192,7 @@ body.dark .alert.alert-info{
 
             <!-- Left: Review Form -->
             <div class="col-lg-8 mb-4">
-                <div class="card shadow-sm recruiter-review-card">
+                <div class="card shadow-sm recruiter-review-card" style="border-radius: 20px !important;overflow: hidden;">
                     <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <h6 class="m-0">Interview Review</h6>
                         <?php
@@ -212,7 +212,7 @@ body.dark .alert.alert-info{
                         </span>
                     </div>
 
-                    <div class="card-body">
+                    <div class="card-body" style="border-radius: 20px !important;overflow: hidden;">
 
                         <?php if (!empty($review)): ?>
                             <div class="alert alert-info mb-4">
@@ -297,7 +297,7 @@ body.dark .alert.alert-info{
 
             <!-- Right: What happens next -->
             <div class="col-lg-4 mb-4">
-                <div class="card shadow-sm recruiter-review-card h-30">
+                <div class="card shadow-sm recruiter-review-card h-30" style="border-radius: 20px !important;overflow: hidden;">
                     <div class="card-header py-3">
                         <h6 class="m-0">What happens next</h6>
                     </div>

@@ -569,7 +569,7 @@
     <div class="container-fluid recruiter-dashboard-main">
 
         <?php if (!empty($noJobs)): ?>
-        <div class="card mb-4 recruiter-dashboard-panel-card">
+        <div class="card mb-4 recruiter-dashboard-panel-card" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-body p-4 text-center">
                 <h4 class="mb-2">No jobs posted yet</h4>
                 <p class="text-muted mb-3">Post your first job to start receiving applications and build your hiring pipeline.</p>
@@ -597,7 +597,7 @@
         <div class="row mb-4">
             <div class="col-xl-3 col-md-6 mb-3">
                 <a href="<?= $applicationsUrl ?>" class="dashboard-stat-link">
-                    <div class="card recruiter-stat-card recruiter-stat-applications h-100">
+                    <div class="card recruiter-stat-card recruiter-stat-applications h-100" style="border-radius: 20px !important;overflow: hidden;">
                         <div class="card-body d-flex align-items-center gap-3" style="gap:16px;">
                             <div class="stat-card-icon">
                                 <i class="fas fa-file-alt fa-lg"></i>
@@ -614,7 +614,7 @@
 
             <div class="col-xl-3 col-md-6 mb-3">
                 <a href="<?= $jobsUrl ?>" class="dashboard-stat-link">
-                    <div class="card recruiter-stat-card recruiter-stat-openjobs h-100">
+                    <div class="card recruiter-stat-card recruiter-stat-openjobs h-100" style="border-radius: 20px !important;overflow: hidden;">
                         <div class="card-body d-flex align-items-center" style="gap:16px;">
                             <div class="stat-card-icon">
                                 <i class="fas fa-briefcase fa-lg"></i>
@@ -631,7 +631,7 @@
 
             <div class="col-xl-3 col-md-6 mb-3">
                 <a href="<?= $conversionUrl ?>" class="dashboard-stat-link">
-                    <div class="card recruiter-stat-card recruiter-stat-conversion h-100">
+                    <div class="card recruiter-stat-card recruiter-stat-conversion h-100" style="border-radius: 20px !important;overflow: hidden;">
                         <div class="card-body d-flex align-items-center" style="gap:16px;">
                             <div class="stat-card-icon">
                                 <i class="fas fa-chart-pie fa-lg"></i>
@@ -648,7 +648,7 @@
 
             <div class="col-xl-3 col-md-6 mb-3">
                 <a href="<?= $bookingsUrl ?>" class="dashboard-stat-link">
-                    <div class="card recruiter-stat-card recruiter-stat-bookings h-100">
+                    <div class="card recruiter-stat-card recruiter-stat-bookings h-100" style="border-radius: 20px !important;overflow: hidden;">
                         <div class="card-body d-flex align-items-center" style="gap:16px;">
                             <div class="stat-card-icon">
                                 <i class="fas fa-calendar-check fa-lg"></i>
@@ -667,7 +667,7 @@
         <!-- ── ROW 2: Pipeline (full width) ── -->
         <div class="row mb-4" id="conversion-metrics">
             <div class="col-12">
-                <div class="card recruiter-dashboard-panel-card recruiter-pipeline-card">
+                <div class="card recruiter-dashboard-panel-card recruiter-pipeline-card" style="border-radius: 20px !important;overflow: hidden;">
                     <div class="card-header py-3 recruiter-section-header">
                         <div>
                             <h6 class="m-0 font-weight-bold text-primary">  Recruitment Pipeline</h6>
@@ -725,7 +725,7 @@
         <div class="row mb-4">
             <!-- Recent Applications -->
             <div class="col-xl-7 col-lg-6 mb-4 mb-lg-0">
-                <div class="card recruiter-dashboard-panel-card h-100">
+                <div class="card recruiter-dashboard-panel-card h-100" style="border-radius: 20px !important;overflow: hidden;">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">  Recent Applications</h6>
                     </div>
@@ -768,7 +768,7 @@
 
             <!-- Conversion Metrics -->
             <div class="col-xl-5 col-lg-6">
-                <div class="card recruiter-dashboard-panel-card h-100">
+                <div class="card recruiter-dashboard-panel-card h-100" style="border-radius: 20px !important;overflow: hidden;">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-funnel-dollar mr-1"></i> Conversion Metrics</h6>
                     </div>
@@ -819,7 +819,7 @@
         <?php if (empty($noJobs)): ?>
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card recruiter-dashboard-panel-card recruiter-pipeline-card">
+                <div class="card recruiter-dashboard-panel-card recruiter-pipeline-card" style="border-radius: 20px !important;overflow: hidden;">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary"> Action Center</h6>
                     </div>

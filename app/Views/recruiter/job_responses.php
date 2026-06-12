@@ -419,6 +419,11 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
     padding-left: 34px !important;
     padding-right: 34px !important;
 }
+ .recruiter-jobs-jobboard #jobs-list .card,
+.recruiter-jobs-jobboard .recruiter-filter-card{
+    border-radius: 20px !important;
+    overflow: hidden;
+}
 </style> 
 
 <div
@@ -460,8 +465,8 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
             <?php if (empty($jobs)): ?>
                 <div class="alert alert-info">No jobs found matching your criteria.</div>
             <?php else: ?>
-                <div class="table-responsive recruiter-table-card">
-                    <table class="table table-hover bg-white border rounded recruiter-jobs-table">
+                <div class="table-responsive recruiter-table-card" style="border-radius: 20px !important;overflow: hidden;">
+                    <table class="table table-hover bg-white border rounded recruiter-jobs-table" >
                         <thead class="bg-light">
                             <tr>
                                 <th>Job Title</th>
