@@ -156,7 +156,7 @@ class API_RecruiterController extends ResourceController
 
             foreach ($apps as $row) {
                 $status = $this->formatApplicationStatus((string) $row['status']);
-                if (isset($pipeline[$status])) $pipeline[$status] = (int)$row['count'];
+                if (isset($pipeline[$status])) $pipeline[$status] += (int)$row['count'];
             }
 
             $formattedJobs[] = [
@@ -172,7 +172,8 @@ class API_RecruiterController extends ResourceController
                 'job_description' => $job['description'],
                 'job_status'    => $job['status'],
                 'pipeline'  => $pipeline,
-                'applications_count' => array_sum($pipeline),
+                'applications_count' => (int)$appModel->where('job_id', $job['id'])->countAllResults(),
+                'shortlisted_count' => (int)$appModel->where('job_id', $job['id'])->where('status', 'shortlisted')->countAllResults(),
                 'created_at'=> $job['created_at'],
             ];
         }
@@ -186,8 +187,18 @@ class API_RecruiterController extends ResourceController
     public function getApplications()
     {
         $recruiterId = $this->request->getVar('recruiter_id');
-        $jobId = (int) $this->request->getVar('job_id');
-        $query = $this->request->getVar('q');
+        $jobId       = (int)$this->request->getVar('job_id');
+        $stage       = $this->request->getVar('stage');
+        $query       = $this->request->getVar('q');
+
+        $skillsFilter = $this->request->getVar('skills');
+        $locationFilter = $this->request->getVar('location');
+        $experienceFilter = $this->request->getVar('experience');
+        $lastActiveFilter = $this->request->getVar('last_active');
+        $atsMin = $this->request->getVar('ats_min');
+        $atsMax = $this->request->getVar('ats_max');
+        $sortFilter = $this->request->getVar('sort');
+
         if (!$recruiterId) return $this->fail('Recruiter ID required');
 
         $userModel = new UserModel();
@@ -195,6 +206,14 @@ class API_RecruiterController extends ResourceController
         if (!$recruiter) return $this->failNotFound('Recruiter not found');
 
         $appModel = new ApplicationModel();
+        $db = \Config\Database::connect();
+        $hasInterviewSessions = $db->tableExists('interview_sessions');
+        $ratingSelect = $hasInterviewSessions
+            ? 'MAX(COALESCE(interview_sessions.overall_rating, 0)) as overall_rating'
+            : '0 as overall_rating';
+
+        $experienceSubQuery = '(SELECT user_id, SUM(TIMESTAMPDIFF(MONTH, start_date, COALESCE(NULLIF(end_date, \'\'), CURDATE()))) AS total_experience_months FROM work_experiences GROUP BY user_id) candidate_experience';
+
         $appsBuilder = $appModel->select('
                 applications.*,
                 users.name as candidate_name,
@@ -203,19 +222,71 @@ class API_RecruiterController extends ResourceController
                 jobs.recruiter_id,
                 jobs.company_id,
                 jobs.required_skills,
+                jobs.experience_level,
                 jobs.location as job_location,
                 candidate_profiles.key_skills,
                 candidate_profiles.resume_path,
                 candidate_profiles.location as candidate_location,
-                candidate_profiles.is_fresher_candidate
+                candidate_profiles.is_fresher_candidate,
+                COALESCE(candidate_experience.total_experience_months, 0) as total_experience_months,
+                ' . $ratingSelect . '
             ')
             ->join('users', 'users.id = applications.candidate_id')
             ->join('jobs', 'jobs.id = applications.job_id')
             ->join('candidate_profiles', 'candidate_profiles.user_id = applications.candidate_id', 'left')
-            ->where('jobs.recruiter_id', $recruiterId);
+            ->join($experienceSubQuery, 'candidate_experience.user_id = applications.candidate_id', 'left', false);
+
+        if ($hasInterviewSessions) {
+            $appsBuilder->join('interview_sessions', 'interview_sessions.application_id = applications.id', 'left');
+        }
+
+        if (!empty($skillsFilter)) {
+            $appsBuilder->join('candidate_skills', 'candidate_skills.candidate_id = applications.candidate_id', 'left')
+                        ->like('candidate_skills.skill_name', $skillsFilter);
+        }
+
+        if (!empty($locationFilter)) {
+            $appsBuilder->like('candidate_profiles.location', $locationFilter);
+        }
+
+        if (!empty($experienceFilter)) {
+            preg_match('/\d+(\.\d+)?/', $experienceFilter, $matches);
+            if (!empty($matches[0])) {
+                $minMonths = (int) round(((float)$matches[0]) * 12);
+                $appsBuilder->where('COALESCE(candidate_experience.total_experience_months, 0) >=', $minMonths);
+            }
+        }
+
+        if (!empty($lastActiveFilter) && $db->tableExists('user_login_performance_logs')) {
+            $days = (int)$lastActiveFilter;
+            $lastLoginSubQuery = '(SELECT user_id, MAX(login_at) as last_login FROM user_login_performance_logs GROUP BY user_id) last_login_table';
+            $appsBuilder->join($lastLoginSubQuery, 'last_login_table.user_id = applications.candidate_id', 'left', false);
+            $appsBuilder->where('last_login_table.last_login >= DATE_SUB(NOW(), INTERVAL ' . $days . ' DAY)', null, false);
+        }
+
+        $appsBuilder->where('jobs.recruiter_id', $recruiterId)
+            ->groupBy('applications.id');
 
         if ($jobId > 0) {
             $appsBuilder->where('applications.job_id', $jobId);
+        }
+
+        if (!empty($stage) && strtolower($stage) !== 'all') {
+            $stageLower = strtolower($stage);
+            if ($stageLower === 'interview') {
+                $appsBuilder->whereIn('applications.status', ['interview', 'interview_scheduled', 'interview_slot_booked']);
+            } elseif ($stageLower === 'offer') {
+                $appsBuilder->whereIn('applications.status', ['offer', 'offered', 'selected']);
+            } elseif ($stageLower === 'on hold') {
+                $appsBuilder->whereIn('applications.status', ['hold', 'on_hold']);
+            } elseif ($stageLower === 'screening') {
+                $appsBuilder->whereIn('applications.status', ['ai_interview_started', 'ai_interview_completed', 'ai_evaluated']);
+            } else {
+                $appsBuilder->groupStart()
+                    ->where('applications.status', $stage)
+                    ->orWhere('applications.status', $stageLower)
+                    ->groupEnd();
+            }
         }
 
         if (!empty($query)) {
@@ -232,6 +303,12 @@ class API_RecruiterController extends ResourceController
         foreach ($apps as $app) {
             $skills = $this->splitSkills((string) ($app['key_skills'] ?? ''));
 
+            $candForAts = $app;
+            $candForAts['candidate_skills'] = $this->getLeaderboardCandidateSkills($app['candidate_id']);
+            $candForAts['required_skills'] = $app['required_skills'];
+            $candForAts['experience_level'] = $app['experience_level'];
+            $atsScore = $this->calculateLeaderboardAtsScore($candForAts);
+
             $formattedApps[] = [
                 'application_id' => (string)$app['id'],
                 'candidate_id'   => (string)$app['candidate_id'],
@@ -243,7 +320,7 @@ class API_RecruiterController extends ResourceController
                 'job_title'      => $app['job_title'],
                 'status'         => $this->formatApplicationStatus((string) $app['status']),
                 'status_key'     => $this->normalizeApplicationStatus((string) $app['status']),
-                'match_score'    => (string)$this->calculateMobileMatchScore($skills, (string) ($app['required_skills'] ?? '')),
+                'match_score'    => (string)$atsScore,
                 'experience'     => $app['is_fresher_candidate'] ? 'Fresher' : 'Experienced',
                 'skills'         => $skills,
                 'resume_link'    => $app['resume_path'] ?? '',
@@ -253,59 +330,141 @@ class API_RecruiterController extends ResourceController
             ];
         }
 
+        // Filter by ATS Score in PHP
+        if ($atsMin !== null && $atsMin !== '' || $atsMax !== null && $atsMax !== '') {
+            $formattedApps = array_values(array_filter($formattedApps, function ($app) use ($atsMin, $atsMax) {
+                $score = (int)($app['match_score'] ?? 0);
+                if ($atsMin !== null && $atsMin !== '' && $score < (int)$atsMin) return false;
+                if ($atsMax !== null && $atsMax !== '' && $score > (int)$atsMax) return false;
+                return true;
+            }));
+        }
+
+        // Sort in PHP
+        if (!empty($sortFilter)) {
+            if ($sortFilter === 'ats_desc') {
+                usort($formattedApps, fn($a, $b) => (int)$b['match_score'] <=> (int)$a['match_score']);
+            } elseif ($sortFilter === 'ats_asc') {
+                usort($formattedApps, fn($a, $b) => (int)$a['match_score'] <=> (int)$b['match_score']);
+            } elseif ($sortFilter === 'applied_desc') {
+                usort($formattedApps, fn($a, $b) => strcmp($b['applied_at'], $a['applied_at']));
+            }
+        }
+
+        // Calculate pipeline stats
+        $pipelineStats = $this->emptyPipelineStats();
+        $statsBuilder = $appModel->select('applications.status, COUNT(*) as count')
+            ->join('jobs', 'jobs.id = applications.job_id')
+            ->where('jobs.recruiter_id', $recruiterId);
+        if ($jobId > 0) {
+            $statsBuilder->where('applications.job_id', $jobId);
+        }
+        $statsData = $statsBuilder->groupBy('applications.status')->get()->getResultArray();
+        foreach ($statsData as $row) {
+            $formattedStatus = $this->formatApplicationStatus((string) $row['status']);
+            if (isset($pipelineStats[$formattedStatus])) {
+                $pipelineStats[$formattedStatus] += (int)$row['count'];
+            }
+        }
+
         return $this->respond([
-            'success'      => true,
-            'applications' => $formattedApps
+            'success'        => true,
+            'applications'   => $formattedApps,
+            'pipeline_stats' => $pipelineStats
         ]);
     }
 
     public function getInterviews()
     {
         $recruiterId = $this->request->getVar('recruiter_id');
+        $jobId = (int) $this->request->getVar('job_id');
         if (!$recruiterId) return $this->fail('Recruiter ID required');
 
         $userModel = new UserModel();
         $recruiter = $userModel->find((int)$recruiterId);
         if (!$recruiter) return $this->failNotFound('Recruiter not found');
 
-        $slotModel = new \App\Models\InterviewSlotModel();
-        $slots = $slotModel->select('
-                interview_slots.*, 
-                jobs.title as job_title, 
-                interview_bookings.id as booking_id, 
-                interview_bookings.booking_status, 
+        // Fetch Booked Interviews
+        $bookingModel = new \App\Models\InterviewBookingModel();
+        $bookingsQuery = $bookingModel->select('
+                interview_bookings.*, 
                 users.name as candidate_name, 
+                users.email as candidate_email,
+                jobs.title as job_title, 
+                interview_slots.slot_date, 
+                interview_slots.slot_time,
                 interview_bookings.calendar_html_link, 
                 interview_bookings.calendar_add_link
             ')
-            ->join('jobs', 'jobs.id = interview_slots.job_id')
-            ->join('interview_bookings', 'interview_bookings.slot_id = interview_slots.id', 'left')
             ->join('users', 'users.id = interview_bookings.user_id', 'left')
-            ->where('jobs.recruiter_id', $recruiterId)
-            ->where('interview_slots.slot_datetime >=', date('Y-m-d 00:00:00'))
-            ->orderBy('interview_slots.slot_datetime', 'ASC')
-            ->findAll();
+            ->join('jobs', 'jobs.id = interview_bookings.job_id', 'left')
+            ->join('interview_slots', 'interview_slots.id = interview_bookings.slot_id', 'left')
+            ->where('jobs.recruiter_id', $recruiterId);
+
+        if ($jobId > 0) {
+            $bookingsQuery->where('interview_bookings.job_id', $jobId);
+        } else {
+            $bookingsQuery->where('interview_bookings.slot_datetime >=', date('Y-m-d 00:00:00'));
+        }
+
+        $bookings = $bookingsQuery->orderBy('interview_bookings.slot_datetime', 'ASC')->findAll();
 
         $formattedInterviews = [];
-        foreach ($slots as $slot) {
-            $meetingLink = $slot['calendar_html_link'] ?: $slot['calendar_add_link'] ?: '';
-            $status = !empty($slot['booking_status']) ? ucwords(str_replace('_', ' ', $slot['booking_status'])) : 'Available';
+        foreach ($bookings as $b) {
+            $meetingLink = $b['calendar_html_link'] ?: $b['calendar_add_link'] ?: '';
+            $status = !empty($b['booking_status']) ? ucwords(str_replace('_', ' ', $b['booking_status'])) : 'Booked';
             
             $formattedInterviews[] = [
-                'id' => (string)($slot['booking_id'] ?: $slot['id']),
-                'candidate_name' => $slot['candidate_name'] ?: 'Available Slot (Unbooked)',
-                'job_title' => $slot['job_title'],
-                'interview_date' => $slot['slot_datetime'],
+                'id' => (string)$b['id'],
+                'candidate_id' => (string)$b['user_id'],
+                'candidate_name' => $b['candidate_name'] ?: 'Unknown Candidate',
+                'candidate_email' => $b['candidate_email'] ?: '',
+                'job_title' => $b['job_title'],
+                // Dashboard keys
+                'interview_date' => $b['slot_datetime'],
                 'interview_type' => $status,
                 'interview_mode' => !empty($meetingLink) ? 'Online' : 'Offline',
                 'meeting_link' => $meetingLink,
-                'is_booked' => !empty($slot['booking_id']),
+                'is_booked' => true,
+                // Detail screen keys
+                'slot_date' => $b['slot_date'],
+                'slot_time' => $b['slot_time'],
+                'slot_datetime' => $b['slot_datetime'],
+                'booking_status' => $b['booking_status'] ?: 'booked',
+                'calendar_html_link' => $b['calendar_html_link'] ?: '',
+                'calendar_add_link' => $b['calendar_add_link'] ?: '',
+                'created_at' => $b['booked_at'] ?? '',
             ];
+        }
+
+        // Fetch Slot Capacity/Interview Slots
+        $formattedSlots = [];
+        if ($jobId > 0) {
+            $slotModel = new \App\Models\InterviewSlotModel();
+            $slots = $slotModel->select('interview_slots.*, users.name as created_by_name')
+                ->join('users', 'users.id = interview_slots.created_by', 'left')
+                ->where('interview_slots.job_id', $jobId)
+                ->orderBy('interview_slots.slot_datetime', 'ASC')
+                ->findAll();
+
+            foreach ($slots as $s) {
+                $formattedSlots[] = [
+                    'id' => (string)$s['id'],
+                    'slot_date' => $s['slot_date'],
+                    'slot_time' => $s['slot_time'],
+                    'slot_datetime' => $s['slot_datetime'],
+                    'capacity' => (int)$s['capacity'],
+                    'booked_count' => (int)$s['booked_count'],
+                    'status' => ($s['is_available'] ?? 1) ? 'Available' : 'Unavailable',
+                    'created_by_name' => $s['created_by_name'] ?: 'System',
+                ];
+            }
         }
 
         return $this->respond([
             'success'    => true,
-            'interviews' => $formattedInterviews
+            'interviews' => $formattedInterviews,
+            'slots'      => $formattedSlots,
         ]);
     }
 
@@ -469,28 +628,109 @@ class API_RecruiterController extends ResourceController
         if (!$recruiterId) return $this->fail('Recruiter ID required');
 
         $userModel = new UserModel();
-        $recruiter = $userModel->find((int)$recruiterId);
+        $recruiter = $userModel->findRecruiterWithProfile((int)$recruiterId) ?? $userModel->find((int)$recruiterId);
         if (!$recruiter) return $this->failNotFound('Recruiter not found');
 
+        $companyModel = new CompanyModel();
         $jobModel = new JobModel();
+
+        $title = trim((string) $this->request->getVar('title'));
+        $category = trim((string) $this->request->getVar('category'));
+        $description = trim((string) $this->request->getVar('description'));
+        $location = trim((string) $this->request->getVar('location'));
+        $requiredSkills = trim((string) $this->request->getVar('required_skills'));
+        $experienceLevel = trim((string) $this->request->getVar('experience_level'));
+        $employmentType = trim((string) $this->request->getVar('employment_type'));
+        $salaryRange = trim((string) $this->request->getVar('salary_range'));
+        $applicationDeadlineRaw = trim((string) $this->request->getVar('application_deadline'));
+        $postedFor = trim((string) $this->request->getVar('posted_for'));
+        $clientCompanyName = trim((string) $this->request->getVar('client_company_name'));
+        $clientDisclosure = trim((string) $this->request->getVar('client_disclosure'));
+        $payrollType = trim((string) $this->request->getVar('payroll_type'));
+        $aiInterviewPolicy = JobModel::normalizeAiPolicy($this->request->getVar('ai_interview_policy'));
+        $minAiCutoffRaw = trim((string) $this->request->getVar('min_ai_cutoff_score'));
+        $minAiCutoff = $minAiCutoffRaw === '' ? null : (int) $minAiCutoffRaw;
+        $openings = (int) $this->request->getVar('openings');
+        
+        $questionnaireRaw = $this->request->getVar('questionnaire');
+        $questionnaireArray = is_string($questionnaireRaw) ? json_decode($questionnaireRaw, true) : $questionnaireRaw;
+        if (!is_array($questionnaireArray)) $questionnaireArray = [];
+
+        $companyId = (int) ($recruiter['company_id'] ?? 0);
+        $companyRow = $companyId > 0 ? $companyModel->find($companyId) : null;
+        $company = trim((string) ($companyRow['name'] ?? ($recruiter['company_name'] ?? '')));
+
+        if ($title === '' || $category === '' || $description === '' || $location === '') {
+            return $this->fail('Title, category, description and location are required.');
+        }
+
+        if ($company === '') {
+            return $this->fail('Please set your company name in Company Profile before posting jobs.');
+        }
+
+        if ($openings <= 0) {
+            return $this->fail('Openings must be greater than 0.');
+        }
+
+        if ($postedFor === 'client' && $clientCompanyName === '') {
+            return $this->fail('Client company name is required when posting for a client.');
+        }
+
+        if ($aiInterviewPolicy !== JobModel::AI_POLICY_OFF) {
+            if ($minAiCutoff === null) {
+                return $this->fail('Minimum AI cutoff score is required when AI interview is enabled.');
+            }
+            if ($minAiCutoff < 0 || $minAiCutoff > 100) {
+                return $this->fail('Minimum AI cutoff score must be between 0 and 100.');
+            }
+        } else {
+            $minAiCutoff = 0;
+        }
+
+        $applicationDeadline = null;
+        if ($applicationDeadlineRaw !== '') {
+            $parsedDate = \DateTime::createFromFormat('Y-m-d', $applicationDeadlineRaw);
+            if ($parsedDate) {
+                $applicationDeadline = $parsedDate->format('Y-m-d');
+            }
+        }
+
         $data = [
-            'title' => $this->request->getVar('job_title'),
-            'recruiter_id' => $recruiterId,
-            'company_id' => $recruiter['company_id'],
-            'location' => $this->request->getVar('job_location'),
-            'description' => $this->request->getVar('job_description'),
-            'employment_type' => $this->request->getVar('job_type'),
-            'experience_level' => $this->request->getVar('experience_required'),
-            'salary_range' => $this->request->getVar('salary_range'),
-            'required_skills' => $this->request->getVar('skills_required'),
+            'title' => $title,
+            'category' => $category,
+            'company_id' => $companyId > 0 ? $companyId : null,
+            'company' => $company,
+            'description' => $description,
+            'location' => $location,
+            'required_skills' => $requiredSkills,
+            'experience_level' => $experienceLevel,
+            'employment_type' => $employmentType !== '' ? $employmentType : null,
+            'salary_range' => $salaryRange !== '' ? $salaryRange : null,
+            'application_deadline' => $applicationDeadline,
+            'posted_for' => in_array($postedFor, ['own_company', 'client']) ? $postedFor : 'own_company',
+            'client_company_name' => $postedFor === 'client' ? $clientCompanyName : null,
+            'client_disclosure' => in_array($clientDisclosure, ['visible', 'confidential']) ? $clientDisclosure : 'visible',
+            'payroll_type' => in_array($payrollType, ['company_payroll', 'client_payroll', 'consultancy_payroll', 'third_party_contract']) ? $payrollType : null,
+            'ai_interview_policy' => $aiInterviewPolicy,
+            'min_ai_cutoff_score' => $minAiCutoff,
+            'openings' => $openings,
+            'application_questionnaire' => !empty($questionnaireArray) ? json_encode($questionnaireArray) : null,
+            'candidate_fee_allowed' => 0,
             'status' => 'open',
+            'recruiter_id' => $recruiterId,
+            'created_at' => date('Y-m-d H:i:s')
         ];
 
         if ($jobModel->insert($data)) {
+            $jobId = (int) $jobModel->getInsertID();
+            $job = $jobModel->find($jobId);
+            if (!empty($job)) {
+                (new \App\Libraries\JobAlertService())->processNewJob($job);
+            }
             return $this->respondCreated([
                 'success' => true,
                 'message' => 'Job posted successfully',
-                'job_id' => (string)$jobModel->getInsertID()
+                'job_id' => (string)$jobId
             ]);
         }
 
@@ -2190,6 +2430,322 @@ class API_RecruiterController extends ResourceController
             log_message('error', 'Candidate action email failed: ' . $e->getMessage());
         }
     }
+
+    public function bulkUpdateApplicationStatus()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        $applicationIdsRaw = $this->request->getVar('application_ids');
+        $status = $this->normalizeApplicationStatus((string) $this->request->getVar('status'));
+
+        if (!$recruiterId || empty($applicationIdsRaw) || !$status) {
+            return $this->fail('Recruiter ID, Application IDs, and Status are required');
+        }
+
+        $applicationIds = is_array($applicationIdsRaw) ? $applicationIdsRaw : explode(',', $applicationIdsRaw);
+        $applicationIds = array_map('intval', array_filter($applicationIds));
+
+        if (empty($applicationIds)) {
+            return $this->fail('No valid Application IDs provided');
+        }
+
+        $userModel = new UserModel();
+        $recruiter = $userModel->find((int)$recruiterId);
+        if (!$recruiter) return $this->failNotFound('Recruiter not found');
+
+        $appModel = new ApplicationModel();
+        $stageModel = new StageHistoryModel();
+        $notificationModel = new NotificationModel();
+        $db = \Config\Database::connect();
+
+        $successCount = 0;
+        foreach ($applicationIds as $appId) {
+            $app = $appModel
+                ->select('applications.*, jobs.recruiter_id')
+                ->join('jobs', 'jobs.id = applications.job_id')
+                ->where('applications.id', $appId)
+                ->first();
+
+            if (!$app || (int)$app['recruiter_id'] !== (int)$recruiterId) {
+                continue;
+            }
+
+            $db->transStart();
+            $appModel->update($appId, ['status' => $status]);
+            $stageModel->moveToStage($appId, $this->formatApplicationStatus($status));
+
+            $updatedApplication = $appModel->find($appId);
+            if ($updatedApplication) {
+                $notificationModel->triggerApplicationNotifications((int) $app['candidate_id'], $updatedApplication);
+            }
+
+            $db->table('recruiter_candidate_actions')->insert([
+                'candidate_id' => $app['candidate_id'],
+                'recruiter_id' => $recruiterId,
+                'application_id' => $appId,
+                'job_id' => $app['job_id'],
+                'action_type' => 'status_update_' . $status,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+            $db->transComplete();
+
+            if ($db->transStatus() !== false) {
+                $successCount++;
+            }
+        }
+
+        return $this->respond([
+            'success' => true,
+            'message' => "Successfully updated $successCount applications to " . $this->formatApplicationStatus($status)
+        ]);
+    }
+
+    public function bulkSendEmail()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        $candidateIdsRaw = $this->request->getVar('candidate_ids');
+        $subject = $this->request->getVar('subject');
+        $body = $this->request->getVar('body');
+
+        if (!$recruiterId || empty($candidateIdsRaw) || !$subject || !$body) {
+            return $this->fail('Recruiter ID, Candidate IDs, Subject, and Body are required');
+        }
+
+        $candidateIds = is_array($candidateIdsRaw) ? $candidateIdsRaw : explode(',', $candidateIdsRaw);
+        $candidateIds = array_map('intval', array_filter($candidateIds));
+
+        if (empty($candidateIds)) {
+            return $this->fail('No valid Candidate IDs provided');
+        }
+
+        $userModel = new UserModel();
+        $recruiter = $userModel->find((int)$recruiterId);
+        if (!$recruiter) return $this->failNotFound('Recruiter not found');
+
+        $emailSentCount = 0;
+        foreach ($candidateIds as $candidateId) {
+            $candidate = $userModel->findCandidateWithProfile($candidateId) ?? $userModel->find($candidateId);
+            if (!$candidate) continue;
+
+            $recipient = trim((string) ($candidate['email'] ?? ''));
+            if ($recipient === '') continue;
+
+            $actionModel = new \App\Models\RecruiterCandidateActionModel();
+            $actionModel->logAction(
+                (int) $candidateId,
+                (int) $recruiterId,
+                'email_sent',
+                null,
+                null,
+                24
+            );
+
+            try {
+                $email = \Config\Services::email(null, false);
+                $config = config('Email');
+                $email->clear(true);
+                $email->setMailType('html');
+                if ($config->fromEmail !== '') {
+                    $email->setFrom($config->fromEmail, $config->fromName ?: 'HireMatrix');
+                }
+                $email->setTo($recipient);
+                $email->setSubject($subject);
+                $email->setMessage($body);
+                if ($email->send(false)) {
+                    $emailSentCount++;
+                }
+            } catch (\Throwable $e) {
+                log_message('error', 'Bulk email failed: ' . $e->getMessage());
+            }
+        }
+
+        return $this->respond([
+            'success' => true,
+            'message' => "Successfully sent email to $emailSentCount candidates."
+        ]);
+    }
+
+    public function bulkSendMessage()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        $candidateIdsRaw = $this->request->getVar('candidate_ids');
+        $message = trim((string) $this->request->getVar('message'));
+        $applicationId = (int) ($this->request->getVar('application_id') ?? 0);
+        $jobId = (int) ($this->request->getVar('job_id') ?? 0);
+
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+        if (empty($candidateIdsRaw)) return $this->fail('Candidate IDs required');
+        if ($message === '') return $this->fail('Message cannot be empty');
+
+        $candidateIds = is_array($candidateIdsRaw) ? $candidateIdsRaw : explode(',', $candidateIdsRaw);
+        $candidateIds = array_map('intval', array_filter($candidateIds));
+
+        if (empty($candidateIds)) return $this->fail('No valid Candidate IDs provided');
+
+        $userModel = new \App\Models\UserModel();
+        $recruiter = $userModel->findRecruiterWithProfile((int) $recruiterId);
+        $recruiterName = !empty($recruiter['name']) ? $recruiter['name'] : 'Recruiter';
+
+        $messageModel = new \App\Models\RecruiterCandidateMessageModel();
+
+        $successCount = 0;
+        foreach ($candidateIds as $candidateId) {
+            $messageModel->insert([
+                'candidate_id' => $candidateId,
+                'recruiter_id' => (int) $recruiterId,
+                'application_id' => $applicationId > 0 ? $applicationId : null,
+                'job_id' => $jobId > 0 ? $jobId : null,
+                'sender_id' => (int) $recruiterId,
+                'sender_role' => 'recruiter',
+                'message' => $message,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            $this->notifyCandidateAction(
+                (int) $candidateId,
+                $applicationId > 0 ? $applicationId : null,
+                'recruiter_message',
+                'Message from Recruiter',
+                "{$recruiterName} sent you a message. Open conversation to read it.",
+                base_url('candidate/messages/' . (int) $recruiterId . ($applicationId > 0 ? '?application_id=' . $applicationId : ''))
+            );
+
+            $successCount++;
+        }
+
+        return $this->respond([
+            'success' => true,
+            'message' => "Successfully sent message to $successCount candidates."
+        ]);
+    }
+
+    public function addInterviewSlot()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        $jobId = $this->request->getVar('job_id');
+        $startDate = $this->request->getVar('start_date');
+        $endDate = $this->request->getVar('end_date');
+        $timesRaw = $this->request->getVar('times');
+        $times = [];
+        if (is_string($timesRaw)) {
+            if (strpos($timesRaw, '[') === 0 && substr($timesRaw, -1) === ']') {
+                $timesRaw = trim($timesRaw, '[]');
+                $times = array_filter(array_map('trim', explode(',', $timesRaw)));
+            } else {
+                $decoded = json_decode($timesRaw, true);
+                $times = is_array($decoded) ? $decoded : [$timesRaw];
+            }
+        } elseif (is_array($timesRaw)) {
+            $times = $timesRaw;
+        }
+        $capacity = (int) ($this->request->getVar('capacity') ?? 1);
+        $excludeWeekends = $this->request->getVar('exclude_weekends') == '1';
+
+        if (!$recruiterId || !$jobId || !$startDate || empty($times)) {
+            return $this->fail('Missing required fields');
+        }
+
+        $slotModel = new \App\Models\InterviewSlotModel();
+        
+        $dates = [];
+        $current = strtotime($startDate);
+        $end = $endDate ? strtotime($endDate) : $current;
+
+        while ($current <= $end) {
+            $dayOfWeek = date('N', $current);
+            if ($excludeWeekends && ($dayOfWeek == 6 || $dayOfWeek == 7)) {
+                $current = strtotime('+1 day', $current);
+                continue;
+            }
+            $dates[] = date('Y-m-d', $current);
+            $current = strtotime('+1 day', $current);
+        }
+
+        $totalCreated = 0;
+        foreach ($dates as $date) {
+            $created = $slotModel->createBulkSlots(
+                (int) $jobId,
+                $date,
+                $times,
+                (int) $recruiterId,
+                $capacity
+            );
+            $totalCreated += $created;
+        }
+
+        return $this->respond([
+            'success' => true,
+            'message' => "Successfully created {$totalCreated} interview slots"
+        ]);
+    }
+
+    public function updateInterviewSlot()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        $slotId = $this->request->getVar('slot_id');
+        $date = $this->request->getVar('slot_date');
+        $time = $this->request->getVar('slot_time');
+        $capacity = (int) ($this->request->getVar('capacity') ?? 1);
+
+        if (!$recruiterId || !$slotId || !$date || !$time) {
+            return $this->fail('Missing required fields');
+        }
+
+        $slotModel = new \App\Models\InterviewSlotModel();
+        $slot = $slotModel->find($slotId);
+
+        if (!$slot) {
+            return $this->failNotFound('Slot not found');
+        }
+
+        if ($slot['booked_count'] > 0 && $capacity < $slot['booked_count']) {
+            return $this->fail('Cannot reduce capacity below current bookings');
+        }
+
+        $dbTime = substr($slot['slot_time'], 0, 5);
+        $inputTime = substr($time, 0, 5);
+
+        if ($slot['booked_count'] > 0 && ($date !== $slot['slot_date'] || $inputTime !== $dbTime)) {
+            return $this->fail('Cannot edit time/date for slot with existing bookings');
+        }
+
+        $slotModel->update($slotId, [
+            'slot_date' => $date,
+            'slot_time' => $time,
+            'slot_datetime' => $date . ' ' . $time,
+            'capacity' => $capacity
+        ]);
+
+        return $this->respond([
+            'success' => true,
+            'message' => 'Slot updated successfully'
+        ]);
+    }
+
+    public function deleteInterviewSlot()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        $slotId = $this->request->getVar('slot_id');
+
+        if (!$recruiterId || !$slotId) {
+            return $this->fail('Missing required fields');
+        }
+
+        $slotModel = new \App\Models\InterviewSlotModel();
+        $slot = $slotModel->find($slotId);
+
+        if (!$slot) {
+            return $this->failNotFound('Slot not found');
+        }
+
+        if ($slot['booked_count'] > 0) {
+            return $this->fail('Cannot delete slot with existing bookings');
+        }
+
+        $slotModel->delete($slotId);
+
+        return $this->respond([
+            'success' => true,
+            'message' => 'Slot deleted successfully'
+        ]);
+    }
 }
-
-

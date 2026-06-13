@@ -194,14 +194,18 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         $routes->get('team', 'API_RecruiterController::getTeam');
         $routes->post('team/invite', 'API_RecruiterController::inviteMember');
         $routes->post('applications/update_status', 'API_RecruiterController::updateApplicationStatus');
+        $routes->post('applications/bulk_update_status', 'API_RecruiterController::bulkUpdateApplicationStatus');
+        $routes->post('applications/bulk_email', 'API_RecruiterController::bulkSendEmail');
+        $routes->post('applications/bulk_message', 'API_RecruiterController::bulkSendMessage');
         $routes->post('update_fcm_token', 'API_RecruiterController::updateFcmToken');
 
         // Interview Management
-        $routes->get('interview_slots', 'API_InterviewController::getSlots');
-        $routes->post('interview_slots/add', 'API_InterviewController::addSlot');
-        $routes->post('interview_slots/delete', 'API_InterviewController::deleteSlot');
-        $routes->get('interview_bookings', 'API_InterviewController::getBookings');
-        $routes->post('interviews/reschedule', 'API_InterviewController::rescheduleBooking');
+        $routes->get('interview_slots', 'API_RecruiterController::getInterviewSlots');
+        $routes->post('interview_slots/add', 'API_RecruiterController::addInterviewSlot');
+        $routes->post('interview_slots/update', 'API_RecruiterController::updateInterviewSlot');
+        $routes->post('interview_slots/delete', 'API_RecruiterController::deleteInterviewSlot');
+        $routes->get('interview_bookings', 'API_RecruiterController::getInterviewBookings');
+        $routes->post('interviews/reschedule', 'API_RecruiterController::rescheduleInterviewBooking');
     });
     // Career Transition AI API Routes
     $routes->get('career-transition/(:num)', 'ApiCareerTransitionController::getTransition/$1');
