@@ -192,6 +192,14 @@ header.site-navbar.landing-header .landing-header-logo-text {
         padding-top: 24px !important;
     }
 
+    body.login-auth-page header.site-navbar.landing-header .site-logo {
+        max-width: 100% !important;
+    }
+
+    body.login-auth-page header.site-navbar.landing-header .landing-header-actions {
+        display: none !important;
+    }
+
     html.hm-system-dark-preload body.public-auth-page header.site-navbar.landing-header,
     html.hm-dark-preload body.public-auth-page header.site-navbar.landing-header {
         background: #0d1117 !important;
