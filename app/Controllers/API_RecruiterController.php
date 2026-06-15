@@ -503,6 +503,27 @@ class API_RecruiterController extends ResourceController
         ]);
     }
 
+    public function deleteNotification()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        $notificationId = $this->request->getVar('notification_id');
+
+        if (!$recruiterId || !$notificationId) return $this->fail('ID required');
+
+        $notifyModel = new NotificationModel();
+
+        if ($notificationId === 'all') {
+            $notifyModel->where('user_id', $recruiterId)->delete();
+        } else {
+            $notifyModel->where('id', $notificationId)->where('user_id', $recruiterId)->delete();
+        }
+
+        return $this->respond([
+            'success' => true,
+            'message' => 'Notification(s) deleted successfully'
+        ]);
+    }
+
     public function getCompany()
     {
         $recruiterId = $this->request->getVar('recruiter_id');
@@ -2746,6 +2767,43 @@ class API_RecruiterController extends ResourceController
         return $this->respond([
             'success' => true,
             'message' => 'Slot deleted successfully'
+        ]);
+    }
+
+    public function changePassword()
+    {
+        $json = $this->request->getJSON();
+        
+        $recruiterId = $json->recruiter_id ?? $this->request->getVar('recruiter_id');
+        $currentPassword = $json->current_password ?? $this->request->getVar('current_password');
+        $newPassword = $json->new_password ?? $this->request->getVar('new_password');
+
+        if (!$recruiterId || !$currentPassword || !$newPassword) {
+            return $this->fail('Missing required fields');
+        }
+
+        $userModel = new UserModel();
+        $user = $userModel->find($recruiterId);
+
+        if (!$user || $user['role'] !== 'recruiter') {
+            return $this->failNotFound('Recruiter not found');
+        }
+
+        if (empty($user['password']) || !password_verify((string)$currentPassword, (string)$user['password'])) {
+            return $this->fail('Current password is incorrect', 400);
+        }
+
+        if (password_verify((string)$newPassword, (string)$user['password'])) {
+            return $this->fail('New password must be different from the current password', 400);
+        }
+
+        $userModel->update($recruiterId, [
+            'password' => password_hash((string)$newPassword, PASSWORD_DEFAULT),
+        ]);
+
+        return $this->respond([
+            'success' => true,
+            'message' => 'Password changed successfully'
         ]);
     }
 }

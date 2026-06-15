@@ -166,6 +166,7 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         $routes->post('resend_verification', 'ApiAuthController::resendVerification');
         $routes->post('signup', 'ApiAuthController::register');
         $routes->post('change-password', 'ApiAuthController::changePassword');
+        $routes->post('recruiter/change-password', 'API_RecruiterController::changePassword');
         $routes->get('dashboard', 'API_RecruiterController::getDashboard');
         $routes->get('dashboard/leaderboard', 'API_RecruiterController::getLeaderboard');
         $routes->get('jobs', 'API_RecruiterController::getJobs');
@@ -181,6 +182,7 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         $routes->get('interviews', 'API_RecruiterController::getInterviews');
         $routes->get('notifications', 'API_RecruiterController::getNotifications');
         $routes->post('notifications/mark_read', 'API_RecruiterController::markNotificationRead');
+        $routes->post('notifications/delete', 'API_RecruiterController::deleteNotification');
         $routes->get('company', 'API_RecruiterController::getCompany');
         $routes->post('company/update', 'API_RecruiterController::updateCompanyProfile');
         $routes->post('company/upload_photo', 'API_RecruiterController::uploadCompanyImage');
