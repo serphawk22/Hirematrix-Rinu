@@ -93,7 +93,7 @@ $timeout = Q_TIMEOUT;
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 <!-- PROCTORING -->
-<script src="js/proctoring.js"></script>
+<script src="js/proctoring.js?v=2"></script>
 <script>
 
 const proctoringBox =

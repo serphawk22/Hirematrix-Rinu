@@ -176,7 +176,7 @@ const candidate_name = <?= json_encode($_SESSION['candidateName'] ?? ($_SESSION[
 const jobrole = <?= json_encode($_SESSION['position'] ?? '') ?>;
 </script>
 <!-- PROCTORING -->
-<script src="js/proctoring.js"></script>
+<script src="js/proctoring.js?v=2"></script>
 <script>
 
 const proctoringBox =

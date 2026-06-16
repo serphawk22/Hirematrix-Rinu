@@ -3155,6 +3155,28 @@ body.dark .badge-warning {
   color: #78e3dd !important;
 }
 
+body.dark .notification {
+  background: #142427 !important;
+  border: 1px solid #2e4a50 !important;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .34) !important;
+  color: #b8cdd2 !important;
+}
+
+body.dark .notification.success {
+  border-left: 4px solid #63d889 !important;
+  color: #d8f7e3 !important;
+}
+
+body.dark .notification.error {
+  border-left: 4px solid #f87171 !important;
+  color: #ffd7d7 !important;
+}
+
+body.dark .notification.info {
+  border-left: 4px solid #78e3dd !important;
+  color: #d7fffb !important;
+}
+
 body.dark .exam-sidebar {
   background: #161b22 !important;
 }
@@ -3439,6 +3461,21 @@ body.dark .theme-toggle-icon::after {
 
 body.ai-interview-candidate-page .theme-toggle-btn {
   top: 24px !important;
+}
+
+/* Remove the pale blue stage behind AI interview intro/transition screens. */
+body:not(.dark) #app,
+body:not(.dark) #screen-container,
+body:not(.dark) .intro-screen,
+body:not(.dark) .transition-screen,
+body:not(.dark) .loading-screen {
+  background: #ffffff !important;
+}
+
+body:not(.dark) .intro-screen,
+body:not(.dark) .transition-screen,
+body:not(.dark) .loading-screen {
+  background-image: none !important;
 }
 
 @media (max-width: 900px) {

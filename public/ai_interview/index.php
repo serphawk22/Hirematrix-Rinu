@@ -2,6 +2,7 @@
 session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+require_once __DIR__ . '/config.php';
  
 // Redirect if already in exam
 //if (!empty($_SESSION['exam_ready'])) { header('Location: exam.php'); exit; }
@@ -40,27 +41,21 @@ $_SESSION['jobid'] = $jobid;
 $candidateName = $_POST['candidate_name'] ?? '';
 
 if ($candidateId > 0) {
-    // Connect to ai_job_portal1 database
-  $conn = new mysqli(
-    "localhost",
-    "root",
-    "",
-    "ai_job_portal1"
-);
+    $conn = db_connect();
     // Check connection
-    if ($conn->connect_error) {
-        die('Database connection failed: ' . $conn->connect_error);
+    if (!$conn) {
+        die('Database connection failed.');
     }
 
     // Safe query using prepared statement
     $stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
-    $stmt->bind_param('i', $candidateId);
-    $stmt->execute();
-    $stmt->bind_result($candidateName);
-    $stmt->fetch();
-
-    // Cleanup
-    $stmt->close();
+    if ($stmt) {
+        $stmt->bind_param('i', $candidateId);
+        $stmt->execute();
+        $stmt->bind_result($candidateName);
+        $stmt->fetch();
+        $stmt->close();
+    }
     $conn->close();
 }
  
