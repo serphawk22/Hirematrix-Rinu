@@ -1047,7 +1047,7 @@ function showTerminationOverlay(
     let secondsLeft = redirectSeconds;
 
     countdown.textContent =
-        Redirecting in ${secondsLeft}s...;
+        `Redirecting in ${secondsLeft}s...`;
 
     const countdownTimer =
         setInterval(() => {
@@ -1066,7 +1066,7 @@ function showTerminationOverlay(
             } else {
 
                 countdown.textContent =
-                    Redirecting in ${secondsLeft}s...;
+                    `Redirecting in ${secondsLeft}s...`;
             }
 
         }, 1000);
@@ -1105,7 +1105,7 @@ async function getProfileDescriptor() {
 
     const res =
         await fetch(
-            api/get_candidate_photo.php?candidate_id=${candidate_id}
+            `api/get_candidate_photo.php?candidate_id=${candidate_id}`
         );
 
     const data =
@@ -1296,7 +1296,7 @@ async function verifyCandidateFace() {
     ) {
 
         updateVerificationOverlay(
-            Verifying your identity... (${attempt}/${maxAttempts})
+            `Verifying your identity... (${attempt}/${maxAttempts})`
         );
 
         let liveDescriptor = null;
@@ -1320,7 +1320,7 @@ async function verifyCandidateFace() {
                 );
 
             console.log(
-                Attempt ${attempt}: distance = ${lastDistance.toFixed(3)}
+                `Attempt ${attempt}: distance = ${lastDistance.toFixed(3)}`
             );
 
             if (lastDistance < FACE_MATCH_THRESHOLD) {
@@ -1333,7 +1333,7 @@ async function verifyCandidateFace() {
         } else {
 
             console.log(
-                Attempt ${attempt}: no face detected in camera
+                `Attempt ${attempt}: no face detected in camera`
             );
         }
 
