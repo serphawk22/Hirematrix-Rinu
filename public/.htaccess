@@ -10,7 +10,7 @@ Options -Indexes
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    RewriteRule ^ai_interview/api/ - [F,L,NC]
+    #RewriteRule ^ai_interview/api/ - [F,L,NC]
     RewriteRule ^ai_interview/config\.php$ - [F,L,NC]
     RewriteRule ^ai_interview/database/ - [F,L,NC]
     RewriteRule ^database/ - [F,L,NC]
