@@ -9,7 +9,7 @@ header("Access-Control-Allow-Origin: *");
 */
 
 $db_host = "localhost";
-$db_name = "ai_job_portal";   // 👈 Change this
+$db_name = "ai_job_portal1";   // 👈 Change this
 $db_user = "root";   // 👈 Change this
 $db_pass = ""; // 👈 Change this
 
@@ -87,7 +87,7 @@ if (!$row || empty($row['profile_photo'])) {
 $relativePath = trim($row['profile_photo']);
 $relativePath = str_replace('\\', '/', $relativePath);
 
-$filePath = "C:/xampp/htdocs/hirematrix.serphawk.in/ai-job-portal/public/" . ltrim($relativePath, '/');
+$filePath = "C:/xampp/htdocs/ai-job-portal/public/" . ltrim($relativePath, '/');
 
 if (!file_exists($filePath)) {
 

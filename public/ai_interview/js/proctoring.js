@@ -504,7 +504,7 @@ async function loadModels() {
 
     if (modelsLoaded) return;
 const MODEL_URL =
-"http://localhost/hirematrix.serphawk.in/ai-job-portal/public/ai_interview/models";
+"http://localhost/ai-job-portal/public/ai_interview/models";
   try {
     await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
     console.log("SSD Loaded");
