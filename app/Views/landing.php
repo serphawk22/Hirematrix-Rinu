@@ -3,54 +3,33 @@ $platformStats = $platformStats ?? [];
 $featuredJobs = $featuredJobs ?? [];
 
 $jobsPostedCount = (int) ($platformStats['jobs_posted'] ?? count($featuredJobs));
-$candidateCount = (int) ($platformStats['candidates'] ?? 0);
-$interviewCount = (int) ($platformStats['interviews_booked'] ?? 0);
-$recruiterCount = (int) ($platformStats['recruiters'] ?? 0);
+$candidateCount  = (int) ($platformStats['candidates'] ?? 0);
+$interviewCount  = (int) ($platformStats['interviews_booked'] ?? 0);
+$recruiterCount  = (int) ($platformStats['recruiters'] ?? 0);
 
 $jobIconSet = [
     'developer' => 'fas fa-code',
-    'engineer' => 'fas fa-cogs',
-    'designer' => 'fas fa-palette',
-    'manager' => 'fas fa-chart-line',
-    'data' => 'fas fa-database',
+    'engineer'  => 'fas fa-cogs',
+    'designer'  => 'fas fa-palette',
+    'manager'   => 'fas fa-chart-line',
+    'data'      => 'fas fa-database',
     'marketing' => 'fas fa-bullhorn',
-    'product' => 'fas fa-briefcase',
+    'product'   => 'fas fa-briefcase',
 ];
 
 $pickJobIcon = static function (string $title) use ($jobIconSet): string {
     $needle = strtolower($title);
     foreach ($jobIconSet as $key => $icon) {
-        if (str_contains($needle, $key)) {
-            return $icon;
-        }
+        if (str_contains($needle, $key)) return $icon;
     }
-
     return 'fas fa-briefcase';
 };
 
 $formatAge = static function ($value): string {
-    if ($value === null || $value === '') {
-        return 'Recently';
-    }
-
+    if ($value === null || $value === '') return 'Recently';
     $date = strtotime((string) $value);
-    if ($date === false) {
-        return 'Recently';
-    }
-
+    if ($date === false) return 'Recently';
     return date('M d, Y', $date);
-};
-
-$formatCount = static function (int $count, string $fallback): string {
-    if ($count <= 0) {
-        return $fallback;
-    }
-
-    if ($count >= 1000) {
-        return number_format($count / 1000, 1) . 'k+';
-    }
-
-    return number_format($count) . '+';
 };
 ?>
 <!doctype html>
@@ -59,11 +38,9 @@ $formatCount = static function (int $count, string $fallback): string {
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>HireMatrix | AI Job Portal</title>
-    <meta name="description" content="HireMatrix connects candidates and recruiters with AI job matching, resume tools, interviews, and career transition guidance.">
+    <title>HireMatrix | Home</title>
     <link rel="icon" type="image/png" href="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>">
-
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/theme-colors.css') ?>">
+    <meta name="description" content="AI Job Portal home page">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/custom-bs.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/jquery.fancybox.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/bootstrap-select.min.css') ?>">
@@ -74,1244 +51,1035 @@ $formatCount = static function (int $count, string $fallback): string {
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/style.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/hirematrix-style.css?v=' . @filemtime(FCPATH . 'jobboard/css/hirematrix-style.css')) ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.css')) ?>">
-    <style>
-        :root {
-            --hm-primary: #1FB7B5;
-            --hm-primary-dark: #0D8A90;
-            --hm-secondary: #53B86C;
-            --hm-accent: #B5D84E;
-            --hm-ink: #0F172A;
-            --hm-muted: #5D7083;
-            --hm-bg: #FFFFFF;
-            --hm-surface: #FFFFFF;
-            --hm-soft: #F1FAF9;
-            --hm-line: #DDECEF;
-            --hm-radius: 8px;
-        }
-
-        body.landing-redesign {
-            background: var(--hm-bg);
-            color: var(--hm-ink);
-            overflow-x: hidden;
-        }
-
-        body.landing-redesign::before {
-            display: none !important;
-        }
-
-        .landing-redesign .site-wrap {
-            min-height: 100vh;
-            background: var(--hm-bg);
-        }
-
-        .hm-landing-rail {
-            width: min(1180px, calc(100vw - 40px));
-            margin: 0 auto;
-        }
-
-        .hm-hero {
-            padding: 28px 0 38px;
-        }
-
-        .hm-hero-nav {
-            position: relative;
-            z-index: 4;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 18px;
-            animation: hmFadeUp 0.65s ease both;
-        }
-
-        .hm-brand-mark {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--hm-ink);
-            font-weight: 850;
-            text-decoration: none;
-        }
-
-        .hm-brand-mark img {
-            width: 40px;
-            height: 40px;
-            border-radius: 0;
-            object-fit: contain;
-            background: transparent;
-            border: 0;
-        }
-
-        .hm-hero-nav-actions {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .hm-hero-nav-actions .hm-cta-primary,
-        .hm-hero-nav-actions .hm-cta-secondary {
-            min-height: 42px;
-            padding: 0 16px;
-        }
-
-        .hm-hero-panel {
-            position: relative;
-            overflow: hidden;
-            min-height: 640px;
-            border: 1px solid rgba(216, 231, 239, 0.95);
-            border-radius: var(--hm-radius);
-            background:
-                linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.93) 48%, rgba(241, 250, 249, 0.88) 100%),
-                url("<?= base_url('jobboard/images/hero_1.jpg') ?>");
-            background-size: cover;
-            background-position: center right;
-            box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
-            animation: hmFadeUp 0.72s ease 0.08s both;
-        }
-
-        .hm-hero-panel::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(13, 138, 144, 0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(13, 138, 144, 0.08) 1px, transparent 1px);
-            background-size: 42px 42px;
-            opacity: 0.38;
-            pointer-events: none;
-        }
-
-        .hm-hero-content {
-            position: relative;
-            z-index: 2;
-            display: block;
-            min-height: 640px;
-            padding: 44px;
-        }
-
-        .hm-hero-content > div:first-child {
-            position: relative;
-            z-index: 3;
-            max-width: 710px;
-            animation: hmFadeUp 0.78s ease 0.18s both;
-        }
-
-        .hm-kicker {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            min-height: 30px;
-            padding: 5px 10px;
-            border: 1px solid rgba(31, 183, 181, 0.25);
-            border-radius: 999px;
-            background: rgba(234, 248, 247, 0.92);
-            color: var(--hm-primary-dark);
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-        }
-
-        .hm-hero h1 {
-            max-width: 690px;
-            margin: 18px 0 16px;
-            color: var(--hm-ink);
-            font-size: 56px;
-            font-weight: 850;
-            letter-spacing: 0;
-            line-height: 1.03;
-        }
-
-        .hm-hero h1 span {
-            color: var(--hm-primary-dark);
-        }
-
-        .hm-hero-copy {
-            max-width: 640px;
-            margin: 0;
-            color: var(--hm-muted);
-            font-size: 17px;
-            line-height: 1.7;
-        }
-
-        .hm-search-card {
-            margin-top: 28px;
-            padding: 12px;
-            max-width: 760px;
-            border: 1px solid rgba(216, 231, 239, 0.98);
-            border-radius: var(--hm-radius);
-            background: rgba(255, 255, 255, 0.98);
-            box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
-            animation: hmFadeUp 0.78s ease 0.28s both;
-        }
-
-        .hm-search-form {
-            display: grid;
-            grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.8fr) auto;
-            gap: 10px;
-            align-items: stretch;
-        }
-
-        .hm-search-field {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-height: 52px;
-            padding: 0 14px;
-            border-radius: 6px;
-            background: #F2FBFA;
-            border: 1px solid rgba(31, 183, 181, 0.14);
-        }
-
-        .hm-search-field i {
-            color: var(--hm-primary-dark);
-        }
-
-        .hm-search-field input {
-            width: 100%;
-            border: 0;
-            outline: 0;
-            background: transparent;
-            color: var(--hm-ink);
-            font-size: 14px;
-        }
-
-        .hm-search-submit,
-        .hm-cta-primary {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            min-height: 52px;
-            padding: 0 20px;
-            border: 1px solid var(--hm-primary);
-            border-radius: 6px;
-            background: var(--hm-primary);
-            color: #fff !important;
-            font-weight: 800;
-            text-decoration: none !important;
-            white-space: nowrap;
-            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-        }
-
-        .hm-cta-secondary {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            min-height: 52px;
-            padding: 0 20px;
-            border: 1px solid rgba(31, 183, 181, 0.48);
-            border-radius: 6px;
-            background: #fff;
-            color: var(--hm-primary-dark) !important;
-            font-weight: 800;
-            text-decoration: none !important;
-            white-space: nowrap;
-            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-        }
-
-        .hm-search-submit:hover,
-        .hm-cta-primary:hover,
-        .hm-cta-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
-        }
-
-        .hm-quick-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .hm-quick-links a {
-            display: inline-flex;
-            align-items: center;
-            min-height: 32px;
-            padding: 0 12px;
-            border: 1px solid rgba(31, 183, 181, 0.2);
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.86);
-            color: var(--hm-primary-dark);
-            font-size: 13px;
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .hm-hero-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .hm-product-scene {
-            position: absolute;
-            right: 44px;
-            bottom: 44px;
-            z-index: 2;
-            display: grid;
-            width: min(520px, 42vw);
-            animation: hmFloatScene 5.8s ease-in-out infinite;
-        }
-
-        .hm-dashboard-card {
-            position: relative;
-            border: 1px solid rgba(216, 231, 239, 0.95);
-            border-radius: var(--hm-radius);
-            background: rgba(255, 255, 255, 0.98);
-            box-shadow: 0 24px 50px rgba(15, 23, 42, 0.14);
-            overflow: hidden;
-            transform-origin: center;
-        }
-
-        .hm-dashboard-topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--hm-line);
-            background: #F8FCFC;
-        }
-
-        .hm-window-dots {
-            display: inline-flex;
-            gap: 6px;
-        }
-
-        .hm-window-dots span {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: #CBD5E1;
-        }
-
-        .hm-window-dots span:nth-child(2) {
-            background: var(--hm-primary);
-        }
-
-        .hm-window-dots span:nth-child(3) {
-            background: var(--hm-accent);
-        }
-
-        .hm-dashboard-body {
-            display: grid;
-            gap: 14px;
-            padding: 16px;
-        }
-
-        .hm-match-card,
-        .hm-job-row,
-        .hm-pipeline-card {
-            border: 1px solid var(--hm-line);
-            border-radius: 8px;
-            background: #fff;
-        }
-
-        .hm-match-card {
-            display: grid;
-            grid-template-columns: 58px minmax(0, 1fr) auto;
-            gap: 12px;
-            align-items: center;
-            padding: 14px;
-        }
-
-        .hm-avatar-stack {
-            position: relative;
-            width: 58px;
-            height: 44px;
-        }
-
-        .hm-avatar-stack img {
-            position: absolute;
-            width: 38px;
-            height: 38px;
-            border: 2px solid #fff;
-            border-radius: 50%;
-            object-fit: cover;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
-        }
-
-        .hm-avatar-stack img:nth-child(2) {
-            left: 20px;
-        }
-
-        .hm-match-card strong,
-        .hm-pipeline-card strong,
-        .hm-job-row strong {
-            display: block;
-            color: var(--hm-ink);
-            font-size: 15px;
-            line-height: 1.2;
-        }
-
-        .hm-match-card span,
-        .hm-pipeline-card span,
-        .hm-job-row span {
-            color: var(--hm-muted);
-            font-size: 12px;
-        }
-
-        .hm-score-ring {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            background: conic-gradient(var(--hm-primary) 88%, #E6EEF2 0);
-            color: var(--hm-primary-dark);
-            font-size: 13px;
-            font-weight: 850;
-        }
-
-        .hm-score-ring::before {
-            content: "";
-            position: absolute;
-        }
-
-        .hm-dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .hm-pipeline-card {
-            padding: 14px;
-        }
-
-        .hm-bars {
-            display: grid;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .hm-bars span {
-            display: block;
-            height: 8px;
-            border-radius: 999px;
-            background: #E8F1F4;
-            overflow: hidden;
-        }
-
-        .hm-bars span::before {
-            content: "";
-            display: block;
-            height: 100%;
-            width: var(--w, 72%);
-            border-radius: inherit;
-            background: var(--hm-primary);
-            transform-origin: left;
-            animation: hmBarGrow 1.1s ease both;
-        }
-
-        .hm-job-row {
-            display: grid;
-            grid-template-columns: 42px minmax(0, 1fr) auto;
-            gap: 12px;
-            align-items: center;
-            padding: 12px;
-        }
-
-        .hm-job-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 42px;
-            height: 42px;
-            border-radius: 8px;
-            background: var(--hm-soft);
-            color: var(--hm-primary-dark);
-        }
-
-        .hm-job-pill {
-            display: inline-flex;
-            min-height: 28px;
-            align-items: center;
-            padding: 0 10px;
-            border-radius: 999px;
-            background: #F2FBFA;
-            color: var(--hm-primary-dark);
-            font-size: 12px;
-            font-weight: 800;
-        }
-
-        .hm-stats {
-            padding: 22px 0 28px;
-        }
-
-        .hm-stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 0;
-            border-top: 1px solid var(--hm-line);
-            border-bottom: 1px solid var(--hm-line);
-        }
-
-        .hm-stat-card {
-            min-height: 96px;
-            padding: 22px 24px;
-        }
-
-        .hm-stat-card + .hm-stat-card {
-            border-left: 1px solid var(--hm-line);
-        }
-
-        .hm-stat-card strong {
-            display: block;
-            color: var(--hm-ink);
-            font-size: 30px;
-            font-weight: 850;
-            line-height: 1;
-        }
-
-        .hm-stat-card span {
-            display: block;
-            margin-top: 8px;
-            color: var(--hm-muted);
-            font-size: 14px;
-        }
-
-        .hm-section {
-            padding: 54px 0;
-        }
-
-        .hm-section-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: end;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        .hm-section-title {
-            margin: 12px 0 0;
-            color: var(--hm-ink);
-            font-size: 34px;
-            line-height: 1.12;
-            font-weight: 850;
-            letter-spacing: 0;
-        }
-
-        .hm-section-text {
-            max-width: 610px;
-            margin: 10px 0 0;
-            color: var(--hm-muted);
-            line-height: 1.7;
-        }
-
-        .hm-cta-panel {
-            border: 1px solid var(--hm-line);
-            border-radius: var(--hm-radius);
-            background: var(--hm-surface);
-            box-shadow: none;
-            transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-        }
-
-        .hm-story-board {
-            display: grid;
-            gap: 0;
-            border-top: 1px solid var(--hm-line);
-            border-bottom: 1px solid var(--hm-line);
-        }
-
-        .hm-story-row {
-            display: grid;
-            grid-template-columns: 180px minmax(0, 1fr) minmax(240px, 0.72fr);
-            gap: 28px;
-            align-items: center;
-            padding: 28px 0;
-        }
-
-        .hm-story-row + .hm-story-row {
-            border-top: 1px solid var(--hm-line);
-        }
-
-        .hm-story-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--hm-primary-dark);
-            font-size: 13px;
-            font-weight: 850;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-
-        .hm-story-label i {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: var(--hm-soft);
-        }
-
-        .hm-story-row h3 {
-            margin: 0 0 8px;
-            color: var(--hm-ink);
-            font-size: 18px;
-            font-weight: 850;
-            line-height: 1.25;
-        }
-
-        .hm-story-row p {
-            margin: 0;
-            color: var(--hm-muted);
-            font-size: 14px;
-            line-height: 1.65;
-        }
-
-        .hm-story-steps {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .hm-story-steps li {
-            display: inline-flex;
-            align-items: center;
-            min-height: 30px;
-            padding: 0 11px;
-            border-radius: 999px;
-            background: #F2FBFA;
-            color: var(--hm-primary-dark);
-            font-size: 12px;
-            font-weight: 800;
-        }
-
-        .hm-jobs-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .hm-job-card {
-            position: relative;
-            display: grid;
-            align-content: space-between;
-            gap: 18px;
-            min-height: 300px;
-            padding: 22px;
-            overflow: hidden;
-            border: 1px solid var(--hm-line);
-            background: #fff;
-            transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-        }
-
-        .hm-job-card::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent 0%, rgba(31, 183, 181, 0.12) 42%, transparent 72%);
-            opacity: 0;
-            transform: translateX(-100%);
-            pointer-events: none;
-        }
-
-        .hm-job-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(31, 183, 181, 0.42);
-            box-shadow: 0 18px 34px rgba(15, 47, 52, 0.08);
-        }
-
-        .hm-job-card:hover::before {
-            opacity: 1;
-            animation: hmCardScan 1.2s ease;
-        }
-
-        .hm-job-top {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .hm-job-card-head {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            gap: 12px;
-            min-width: 0;
-        }
-
-        .hm-job-card h3 {
-            margin: 0 0 6px;
-            color: var(--hm-ink);
-            font-size: 20px;
-            font-weight: 850;
-            line-height: 1.18;
-            letter-spacing: 0;
-        }
-
-        .hm-job-card p {
-            margin: 0;
-            color: var(--hm-muted);
-            font-size: 14px;
-        }
-
-        .hm-job-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            min-height: 30px;
-            padding: 0 10px;
-            border-radius: 999px;
-            background: #F2FBFA;
-            color: var(--hm-primary-dark);
-            font-size: 12px;
-            font-weight: 850;
-            white-space: nowrap;
-        }
-
-        .hm-job-badge i {
-            animation: hmPulseDot 1.8s ease-in-out infinite;
-        }
-
-        .hm-job-meta,
-        .hm-job-context {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .hm-job-context {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .hm-job-meta span,
-        .hm-job-context li {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            min-height: 28px;
-            padding: 0 10px;
-            border-radius: 999px;
-            background: #F7FAFA;
-            color: #48616A;
-            font-size: 12px;
-            font-weight: 750;
-        }
-
-        .hm-job-link {
-            position: relative;
-            z-index: 1;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            width: fit-content;
-            color: var(--hm-primary-dark);
-            font-weight: 850;
-            text-decoration: none;
-        }
-
-        .hm-job-link i {
-            transition: transform 0.18s ease;
-        }
-
-        .hm-job-card:hover .hm-job-link i {
-            transform: translateX(4px);
-        }
-
-        .hm-cta-panel {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto;
-            align-items: center;
-            gap: 20px;
-            padding: 34px;
-            background: #0F2F34;
-            color: #fff;
-        }
-
-        .hm-cta-panel h2 {
-            margin: 0 0 8px;
-            color: #fff;
-            font-size: 32px;
-            font-weight: 850;
-            letter-spacing: 0;
-        }
-
-        .hm-cta-panel p {
-            margin: 0;
-            color: rgba(255, 255, 255, 0.76);
-        }
-
-        .hm-cta-panel .hm-cta-secondary {
-            background: transparent;
-            border-color: rgba(255, 255, 255, 0.36);
-            color: #fff !important;
-        }
-
-        .hm-cta-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: flex-end;
-        }
-
-        .hm-stat-card,
-        .hm-story-row,
-        .hm-job-card,
-        .hm-cta-panel {
-            animation: hmFadeUp 0.72s ease both;
-        }
-
-        .hm-stat-card:nth-child(2),
-        .hm-story-row:nth-child(2),
-        .hm-job-card:nth-child(2) {
-            animation-delay: 0.06s;
-        }
-
-        .hm-stat-card:nth-child(3),
-        .hm-story-row:nth-child(3),
-        .hm-job-card:nth-child(3) {
-            animation-delay: 0.12s;
-        }
-
-        .hm-stat-card:nth-child(4),
-        .hm-job-card:nth-child(4) {
-            animation-delay: 0.18s;
-        }
-
-        .hm-job-card:nth-child(5) {
-            animation-delay: 0.24s;
-        }
-
-        .hm-job-card:nth-child(6) {
-            animation-delay: 0.3s;
-        }
-
-        @keyframes hmFadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(18px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes hmFloatScene {
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        @keyframes hmBarGrow {
-            from {
-                transform: scaleX(0);
-            }
-            to {
-                transform: scaleX(1);
-            }
-        }
-
-        @keyframes hmCardScan {
-            from {
-                transform: translateX(-100%);
-            }
-            to {
-                transform: translateX(100%);
-            }
-        }
-
-        @keyframes hmPulseDot {
-            0%,
-            100% {
-                opacity: 0.55;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.12);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.001ms !important;
-                animation-iteration-count: 1 !important;
-                scroll-behavior: auto !important;
-                transition-duration: 0.001ms !important;
-            }
-        }
-
-        @media (max-width: 1199.98px) {
-            .hm-hero-content {
-                min-height: 0;
-            }
-
-            .hm-product-scene {
-                position: relative;
-                right: auto;
-                bottom: auto;
-                width: min(100%, 720px);
-                margin-top: 30px;
-            }
-        }
-
-        @media (max-width: 991.98px) {
-            .hm-hero {
-                padding-top: 18px;
-            }
-
-            .hm-hero-content {
-                padding: 28px;
-            }
-
-            .hm-hero h1 {
-                font-size: 42px;
-            }
-
-            .hm-search-form,
-            .hm-stats-grid,
-            .hm-story-row,
-            .hm-cta-panel {
-                grid-template-columns: 1fr;
-            }
-
-            .hm-section-head {
-                display: block;
-            }
-
-            .hm-stat-card + .hm-stat-card {
-                border-left: 0;
-                border-top: 1px solid var(--hm-line);
-            }
-
-            .hm-jobs-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            .hm-story-row {
-                gap: 14px;
-            }
-
-            .hm-hero-nav {
-                align-items: flex-start;
-            }
-
-            .hm-cta-actions {
-                justify-content: flex-start;
-            }
-        }
-
-        @media (max-width: 575.98px) {
-            .hm-landing-rail {
-                width: min(100% - 24px, 1180px);
-            }
-
-            .hm-hero-content {
-                padding: 18px;
-            }
-
-            .hm-hero h1 {
-                font-size: 34px;
-            }
-
-            .hm-hero-nav {
-                display: grid;
-            }
-
-            .hm-hero-nav-actions {
-                justify-content: flex-start;
-            }
-
-            .hm-dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hm-match-card,
-            .hm-job-row,
-            .hm-jobs-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.css?v='       . @filemtime(FCPATH . 'jobboard/css/responsive.css')) ?>">
+<style>
+/* ================================================
+   HERO
+================================================ */
+.hero {
+    position: relative; overflow: hidden;
+    min-height: 100vh; display: flex; align-items: center;
+    padding: 100px 24px 72px; text-align: center;
+    background: #ffffff;
+}
+#heroCanvas {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+}
+.hero .container { position: relative; z-index: 1; }
+
+.hero-h1 {
+    font-size: 56px; font-weight: 600 !important;
+    letter-spacing: -.03em; line-height: 1.1;
+    color: var(--foreground); margin-bottom: 18px;
+    min-height: unset !important;
+}
+.hero-h1 .grad-text {
+    background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-sub {
+    font-size: 20px !important; font-weight: 500;
+    color: var(--muted-foreground); line-height: 1.75;
+    max-width: 520px; margin: 0 auto 32px;
+    min-height: unset !important;
+}
+.tw-cursor {
+    display: inline-block; width: 2.5px; height: .85em;
+    background: var(--primary); border-radius: 1px;
+    margin-left: 2px; vertical-align: middle;
+    animation: blink-cur .9s step-end infinite;
+}
+@keyframes blink-cur { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.hero-search {
+    display: flex; align-items: center;
+    background: #fff; border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 7px 7px 7px 14px;
+    gap: 6px; max-width: 640px; margin: 0 auto 14px;
+    box-shadow: 0 2px 12px rgba(31,183,181,.06);
+    transition: border-color .2s, box-shadow .2s;
+}
+.hero-search:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(31,183,181,.12);
+}
+.search-field {
+    flex: 1; display: flex; align-items: center; gap: 8px;
+    padding: 4px 8px; border-radius: 9px; transition: .18s; min-width: 0;
+}
+.search-field:focus-within { background: var(--muted); }
+.search-field i { color: var(--primary); font-size: 15px; flex-shrink: 0; }
+.search-field input {
+    flex: 1; background: transparent; border: none; outline: none;
+    font-size: 14px; color: var(--foreground); font-family: inherit; min-width: 0;
+}
+.search-field input::placeholder { color: var(--text-light); }
+.search-divider { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
+.search-btn {
+    background: transparent !important; border: 1.5px solid #1FB7B5 !important;
+    color: #1FB7B5 !important; padding: 8px 20px;
+    border-radius: 6px !important; font-size: 14px; font-weight: 600;
+    transition: all 0.2s ease;
+}
+.search-btn:hover { background: #1FB7B5 !important; color: #ffffff !important; transform: translateY(-1px); }
+.hero-hint { font-size: 12.5px; color: var(--text-light); margin-top: 8px; margin-bottom: 0; }
+
+@media (max-width: 768px) { .hero-h1 { font-size: 38px; } .hero { padding: 90px 16px 56px; min-height: 100svh; } }
+@media (max-width: 640px) {
+    .hero-h1 { font-size: 32px; }
+    .hero-search { flex-direction: column; align-items: stretch; padding: 10px; }
+    .search-divider { display: none; }
+    .search-btn { width: 100%; justify-content: center; }
+}
+
+/* ================================================
+   WAVE SECTION
+================================================ */
+.wave-section {
+    width: 100vw; margin-left: calc(-50vw + 50%);
+    background: #fff; padding: 20px 0 36px;
+    border-bottom: none !important; overflow: hidden; position: relative;
+}
+.wave-section::before, .wave-section::after {
+    content: ''; position: absolute; top: 0; bottom: 0;
+    width: 80px; z-index: 2; pointer-events: none;
+}
+.wave-section::before { left: 0;  background: linear-gradient(to right, #fff, transparent); }
+.wave-section::after  { right: 0; background: linear-gradient(to left,  #fff, transparent); }
+.wave-track-outer { overflow: visible; width: 100%; }
+.wave-track { position: relative; height: 260px; width: 100%; }
+
+.cat-bubble {
+    position: absolute;
+    display: flex; flex-direction: column; align-items: center;
+    text-decoration: none !important;
+}
+.bubble-circle {
+    width: 130px !important; height: 130px !important;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%);
+    border: 1.5px solid #D9ECE5;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 6px; font-size: 28px !important; color: #0D8A90;
+    will-change: transform;
+}
+.bubble-label {
+    font-size: 11px; font-weight: 600;
+    color: #0D8A90; white-space: nowrap; line-height: 1;
+}
+
+@media (max-width: 640px) {
+    .bubble-circle { width: 80px !important; height: 80px !important; font-size: 18px !important; }
+    .bubble-label  { font-size: 10px; }
+    .wave-track    { height: 200px; }
+}
+
+/* ================================================
+   FEATURED JOBS SECTION
+================================================ */
+.featured-jobs-section {
+    padding: 64px 0 72px;
+    background: transparent;
+}
+.featured-jobs-section .section-head-title {
+    font-size: 56px !important; font-weight: 500 !important;
+    color: var(--foreground); margin-bottom: 6px;
+}
+.featured-jobs-section .section-head-sub {
+    font-size: 15px; color: var(--muted-foreground);
+    max-width: 480px; margin: 0 auto 40px;
+}
+
+/* Individual job card — completely separate */
+.fj-card {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 24px;
+    background: white !important;
+    border: 1px solid #D9ECE5;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(13,138,144,0.04);
+    /* animation start state */
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.55s ease, transform 0.55s ease, box-shadow 0.25s ease;
+}
+.fj-card.fj-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* gentle float once visible */
+.fj-card.fj-float { animation: fjFloat 3.8s ease-in-out infinite; }
+.fj-card.fj-float:nth-child(2) { animation-delay: 0.3s; }
+.fj-card.fj-float:nth-child(3) { animation-delay: 0.6s; }
+.fj-card.fj-float:nth-child(4) { animation-delay: 0.9s; }
+.fj-card.fj-float:nth-child(5) { animation-delay: 1.2s; }
+.fj-card.fj-float:nth-child(6) { animation-delay: 1.5s; }
+
+@keyframes fjFloat {
+    0%,100% { transform: translateY(0px); }
+    50%      { transform: translateY(-6px); }
+}
+
+.fj-card:hover {
+    box-shadow: none !important;
+    transform: translateY(-3px) !important;
+    animation-play-state: paused;
+}
+
+.fj-main   { flex: 1; min-width: 0; }
+.fj-top    { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.fj-title  { font-size: 18px !important; font-weight: 500 !important; color: var(--foreground); letter-spacing: -.1px; }
+.fj-company { font-size: 15px !important; color: var(--muted-foreground); font-weight: 500; margin-bottom: 7px; }
+.fj-meta   { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.fj-meta-item { font-size: 13px !important; color: var(--text-light); display: flex; align-items: center; gap: 4px; }
+
+.fj-tags   { flex-shrink: 0; display: flex; gap: 6px; flex-wrap: wrap; }
+.fj-tag {
+    font-size: 13px !important; font-weight: 500; padding: 4px 9px;
+    border-radius: 6px; background: rgba(31,183,181,.08);
+    color: #0D8A90; border: 1px solid #D9ECE5;
+}
+
+.fj-right  { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; min-width: 120px; }
+.fj-salary { font-size: 14px; font-weight: 700; color: var(--foreground); }
+
+.badge-featured {
+    font-size: 10px; font-weight: 700; padding: 3px 8px;
+    border-radius: 50px; background: rgba(31,183,181,.12);
+    color: #0D8A90; border: 1px solid #D9ECE5; letter-spacing: .03em;
+}
+
+@media (max-width: 768px) {
+    .fj-card { flex-wrap: wrap; }
+    .fj-right { align-items: flex-start; min-width: unset; width: 100%; flex-direction: row; justify-content: space-between; }
+    .fj-tags  { width: 100%; }
+}
+
+/* ================================================
+   CAREER TRANSITION
+================================================ */  
+
+.landing-career-transition{
+    position:relative;
+    overflow:hidden;
+
+    padding:50px 0 !important;
+
+    background:
+    radial-gradient(
+        circle at top right,
+        rgba(31,183,181,.12),
+        transparent 35%
+    ),
+    radial-gradient(
+        circle at bottom left,
+        rgba(181,216,78,.10),
+        transparent 35%
+    ),
+    #ffffff;
+}
+
+.career-bg-glow{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+}
+
+.career-content{
+    max-width:1100px;
+    margin:auto;
+    position:relative;
+    z-index:2;
+}
+
+.career-badge{
+    display:inline-flex;
+    align-items:center;
+
+    padding:10px 18px;
+
+    border-radius:999px;
+
+    background:
+    rgba(31,183,181,.08);
+
+    color:#0D8A90;
+
+    font-size:14px;
+    font-weight:700;
+
+    margin-bottom:32px;
+}
+
+.career-title{
+    font-size:clamp(25px,3vw,55px) !important;
+    line-height:0.8 !important;
+
+    font-weight:500 !important;
+
+    letter-spacing:-.06em;
+
+    color:#111827;
+
+    margin-bottom:32px;
+} 
+.career-title span{
+    display:inline !important;
+
+    background:
+    linear-gradient(
+        135deg,
+        #1FB7B5,
+        #53B86C,
+        #B5D84E
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.career-description{
+    max-width:760px;
+
+    margin:auto;
+
+    font-size:20px !important;
+
+    line-height:1.9;
+
+    color:#6b7280;
+
+    margin-bottom:50px;
+}
+
+.career-actions{
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    flex-wrap:wrap;
+
+    margin-bottom:40px !important;
+}
+ 
+@media(max-width:768px){
+
+    .landing-career-transition{
+        padding:100px 0;
+    }
+
+    .career-title{
+        font-size:52px;
+    }
+
+    .career-description{
+        font-size:17px;
+    }
+
+    .career-stats{
+        gap:40px;
+    }
+
+    .career-stat strong{
+        font-size:38px;
+    }
+}
+/* ================================================
+   GET STARTED
+================================================ */
+.landing-choices{
+    padding:0px 0 !important;
+    overflow:hidden;
+}
+
+.choices-header{
+    text-align:center;
+    margin-bottom:40px !important;
+}
+
+.choices-label{
+    display:inline-block;
+
+    padding:8px 16px;
+
+    border-radius:999px;
+
+    background:rgba(31,183,181,.08);
+
+    color:#0D8A90;
+
+    font-size:12px;
+    font-weight:700;
+
+    letter-spacing:.15em;
+
+    margin-bottom:24px;
+}
+
+.choices-title{
+    font-size:clamp(25px,3vw,55px) !important;
+
+    font-weight:500 !important;
+
+    letter-spacing:-.04em;
+
+    color:#111827;
+
+    margin-bottom:16px;
+}
+
+.choices-subtitle{
+    color:#6b7280;
+    font-size:18px;
+}
+
+.choices-wrap{
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+
+    max-width:1000px;
+    margin:auto;
+}
+
+.choice-card{
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:45px 50px;
+
+    background:#fff;
+
+    border:1px solid #D9ECE5;
+
+    border-radius:28px;
+
+    text-decoration:none;
+
+    color:inherit;
+
+    box-shadow:
+    0 10px 30px rgba(13, 138, 144, 0.01) !important;
+
+    opacity:0;
+    transform:translateY(80px);
+
+    transition:
+    transform 0.25s ease, 
+    opacity .6s ease;
+}
+
+.choice-card.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
+.choice-card.float{
+    animation:choiceFloat 5s ease-in-out infinite;
+}
+
+.choice-card:last-child.float{
+    animation-delay:1s;
+}
+
+.choice-card:hover{
+    transform:translateY(-1px)!important;
+text-decoration:none !important;
+    border-color:#1FB7B5;
+
+    box-shadow:
+   none !important;
+}
+
+.choice-content h3{
+    font-size:26px !important;
+    font-weight:500 !important;
+    margin-bottom:10px !important;
+    color:#111827;
+}
+
+.choice-content p{
+    margin:0;
+    color:#6b7280;
+    font-size:16px;
+}
+ 
+
+@keyframes choiceFloat{
+
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-10px);
+    }
+}
+
+@media(max-width:768px){
+
+    .choice-card{
+        padding:32px 28px;
+    }
+
+    .choice-content h3{
+        font-size:28px;
+    }
+
+    .choice-arrow{
+        font-size:34px;
+    }
+
+} 
+@media (prefers-color-scheme: dark) {
+
+    /* ── Base ── */
+    body, html {
+        background: #111111 !important;
+    }
+
+    /* ── Hero ── */
+    .hero {
+        background: #111111 !important;
+    }
+    .hero-h1 {
+        color: #F8FAFC !important;
+    }
+    .hero-sub {
+        color: #94A3B8 !important;
+    }
+    .hero-hint {
+        color: #7A8B96 !important;
+    }
+    .hero-search {
+        background: #111111 !important;
+        border-color: #23343A !important;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+    }
+    .hero-search:focus-within {
+        border-color: #1FB7B5 !important;
+        box-shadow: 0 0 0 3px rgba(31,183,181,.12) !important;
+    }
+    .search-field input {
+        color: #F8FAFC !important;
+    }
+    .search-field input::placeholder {
+        color: #7A8B96 !important;
+    }
+    .search-field:focus-within {
+        background: #1B2A2F !important;
+    }
+    .search-divider {
+        background: #23343A !important;
+    }
+
+    /* ── Wave section ── */
+    .wave-section {
+        background: #111111 !important;
+    }
+    .wave-section::before {
+        background: linear-gradient(to right, #111111, transparent) !important;
+    }
+    .wave-section::after {
+        background: linear-gradient(to left, #111111, transparent) !important;
+    }
+    .bubble-circle {
+        background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+        border-color: #23343A !important;
+        color: #1FB7B5 !important;
+    }
+    .bubble-label {
+        color: #1FB7B5 !important;
+    }
+
+    /* ── Featured Jobs ── */
+    .featured-jobs-section {
+        background: #111111 !important;
+    }
+    .featured-jobs-section .section-head-title {
+        color: #F8FAFC !important;
+    }
+    .featured-jobs-section .section-head-sub {
+        color: #94A3B8 !important;
+    }
+    .fj-card {
+        background: #111111 !important;
+        border-color: #23343A !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
+    }
+    .fj-card:hover {
+        border-color: #1FB7B5 !important;
+        box-shadow: none !important;
+    }
+    .fj-title {
+        color: #F8FAFC !important;
+    }
+    .fj-company {
+        color: #94A3B8 !important;
+    }
+    .fj-meta-item {
+        color: #7A8B96 !important;
+    }
+    .fj-salary {
+        color: #F8FAFC !important;
+    }
+    .fj-tag {
+        background: rgba(31,183,181,.08) !important;
+        border-color: #23343A !important;
+        color: #1FB7B5 !important;
+    }
+    .badge-featured {
+        background: rgba(31,183,181,.12) !important;
+        border-color: #23343A !important;
+        color: #1FB7B5 !important;
+    }
+
+    /* ── Career Transition ── */
+    .landing-career-transition {
+        background:
+            #111111 !important;
+    }
+    .career-title {
+        color: #F8FAFC !important;
+    }
+    .career-description {
+        color: #94A3B8 !important;
+    }
+    .career-badge {
+        background: rgba(31,183,181,.08) !important;
+        color: #1FB7B5 !important;
+    }
+
+    /* ── Get Started / Choices ── */
+    .landing-choices {
+        background: #111111 !important;
+    }
+    .choices-title {
+        color: #F8FAFC !important;
+    }
+    .choices-subtitle {
+        color: #94A3B8 !important;
+    }
+    .choices-label {
+        background: rgba(31,183,181,.08) !important;
+        color: #1FB7B5 !important;
+    }
+    .choice-card {
+        background: #111111 !important;
+        border-color: #23343A !important;
+        box-shadow: none !important;
+    }
+    .choice-card:hover {
+        border-color: #1FB7B5 !important;
+        box-shadow: none !important;
+    }
+    .choice-content h3 {
+        color: #F8FAFC !important;
+    }
+    .choice-content p {
+        color: #94A3B8 !important;
+    }
+}
+
+</style>
 </head>
-<body id="top" class="hirematrix-app landing-page landing-redesign">
-<div class="site-wrap">
+<?= view('Layouts/public_header', ['body_class' => 'landing-page']) ?>
 
-    <main>
-        <section class="hm-hero">
-            <div class="hm-landing-rail">
-                <div class="hm-hero-nav">
-                    <a href="<?= base_url('/') ?>" class="hm-brand-mark" aria-label="HireMatrix home">
-                        <img src="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>" alt="HireMatrix logo">
-                        <span>HireMatrix</span>
-                    </a>
-                    <div class="hm-hero-nav-actions">
-                        <a href="<?= base_url('login') ?>" class="hm-cta-secondary">Sign in</a>
-                    </div>
-                </div>
-                <div class="hm-hero-panel">
-                    <div class="hm-hero-content">
-                        <div>
-                            <span class="hm-kicker"><i class="fas fa-bolt"></i> AI hiring platform</span>
-                            <h1>From search to shortlist, <span>move faster</span>.</h1>
-                            <p class="hm-hero-copy">
-                                HireMatrix helps candidates get ready and helps recruiters find the right fit.
-                            </p>
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero py-5">
+  <canvas id="heroCanvas"></canvas>
+  <div class="container">
+    <div class="hero-inner">
+      
+      <h1 class="hero-h1" id="heroH1" aria-label="Find Your Dream Job Today"></h1>
+      <p class="hero-sub" id="heroSub" aria-label="Connect with top companies and discover opportunities that match your skills. AI-powered recommendations to fast-track your career."></p>
+      <form action="<?= base_url('jobs') ?>" method="get" class="hero-search">
+        <div class="search-field">
+          <i class="fas fa-search"></i>
+          <input type="text" name="search" placeholder="Job title, skills or company">
+        </div>
+        <div class="search-divider"></div>
+        <div class="search-field">
+          <i class="fas fa-map-pin"></i>
+          <input type="text" name="location" placeholder="City or Remote">
+        </div>
+        <button type="submit" class="search-btn">Search Jobs</button>
+      </form>
+      <p class="hero-hint">Sign in to view AI match score, complete listings &amp; application status.</p>
+    </div>
+  </div>
+</section>
 
-                            <div class="hm-search-card">
-                                <form action="<?= base_url('jobs') ?>" method="get" class="hm-search-form">
-                                    <label class="hm-search-field">
-                                        <i class="fas fa-search" aria-hidden="true"></i>
-                                        <input type="text" name="search" placeholder="Job title, skills, or company" autocomplete="off">
-                                    </label>
-                                    <label class="hm-search-field">
-                                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                                        <input type="text" name="location" placeholder="Location or remote" autocomplete="off">
-                                    </label>
-                                    <button type="submit" class="hm-search-submit">Search Jobs</button>
-                                </form>
-                            </div>
+<!-- ═══════════════ WAVE BUBBLES ═══════════════ -->
+<section class="wave-section">
+  <div class="wave-track-outer">
+    <div class="wave-track" id="waveTrack"></div>
+  </div>
+</section>
 
-                            <div class="hm-quick-links" aria-label="Popular searches">
-                                <a href="<?= base_url('jobs?search=developer') ?>">Developer</a>
-                                <a href="<?= base_url('jobs?search=data') ?>">Data roles</a>
-                                <a href="<?= base_url('jobs?location=remote') ?>">Remote</a>
-                                <a href="<?= base_url('candidate/company-job-discovery') ?>">Company discovery</a>
-                            </div>
+<!-- ═══════════════ FEATURED JOBS ═══════════════ -->
+<section class="featured-jobs-section">
+  <div class="container">
 
-                            <div class="hm-hero-actions">
-                                <a href="<?= base_url('register') ?>" class="hm-cta-primary">Start as candidate</a>
-                                <a href="<?= base_url('recruiter/register') ?>" class="hm-cta-secondary">Hire talent</a>
-                            </div>
-                        </div>
+    <div class="text-center mb-5">
+      <h2 class="section-head-title">Featured Jobs</h2>
+      <p class="section-head-sub">Hand-picked opportunities from top companies</p>
+    </div>
 
-                        <div class="hm-product-scene" aria-label="HireMatrix product preview">
-                            <div class="hm-dashboard-card">
-                                <div class="hm-dashboard-topbar">
-                                    <span class="hm-window-dots"><span></span><span></span><span></span></span>
-                                    <span class="hm-job-pill">Live match</span>
-                                </div>
-                                <div class="hm-dashboard-body">
-                                    <div class="hm-match-card">
-                                        <span class="hm-avatar-stack">
-                                            <img src="<?= base_url('jobboard/images/person_1.jpg') ?>" alt="Candidate avatar">
-                                            <img src="<?= base_url('jobboard/images/person_2.jpg') ?>" alt="Recruiter avatar">
-                                        </span>
-                                        <span>
-                                            <strong>Frontend Developer</strong>
-                                            <span>Matched by skills and intent</span>
-                                        </span>
-                                        <span class="hm-score-ring">88%</span>
-                                    </div>
-
-                                    <div class="hm-dashboard-grid">
-                                        <div class="hm-pipeline-card">
-                                            <strong>Pipeline</strong>
-                                            <span>Applied to booked</span>
-                                            <span class="hm-bars">
-                                                <span style="--w: 74%"></span>
-                                                <span style="--w: 54%"></span>
-                                                <span style="--w: 38%"></span>
-                                            </span>
-                                        </div>
-                                        <div class="hm-pipeline-card">
-                                            <strong>Career path</strong>
-                                            <span>PHP to Data Analyst</span>
-                                            <span class="hm-bars">
-                                                <span style="--w: 82%"></span>
-                                                <span style="--w: 61%"></span>
-                                                <span style="--w: 42%"></span>
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="hm-job-row">
-                                        <span class="hm-job-icon"><i class="fas fa-file-alt"></i></span>
-                                        <span>
-                                            <strong>Resume Studio</strong>
-                                            <span>Tailored and ready</span>
-                                        </span>
-                                        <span class="hm-job-pill">ATS</span>
-                                    </div>
-                                    <div class="hm-job-row">
-                                        <span class="hm-job-icon"><i class="fas fa-calendar-check"></i></span>
-                                        <span>
-                                            <strong>Interview booked</strong>
-                                            <span>Slot confirmed</span>
-                                        </span>
-                                        <span class="hm-job-pill">Today</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="d-flex flex-column" style="gap: 16px;" id="fjList">
+      <?php foreach (array_slice($featuredJobs, 0, 6) as $i => $job): ?>
+        <?php
+          $title    = (string) ($job['title']    ?? 'Untitled Role');
+          $company  = trim((string) ($job['company']  ?? 'Company'));
+          $location = trim((string) ($job['location'] ?? 'N/A'));
+          $postedAt = $formatAge($job['created_at'] ?? $job['posted_at'] ?? null);
+          $salary   = $job['salary'] ?? '';
+          $tags     = $job['tags']   ?? [];
+          $isFeat   = $job['is_featured'] ?? false;
+        ?>
+        <div class="fj-card" data-index="<?= $i ?>">
+          <div class="fj-main">
+            <div class="fj-top">
+              <span class="fj-title"><?= esc($title) ?></span>
+              <?php if ($isFeat): ?><span class="badge-featured">Featured</span><?php endif; ?>
             </div>
-        </section>
-
-        <section class="hm-stats">
-            <div class="hm-landing-rail">
-                <div class="hm-stats-grid">
-                    <div class="hm-stat-card"><strong><?= esc($formatCount($jobsPostedCount, '500+')) ?></strong><span>matched jobs</span></div>
-                    <div class="hm-stat-card"><strong><?= esc($formatCount($candidateCount, '2k+')) ?></strong><span>candidate profiles</span></div>
-                    <div class="hm-stat-card"><strong><?= esc($formatCount($interviewCount, '250+')) ?></strong><span>interviews booked</span></div>
-                    <div class="hm-stat-card"><strong><?= esc($formatCount($recruiterCount, '120+')) ?></strong><span>recruiters</span></div>
-                </div>
+            <div class="fj-company"><?= esc($company) ?></div>
+            <div class="fj-meta">
+              <span class="fj-meta-item"><i class="fas fa-map-pin"></i> <?= esc($location) ?></span>
+              <span class="fj-meta-item"><i class="fas fa-briefcase"></i> Full-time</span>
+              <span class="fj-meta-item"><i class="fas fa-clock"></i> <?= esc($postedAt) ?></span>
             </div>
-        </section>
+          </div>
+          <div class="fj-tags">
+            <?php foreach (array_slice($tags, 0, 3) as $tag): ?>
+              <span class="fj-tag"><?= esc($tag) ?></span>
+            <?php endforeach; ?>
+          </div>
+          <div class="fj-right">
+            <?php if ($salary): ?><span class="fj-salary"><?= esc($salary) ?></span><?php endif; ?>
+            <a href="<?= base_url('login') ?>" class="btn btn-primary">Apply Now</a>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
 
-        <section class="hm-section">
-            <div class="hm-landing-rail">
-                <div class="hm-section-head">
-                    <div>
-                        <span class="hm-kicker"><i class="fas fa-layer-group"></i> Three connected journeys</span>
-                        <h2 class="hm-section-title">One platform, different moves.</h2>
-                    </div>
-                    <p class="hm-section-text">Candidate, recruiter, and interview flow each get a clear next step.</p>
-                </div>
+    <div class="text-center mt-4">
+      <a href="<?= base_url('jobs') ?>" class="btn btn-outline-primary px-4">View All Jobs</a>
+    </div>
 
-                <div class="hm-story-board">
-                    <article class="hm-story-row">
-                        <span class="hm-story-label"><i class="fas fa-user"></i> Candidate</span>
-                        <div>
-                            <h3>Get ready before the application.</h3>
-                            <p>Build the profile, match the role, send the better resume.</p>
-                        </div>
-                        <ul class="hm-story-steps">
-                            <li>Profile</li>
-                            <li>Resume Studio</li>
-                            <li>Matched jobs</li>
-                        </ul>
-                    </article>
+  </div>
+</section>
 
-                    <article class="hm-story-row">
-                        <span class="hm-story-label"><i class="fas fa-briefcase"></i> Recruiter</span>
-                        <div>
-                            <h3>See the right candidates sooner.</h3>
-                            <p>Post the role, compare applicants, keep hiring motion visible.</p>
-                        </div>
-                        <ul class="hm-story-steps">
-                            <li>Post role</li>
-                            <li>Applicant fit</li>
-                            <li>Notes</li>
-                        </ul>
-                    </article>
+<!-- ═══════════════ CAREER TRANSITION ═══════════════ -->
+<section class="landing-career-transition">
 
-                    <article class="hm-story-row">
-                        <span class="hm-story-label"><i class="fas fa-calendar-check"></i> Interview</span>
-                        <div>
-                            <h3>Turn interest into a booked slot.</h3>
-                            <p>Move from discovery to interview without losing the thread.</p>
-                        </div>
-                        <ul class="hm-story-steps">
-                            <li>Company discovery</li>
-                            <li>Slots</li>
-                            <li>Status</li>
-                        </ul>
-                    </article>
-                </div>
+    <div class="career-bg-glow"></div>
+
+    <div class="container-fluid px-lg-5">
+
+        <div class="career-content text-center">
+ 
+            <h2 class="career-title">
+                Transition Into Your&#160;<span>Dream Career</span>&#160;With AI Guidance
+            </h2>
+
+            <p class="career-description">
+                Discover skill gaps, build personalized learning paths,
+                identify certifications, and generate a complete roadmap
+                to move from your current role into the career you want.
+            </p>
+
+            <div class="career-actions">
+                <a href="<?= base_url('career-transition') ?>"
+                   class="btn btn-outline-primary">
+                    Generate My Roadmap
+                </a>
+
+                <a href="<?= base_url('jobs') ?>"
+                   class="btn btn-outline-primary">
+                    Explore Careers
+                </a>
             </div>
-        </section>
 
-        <section class="hm-section" id="jobs">
-            <div class="hm-landing-rail">
-                <div class="hm-section-head">
-                    <div>
-                        <span class="hm-kicker"><i class="fas fa-magic"></i> Live role signals</span>
-                        <h2 class="hm-section-title">Jobs with HireMatrix context built in.</h2>
-                    </div>
-                    <a href="<?= base_url('jobs') ?>" class="hm-cta-secondary">View all jobs <i class="fas fa-arrow-right"></i></a>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ═══════════════ GET STARTED ═══════════════ -->
+<section class="landing-choices" id="get-started">
+
+    <div class="container">
+
+        <div class="choices-header"> 
+            <h2 class="choices-title">
+                Who Are You?
+            </h2>
+
+            <p class="choices-subtitle">
+                Choose how you want to use HireMatrix.
+            </p>
+
+        </div>
+
+        <div class="choices-wrap">
+
+            <a href="<?= base_url('register') ?>"
+               class="choice-card">
+
+                <div class="choice-content">
+
+                    <h3>
+                        I Want To Find A Job
+                    </h3>
+
+                    <p>
+                        AI matching, career roadmaps,
+                        resume analysis and interview preparation.
+                    </p>
+
                 </div>
 
-                <?php
-                $fallbackJobs = [
-                    ['title' => 'Data Scientist', 'company' => 'AI Dynamics', 'location' => 'Remote', 'job_type' => 'Full-time', 'created_at' => null],
-                    ['title' => 'UI/UX Designer', 'company' => 'Design Studio Pro', 'location' => 'Bangalore', 'job_type' => 'Contract', 'created_at' => null],
-                    ['title' => 'Backend Engineer', 'company' => 'Cloud Systems Inc', 'location' => 'Hyderabad', 'job_type' => 'Full-time', 'created_at' => null],
-                    ['title' => 'Product Analyst', 'company' => 'GrowthWorks', 'location' => 'Pune', 'job_type' => 'Hybrid', 'created_at' => null],
-                    ['title' => 'Talent Partner', 'company' => 'PeopleOps Lab', 'location' => 'Remote', 'job_type' => 'Full-time', 'created_at' => null],
-                    ['title' => 'Cloud Project Lead', 'company' => 'OpsBridge', 'location' => 'Mumbai', 'job_type' => 'Full-time', 'created_at' => null],
-                ];
-                $signalLabels = ['Role signal', 'Company context', 'Resume angle', 'Interview path', 'Career move', 'Recruiter signal'];
-                $contextLabels = [
-                    ['Role snapshot', 'Skill themes'],
-                    ['Company view', 'Role cluster'],
-                    ['Resume Studio', 'Keyword hints'],
-                    ['Slot-ready', 'Status tracking'],
-                    ['Transition plan', 'Learning path'],
-                    ['Fresh lead', 'Hiring motion'],
-                ];
-                $jobPool = !empty($featuredJobs) ? array_values(array_slice($featuredJobs, 0, 6)) : $fallbackJobs;
-                ?>
-                <div class="hm-jobs-grid">
-                    <?php foreach ($jobPool as $jobIndex => $job): ?>
-                        <?php
-                        $job = (array) $job;
-                        $title = (string) ($job['title'] ?? 'Untitled Role');
-                        $company = trim((string) ($job['company'] ?? 'Company'));
-                        $location = trim((string) ($job['location'] ?? 'N/A'));
-                        $postedAt = $formatAge($job['created_at'] ?? $job['posted_at'] ?? null);
-                        $jobType = trim((string) ($job['job_type'] ?? $job['type'] ?? 'Full-time'));
-                        $signalLabel = $signalLabels[$jobIndex % count($signalLabels)];
-                        $contextSet = $contextLabels[$jobIndex % count($contextLabels)];
-                        ?>
-                        <article class="hm-job-card">
-                            <div class="hm-job-top">
-                                <span class="hm-job-badge"><i class="fas fa-circle"></i> <?= esc($signalLabel) ?></span>
-                            </div>
-                            <div class="hm-job-card-head">
-                                <span class="hm-job-icon"><i class="<?= esc($pickJobIcon($title)) ?>"></i></span>
-                                <div>
-                                    <h3><?= esc($title) ?></h3>
-                                    <p><?= esc($company) ?></p>
-                                </div>
-                            </div>
-                            <div class="hm-job-meta">
-                                <span><i class="fas fa-map-marker-alt"></i> <?= esc($location) ?></span>
-                                <span><i class="fas fa-clock"></i> <?= esc($postedAt) ?></span>
-                                <span><i class="fas fa-briefcase"></i> <?= esc($jobType ?: 'Full-time') ?></span>
-                            </div>
-                            <ul class="hm-job-context">
-                                <?php foreach ($contextSet as $context): ?>
-                                    <li><?= esc($context) ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                            <a href="<?= base_url('login') ?>" class="hm-job-link">Open role signal <i class="fas fa-arrow-right"></i></a>
-                        </article>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
+               
+            </a>
 
-        <section class="hm-section">
-            <div class="hm-landing-rail">
-                <div class="hm-cta-panel">
-                    <div>
-                        <h2>Your next move starts here.</h2>
-                        <p>Search smarter. Hire faster.</p>
-                    </div>
-                    <div class="hm-cta-actions">
-                        <a href="<?= base_url('register') ?>" class="hm-cta-primary">Join as candidate</a>
-                        <a href="<?= base_url('recruiter/register') ?>" class="hm-cta-secondary">Join as recruiter</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+            <a href="<?= base_url('recruiter/register') ?>"
+               class="choice-card">
 
-</div>
+                <div class="choice-content">
+
+                    <h3>
+                        I Want To Hire Talent
+                    </h3>
+
+                    <p>
+                        Candidate sourcing, AI screening
+                        and recruitment automation.
+                    </p>
+
+                </div>
+
+               
+
+            </a>
+
+        </div>
+
+    </div>
+<br/><br/>
+</section>
+
+<?= view('Layouts/public_footer') ?>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+
+<!-- Hero canvas particle animation -->
+<script>
+(function () {
+  const canvas = document.getElementById('heroCanvas');
+  const hero   = canvas.parentElement;
+  const ctx    = canvas.getContext('2d');
+  const COLORS = ['#1FB7B5','#53B86C','#B5D84E','#0D8A90'];
+  let pts = [], W, H;
+  function resize() { W = canvas.width = hero.offsetWidth; H = canvas.height = hero.offsetHeight; }
+  function init() {
+    resize();
+    pts = Array.from({length:55}, () => ({
+      x: Math.random()*W, y: Math.random()*H,
+      vx: (Math.random()-.5)*.35, vy: (Math.random()-.5)*.35,
+      r: 2+Math.random()*2, color: COLORS[Math.floor(Math.random()*COLORS.length)]
+    }));
+  }
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p => {
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W) p.vx*=-1;
+      if(p.y<0||p.y>H) p.vy*=-1;
+    });
+    for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++) {
+      const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<90){
+        ctx.beginPath();
+        ctx.strokeStyle=`rgba(31,183,181,${(1-d/90)*.28})`;
+        ctx.lineWidth=1; ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y); ctx.stroke();
+      }
+    }
+    pts.forEach(p => {
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=p.color+'55'; ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*.5,0,Math.PI*2); ctx.fillStyle=p.color+'cc'; ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  init(); draw();
+  window.addEventListener('resize', resize);
+})();
+</script>
+
+<!-- Hero typewriter -->
+<script>
+(function () {
+  var GRAD_START = 'Find Your ', GRAD_WORD = 'Dream Job', FULL_PLAIN = 'Find Your Dream Job Today';
+  var SUB_TEXT = 'Connect with top companies and discover opportunities that match your skills. AI-powered recommendations to fast-track your career.';
+  var h1El = document.getElementById('heroH1'), subEl = document.getElementById('heroSub');
+  var charIdx = 0, subIdx = 0;
+  function buildH1(n) {
+    var plain=FULL_PLAIN.slice(0,n), gs=GRAD_START.length, gw=GRAD_WORD.length, cursor='<span class="tw-cursor"></span>';
+    if(n<=gs) return plain+cursor;
+    if(n<=gs+gw) return GRAD_START+'<span class="grad-text">'+plain.slice(gs)+'</span>'+cursor;
+    return GRAD_START+'<span class="grad-text">'+GRAD_WORD+'</span>'+plain.slice(gs+gw)+(n<FULL_PLAIN.length?cursor:'');
+  }
+  function typeH1() {
+    if(charIdx>FULL_PLAIN.length){h1El.innerHTML=buildH1(FULL_PLAIN.length);setTimeout(typeSub,380);return;}
+    h1El.innerHTML=buildH1(charIdx++); setTimeout(typeH1,52+Math.random()*28);
+  }
+  function typeSub() {
+    if(subIdx>SUB_TEXT.length){subEl.innerHTML=SUB_TEXT;return;}
+    subEl.innerHTML=SUB_TEXT.slice(0,subIdx++)+'<span class="tw-cursor"></span>';
+    setTimeout(typeSub,18+Math.random()*12);
+  }
+  setTimeout(typeH1,300);
+})();
+</script>
+
+<!-- Wave bubble animation -->
+<script>
+(function () {
+  const cats = [
+    {icon:'fa-code',           label:'Developer'},
+    {icon:'fa-bullhorn',       label:'Marketing'},
+    {icon:'fa-home',           label:'Remote'},
+    {icon:'fa-clock',          label:'Full-time'},
+    {icon:'fa-database',       label:'Data & AI'},
+    {icon:'fa-users',          label:'HR'},
+    {icon:'fa-cube',        label:'Design'},
+    {icon:'fa-chart-line',     label:'Finance'},
+    {icon:'fa-handshake',      label:'Sales'},
+    {icon:'fa-heartbeat',      label:'Healthcare'},
+    {icon:'fa-graduation-cap', label:'Education'},
+    {icon:'fa-cogs',           label:'Operations'},
+  ];
+  const track      = document.getElementById('waveTrack');
+  const ITEM_W     = 150;
+  const AMPLITUDE  = 80;
+  const WAVE_SPEED = 0.00022;
+  const SCROLL_SPD = 0.55;
+  const totalW     = cats.length * ITEM_W;
+  const bubbles    = [];
+
+  for (let i = 0; i < cats.length * 3; i++) {
+    const c  = cats[i % cats.length];
+    const el = document.createElement('a');
+    el.href      = '<?= base_url("jobs") ?>';
+    el.className = 'cat-bubble';
+    el.style.cssText = 'position:absolute; pointer-events:none;';
+    el.innerHTML = `<div class="bubble-circle"><i class="fas ${c.icon}"></i><span class="bubble-label">${c.label}</span></div>`;
+    track.appendChild(el);
+    bubbles.push(el);
+  }
+
+  const centerY = 90;
+  let offset = 0, t = 0;
+
+  function animate() {
+    offset += SCROLL_SPD;
+    if (offset >= totalW) offset -= totalW;
+    t += WAVE_SPEED;
+
+    bubbles.forEach((el, i) => {
+      let x = i * ITEM_W - offset;
+      x = ((x % (totalW * 3)) + totalW * 3) % (totalW * 3) - totalW;
+      const phase = (x / (ITEM_W * cats.length)) * Math.PI * 2;
+      const y = centerY + Math.sin(phase - t * Math.PI * 2 * cats.length) * AMPLITUDE;
+      el.style.left      = x + 'px';
+      el.style.top       = y + 'px';
+      el.style.transform = 'translateX(-50%)';
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+</script>
+
+<!-- Featured jobs: unfold one by one then float forever -->
+<script>
+window.addEventListener('load', function () {
+  var cards = document.querySelectorAll('#fjList .fj-card');
+  if (!cards.length) return;
+
+  cards.forEach(function (card) {
+    var i = parseInt(card.getAttribute('data-index'), 10) || 0;
+
+    // Step 1 — reveal (slide up + fade in), staggered
+    setTimeout(function () {
+      card.classList.add('fj-visible');
+
+      // Step 2 — once transition finishes, start the float animation permanently
+      card.addEventListener('transitionend', function onDone(e) {
+        if (e.propertyName !== 'opacity') return;
+        card.removeEventListener('transitionend', onDone);
+        card.classList.add('fj-float');
+      });
+    }, 200 + i * 220);
+  });
+});
+</script>
+<script>
+
+document.addEventListener('DOMContentLoaded',()=>{
+
+    const section=document.querySelector('.landing-choices');
+
+    const cards=document.querySelectorAll('.choice-card');
+
+    const observer=new IntersectionObserver(
+
+        entries=>{
+
+            entries.forEach(entry=>{
+
+                if(entry.isIntersecting){
+
+                    cards.forEach((card,index)=>{
+
+                        setTimeout(()=>{
+
+                            card.classList.add('show');
+
+                            setTimeout(()=>{
+
+                                card.classList.add('float');
+
+                            },500);
+
+                        },index*250);
+
+                    });
+
+                    observer.disconnect();
+
+                }
+
+            });
+
+        },
+
+        {
+            threshold:.25
+        }
+
+    );
+
+    observer.observe(section);
+
+});
+
+</script>
+
 </body>
 </html>

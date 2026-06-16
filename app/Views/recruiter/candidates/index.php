@@ -71,7 +71,7 @@ body.dark .card.shadow-sm.recruiter-table-card,
 body.dark .hm-page-content,
 body.dark .card.shadow-sm.recruiter-filter-card,
 body.dark .card-header {
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+    background: #111111 !important;
 }
 
 /* ── Page title ── */
@@ -121,7 +121,7 @@ body.dark .recruiter-filter-card {
     background: transparent !important;
 }
 body.dark .recruiter-candidates-table thead tr {
-    background: #1B2A2F !important;
+    background: #111111 !important;
     border-bottom-color: #23343A !important;
 }
 body.dark .recruiter-candidates-table thead th {
@@ -237,14 +237,10 @@ body.dark .badge-resume-no {
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #111111 !important;
     color: #0D8A90;
-}
-.status-pill:hover {
-    opacity: 0.85;
-    color: #0D8A90;
-    text-decoration: none !important;
-}
+    border: 1px solid rgba(31, 183, 181, 0.15) !important;
+} 
 
 /* ── Primary button (Search, View in AI table) ── */
 .btn-primary {
@@ -320,20 +316,7 @@ body.dark .title{
     font-weight: 600 !important;
     text-decoration:none !important;
     backdrop-filter: blur(10px);
-}
-body.dark .status-pill{
-     display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #7a8b9650 !important;
-    color: #0D8A90 !important;
-    padding: 6px 14px;
-    border-radius: 50px;
-    font-size: 13px;
-    font-weight: 600 !important;
-    text-decoration:none !important;
-    backdrop-filter: blur(10px);
-}
+} 
 /* ── Labels — match h6 style ── */
 .recruiter-candidate-filter-form label {
     font-size: 1rem;        /* same as Bootstrap h6 */
@@ -363,7 +346,7 @@ body.dark .recruiter-candidate-filter-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #1B2A2F !important;
+    background: #111111 !important;
     color: #F8FAFC !important;
 }
 /* ── Kill Bootstrap's orange/default focus first ── */
@@ -452,7 +435,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
         <div class="alert alert-danger recruiter-alert"><?= session()->getFlashdata('error') ?></div>
     <?php endif; ?>
 
-    <div class="card shadow-sm recruiter-filter-card mb-4">
+    <div class="card shadow-sm recruiter-filter-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-body">
             <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
                 <div>
@@ -461,7 +444,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
                 </div>
             </div>
 
-            <form method="get" action="<?= base_url('recruiter/candidates') ?>" class="recruiter-candidate-filter-form">
+            <form method="get" action="<?= base_url('recruiter/candidates') ?>" class="recruiter-candidate-filter-form" >
                 <div class="row">
                     <div class="col-md-3">
                         <label class="small text-muted mb-1">Keyword</label>
@@ -514,11 +497,11 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
     </div>
 
     <?php if (!empty($selectedJob)): ?>
-        <div class="card shadow-sm recruiter-ai-suggestions-card mb-4">
+        <div class="card shadow-sm recruiter-ai-suggestions-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-header py-3 bg-gradient-primary text-white">
                 <h6 class="title mb-3"> AI Candidate Suggestions for <?= esc($selectedJob['title'] ?? 'Selected Job') ?></h6>
             </div>
-            <div class="card-body">
+            <div class="card-body" >
                 <?php if (empty($aiSuggestions)): ?>
                     <p class="text-muted mb-0">No suitable candidates found for this role.</p>
                 <?php else: ?>
@@ -564,7 +547,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
 
     <?php $aiModeForJob = !empty($selectedJob); ?>
     <?php if (!$aiModeForJob): ?>
-        <div class="card shadow-sm recruiter-table-card">
+        <div class="card shadow-sm recruiter-table-card" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-header py-3">
                 <h6 class="title mb-3">  Candidates (<?= count($candidates ?? []) ?> on this page)</h6>
             </div>

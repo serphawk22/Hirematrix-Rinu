@@ -19,25 +19,19 @@ $readMinutes = max(1, (int) ceil($wordCount / 220));
 ?>
 <?= view('Layouts/candidate_header', ['title' => esc($post['title'])]) ?>
 
-<section class="blog-detail-page">
-    <div class="blog-article-hero">
-        <div class="container">
-            <div class="blog-detail-back-row">
-                <a href="<?= base_url('candidate/dashboard') ?>" class="blog-back-link">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>Back to Dashboard</span>
-                </a>
-            </div>
-
-            <div class="blog-hero-grid">
-                <div class="blog-hero-copy">
-                    <div class="blog-kicker">
-                        <i class="fas fa-newspaper"></i>
-                        <span>Career Insight</span>
-                    </div>
-                    <h1><?= esc($post['title']) ?></h1>
+<div class="blog-detail-jobboard">
+    <section class="content-wrap blog-detail-content-canvas">
+        <div class="container-fluid">
+            <div class="page-board-header blog-detail-header">
+                <div class="page-board-copy">
+                    <a href="<?= base_url('candidate/dashboard') ?>" class="blog-back-link">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back to Dashboard</span>
+                    </a>
+                    <span class="page-board-kicker"><i class="fas fa-newspaper"></i> Career Insight</span>
+                    <h1 class="page-board-title"><?= esc($post['title']) ?></h1>
                     <?php if ($excerpt !== ''): ?>
-                        <p class="blog-hero-excerpt"><?= esc($excerpt) ?></p>
+                        <p class="page-board-subtitle"><?= esc($excerpt) ?></p>
                     <?php endif; ?>
                     <div class="blog-meta-row" aria-label="Article information">
                         <span><i class="fas fa-calendar-alt"></i><?= esc(date('M d, Y', strtotime($publishedDate))) ?></span>
@@ -45,24 +39,14 @@ $readMinutes = max(1, (int) ceil($wordCount / 220));
                         <span><i class="fas fa-clock"></i><?= $readMinutes ?> min read</span>
                     </div>
                 </div>
-
-                <div class="blog-hero-panel" aria-label="Candidate resource summary">
-                    <div class="blog-hero-panel-icon">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <h2>Make this insight actionable</h2>
-                    <p>Use the ideas here to sharpen your applications, prepare cleaner answers, and move faster on relevant roles.</p>
-                    <a href="<?= base_url('jobs?tab=suggested') ?>" class="blog-primary-action">
-                        <span>Explore matched jobs</span>
-                        <i class="fas fa-arrow-right"></i>
+                <div class="page-board-actions">
+                    <a href="<?= base_url('jobs?tab=suggested') ?>" class="btn btn-primary">
+                        <i class="fas fa-search mr-1"></i>
+                        Explore matched jobs
                     </a>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="blog-detail-wrap">
-        <div class="container">
             <div class="blog-detail-layout">
                 <article class="blog-article-card">
                     <?php if ($coverImageUrl !== ''): ?>
@@ -117,7 +101,7 @@ $readMinutes = max(1, (int) ceil($wordCount / 220));
                 </aside>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</div>
 
 <?= view('Layouts/candidate_footer') ?>

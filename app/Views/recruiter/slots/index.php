@@ -33,17 +33,11 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #111111 !important;
     color: #0D8A90;
+    border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
-  background: transparent !important;
-    border: 1.5px solid #1FB7B5 !important;
-    color: #1FB7B5 !important;
-    padding: 8px 20px;
-    border-radius: 6px !important;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.2s ease;
+ 
 .card.recruiter-stat-card.recruiter-stat-applications::before,body.dark .card.recruiter-stat-card.recruiter-stat-applications::before{
     display:none !important;
 }
@@ -91,7 +85,7 @@ body.dark .recruiter-filter-card {
 body.dark .card,
 body.dark .card-header,
 body.dark .card-body {
-    border-color: #23343A !important;
+    border-color: #111111 !important;
 }
 body.dark .card.shadow-sm {
     box-shadow: none !important;
@@ -247,7 +241,7 @@ body.dark .card.shadow-sm.recruiter-table-card,
 body.dark .hm-page-content,
 body.dark .card.shadow-sm.recruiter-filter-card,
 body.dark .card-header {
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+    background: #111111 !important;
 }
  
 /* ── Page title ── */
@@ -282,7 +276,7 @@ body.dark .page-board-subtitle {
 }
 body.dark .recruiter-stat-card,
 body.dark .card.recruiter-stat-card {
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+    background: #111111 !important;
     border: 1px solid #23343A !important;
     box-shadow: none !important;
 }
@@ -435,7 +429,7 @@ body.dark .recruiter-slot-filter-form label {
 }
 body.dark .recruiter-slot-filter-form .form-control {
     border: 1px solid #23343A !important;
-    background: #1B2A2F !important;
+    background: #111111 !important;
     color: #F8FAFC !important;
 }
 
@@ -522,7 +516,7 @@ body.dark .status-pill {
     box-shadow: none !important;
 }
 body.dark .recruiter-slots-table thead tr ,body.dark .recruiter-slots-table thead th{
-    background: #1B2A2F !important;
+    background: #111111 !important;
     border-bottom: 2px solid #23343A !important;
 }
 body.dark .recruiter-slots-table thead th {
@@ -542,7 +536,7 @@ body.dark .recruiter-slots-table thead th {
     background: #F4FBFA !important;
 }
 body.dark .recruiter-slots-table tbody tr {
-    background: #162327 !important;
+    background: #111111 !important;
     border-bottom: 1px solid #23343A !important;
 }
 body.dark .recruiter-slots-table tbody tr:hover {
@@ -581,7 +575,7 @@ body.dark .recruiter-slots-table tbody td small {
 }
 body.dark .recruiter-slots-table tr.table-secondary,
 body.dark .recruiter-slots-table tr.table-secondary td {
-    background: rgba(255,255,255,0.02) !important;
+    background: #111111 !important;
     color: #7A8B96 !important;
 }
 
@@ -697,7 +691,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
 
     <div class="row mb-4">
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card recruiter-stat-card recruiter-stat-applications shadow h-100">
+            <div class="card recruiter-stat-card recruiter-stat-applications shadow h-100" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -713,7 +707,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
         </div>
 
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card recruiter-stat-card recruiter-stat-openjobs shadow h-100">
+            <div class="card recruiter-stat-card recruiter-stat-openjobs shadow h-100" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -729,7 +723,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
         </div>
 
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card recruiter-stat-card recruiter-stat-conversion shadow h-100">
+            <div class="card recruiter-stat-card recruiter-stat-conversion shadow h-100" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -745,7 +739,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
         </div>
 
         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card recruiter-stat-card recruiter-stat-bookings shadow h-100">
+            <div class="card recruiter-stat-card recruiter-stat-bookings shadow h-100" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -761,7 +755,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
         </div>
     </div>
 
-    <div class="card shadow-sm recruiter-filter-card mb-4">
+    <div class="card shadow-sm recruiter-filter-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-body">
             <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
                 <div>
@@ -817,7 +811,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
         </div>
     </div>
 
-    <div class="card shadow-sm recruiter-table-card">
+    <div class="card shadow-sm recruiter-table-card" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Interview Slots</h6>
         </div>

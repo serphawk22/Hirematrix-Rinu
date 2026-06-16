@@ -411,14 +411,14 @@ body.dark .activity-stack span i { color: #4A5C63; }
 .pipeline-status-select:hover { border-color: #1FB7B5; }
 
 body.dark .pipeline-status-select {
-    background: #1B2A2F;
+    background: #111111 !important;
     border-color: #23343A;
     color: #F8FAFC;
 }
 body.dark .pipeline-status-select:focus { border-color: #0D8A90; }
 body.dark .pipeline-status-select:hover { border-color: #1FB7B5; }
 body.dark .pipeline-status-select option {
-    background: #1B2A2F;
+    background: #111111 !important;
     color: #F8FAFC;
 }
 
@@ -568,7 +568,7 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
         <strong>No candidates found in this stage.</strong>
     </div>
 <?php else: ?>
-    <div class="pipeline-table-wrap">
+    <div class="pipeline-table-wrap" style="border-radius: 20px !important;overflow: hidden;">
         <table class="pipeline-table" id="candidatePipelineTable">
             <thead>
                 <tr>

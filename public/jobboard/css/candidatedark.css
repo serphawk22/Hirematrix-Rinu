@@ -1678,3 +1678,109 @@ body.dark ::-webkit-scrollbar-thumb:hover { background: #1FB7B5; }
 @media (max-width: 992px) {
     body.dark .dashboard-sidebar { margin-bottom: 24px; }
 }
+
+/* =====================================================
+   COMPANY PROFILE PAGE
+===================================================== */
+
+body.dark .company-profile-jobboard {
+    background: #0d1117 !important;
+    color: #e6edf3 !important;
+}
+
+body.dark .company-profile-jobboard .page-board-title  { color: #e6edf3 !important; }
+body.dark .company-profile-jobboard .page-board-subtitle,
+body.dark .company-profile-jobboard .page-board-kicker { color: #1FB7B5 !important; }
+
+/* Overview card logo placeholder */
+body.dark .company-profile-jobboard .company-overview-logo {
+    background: #21262d !important;
+    border-color: #30363d !important;
+    color: #1FB7B5 !important;
+}
+
+/* Meta grid */
+body.dark .company-profile-jobboard .company-overview-grid {
+    border-top-color: #30363d !important;
+}
+
+body.dark .company-profile-jobboard .company-overview-grid strong { color: #8b949e !important; }
+body.dark .company-profile-jobboard .company-overview-grid span   { color: #e6edf3 !important; }
+
+/* Social card */
+body.dark .company-social-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+    box-shadow: none !important;
+}
+
+body.dark .company-social-link {
+    background: #21262d !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+    box-shadow: none !important;
+}
+
+body.dark .company-social-link:hover {
+    background: rgba(31, 183, 181, 0.1) !important;
+    border-color: #1FB7B5 !important;
+    color: #1FB7B5 !important;
+}
+
+body.dark .company-social-link--linkedin,
+body.dark .company-social-link--twitter,
+body.dark .company-social-link--facebook,
+body.dark .company-social-link--instagram,
+body.dark .company-social-link--youtube { color: #e6edf3 !important; }
+
+/* Branding panels */
+body.dark .company-branding-panel {
+    background: #21262d !important;
+    border-color: #30363d !important;
+}
+
+body.dark .company-branding-panel h4 { color: #e6edf3 !important; }
+body.dark .company-branding-panel p  { color: #8b949e !important; }
+
+/* Open job items */
+body.dark .company-open-job-item {
+    background: #21262d !important;
+    border-color: #30363d !important;
+}
+
+body.dark .company-open-job-item:hover {
+    background: rgba(31, 183, 181, 0.08) !important;
+    border-color: #1FB7B5 !important;
+}
+
+body.dark .company-open-job-item h6   { color: #e6edf3 !important; }
+body.dark .company-open-job-item span { color: #8b949e !important; }
+
+/* Review items */
+body.dark .company-review-item {
+    background: #21262d !important;
+    border-color: #30363d !important;
+}
+
+body.dark .company-review-summary strong { color: #e6edf3 !important; }
+
+/* Office tour card */
+body.dark .office-tour-card {
+    background: #21262d !important;
+    border-color: #30363d !important;
+}
+
+body.dark .office-tour-title   { color: #e6edf3 !important; }
+body.dark .office-tour-summary { color: #8b949e !important; }
+
+/* Contact sidebar card */
+body.dark .company-contact-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+}
+
+/* Write review sidebar card */
+body.dark .company-profile-jobboard .summary-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+}

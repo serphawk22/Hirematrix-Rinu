@@ -8,8 +8,13 @@
       #EEF9F2 100%
     ) !important;
 }
+ .recruiter-form-card,
+.recruiter-form-card.card {
+    border-radius: 20px !important;
+    overflow: hidden;
+}
 body.dark .recruiter-post-jobboard,body.dark .form-contact.contact_form.recruiter-job-form,body.dark .recruiter-form-card{
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+    background: #111111 !important;
 }
     .page-board-title{
         font-size: 26px !important; 
@@ -61,7 +66,7 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #1B2A2F !important;
+    background: #111111 !important;
     color: #F8FAFC !important;
 }
 /* ── Labels — match h6 style ── */
@@ -74,7 +79,7 @@ body.dark .recruiter-job-form .form-control {
     line-height: 1.5;
 }
 body.dark .recruiter-tip-item{
-     background: #1B2A2F !important;
+     background:#111111 !important;
     color: #7A8B96 !important;
      border: 1px solid #23343A !important;
       font-weight: 400 !important;   

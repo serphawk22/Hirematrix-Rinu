@@ -46,8 +46,9 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #111111 !important;
     color: #0D8A90;
+    border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
 .page-board-header.page-board-header-tight.recruiter-page-board-header, body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
     border : none !important;
@@ -63,19 +64,20 @@ tr, td, th, .col-md-3 {
 body.dark tr,
 body.dark td,
 body.dark th, body.dark .col-md-3  {
-  background: #1B2A2F !important;
+background: #111111 !important;
     color:#94A3B8 !important;
-    border-color: #23343A !important;
+ border: 1px solid #23343A !important;
 }
 
 body.dark .table-secondary td,
 body.dark .table-secondary th,
 body.dark .table-secondary {
    background:  #162327 !important; 
+   border: 1px solid #23343A !important;
 }
 
 body.dark thead th {
-   background:  #162327 !important; 
+border: 1px solid #23343A !important;
     color: #94A3B8 !important;
 }
 .hm-page-content,.recruiter-leaderboard-jobboard{
@@ -85,14 +87,14 @@ body.dark thead th {
       #EEF9F2 100%
     ) !important;
 }
-body.dark .hm-page-content,body.dark .recruiter-leaderboard-jobboard,body.dark .card-header,body.dark .recruiter-leaderboard-card, body.dark .recruiter-filter-card,body.dark .recruiter-alert, body.dark .alert-light{
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
-    border: 1px solid #23343A !important;
+body.dark .hm-page-content,body.dark .recruiter-leaderboard-jobboard,body.dark .card-header,body.dark .recruiter-leaderboard-card,body.dark .recruiter-alert, body.dark .alert-light{
+  background: #111111 !important;
+    border: none !important;
 } 
 body.dark .card-header, body.dark .recruiter-filter-card,body.dark .recruiter-alert,body.dark h6.m-0.font-weight-bold{
     color:#94A3B8 !important;
 }
-.page-board-header.page-board-header-tight.recruiter-page-board-header, body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header,{
+.page-board-header.page-board-header-tight.recruiter-page-board-header, body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .card-body,body.dark .row mt-4,body.dark .col-md-3{
       border: none !important;
 }
 /* ── Input focus border ── */
@@ -112,7 +114,7 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #1B2A2F !important;
+   background: #111111 !important;
     color: #F8FAFC !important;
 }
 /* ── Labels — match h6 style ── */
@@ -125,7 +127,7 @@ body.dark .recruiter-job-form .form-control {
     line-height: 1.5;
 }
 body.dark .recruiter-tip-item{
-     background: #1B2A2F !important;
+   background: #111111 !important;
     color: #7A8B96 !important;
      border: 1px solid #23343A !important;
       font-weight: 400 !important;   
@@ -150,6 +152,14 @@ body.dark .recruiter-job-form label, body.dark h6 {
     box-shadow: none !important;   /* ← add this */
     border-color: #0D8A90 !important; 
 }
+
+#filterForm .form-control:focus,
+#filterForm select.form-control:focus,
+#filterForm textarea.form-control:focus {
+    outline: 0 !important;
+    box-shadow: none !important;   /* ← add this */
+    border-color: #0D8A90 !important; 
+}
 /* ── Also reset Bootstrap's base .form-control focus ── */
 .form-control:focus {
     box-shadow: none !important;   /* ← already there, add !important */
@@ -158,12 +168,12 @@ body.dark .recruiter-job-form label, body.dark h6 {
 /* ── Summary cards below leaderboard table ── */
 body.dark .card,
 body.dark .card.bg-light {
-    background: #1B2A2F !important;
+  background: #111111 !important;
     border: 1px solid #23343A !important;
 }
 
 body.dark .card .card-body {
-    background: #1B2A2F !important;
+   background: #111111 !important;
 }
 
 body.dark .card .card-body h5.text-muted {
@@ -221,7 +231,7 @@ body.dark .card .card-body h3.text-warning {
         </div>
     </div>
 
-    <div class="card shadow-sm recruiter-filter-card mb-4">
+    <div class="card shadow-sm recruiter-filter-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-body">
             <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
                 <div>
@@ -280,7 +290,7 @@ body.dark .card .card-body h3.text-warning {
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-outline-primary" btn-block">
+                            <button type="submit" class="btn btn-outline-primary btn-block">
                                 Apply Filters
                             </button>
                         </div>
@@ -308,7 +318,7 @@ body.dark .card .card-body h3.text-warning {
         </div>
     <?php endif; ?>
 
-    <div class="card shadow-sm recruiter-leaderboard-card">
+    <div class="card shadow-sm recruiter-leaderboard-card" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold">
                 <i class="fas fa-crown"></i> Comparison View - <?= ucwords(str_replace('_', ' ', $filters['sort_by'] ?? 'technical_score')) ?>
@@ -519,15 +529,15 @@ body.dark .card .card-body h3.text-warning {
 
                 <div class="row mt-4">
                     <div class="col-md-3">
-                        <div class="card">
-                            <div class="card-body text-center crd">
+                        <div class="card" style="border-radius: 20px !important;overflow: hidden;">
+                            <div class="card-body text-center crd" >
                                 <h5 class="text-muted">Average Technical Score</h5>
                                 <h3 class="text-primary"><?= number_format($avgTech, 1) ?></h3>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card bg-light">
+                        <div class="card" style="border-radius: 20px !important;overflow: hidden;">
                             <div class="card-body text-center">
                                 <h5 class="text-muted">Average Communication Score</h5>
                                 <h3 class="text-info"><?= number_format($avgComm, 1) ?></h3>
@@ -535,7 +545,7 @@ body.dark .card .card-body h3.text-warning {
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card bg-light">
+                        <div class="card" style="border-radius: 20px !important;overflow: hidden;">
                             <div class="card-body text-center">
                                 <h5 class="text-muted">Average Overall Rating</h5>
                                 <h3 class="text-warning"><?= number_format($avgOverall, 1) ?></h3>
@@ -543,7 +553,7 @@ body.dark .card .card-body h3.text-warning {
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card bg-light">
+                        <div class="card" style="border-radius: 20px !important;overflow: hidden;">
                             <div class="card-body text-center">
                                 <h5 class="text-muted">Average ATS Score</h5>
                                 <h3 class="text-info"><?= $avgAts !== null ? number_format($avgAts, 1) : 'N/A' ?></h3>

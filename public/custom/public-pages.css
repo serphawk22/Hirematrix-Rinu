@@ -219,6 +219,23 @@ body.dark .public-auth-page select.auth-input option {
   width: 100%;
 }
 
+.public-auth-page .btn.auth-primary-btn,
+.public-auth-page .btn.auth-secondary-btn {
+  background: var(--primary, #1FB7B5) !important;
+  border: 1px solid var(--primary, #1FB7B5) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.public-auth-page .btn.auth-primary-btn:hover,
+.public-auth-page .btn.auth-primary-btn:focus,
+.public-auth-page .btn.auth-secondary-btn:hover,
+.public-auth-page .btn.auth-secondary-btn:focus {
+  background: var(--primary-dark, #0D8A90) !important;
+  border-color: var(--primary-dark, #0D8A90) !important;
+  color: #ffffff !important;
+}
+
 .public-auth-page .auth-logingroup {
   display: flex;
   align-items: center;
@@ -317,4 +334,80 @@ body.dark .public-auth-page select.auth-input option {
   -webkit-text-fill-color: #0F172A;
   /* box-shadow: 0 0 0 1000px #FFFFFF inset, 0 0 0 0.18rem rgba(31, 183, 181, 0.14) !important; */
   caret-color: #0D8A90;
+}
+
+html.hm-auth-dark body.public-auth-page,
+html.hm-dark-preload body.change-password-auth-page {
+  background: #0d1117 !important;
+  color: #f8fafc !important;
+}
+
+html.hm-auth-dark body.public-auth-page .auth-page-shell,
+html.hm-dark-preload body.change-password-auth-page .auth-page-shell {
+  background: #0d1117 !important;
+}
+
+html.hm-auth-dark body.public-auth-page .auth-page-card,
+html.hm-dark-preload body.change-password-auth-page .auth-page-card {
+  background: #161b22 !important;
+  border-color: #2d3748 !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28) !important;
+}
+
+html.hm-auth-dark body.public-auth-page .auth-page-title,
+html.hm-auth-dark body.public-auth-page .auth-page-title a,
+html.hm-dark-preload body.change-password-auth-page .auth-page-title,
+html.hm-dark-preload body.change-password-auth-page .auth-page-title a {
+  color: #f8fafc !important;
+}
+
+html.hm-auth-dark body.public-auth-page .auth-page-subtitle,
+html.hm-auth-dark body.public-auth-page .auth-footer-copy p,
+html.hm-dark-preload body.change-password-auth-page .auth-page-subtitle,
+html.hm-dark-preload body.change-password-auth-page .auth-footer-copy p {
+  color: #94a3b8 !important;
+}
+
+html.hm-auth-dark body.public-auth-page .auth-field-label,
+html.hm-dark-preload body.change-password-auth-page .auth-field-label {
+  color: #cbd5e1 !important;
+}
+
+html.hm-auth-dark body.public-auth-page .auth-input,
+html.hm-auth-dark body.public-auth-page .form-control,
+html.hm-auth-dark body.public-auth-page .custom-select,
+html.hm-dark-preload body.change-password-auth-page .auth-input,
+html.hm-dark-preload body.change-password-auth-page .form-control,
+html.hm-dark-preload body.change-password-auth-page .custom-select {
+  background: #0f1720 !important;
+  border-color: #2d3748 !important;
+  color: #e2e8f0 !important;
+}
+
+html.hm-auth-dark body.public-auth-page .auth-input:focus,
+html.hm-auth-dark body.public-auth-page .form-control:focus,
+html.hm-auth-dark body.public-auth-page .custom-select:focus,
+html.hm-dark-preload body.change-password-auth-page .auth-input:focus,
+html.hm-dark-preload body.change-password-auth-page .form-control:focus,
+html.hm-dark-preload body.change-password-auth-page .custom-select:focus {
+  border-color: #1FB7B5 !important;
+  box-shadow: 0 0 0 0.16rem rgba(31, 183, 181, 0.16) !important;
+}
+
+html.hm-auth-dark body.public-auth-page .auth-field-icon,
+html.hm-auth-dark body.public-auth-page .auth-password-toggle,
+html.hm-dark-preload body.change-password-auth-page .auth-field-icon,
+html.hm-dark-preload body.change-password-auth-page .auth-password-toggle {
+  color: #64748b !important;
+}
+
+html.hm-auth-dark body.public-auth-page input:-webkit-autofill,
+html.hm-auth-dark body.public-auth-page input:-webkit-autofill:hover,
+html.hm-auth-dark body.public-auth-page input:-webkit-autofill:focus,
+html.hm-dark-preload body.change-password-auth-page input:-webkit-autofill,
+html.hm-dark-preload body.change-password-auth-page input:-webkit-autofill:hover,
+html.hm-dark-preload body.change-password-auth-page input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #e2e8f0;
+  box-shadow: 0 0 0 1000px #0f1720 inset !important;
+  caret-color: #1FB7B5;
 }

@@ -50,8 +50,9 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #111111 !important;
     color: #0D8A90;
+    border: 1px solid rgba(31, 183, 181, 0.6) !important;
 }
 .page-board-header.page-board-header-tight.recruiter-page-board-header,.border-bottom,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .border-bottom,body.dark .candidate-summary-fallback{
     border:none !important;
@@ -64,7 +65,7 @@ body.dark .status-pill {
     ) !important;
 }
 body.dark .hm-page-content,body.dark .recruiter-candidate-profile-jobboard, body.dark .candidate-profile-rail-card, body.dark .candidate-profile-section,body.dark .candidate-detail-item,body.dark .card.shadow-sm.mb-3{
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
+    background: #111111 !important;
     border: 1px solid #23343A !important;
 } 
 body.dark .candidate-detail-item div,body.dark .card-body p,body.dark .candidate-meta p,body.dark .h6.mb-0{
@@ -103,7 +104,7 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #1B2A2F !important;
+    background: #111111 !important;
     color: #F8FAFC !important;
 }
 /* ── Labels — match h6 style ── */
@@ -176,7 +177,7 @@ body.dark div{
         return implode(' ', $parts);
     };
     ?>
-    <div class="page-board-header page-board-header-tight recruiter-page-board-header">
+    <div class="page-board-header page-board-header-tight recruiter-page-board-header" style="border-radius: 20px !important;overflow: hidden;">
         <div class="page-board-copy"> 
             <h1 class="page-board-title"><?= esc($candidate['name']) ?></h1>
             <p class="page-board-subtitle">
@@ -190,7 +191,7 @@ body.dark div{
                 </a>
             <?php endif; ?>
             <?php if ($candidate['resume_path']): ?>
-                <a href="<?= $resumeUrl ?>" class="btn btn-primary">
+                <a href="<?= $resumeUrl ?>" class="btn btn-outline-primary">
                    Download Resume
                 </a>
             <?php endif; ?>
@@ -204,7 +205,7 @@ body.dark div{
     <?php endif; ?>
     <div class="candidate-profile-shell">
         <div class="candidate-profile-side">
-            <div class="card shadow-sm candidate-summary-card candidate-profile-rail-card">
+            <div class="card shadow-sm candidate-summary-card candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body text-center">
                     <?php
                     $candidatePhotoPath = trim((string) ($candidate['profile_photo'] ?? ''));
@@ -233,7 +234,7 @@ body.dark div{
             </div>
             
             <?php if($candidate['bio']): ?>
-            <div class="card shadow-sm mt-3 candidate-profile-rail-card">
+            <div class="card shadow-sm mt-3 candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6>  About</h6>
                     <p><?= nl2br(esc($candidate['bio'])) ?></p>
@@ -242,7 +243,7 @@ body.dark div{
             <?php endif; ?>
 
             <?php if ($introVideoUrl !== '' || !empty($candidate['intro_video_pitch']) || !empty($candidate['intro_video_target_role'])): ?>
-            <div class="card shadow-sm mt-3 candidate-profile-rail-card">
+            <div class="card shadow-sm mt-3 candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6>  Video Introduction</h6>
                     <?php if (!empty($candidate['intro_video_target_role'])): ?>
@@ -261,7 +262,7 @@ body.dark div{
             </div>
             <?php endif; ?>
 
-            <div class="card shadow-sm mt-3 candidate-profile-rail-card">
+            <div class="card shadow-sm mt-3 candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6> Invite to Apply</h6>
                     <p class="text-muted mb-3">Send a direct invitation for one of your open roles. The candidate gets an in-app alert and an email if their notification settings allow it.</p>
@@ -295,7 +296,7 @@ body.dark div{
                 </div>
             </div>
 
-            <div class="card shadow-sm mt-3 candidate-profile-rail-card">
+            <div class="card shadow-sm mt-3 candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6>  Recruiter Notes & Tags</h6>
                     <?php if (!empty($recruiterNote['tags'])): ?>
@@ -328,7 +329,7 @@ body.dark div{
                 </div>
             </div>
 
-            <div class="card shadow-sm mt-3 candidate-profile-rail-card">
+            <div class="card shadow-sm mt-3 candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6>  Message Candidate</h6>
                     <?php if (!empty($messages)): ?>
@@ -360,7 +361,7 @@ body.dark div{
             </div>
         </div>
         
-        <div class="candidate-profile-main">
+        <div class="candidate-profile-main" style="border-radius: 20px !important;overflow: hidden;">
             <?php if (!empty($applicationContext['questionnaire_items'])): ?>
             <div class="card shadow-sm mb-3 candidate-profile-section">
                 <div class="card-body">
@@ -380,7 +381,7 @@ body.dark div{
             </div>
             <?php endif; ?>
 
-            <div class="card shadow-sm mb-3 candidate-profile-section">
+            <div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6>  Professional Summary</h6>
                     <div class="row mt-3">
@@ -402,7 +403,7 @@ body.dark div{
                 </div>
             </div>
 
-            <div class="card shadow-sm mb-3 candidate-profile-section">
+            <div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6> Personal Information</h6>
                     <div class="candidate-detail-grid mt-3">
@@ -434,7 +435,7 @@ body.dark div{
                 </div>
             </div>
 
-            <div class="card shadow-sm mb-3 candidate-profile-section">
+            <div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6> Career Details</h6>
                     <div class="candidate-detail-grid mt-3">
@@ -454,7 +455,7 @@ body.dark div{
                 </div>
             </div>
 
-            <div class="card shadow-sm mb-3 candidate-profile-section">
+            <div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6>  Preferences</h6>
                     <div class="candidate-detail-grid mt-3">
@@ -480,7 +481,7 @@ body.dark div{
 
             <!-- Skills -->
             <?php if (!empty($skills['skill_name']) || !empty($github['languages_used'])): ?>
-            <div class="card shadow-sm mb-3 candidate-profile-section">
+            <div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6> Skills & Technologies</h6>
                     <?php if (!empty($skills['skill_name'])): ?>
@@ -504,7 +505,7 @@ body.dark div{
             <?php endif; ?>
 
             <?php if (!empty($interests)): ?>
-            <div class="card shadow-sm mb-3 candidate-profile-section">
+            <div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6> Job Interests</h6>
                     <div class="mt-3">
@@ -518,7 +519,7 @@ body.dark div{
             
             <!-- Work Experience -->
           <?php if (!empty($workExperiences)): ?>
-<div class="card shadow-sm mb-3 candidate-profile-section">
+<div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
     <div class="card-body">
         <h6>Work Experience</h6>
         <div style="max-height: 250px; overflow-y: auto;">
@@ -537,7 +538,7 @@ body.dark div{
 <?php endif; ?>
 
             <?php if (!empty($projects)): ?>
-            <div class="card shadow-sm mb-3">
+            <div class="card shadow-sm mb-3" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6>  Projects</h6>
                     <?php foreach ($projects as $project): ?>
@@ -566,7 +567,7 @@ body.dark div{
             
             <!-- Education -->
          <?php if (!empty($education)): ?>
-<div class="card shadow-sm mb-3 candidate-profile-section">
+<div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
     <div class="card-body">
         <h6>Education</h6>
         <div class="d-flex flex-nowrap overflow-auto gap-3 pb-2">
@@ -588,7 +589,7 @@ body.dark div{
             
             <!-- Certifications -->
             <?php if (!empty($certifications)): ?>
-            <div class="card shadow-sm mb-3">
+            <div class="card shadow-sm mb-3" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6>  Certifications</h6>
                     <?php foreach($certifications as $cert): ?>
@@ -606,7 +607,7 @@ body.dark div{
             
             <!-- GitHub Stats -->
             <?php if (!empty($github['github_username'])): ?>
-            <div class="card shadow-sm mb-3">
+            <div class="card shadow-sm mb-3" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
                     <h6> GitHub Profile</h6>
                     <p><a href="https://github.com/<?= esc($github['github_username']) ?>"style="color:#0D8A90;" target="_blank">@<?= esc($github['github_username']) ?></a></p>

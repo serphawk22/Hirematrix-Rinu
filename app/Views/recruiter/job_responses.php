@@ -15,7 +15,7 @@
 body.dark .recruiter-jobs-jobboard,
 body.dark .recruiter-jobs-jobboard .page-board-header,
 body.dark .recruiter-jobs-jobboard,body.dark .hm-page-content {
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+    background: #111111 !important;
 }
 
 /* ══════════════════════════════════════════
@@ -54,7 +54,7 @@ body.dark .recruiter-jobs-jobboard p.text-muted {
 }
 body.dark .recruiter-jobs-jobboard .recruiter-filter-card,
 body.dark .recruiter-jobs-jobboard .card.bg-light {
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+    background:  #111111 !important;
     border-color: #23343A !important;
 }
 
@@ -81,7 +81,7 @@ body.dark .recruiter-jobs-jobboard .card.bg-light label {
 }
 body.dark .recruiter-jobs-jobboard .recruiter-filter-card .form-control,
 body.dark .recruiter-jobs-jobboard .card.bg-light .form-control {
-    background-color: #1B2A2F !important;
+    background-color: #111111 !important;
     color: #E2E8F0 !important;
     border-color: #2E4A52 !important;
 }
@@ -102,7 +102,7 @@ body.dark .recruiter-jobs-jobboard .form-control::placeholder {
 }
 body.dark .recruiter-jobs-jobboard .recruiter-table-card,
 body.dark .recruiter-jobs-jobboard .table-responsive.recruiter-table-card {
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+    background:  #111111 !important;
     border-color: #23343A !important;
 }
 
@@ -141,6 +141,7 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-table thead tr {
 }
 body.dark .recruiter-jobs-jobboard .recruiter-jobs-table thead th {
     color: #7A8B96 !important;
+    background:  #111111 !important;
 }
 
 /* ── Body rows ── */
@@ -268,7 +269,7 @@ body.dark .recruiter-jobs-jobboard .badge-secondary {
     cursor: pointer;
 }
 body.dark .recruiter-jobs-jobboard .status-pill {
-    background: #7a8b9650;
+    background:  #111111 !important;
     color: #0D8A90;
 }
 .recruiter-jobs-jobboard .btn-outline-primary {
@@ -304,19 +305,15 @@ body.dark .recruiter-jobs-jobboard .btn-outline-primary {
 }
 
 body.dark .recruiter-jobs-jobboard .btn-outline-primary:hover {
-    background: linear-gradient(
-        135deg,
-        #1FB7B5 0%,
-        #53B86C 55%,
-        #B5D84E 100%
-    ) !important;
-    border: none !important;
+    background: #111111 !important;
+    border: 1px solid rgba(31, 183, 181, 0.15) !important;
     color: #ffffff !important;
 }
 body.dark .recruiter-jobs-jobboard .status-pill,
 body.dark .recruiter-jobs-jobboard .btn-outline-primary {
-    background: rgba(122, 139, 150, 0.3) !important;
+    background: #111111 !important;
     color: #1FB7B5 !important;
+    border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
 
 /* Primary button */
@@ -422,6 +419,11 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
     padding-left: 34px !important;
     padding-right: 34px !important;
 }
+ .recruiter-jobs-jobboard #jobs-list .card,
+.recruiter-jobs-jobboard .recruiter-filter-card{
+    border-radius: 20px !important;
+    overflow: hidden;
+}
 </style> 
 
 <div
@@ -463,8 +465,8 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
             <?php if (empty($jobs)): ?>
                 <div class="alert alert-info">No jobs found matching your criteria.</div>
             <?php else: ?>
-                <div class="table-responsive recruiter-table-card">
-                    <table class="table table-hover bg-white border rounded recruiter-jobs-table">
+                <div class="table-responsive recruiter-table-card" style="border-radius: 20px !important;overflow: hidden;">
+                    <table class="table table-hover bg-white border rounded recruiter-jobs-table" >
                         <thead class="bg-light">
                             <tr>
                                 <th>Job Title</th>

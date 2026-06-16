@@ -7,6 +7,15 @@
     <meta name="csrf-token" content="<?= csrf_hash() ?>">
     <meta name="csrf-name" content="<?= csrf_token() ?>">
     <title><?= esc($title ?? 'Candidate Portal') ?></title>
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('theme') === 'dark') {
+                    document.documentElement.classList.add('hm-dark-preload');
+                }
+            } catch (error) {}
+        })();
+    </script>
     <!-- Inside the <head> tag -->
     <link rel="icon" type="image/png" href="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>">
 
@@ -51,6 +60,21 @@
         <!-- CSS Circle Progress (Required for visual ATS Score) -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/css-percentage-circle/0.0.3/css/circle.min.css">
     <?php endif; ?>
+    <style>
+        html.hm-dark-preload,
+        html.hm-dark-preload body,
+        body.dark.candidate-app {
+            background: #0d1117;
+        }
+        html.hm-dark-preload #overlayer,
+        body.dark.candidate-app #overlayer {
+            background: #0d1117 !important;
+        }
+        html.hm-dark-preload .loader .spinner-border,
+        body.dark.candidate-app .loader .spinner-border {
+            color: #1FB7B5 !important;
+        }
+    </style>
 </head>
 <body id="top" class="hirematrix-app candidate-app">
 
@@ -226,15 +250,6 @@
             </div>
 
             <div class="hm-drawer-body">
-                <!-- <div class="hm-drawer-cta-card">
-                    <div class="hm-drawer-cta-kicker">For You</div>
-                    <h3><?= esc($recommendationTitle) ?></h3>
-                    <p><?= esc($recommendationText) ?></p>
-                    <div class="hm-drawer-cta-actions">
-                        <a href="<?= esc($recommendationUrl) ?>" class="hm-drawer-cta-primary"><?= esc($recommendationCta) ?></a>
-                        <a href="<?= esc($profilePromptUrl) ?>" class="hm-drawer-cta-secondary"><?= esc($profilePromptCta) ?></a>
-                    </div>
-                </div> -->
 
                 <!-- Section: My Activity -->
                 <div class="hm-drawer-section">
@@ -282,11 +297,7 @@
                         <span class="hm-drawer-link-icon"><i class="fas fa-search-plus"></i></span>
                         <span>Company & Job Discovery</span>
                     </a>
-                    <a href="<?= base_url('candidate/job-alerts') ?>" class="hm-drawer-link">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-bell"></i></span>
-                        <span>Job Alerts</span>
-                        <span class="hm-drawer-pill hm-drawer-pill-muted"><?= esc($formatCompactCount($jobAlertsCount)) ?></span>
-                    </a>
+                    
                 </div>
 
                 <!-- Section: Career Tools & Interview Prep -->
@@ -520,12 +531,12 @@
             <button type="button" class="mobile-nav-icon" id="mobileSearchToggle" title="Search" aria-label="Search">
                 <span class="icon-search"></span>
             </button>
-            <a href="<?= base_url('notifications') ?>" class="mobile-nav-icon <?= $unreadNotificationCount > 0 ? 'has-unread' : '' ?>" title="Notifications">
+            <!-- <a href="<?= base_url('notifications') ?>" class="mobile-nav-icon <?= $unreadNotificationCount > 0 ? 'has-unread' : '' ?>" title="Notifications">
                 <span class="icon-bell"></span>
                 <?php if ($unreadNotificationCount > 0): ?>
                     <span class="mobile-nav-badge js-notification-badge" data-unread-count="<?= $unreadNotificationCount ?>"><?= $unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount ?></span>
                 <?php endif; ?>
-            </a>
+            </a> -->
             <!-- Avatar dropdown -->
             <div class="cand-topbar__avatar-menu" id="candidateAvatarMenu">
                 <button type="button" class="cand-topbar__avatar-btn" id="candidateAvatarBtn" aria-haspopup="true" aria-expanded="false">

@@ -126,7 +126,7 @@ $formatExperienceDisplay = static function (int $months): string {
                 <!-- Quick Actions -->
                 <div class="card shadow-sm mt-3">
                     <div class="card-body">
-                        <h6 class="card-title"><i class="fas fa-bolt"></i> Quick Actions</h6>
+                        <h6 class="card-title">Quick Actions</h6>
                         <div class="profile-quick-actions">
                             <?php if (!empty($user['resume_path'])): ?>
                                 <a href="<?= base_url('candidate/download-resume') ?>" class="btn btn-outline-primary btn-sm"><i class="fas fa-download"></i> Download Resume</a>
@@ -142,14 +142,13 @@ $formatExperienceDisplay = static function (int $months): string {
 
                 <div class="card shadow-sm mt-3">
                     <div class="card-body">
-                        <h6 class="card-title"><i class="fas fa-link"></i> Quick Links</h6>
+                        <h6 class="card-title">Quick Links</h6>
                         <div class="list-group list-group-flush">
                             <a href="#personal" class="list-group-item list-group-item-action px-0 py-2">Personal Information</a>
                             <a href="#career-details" class="list-group-item list-group-item-action px-0 py-2">Career Details</a>
                             <a href="#intro-video" class="list-group-item list-group-item-action px-0 py-2">Video Introduction</a>
                             <a href="#preferences" class="list-group-item list-group-item-action px-0 py-2">Preferences</a>
                             <a href="#resume" class="list-group-item list-group-item-action px-0 py-2">Resume</a>
-                            <a href="<?= base_url('candidate/resume-studio') ?>" class="list-group-item list-group-item-action px-0 py-2">AI Resume Studio</a>
                             <a href="#github" class="list-group-item list-group-item-action px-0 py-2">GitHub</a>
                             <a href="#skills" class="list-group-item list-group-item-action px-0 py-2">Skills</a>
                             <a href="#interests" class="list-group-item list-group-item-action px-0 py-2">Interests</a>
@@ -188,7 +187,7 @@ $formatExperienceDisplay = static function (int $months): string {
                 <div class="profile-section mb-4">
                     <div class="card shadow-sm">
                         <div class="card-header">
-                            <h5 class="mb-0"><i class="fas fa-info-circle"></i> Profile Summary</h5>
+                            <h5 class="mb-0">Profile Summary</h5>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -212,7 +211,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     <div class="profile-section mb-4" id="personal">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-user"></i> Personal Information</h5>
+                                <h5 class="mb-0">Personal Information</h5>
                                 <button type="button" class="profile-edit-toggle" data-edit-toggle title="Edit Personal Information">
                                     <span class="profile-edit-toggle-text">&#9998;</span>
                                 </button>
@@ -304,7 +303,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     <div class="profile-section mb-4" id="career-details">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-briefcase"></i> Career Details</h5>
+                                <h5 class="mb-0">Career Details</h5>
                                 <button type="button" class="profile-edit-toggle" data-edit-toggle title="Edit Career Details">
                                     <span class="profile-edit-toggle-text">&#9998;</span>
                                 </button>
@@ -387,7 +386,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     <div class="profile-section mb-4" id="intro-video">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-video"></i> Video Introduction</h5>
+                                <h5 class="mb-0">Video Introduction</h5>
                                 <span class="badge badge-light border">Recruiter-facing pitch</span>
                             </div>
                             <div class="card-body">
@@ -437,7 +436,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     <div class="profile-section mb-4" id="preferences">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-sliders-h"></i> Preferences</h5>
+                                <h5 class="mb-0">Preferences</h5>
                                 <button type="button" class="profile-edit-toggle" data-edit-toggle title="Edit Preferences">
                                     <span class="profile-edit-toggle-text">&#9998;</span>
                                 </button>
@@ -515,7 +514,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     <div class="profile-section mb-4" id="resume">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-file-alt"></i> Resume Management</h5>
+                                <h5 class="mb-0">Resume Management</h5>
                                 <button type="button" class="profile-edit-toggle" data-edit-toggle title="Edit Resume">
                                     <span class="profile-edit-toggle-text">&#9998;</span>
                                 </button>
@@ -533,7 +532,7 @@ $formatExperienceDisplay = static function (int $months): string {
                                 <div class="profile-read-view">
                                     <?php if (!empty($user['resume_path'])): ?>
                                         <div class="current-resume mb-4">
-                                            <div class="d-flex align-items-center p-3 border rounded bg-light">
+                                            <div class="d-flex align-items-center p-3 border rounded ">
                                                 <i class="fas fa-file-pdf fa-2x text-danger me-3"></i>
                                                 <div class="flex-grow-1">
                                                     <h6 class="mb-1">Current Resume</h6>
@@ -591,7 +590,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     <div class="profile-section mb-4" id="github">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fab fa-github"></i> GitHub Integration</h5>
+                                <h5 class="mb-0">GitHub Integration</h5>
                                 <button type="button" class="profile-edit-toggle" data-edit-toggle title="Edit GitHub Integration">
                                     <span class="profile-edit-toggle-text">&#9998;</span>
                                 </button>
@@ -640,7 +639,7 @@ $formatExperienceDisplay = static function (int $months): string {
 
                                 <?php if (!empty($github['github_username'])): ?>
                                     <div class="github-stats mt-4">
-                                        <h6><i class="fas fa-chart-bar"></i> GitHub Stats</h6>
+                                        <h6>GitHub Stats</h6>
                                         <div class="row text-center">
                                             <div class="col-4">
                                                 <div class="stat-card p-3 border rounded">
@@ -662,7 +661,7 @@ $formatExperienceDisplay = static function (int $months): string {
                                             </div>
                                         </div>
                                         <div class="mt-3">
-                                            <h6><i class="fas fa-code"></i> Languages Used</h6>
+                                            <h6>Languages Used</h6>
                                             <div class="languages-list">
                                                 <?php 
                                                 $languages = explode(',', $github['languages_used'] ?? '');
@@ -685,7 +684,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     <div class="profile-section mb-4" id="skills">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-code"></i> Skills & Technologies</h5>
+                                <h5 class="mb-0">Skills & Technologies</h5>
                                 <button type="button" class="profile-edit-toggle" data-edit-toggle title="Edit Skills">
                                     <span class="profile-edit-toggle-text">&#9998;</span>
                                 </button>
@@ -713,7 +712,7 @@ $formatExperienceDisplay = static function (int $months): string {
 
                                 <?php if (!empty($github['languages_used'])): ?>
                                     <div class="skills-section mb-4">
-                                        <h6><i class="fab fa-github"></i> GitHub Languages</h6>
+                                        <h6>GitHub Languages</h6>
                                         <div class="skills-tags">
                                             <?php 
                                             $languages = explode(',', $github['languages_used']);
@@ -761,7 +760,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     <div class="profile-section mb-4" id="interests">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-heart"></i> Job Interests</h5>
+                                <h5 class="mb-0">Job Interests</h5>
                                 <button type="button" class="profile-edit-toggle" data-edit-toggle title="Edit Interests">
                                     <span class="profile-edit-toggle-text">&#9998;</span>
                                 </button>
@@ -856,7 +855,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     <div class="profile-section mb-4" id="experience">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-briefcase"></i> Work Experience</h5>
+                                <h5 class="mb-0">Work Experience</h5>
                                 <div class="d-flex align-items-center candidate-flex-gap-10">
                                     <button type="button" class="btn btn-sm btn-primary profile-header-add" data-toggle="modal" data-target="#addExperienceModal"><i class="fas fa-plus"></i> Add</button>
                                     <button type="button" class="profile-edit-toggle" data-edit-toggle title="Edit Work Experience">
@@ -899,7 +898,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     <div class="profile-section mb-4" id="education">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-graduation-cap"></i> Education</h5>
+                                <h5 class="mb-0">Education</h5>
                                 <div class="d-flex align-items-center candidate-flex-gap-10">
                                     <button type="button" class="btn btn-sm btn-primary profile-header-add" data-toggle="modal" data-target="#addEducationModal"><i class="fas fa-plus"></i> Add</button>
                                     <button type="button" class="profile-edit-toggle" data-edit-toggle title="Edit Education">
@@ -939,7 +938,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     <div class="profile-section mb-4" id="projects">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-diagram-project"></i> Projects</h5>
+                                <h5 class="mb-0">Projects</h5>
                                 <div class="d-flex align-items-center candidate-flex-gap-10">
                                     <button type="button" class="btn btn-sm btn-primary profile-header-add" data-toggle="modal" data-target="#addProjectModal"><i class="fas fa-plus"></i> Add</button>
                                     <button type="button" class="profile-edit-toggle" data-edit-toggle title="Edit Projects">
@@ -990,7 +989,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     <div class="profile-section mb-4" id="certifications">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-certificate"></i> Certifications</h5>
+                                <h5 class="mb-0">Certifications</h5>
                                 <div class="d-flex align-items-center candidate-flex-gap-10">
                                     <button type="button" class="btn btn-sm btn-primary profile-header-add" data-toggle="modal" data-target="#addCertificationModal"><i class="fas fa-plus"></i> Add</button>
                                     <button type="button" class="profile-edit-toggle" data-edit-toggle title="Edit Certifications">

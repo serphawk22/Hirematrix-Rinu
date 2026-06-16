@@ -46,8 +46,9 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #111111 !important;
     color: #0D8A90;
+    border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
 .recruiter-summary-item,.recruiter-summary-label{
      font-size: 1rem;
@@ -67,7 +68,7 @@ body.dark .recruiter-summary-item, body.dark .recruiter-summary-label{
     ) !important;
 }
 body.dark .hm-page-content,body.dark .recruiter-slot-bookings-jobboard.recruiter-slot-review-jobboard{
-    background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
+    background: #111111 !important;
     border: 1px solid #23343A !important;
 } 
 .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
@@ -90,7 +91,7 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #1B2A2F !important;
+    background: #111111 !important;
     color: #F8FAFC !important;
 }
 /* ── Labels — match h6 style ── */
@@ -126,7 +127,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
     border-color: #0D8A90;
 }
 body.dark .recruiter-review-summary-card, body.dark .recruiter-review-card, body.dark .recruiter-review-card,body.dark .card-header{
-     background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
+     background: #111111 !important;
     border: 1px solid #23343A !important;
     color:#94A3B8 !important;
 }
@@ -137,6 +138,10 @@ body.dark .recruiter-summary-item,body.darl li, body.dark h6.m-0,body.dark .recr
     max-width: 100% !important;
     padding-left: 34px !important;
     padding-right: 34px !important;
+}
+body.dark .alert.alert-info{
+    background:#111111 !important;
+      border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
 </style>
 
@@ -157,7 +162,7 @@ body.dark .recruiter-summary-item,body.darl li, body.dark h6.m-0,body.dark .recr
         </div>
 
         <!-- Summary Strip -->
-        <div class="card shadow-sm recruiter-review-summary-card mb-4">
+        <div class="card shadow-sm recruiter-review-summary-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-body py-3">
                 <div class="row">
                     <div class="col-md-4 mb-3 mb-md-0">
@@ -187,7 +192,7 @@ body.dark .recruiter-summary-item,body.darl li, body.dark h6.m-0,body.dark .recr
 
             <!-- Left: Review Form -->
             <div class="col-lg-8 mb-4">
-                <div class="card shadow-sm recruiter-review-card">
+                <div class="card shadow-sm recruiter-review-card" style="border-radius: 20px !important;overflow: hidden;">
                     <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <h6 class="m-0">Interview Review</h6>
                         <?php
@@ -207,7 +212,7 @@ body.dark .recruiter-summary-item,body.darl li, body.dark h6.m-0,body.dark .recr
                         </span>
                     </div>
 
-                    <div class="card-body">
+                    <div class="card-body" style="border-radius: 20px !important;overflow: hidden;">
 
                         <?php if (!empty($review)): ?>
                             <div class="alert alert-info mb-4">
@@ -292,7 +297,7 @@ body.dark .recruiter-summary-item,body.darl li, body.dark h6.m-0,body.dark .recr
 
             <!-- Right: What happens next -->
             <div class="col-lg-4 mb-4">
-                <div class="card shadow-sm recruiter-review-card h-30">
+                <div class="card shadow-sm recruiter-review-card h-30" style="border-radius: 20px !important;overflow: hidden;">
                     <div class="card-header py-3">
                         <h6 class="m-0">What happens next</h6>
                     </div>

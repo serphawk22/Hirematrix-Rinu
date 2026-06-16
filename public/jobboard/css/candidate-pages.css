@@ -88,7 +88,7 @@ body.dark {
 /* Progress bars use the gradient fill */
 .settings-summary-progress .progress-bar.settings-progress-bar,
 .candidate-progress-fill {
-    background: var(--gradient-primary) !important;
+    background: var(--candidate-accent, var(--primary, #1FB7B5)) !important;
 }
 
 /* candidate progress fill uses a CSS variable for width */
@@ -1254,7 +1254,7 @@ body.dark {
     margin-bottom: 10px;
 }
 
-.strategy-jobboard .strategy-mini-timeline {
+/* .strategy-jobboard .strategy-mini-timeline {
     display: grid;
     gap: 12px;
 }
@@ -1295,7 +1295,7 @@ body.dark {
     color: #64748b;
     font-size: .88rem;
     line-height: 1.55;
-}
+} 
 
 .strategy-jobboard .strategy-mini-items {
     margin: 0;
@@ -1307,7 +1307,7 @@ body.dark {
 
 .strategy-jobboard .strategy-mini-items li + li {
     margin-top: 4px;
-}
+}*/
 
 .strategy-jobboard .strategy-hero-card {
     position: relative;
@@ -1337,7 +1337,7 @@ body.dark {
     font-weight: 700;
 }
 
-.strategy-jobboard .strategy-metric-grid {
+/* .strategy-jobboard .strategy-metric-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
@@ -1350,7 +1350,7 @@ body.dark {
     border-radius: 14px;
     background: #fff;
     box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
-}
+} 
 
 .strategy-jobboard .strategy-metric-label {
     display: block;
@@ -1375,7 +1375,7 @@ body.dark {
     color: #64748b;
     font-size: .88rem;
     line-height: 1.5;
-}
+}*/
 
 .strategy-jobboard .strategy-section {
     display: grid;
@@ -3491,9 +3491,460 @@ mark { background: #fef9c3; padding: 0 2px; border-radius: 3px; }
 .job-details-jobboard,
 .course-modules-jobboard,
 .course-content-jobboard,
-.jobs-page-jobboard {
+.jobs-page-jobboard,
+.company-profile-jobboard {
     background-color: #f8f9fa !important;
 }
+
+/* ===== Company Profile Page ===== */
+
+.company-profile-jobboard {
+    background: transparent !important;
+    display: grid !important;
+    gap: 18px !important;
+    padding: 0 !important;
+}
+
+.company-profile-jobboard .company-profile-header-rail {
+    box-sizing: border-box !important;
+    max-width: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    width: 100% !important;
+}
+
+.company-profile-jobboard .company-profile-header {
+    align-items: center !important;
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 0 !important;
+    border-radius: var(--candidate-section-radius, 30px) !important;
+    box-shadow: none !important;
+    display: flex !important;
+    gap: 18px !important;
+    justify-content: space-between !important;
+    margin: 0 !important;
+    min-height: 140px !important;
+    padding: 24px 28px !important;
+}
+
+.company-profile-jobboard .company-profile-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.company-profile-jobboard .company-profile-actions .btn {
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.company-profile-jobboard .company-profile-content-canvas {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+.company-profile-jobboard .company-profile-content-canvas > .container-fluid {
+    box-sizing: border-box !important;
+    max-width: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+.company-profile-jobboard .company-profile-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px) !important;
+    gap: 18px !important;
+    align-items: start !important;
+}
+
+.company-profile-jobboard .company-profile-main {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+}
+
+.company-profile-jobboard .company-profile-side {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    position: sticky !important;
+    top: 92px !important;
+}
+
+.company-profile-jobboard .company-overview-top {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.company-profile-jobboard .company-overview-logo {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    background: #eef4ff;
+    border: 1px solid #dce7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #2f57bd;
+}
+
+.company-profile-jobboard .company-overview-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.company-profile-jobboard .company-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #edf2f7;
+}
+
+.company-profile-jobboard .company-overview-grid > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 14px 16px;
+    border: 1px solid var(--candidate-border, #D7E4EF) !important;
+    border-radius: var(--candidate-card-radius, 22px);
+    background: var(--candidate-surface-soft, #F8FBFC) !important;
+}
+
+.company-profile-jobboard .company-overview-grid strong {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.company-profile-jobboard .company-overview-grid span {
+    font-size: 0.95rem;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.company-profile-jobboard .detail-card,
+.company-profile-jobboard .summary-card {
+    border: 1px solid var(--candidate-border, #D7E4EF) !important;
+    border-radius: var(--candidate-card-radius, 22px) !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+}
+
+.company-social-card {
+    border: 1px solid var(--candidate-border, #D7E4EF) !important;
+    border-radius: var(--candidate-card-radius, 22px) !important;
+    background: var(--candidate-surface, #ffffff) !important;
+    box-shadow: none !important;
+}
+
+.company-social-card .detail-card-title {
+    margin-bottom: 1rem;
+}
+
+.company-social-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.company-social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.7rem 1rem;
+    border-radius: 999px;
+    border: 1px solid #dce5fb;
+    background: #fff;
+    color: #2446c0;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    box-shadow: 0 6px 18px rgba(36, 70, 192, 0.06);
+}
+
+.company-social-link i { font-size: 1rem; }
+
+.company-social-link:hover {
+    transform: translateY(-1px);
+    border-color: #b8c9f8;
+    box-shadow: 0 10px 24px rgba(36, 70, 192, 0.12);
+    text-decoration: none;
+    color: #1f3ea8;
+}
+
+.company-social-link--linkedin  { color: #0a66c2; border-color: rgba(10, 102, 194, 0.18); }
+.company-social-link--twitter   { color: #111827; border-color: rgba(17, 24, 39, 0.12); }
+.company-social-link--facebook  { color: #1877f2; border-color: rgba(24, 119, 242, 0.18); }
+.company-social-link--instagram { color: #c13584; border-color: rgba(193, 53, 132, 0.18); }
+.company-social-link--youtube   { color: #ff0000; border-color: rgba(255, 0, 0, 0.18); }
+.company-social-link--linkedin:hover,
+.company-social-link--twitter:hover,
+.company-social-link--facebook:hover,
+.company-social-link--instagram:hover,
+.company-social-link--youtube:hover { color: inherit; }
+
+.company-branding-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 6px;
+}
+
+.company-branding-panel {
+    border: 1px solid var(--candidate-border, #D7E4EF) !important;
+    border-radius: var(--candidate-card-radius, 22px);
+    padding: 16px 18px;
+    background: var(--candidate-surface-soft, #F8FBFC) !important;
+}
+
+.company-branding-panel h4 {
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+
+.company-benefit-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.company-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.company-photo-tile {
+    display: block;
+    border: 1px solid var(--candidate-border, #D7E4EF) !important;
+    border-radius: var(--candidate-card-radius, 22px);
+    overflow: hidden;
+    background: #e8edf8;
+    min-height: 120px;
+}
+
+.company-photo-tile img {
+    width: 100%;
+    height: 100%;
+    min-height: 120px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.company-photo-tile:hover img { transform: scale(1.03); }
+
+.company-open-job-list { display: grid; gap: 8px; }
+
+.company-open-job-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 14px;
+    border: 1px solid var(--candidate-border, #D7E4EF) !important;
+    border-radius: var(--candidate-card-radius, 22px);
+    background: var(--candidate-surface-soft, #F8FBFC) !important;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.company-open-job-item:hover {
+    border-color: rgba(31, 183, 181, 0.4);
+    background: #f0faf9;
+    text-decoration: none;
+    color: inherit;
+}
+
+.company-open-job-item h6 {
+    margin: 0 0 3px;
+    font-size: 0.94rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.company-open-job-item span {
+    font-size: 0.82rem;
+    color: #64748b;
+}
+
+.company-open-job-item i { color: #1FB7B5; flex-shrink: 0; }
+
+.company-profile-jobboard .office-tour-card,
+.company-profile-jobboard .company-review-item {
+    border: 1px solid var(--candidate-border, #D7E4EF) !important;
+    border-radius: var(--candidate-card-radius, 22px) !important;
+    background: var(--candidate-surface-soft, #F8FBFC) !important;
+    box-shadow: none !important;
+}
+
+.company-profile-jobboard .detail-card > .office-tour-card {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.company-profile-jobboard .office-tour-card .d-flex {
+    gap: 12px !important;
+    margin-bottom: 14px !important;
+}
+
+.company-profile-jobboard .office-tour-card h5 {
+    color: var(--candidate-ink, #142033) !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    margin: 0 0 4px !important;
+}
+
+.company-profile-jobboard .office-tour-card .text-muted,
+.company-profile-jobboard .office-tour-summary {
+    color: var(--candidate-muted, #647184) !important;
+}
+
+.company-profile-jobboard .office-tour-card .badge {
+    background: var(--candidate-accent-soft, #E8F7F7) !important;
+    border: 1px solid rgba(31, 183, 181, 0.22) !important;
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    border-radius: 999px !important;
+    padding: 5px 9px !important;
+}
+
+@media (max-width: 991.98px) {
+    .company-profile-jobboard .company-profile-content-canvas > .container-fluid {
+        padding: 0 !important;
+    }
+    .company-profile-jobboard .company-profile-layout {
+        grid-template-columns: 1fr;
+    }
+    .company-profile-jobboard .company-profile-actions {
+        justify-content: flex-start;
+    }
+    .company-profile-jobboard .company-profile-side {
+        position: static;
+    }
+    .company-branding-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .company-profile-jobboard {
+        gap: 20px !important;
+    }
+    .company-profile-jobboard .company-profile-header {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        padding: 20px !important;
+    }
+    .company-profile-jobboard .company-profile-actions {
+        justify-content: flex-start !important;
+        margin-left: 0 !important;
+        width: 100%;
+    }
+}
+
+@media (max-width: 575px) {
+    .company-profile-jobboard .company-profile-content-canvas {
+        border-radius: 0 !important;
+    }
+    .company-profile-jobboard .company-profile-content-canvas > .container-fluid {
+        padding: 0 !important;
+    }
+    .company-profile-jobboard .company-profile-actions .btn {
+        flex: 1 1 100%;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    .company-social-grid { gap: 0.6rem; }
+    .company-social-link { width: 100%; justify-content: center; }
+    .company-photo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-profile-header,
+body.dark.candidate-app .company-profile-jobboard .detail-card,
+body.dark.candidate-app .company-profile-jobboard .summary-card,
+body.dark.candidate-app .company-profile-jobboard .company-social-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+    box-shadow: none !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-profile-content-canvas {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-overview-grid {
+    border-top-color: #30363d !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-overview-grid > div,
+body.dark.candidate-app .company-profile-jobboard .company-branding-panel,
+/* body.dark.candidate-app [class*="-layout"], */
+body.dark.candidate-app .company-profile-jobboard .company-review-item,
+body.dark.candidate-app .company-profile-jobboard .company-open-job-item,
+body.dark.candidate-app .company-profile-jobboard .company-photo-tile,
+body.dark.candidate-app .company-profile-jobboard .company-social-link {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+    box-shadow: none !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-overview-grid strong,
+body.dark.candidate-app .company-profile-jobboard label,
+body.dark.candidate-app .company-profile-jobboard small,
+body.dark.candidate-app .company-profile-jobboard .company-open-job-item span,
+body.dark.candidate-app .company-profile-jobboard .office-tour-summary {
+    color: #8b949e !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-overview-grid span,
+body.dark.candidate-app .company-profile-jobboard .company-open-job-item h6,
+body.dark.candidate-app .company-profile-jobboard .company-branding-panel h4 {
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .company-overview-logo,
+body.dark.candidate-app .company-profile-jobboard .detail-card-icon,
+body.dark.candidate-app .company-profile-jobboard .summary-chip,
+body.dark.candidate-app .company-profile-jobboard .badge {
+    background: #21262d !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .company-profile-jobboard .form-control {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+/* ===== End Company Profile Page ===== */
 
 .companies-directory-hero-stats {
     display: grid;
@@ -6771,13 +7222,7 @@ body.candidate-app .cand-leftnav__pro {
 .dashboard-jobboard .job-card-company{
     color: var(--muted-foreground);
 }
-
 .job-card.dashboard-card {
-    display: block;
-    height: 100%;
-    padding: 18px;
-    margin-bottom: 0;
-    transition: border-color .16s ease, transform .16s ease;
 }
 
 .job-card.dashboard-card:hover,
@@ -7596,7 +8041,7 @@ body.dark .radio-mark { border-color: #b0b3b8; }
 .profile-header-add{display:none}
 .resume-summary-clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .resume-version-preview{max-height:180px;overflow:hidden;position:relative;font-size:.85rem}
-.resume-version-fade{position:absolute;right:0;bottom:0;left:0;height:40px;background:linear-gradient(transparent,#f8f9fa)}
+.resume-version-fade{position:absolute;right:0;bottom:0;left:0;height:40px;background:linear-gradient(180deg,rgba(255,255,255,0),var(--candidate-surface,#ffffff))}
 .resume-preview-frame{width:100%;height:75vh;border:0}
 .mobile-filter-body{padding:20px}
 .mobile-filter-label{font-size:.8rem;font-weight:600;color:var(--slate)}
@@ -7634,6 +8079,9 @@ body.candidate-app{
     --candidate-danger:#c03636;
     --candidate-danger-soft:#fff1f1;
     --candidate-radius:8px;
+    --candidate-inner-radius:16px;
+    --candidate-card-radius:22px;
+    --candidate-section-radius:30px;
     --candidate-button-height:40px;
     --candidate-card-min-height:168px;
     background:var(--candidate-bg);
@@ -7660,6 +8108,7 @@ body.candidate-app,
 .candidate-app .job-details-jobboard,
 .candidate-app .saved-jobs-jobboard,
 .candidate-app .company-jobs-jobboard,
+.candidate-app .company-profile-jobboard,
 .candidate-app .mock-interview-jobboard,
 .candidate-app .book-slot-jobboard,
 .candidate-app .reschedule-slot-jobboard{
@@ -7725,7 +8174,7 @@ body.candidate-app,
 .candidate-app .prep-coach-card{
     background:var(--candidate-surface)!important;
     border-color:var(--candidate-line)!important;
-    border-radius:var(--candidate-radius)!important;
+    border-radius:var(--candidate-card-radius)!important;
     box-shadow:none!important;
 }
 .candidate-app .job-card,
@@ -7746,6 +8195,7 @@ body.candidate-app,
 .candidate-app .application-detail-head,
 .candidate-app .resume-version-fade{
     border-color:var(--candidate-line)!important;
+    background:linear-gradient(180deg,rgba(255,255,255,0),var(--candidate-surface,#ffffff))!important;
 }
 
 .candidate-app .btn,
@@ -7835,7 +8285,7 @@ body.candidate-app,
 
 .candidate-app .alert-success,
 .candidate-app .badge-success{
-    background:var(--candidate-success-soft)!important;
+    /* background:var(--candidate-success-soft)!important; */
     border-color:#bfe8d1!important;
     color:var(--candidate-success)!important;
 }
@@ -8401,6 +8851,7 @@ body.candidate-app{
 .candidate-app .job-details-jobboard,
 .candidate-app .saved-jobs-jobboard,
 .candidate-app .company-jobs-jobboard,
+.candidate-app .company-profile-jobboard,
 .candidate-app .mock-interview-jobboard,
 .candidate-app .book-slot-jobboard,
 .candidate-app .reschedule-slot-jobboard,
@@ -8504,7 +8955,7 @@ body.candidate-app{
 .candidate-app .dashboard-section > .container-fluid,
 .candidate-app .candidate-workbar {
     border: 0 !important;
-    border-radius: var(--candidate-radius) !important;
+    border-radius: var(--candidate-section-radius) !important;
     background: var(--candidate-surface) !important;
     box-shadow: none !important;
 }
@@ -8543,7 +8994,7 @@ body.candidate-app{
 .candidate-app .job-card-icon,
 .candidate-app .top-company-logo {
     border: 0 !important;
-    border-radius: var(--candidate-radius) !important;
+    border-radius: var(--candidate-card-radius) !important;
     background: var(--candidate-surface) !important;
     box-shadow: none !important;
 }
@@ -8844,7 +9295,7 @@ body.candidate-app{
 .candidate-app .applications-jobboard .application-detail-card-plain {
     padding: 22px !important;
     border: 1px solid #e3ebf5 !important;
-    border-radius: var(--candidate-radius) !important;
+    border-radius: var(--candidate-card-radius) !important;
     background: var(--candidate-surface) !important;
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04) !important;
 }
@@ -9007,7 +9458,6 @@ body.candidate-app{
 .candidate-app .dashboard-blog-section > .container-fluid,
 .candidate-app .content-wrap,
 .candidate-app .applications-shell,
-.candidate-app .application-detail-panel,
 .candidate-app .jobs-layout,
 .candidate-app .profile-summary-grid,
 .candidate-app .settings-shell,
@@ -9191,15 +9641,19 @@ body.candidate-app{
 
 .candidate-app .dashboard-jobboard .dashboard-tile-grid .top-company-card {
     width: auto !important;
-    min-height: 74px !important;
+    min-height: 122px !important;
     padding: 14px 12px !important;
     gap: 10px !important;
     display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
+    justify-content: center !important;
     border: 1px solid #dbe6f2 !important;
     border-radius: 12px !important;
     background: #fff !important;
     box-shadow: none !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
 }
 
 .candidate-app .dashboard-jobboard .dashboard-tile-grid .top-company-card:hover {
@@ -9224,6 +9678,7 @@ body.candidate-app{
 }
 
 .candidate-app .dashboard-jobboard .dashboard-tile-grid .top-company-info {
+    width: 100% !important;
     min-width: 0 !important;
     text-align: center !important;
 }
@@ -9232,10 +9687,16 @@ body.candidate-app{
     font-size: 0.92rem !important;
     line-height: 1.25 !important;
     margin-bottom: 4px !important;
-    white-space: nowrap !important;
+    display: -webkit-box !important;
+    min-height: 2.3em !important;
     overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    overflow-wrap: anywhere !important;
     text-align: center !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
 }
 
 .candidate-app .dashboard-jobboard .dashboard-tile-grid .top-company-industry {
@@ -9395,7 +9856,7 @@ body.candidate-app{
 .candidate-app .career-history-jobboard .history-info-box,
 .candidate-app .job-invite-banner,
 .candidate-app .cand-leftnav__user-dropdown {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 
@@ -9408,13 +9869,13 @@ body.candidate-app{
 .candidate-app .dashboard-section > .container-fluid > .top-companies-grid,
 .candidate-app .dashboard-section > .container-fluid > .d-flex + .top-companies-grid,
 .candidate-app .dashboard-section > .container-fluid > .dashboard-panel {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Wrap each dashboard section's container-fluid content area as a rounded surface */
 .candidate-app .dashboard-section > .container-fluid {
     background: #fff;
-    border-radius: 16px;
+    border-radius: var(--candidate-section-radius);
     padding: 20px 24px !important;
     margin-bottom: 0;
 }
@@ -9427,7 +9888,7 @@ body.candidate-app{
 
 /* Keep the inner cta/strategy banner itself rounded */
 .candidate-app .dashboard-cta-banner {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     overflow: hidden;
 }
 
@@ -9450,7 +9911,7 @@ body.candidate-app{
 /* Profile page: every .card inside profile sections */
 .candidate-app .profile-jobboard .profile-section .card,
 .candidate-app .profile-jobboard .card.profile-summary-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     overflow: hidden;
 }
 
@@ -9458,14 +9919,14 @@ body.candidate-app{
 .candidate-app .applications-jobboard .applications-shell,
 .candidate-app .applications-jobboard .application-detail-card-plain,
 .candidate-app .applications-jobboard .applications-sidebar {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Settings shell */
 .candidate-app .settings-side,
 .candidate-app .settings-content,
 .candidate-app .settings-summary-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* My bookings */
@@ -9473,7 +9934,7 @@ body.candidate-app{
 .candidate-app .my-bookings-jobboard .booking-next-step,
 .candidate-app .my-bookings-jobboard .booking-card,
 .candidate-app .my-bookings-jobboard .booking-empty-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     overflow: hidden;
 }
 
@@ -9482,7 +9943,7 @@ body.candidate-app{
 .candidate-app .reschedule-slot-jobboard .slot-form-card,
 .candidate-app .book-slot-jobboard .slot-day-card,
 .candidate-app .reschedule-slot-jobboard .slot-day-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     overflow: hidden;
 }
 
@@ -9490,7 +9951,7 @@ body.candidate-app{
 .candidate-app .career-transition-jobboard .transition-panel,
 .candidate-app .career-transition-jobboard .career-transition-note,
 .candidate-app .career-transition-jobboard .dashboard-panel {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Strategy page */
@@ -9499,7 +9960,7 @@ body.candidate-app{
 .candidate-app .strategy-jobboard .strategy-step-card,
 .candidate-app .strategy-jobboard .strategy-job,
 .candidate-app .strategy-jobboard .strategy-metric-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Onboarding */
@@ -9507,27 +9968,31 @@ body.candidate-app{
 .candidate-app .onboarding-jobboard .onboarding-content,
 .candidate-app .onboarding-jobboard .onboarding-card,
 .candidate-app .onboarding-jobboard .repeatable-item {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Job details */
 .candidate-app .job-details-jobboard .bg-light.border.rounded,
 .candidate-app .employer-branding-section,
 .candidate-app .employer-branding-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Notifications */
 .candidate-app .notifications-jobboard .notification-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Smart jobs sidebar */
 .candidate-app .jobs-page-jobboard .sidebar,
-.candidate-app .jobs-page-jobboard .profile-strip,
-.candidate-app .jobs-page-jobboard .empty-state,
 .candidate-app .jobs-page-jobboard .mobile-filter-drawer {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
+    overflow: hidden;
+}
+
+.candidate-app .jobs-page-jobboard .profile-strip,
+.candidate-app .jobs-page-jobboard .empty-state {
+    border-radius: var(--candidate-card-radius) !important;
     overflow: hidden;
 }
 
@@ -9535,19 +10000,19 @@ body.candidate-app{
 .candidate-app .course-header-panel,
 .candidate-app .course-lesson-card,
 .candidate-app .course-module-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 
 /* ════════════════════════════════════════════
    CANDIDATE PAGES — SECTION-LEVEL ROUNDED PANELS
-   Every visible section/content block gets border-radius: 16px
+   Every visible section/content block uses the shared candidate radius tokens
    ════════════════════════════════════════════ */
 
 /* Dashboard: each .dashboard-section container-fluid becomes a rounded white panel */
 .candidate-app .dashboard-jobboard .dashboard-section > .container-fluid {
     background: #fff;
-    border-radius: 16px;
+    border-radius: var(--candidate-section-radius);
     padding: 22px 24px !important;
     margin-bottom: 0;
 }
@@ -9560,7 +10025,7 @@ body.candidate-app{
     padding: 0 !important;
 }
 .candidate-app .dashboard-jobboard .dashboard-cta-banner {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     overflow: hidden;
 }
 
@@ -9568,7 +10033,7 @@ body.candidate-app{
 .candidate-app .profile-jobboard .profile-section .card,
 .candidate-app .profile-jobboard .card.profile-summary-card,
 .candidate-app .profile-jobboard .card.shadow-sm {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     overflow: hidden;
 }
 
@@ -9578,7 +10043,7 @@ body.candidate-app{
 .candidate-app .applications-jobboard .application-section-card,
 .candidate-app .applications-jobboard .application-status-summary,
 .candidate-app .applications-jobboard .application-activity-item {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Settings */
@@ -9586,7 +10051,7 @@ body.candidate-app{
 .candidate-app .settings-content,
 .candidate-app .settings-summary-card,
 .candidate-app .settings-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Bookings */
@@ -9595,7 +10060,7 @@ body.candidate-app{
 .candidate-app .my-bookings-jobboard .booking-card,
 .candidate-app .my-bookings-jobboard .booking-empty-card,
 .candidate-app .my-bookings-jobboard .booking-review-panel {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Book / reschedule slot */
@@ -9605,7 +10070,7 @@ body.candidate-app{
 .candidate-app .reschedule-slot-jobboard .slot-day-card,
 .candidate-app .reschedule-slot-jobboard .current-booking-card,
 .candidate-app .reschedule-slot-jobboard .reschedule-history-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Career transition */
@@ -9613,13 +10078,13 @@ body.candidate-app{
 .candidate-app .career-transition-jobboard .career-transition-note,
 .candidate-app .career-transition-jobboard .dashboard-panel,
 .candidate-app .career-transition-jobboard .career-transition-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Career history */
 .candidate-app .career-history-jobboard .history-panel,
 .candidate-app .career-history-jobboard .history-info-box {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Strategy */
@@ -9629,14 +10094,14 @@ body.candidate-app{
 .candidate-app .strategy-jobboard .strategy-job,
 .candidate-app .strategy-jobboard .strategy-metric-card,
 .candidate-app .strategy-jobboard .strategy-mini-timeline-item {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Mock interview */
 .candidate-app .mock-interview-jobboard .mock-card,
 .candidate-app .mock-interview-jobboard .mock-sidebar,
 .candidate-app .mock-interview-jobboard .mock-question {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Onboarding */
@@ -9645,12 +10110,12 @@ body.candidate-app{
 .candidate-app .onboarding-jobboard .onboarding-card,
 .candidate-app .onboarding-jobboard .onboarding-summary-card,
 .candidate-app .onboarding-jobboard .repeatable-item {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Notifications */
 .candidate-app .notifications-jobboard .notification-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Smart jobs */
@@ -9659,7 +10124,7 @@ body.candidate-app{
 .candidate-app .jobs-page-jobboard .empty-state,
 .candidate-app .jobs-page-jobboard .mobile-filter-drawer,
 .candidate-app .jobs-page-jobboard .job-listings {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     overflow: hidden;
 }
 
@@ -9668,7 +10133,7 @@ body.candidate-app{
 .candidate-app .employer-branding-section,
 .candidate-app .employer-branding-card,
 .candidate-app .employer-branding-company-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 
@@ -9676,7 +10141,7 @@ body.candidate-app{
 .candidate-app .course-header-panel,
 .candidate-app .course-lesson-card,
 .candidate-app .course-module-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Company discovery */
@@ -9689,7 +10154,7 @@ body.candidate-app{
 .candidate-app .local-company-intro,
 .candidate-app .local-company-stat,
 .candidate-app .local-company-search {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Blog */
@@ -9697,30 +10162,30 @@ body.candidate-app{
 .candidate-app .blog-hero-panel,
 .candidate-app .blog-article-card,
 .candidate-app .related-post-item {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Feedback */
 .candidate-app .feedback-card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Candidate workbar */
 .candidate-app .candidate-workbar {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
 }
 
 /* Left nav */
 .candidate-app .cand-leftnav {
-    border-radius: 18px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 .candidate-app .cand-leftnav__user-dropdown {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Shared: all .card inside .candidate-app that aren't already covered */
 .candidate-app .card {
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 
@@ -9730,14 +10195,14 @@ body.candidate-app{
    ════════════════════════════════════════════════ */
 .candidate-app main section {
     background: #ffffff;
-    border-radius: 16px;
+    border-radius: var(--candidate-section-radius);
     overflow: hidden;
 }
 
 /* Keep the gap between sections using the grid, not margins */
 .candidate-app .dash-grid__main > section,
 .candidate-app .dash-grid__main > .dashboard-section {
-    border-radius: 16px;
+    border-radius: var(--candidate-section-radius);
     overflow: hidden;
 }
 
@@ -9854,7 +10319,7 @@ body.candidate-app{
 .candidate-app .page-board-header {
     padding: var(--cand-section-pad-y) var(--cand-section-pad-x);
     background: #fff;
-    border-radius: 16px;
+    border-radius: var(--candidate-section-radius);
     margin: 0;
 }
 
@@ -9938,20 +10403,20 @@ body.candidate-app{
 .candidate-app .jobs-page-jobboard .job-card,
 .candidate-app .jobs-page-jobboard .recommended-job-card {
     background: #fff !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* Profile strip and empty state are also real surfaces */
 .candidate-app .jobs-page-jobboard .profile-strip,
 .candidate-app .jobs-page-jobboard .empty-state {
     background: #fff !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
 }
 
 /* The sidebar filter panel stays as one rounded surface */
 .candidate-app .jobs-page-jobboard .sidebar {
     background: #fff !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     overflow: hidden;
 }
 
@@ -9968,7 +10433,7 @@ body.candidate-app{
 /* Mobile filter drawer stays as one white panel */
 .candidate-app .jobs-page-jobboard .mobile-filter-drawer {
     background: #fff !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
 }
 
 /* The outer section wrapping everything: no white bg, just spacing */
@@ -10063,7 +10528,7 @@ body.candidate-app{
 /* 3. Page header — white rounded panel, same as other pages */
 .candidate-app .jobs-page-jobboard > .container > .page-board-header {
     background: #fff;
-    border-radius: 16px;
+    border-radius: var(--candidate-section-radius);
     padding: 22px 24px;
     margin-bottom: 18px;
 }
@@ -10097,7 +10562,7 @@ body.candidate-app{
     width: 260px;
     flex-shrink: 0;
     background: #fff !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     border: 1px solid #e8edf3;
     overflow: hidden;
     position: sticky;
@@ -10119,7 +10584,7 @@ body.candidate-app{
 /* 8. Profile strip — white rounded panel */
 .candidate-app .jobs-page-jobboard .profile-strip {
     background: #fff !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     border: 1px solid #e8edf3;
     padding: 16px 20px !important;
     margin: 0 !important;
@@ -10185,7 +10650,7 @@ body.candidate-app{
 .candidate-app .jobs-page-jobboard .job-card,
 .candidate-app .jobs-page-jobboard .recommended-job-card {
     background: #fff !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     border: 1px solid #e8edf3;
     padding: 18px;
     margin: 0 !important;
@@ -10205,7 +10670,7 @@ body.candidate-app{
 /* 16. Mobile filter drawer — white rounded panel */
 .candidate-app .jobs-page-jobboard .mobile-filter-drawer {
     background: #fff !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     border: 1px solid #e8edf3;
     padding: 16px !important;
     margin: 0 !important;
@@ -10223,7 +10688,7 @@ body.candidate-app{
 /* 18. Search feedback banner — white rounded */
 .candidate-app .jobs-page-jobboard .jobs-search-feedback {
     background: #fff !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     border: 1px solid #e8edf3;
     padding: 16px 20px;
 }
@@ -10231,7 +10696,7 @@ body.candidate-app{
 /* 19. Empty state — white rounded */
 .candidate-app .jobs-page-jobboard .empty-state {
     background: #fff !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     border: 1px solid #e8edf3;
     padding: 48px 24px;
     text-align: center;
@@ -10281,7 +10746,7 @@ body.candidate-app{
 /* 2. Page header panel: white rounded, consistent with other pages */
 .candidate-app .jobs-page-jobboard > .container > .page-board-header {
     background: #fff !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     border: 1px solid #e8edf3 !important;
     box-shadow: none !important;
     padding: 22px 24px !important;
@@ -10328,7 +10793,7 @@ body.candidate-app{
 .candidate-app .jobs-page-jobboard .sidebar {
     background: #fff !important;
     border: 1px solid #e8edf3 !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     box-shadow: none !important;
     overflow: hidden !important;
     position: sticky !important;
@@ -10356,7 +10821,7 @@ body.candidate-app{
 .candidate-app .jobs-page-jobboard .job-card {
     background: #fff !important;
     border: 1px solid #e8edf3 !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
     padding: 18px !important;
     margin: 0 !important;
@@ -10431,7 +10896,7 @@ body.candidate-app{
 .candidate-app .jobs-page-jobboard .profile-strip {
     background: #fff !important;
     border: 1px solid #e8edf3 !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
     padding: 16px 20px !important;
     margin: 0 !important;
@@ -10441,7 +10906,7 @@ body.candidate-app{
 .candidate-app .jobs-page-jobboard .empty-state {
     background: #fff !important;
     border: 1px solid #e8edf3 !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
 }
 
@@ -10449,7 +10914,7 @@ body.candidate-app{
 .candidate-app .jobs-page-jobboard .mobile-filter-drawer {
     background: #fff !important;
     border: 1px solid #e8edf3 !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     box-shadow: none !important;
     padding: 16px !important;
     margin: 0 !important;
@@ -10459,7 +10924,7 @@ body.candidate-app{
 .candidate-app .jobs-page-jobboard .jobs-search-feedback {
     background: #fff !important;
     border: 1px solid #e8edf3 !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
     padding: 16px 20px !important;
     margin: 0 !important;
@@ -10845,7 +11310,7 @@ body.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-tools-tog
     width: 100% !important;
     margin: 0 !important;
     box-sizing: border-box !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     padding: 16px 20px !important;
 }
 
@@ -10875,7 +11340,7 @@ body.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-tools-tog
 .candidate-app .page-board-header {
     padding: 20px 22px !important;
     margin: 0 0 var(--cand-pad) 0 !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     background: #fff !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -10884,7 +11349,7 @@ body.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-tools-tog
 /* Dashboard sections: consistent padding matching workbar */
 .candidate-app .dashboard-section > .container-fluid {
     padding: 20px 22px !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     background: #fff !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -10947,7 +11412,7 @@ body.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-tools-tog
     margin: 16px 0 0 0 !important;
     padding: 14px 20px !important;
     box-sizing: border-box !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     flex-shrink: 0 !important;
     /* right gutter to match main's right padding */
     padding-right: 20px !important;
@@ -11112,7 +11577,7 @@ body.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-tools-tog
 .career-transition-jobboard .page-board-header {
     padding: 20px 22px !important;
     margin: 0 0 var(--cand-pad) 0 !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     background: #fff !important;
 }
 
@@ -11303,7 +11768,7 @@ body.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-tools-tog
 
 .candidate-app .jobs-page-jobboard > .container > .page-board-header {
     border: 1px solid var(--candidate-line, #e8edf3) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     box-shadow: none !important;
     padding: 22px 24px !important;
 }
@@ -11344,7 +11809,7 @@ body.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-tools-tog
 .candidate-app .jobs-page-jobboard .jobs-search-feedback {
     background: #fff !important;
     border: 1px solid var(--candidate-line, #e8edf3) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
 }
 
@@ -11365,7 +11830,7 @@ body.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-tools-tog
 
 .candidate-app .jobs-page-jobboard .recommended-job-card {
     border: 1px solid var(--candidate-line, #e8edf3) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
     padding: 18px !important;
     overflow: visible !important;
@@ -11398,15 +11863,44 @@ body.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-tools-tog
     padding: 5px 9px !important;
 }
 
+.candidate-app .jobs-page-jobboard .progress-track,
+.candidate-app .saved-jobs-jobboard .progress-track,
 .candidate-app .jobs-page-jobboard .recommended-job-card .progress-track {
+    display: block !important;
+    flex: 1 1 auto !important;
     height: 7px !important;
+    min-width: 120px !important;
     border-radius: 999px !important;
-    background: #edf2f7 !important;
+    background: var(--candidate-accent-soft, #EDF8F5) !important;
+    overflow: hidden !important;
+}
+
+.candidate-app .jobs-page-jobboard .progress-track .progress-bar-custom,
+.candidate-app .jobs-page-jobboard .progress-track .candidate-progress-fill,
+.candidate-app .saved-jobs-jobboard .progress-track .progress-bar-custom,
+.candidate-app .saved-jobs-jobboard .progress-track .candidate-progress-fill,
+.candidate-app .jobs-page-jobboard .recommended-job-card .progress-bar-custom,
+.candidate-app .jobs-page-jobboard .recommended-job-card .candidate-progress-fill {
+    background: var(--primary, #1FB7B5) !important;
+    background-image: none !important;
+    display: block !important;
+    height: 100% !important;
+    width: var(--candidate-progress, 0%) !important;
+}
+
+.candidate-app .jobs-page-jobboard .progress-track .progress-bar-custom::after,
+.candidate-app .jobs-page-jobboard .progress-track .candidate-progress-fill::after,
+.candidate-app .saved-jobs-jobboard .progress-track .progress-bar-custom::after,
+.candidate-app .saved-jobs-jobboard .progress-track .candidate-progress-fill::after,
+.candidate-app .jobs-page-jobboard .recommended-job-card .progress-bar-custom::after,
+.candidate-app .jobs-page-jobboard .recommended-job-card .candidate-progress-fill::after {
+    content: none !important;
+    display: none !important;
 }
 
 .candidate-app .jobs-page-jobboard .recommended-job-card .progress-label,
 .candidate-app .jobs-page-jobboard .recommended-job-card .view-details {
-    color: var(--candidate-accent-dark, #15803d) !important;
+    color: var(--candidate-accent-strong, var(--primary-dark, #0D8A90)) !important;
 }
 
 .candidate-app .jobs-page-jobboard .recommended-job-card .job-card-tools-wrapper {
@@ -12307,8 +12801,8 @@ body.candidate-app .jobs-page-jobboard #tab-recommended .tab-pill {
     min-height: 38px !important;
     padding: 7px 12px !important;
     border-radius: 999px !important;
-    border: 1px solid rgba(31, 183, 181, 0.28) !important;
-    background: #ffffff !important;
+    border: 1px solid var(--candidate-line, var(--border, #D9ECE5)) !important;
+    background: var(--candidate-surface, var(--card, #ffffff)) !important;
     color: var(--candidate-ink, #16212B) !important;
     font-size: 0.86rem !important;
     font-weight: 700 !important;
@@ -12319,15 +12813,15 @@ body.candidate-app .jobs-page-jobboard #tab-recommended .tab-pill {
 body.candidate-app .jobs-page-jobboard #tab-recommended .tab-pill:hover,
 body.candidate-app .jobs-page-jobboard #tab-recommended .tab-pill:focus {
     background: var(--candidate-accent-soft, #EDF8F5) !important;
-    border-color: rgba(31, 183, 181, 0.44) !important;
-    color: var(--primary-dark, #0D8A90) !important;
+    border-color: var(--candidate-accent, var(--primary, #1FB7B5)) !important;
+    color: var(--candidate-accent-strong, var(--primary-dark, #0D8A90)) !important;
     transform: none !important;
 }
 
 body.candidate-app .jobs-page-jobboard #tab-recommended .tab-pill.active {
-    background: var(--primary, #1FB7B5) !important;
-    border-color: var(--primary, #1FB7B5) !important;
-    color: #ffffff !important;
+    background: var(--candidate-accent-soft, #E8F8F7) !important;
+    border-color: var(--candidate-accent, var(--primary, #1FB7B5)) !important;
+    color: var(--candidate-accent-strong, var(--primary-dark, #0D8A90)) !important;
 }
 
 body.candidate-app .jobs-page-jobboard #tab-recommended .tab-pill .pill-count {
@@ -12335,15 +12829,15 @@ body.candidate-app .jobs-page-jobboard #tab-recommended .tab-pill .pill-count {
     height: 24px !important;
     padding: 0 8px !important;
     background: var(--candidate-accent-soft, #EDF8F5) !important;
-    border: 1px solid rgba(31, 183, 181, 0.24) !important;
-    color: var(--primary-dark, #0D8A90) !important;
+    border: 1px solid var(--candidate-line, var(--border, #D9ECE5)) !important;
+    color: var(--candidate-accent-strong, var(--primary-dark, #0D8A90)) !important;
     font-size: 0.76rem !important;
 }
 
 body.candidate-app .jobs-page-jobboard #tab-recommended .tab-pill.active .pill-count {
-    background: #ffffff !important;
-    border-color: rgba(255, 255, 255, 0.68) !important;
-    color: var(--primary-dark, #0D8A90) !important;
+    background: var(--candidate-surface, var(--card, #ffffff)) !important;
+    border-color: var(--candidate-accent, var(--primary, #1FB7B5)) !important;
+    color: var(--candidate-accent-strong, var(--primary-dark, #0D8A90)) !important;
 }
 
 body.dark.candidate-app .jobs-page-jobboard #tab-recommended .profile-strip,
@@ -12356,12 +12850,21 @@ body.dark.candidate-app .jobs-page-jobboard #tab-recommended .interest-chip {
 
 body.dark.candidate-app .jobs-page-jobboard #tab-recommended .tab-pill:hover,
 body.dark.candidate-app .jobs-page-jobboard #tab-recommended .tab-pill:focus {
-    background: rgba(31, 183, 181, 0.10) !important;
+    background: var(--candidate-accent-soft, #21262d) !important;
+    border-color: var(--candidate-accent, #1FB7B5) !important;
+    color: var(--candidate-accent, #1FB7B5) !important;
 }
 
 body.dark.candidate-app .jobs-page-jobboard #tab-recommended .tab-pill.active {
-    background: var(--primary, #1FB7B5) !important;
-    border-color: var(--primary, #1FB7B5) !important;
+    background: var(--candidate-accent-soft, #21262d) !important;
+    border-color: var(--candidate-accent, #1FB7B5) !important;
+    color: var(--candidate-accent, #1FB7B5) !important;
+}
+
+body.dark.candidate-app .jobs-page-jobboard #tab-recommended .tab-pill.active .pill-count {
+    background: var(--candidate-surface, #161b22) !important;
+    border-color: var(--candidate-accent, #1FB7B5) !important;
+    color: var(--candidate-accent, #1FB7B5) !important;
 }
 
 @media (max-width: 767.98px) {
@@ -12391,10 +12894,6 @@ body.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-icon {
     background: var(--candidate-accent-soft, #EDF8F5) !important;
     border-color: rgba(31, 183, 181, 0.22) !important;
     color: var(--primary-dark, #0D8A90) !important;
-}
-
-body.candidate-app .jobs-page-jobboard .recommended-job-card .progress-track {
-    background: var(--candidate-accent-soft, #EDF8F5) !important;
 }
 
 body.dark.candidate-app .jobs-page-jobboard .page-board-header,
@@ -12583,7 +13082,7 @@ body.candidate-app .history-info-box,
 body.candidate-app .history-empty-state {
     background: var(--candidate-surface, var(--card, #ffffff)) !important;
     border: 1px solid var(--candidate-line, var(--border, #D9ECE5)) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
 }
 
@@ -13043,7 +13542,7 @@ body.candidate-app .page-board-header {
     padding: 24px 28px !important;
     margin: 0 0 18px !important;
     border: 1px solid var(--candidate-line, var(--border, #D9ECE5)) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     background: var(--candidate-surface, var(--card, #ffffff)) !important;
     box-shadow: none !important;
     box-sizing: border-box !important;
@@ -13365,7 +13864,7 @@ body.candidate-app .applications-jobboard .application-status-summary,
 body.candidate-app .applications-empty-state {
     background: var(--candidate-surface, var(--card, #ffffff)) !important;
     border: 1px solid var(--candidate-line, var(--border, #D9ECE5)) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
 }
 
@@ -13642,7 +14141,7 @@ body.candidate-app .notifications-jobboard .notification-empty-state {
     overflow: hidden !important;
     background: var(--candidate-surface, var(--card, #ffffff)) !important;
     border: 1px solid var(--candidate-line, var(--border, #D9ECE5)) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
 }
 
@@ -13939,7 +14438,8 @@ body.dark.candidate-app .career-transition-jobboard .premium-plan-card {
 }
 
 /* Premium Plans: candidate-theme consistency pass. */
-body.candidate-app .premium-plans-jobboard {
+body.candidate-app .premium-plans-jobboard,
+body.candidate-app .payment-history-jobboard {
     background: var(--candidate-bg, #F4F7FB) !important;
 }
 
@@ -13956,12 +14456,52 @@ body.candidate-app .premium-plans-jobboard .container-fluid {
     padding-right: var(--candidate-page-gutter, 16px) !important;
 }
 
-body.candidate-app .premium-plans-jobboard .page-board-header {
+body.candidate-app .payment-history-jobboard .container-fluid {
+    max-width: none !important;
+    padding-left: var(--candidate-page-gutter, 16px) !important;
+    padding-right: var(--candidate-page-gutter, 16px) !important;
+}
+
+body.candidate-app .premium-plans-jobboard .page-board-header,
+body.candidate-app .payment-history-jobboard .page-board-header {
     border: 1px solid var(--candidate-border, #D7E4EF) !important;
-    border-radius: 12px !important;
+    border-radius: var(--candidate-section-radius) !important;
     box-shadow: none !important;
     margin-bottom: 16px !important;
     padding: 20px 22px !important;
+}
+
+body.candidate-app .payment-history-jobboard .payment-history-card,
+body.candidate-app .payment-history-jobboard .payment-history-empty {
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 1px solid var(--candidate-border, #D7E4EF) !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .payment-history-jobboard .payment-history-table {
+    color: var(--candidate-ink, #0F172A) !important;
+}
+
+body.candidate-app .payment-history-jobboard .payment-history-table thead th {
+    background: var(--candidate-accent-soft, #EDF8F5) !important;
+    border-bottom: 1px solid var(--candidate-border, #D7E4EF) !important;
+    color: var(--candidate-muted, #64748B) !important;
+}
+
+body.candidate-app .payment-history-jobboard .payment-history-table td,
+body.candidate-app .payment-history-jobboard .payment-history-table th {
+    border-color: var(--candidate-border, #D7E4EF) !important;
+    vertical-align: middle !important;
+}
+
+body.candidate-app .payment-history-jobboard .payment-history-table tbody tr:hover {
+    background: var(--candidate-accent-soft, #EDF8F5) !important;
+}
+
+body.candidate-app .payment-history-jobboard .payment-history-table .text-muted,
+body.candidate-app .payment-history-jobboard .payment-history-empty .text-muted {
+    color: var(--candidate-muted, #64748B) !important;
 }
 
 body.candidate-app .premium-plans-jobboard .alert {
@@ -14089,9 +14629,37 @@ body.candidate-app .premium-plans-jobboard .btn.btn-outline-primary:focus {
 
 body.dark.candidate-app .premium-plans-jobboard .premium-service-card,
 body.dark.candidate-app .premium-plans-jobboard .premium-plan-card,
-body.dark.candidate-app .premium-plans-jobboard .page-board-header {
+body.dark.candidate-app .premium-plans-jobboard .page-board-header,
+body.dark.candidate-app .payment-history-jobboard .page-board-header,
+body.dark.candidate-app .payment-history-jobboard .payment-history-card,
+body.dark.candidate-app .payment-history-jobboard .payment-history-empty {
     background: var(--candidate-surface, #142427) !important;
     border-color: var(--candidate-line, #2E4A50) !important;
+}
+
+body.dark.candidate-app .payment-history-jobboard .payment-history-table {
+    background: var(--candidate-surface, #142427) !important;
+    color: var(--candidate-ink, #F8FAFC) !important;
+}
+
+body.dark.candidate-app .payment-history-jobboard .payment-history-table thead th {
+    background: var(--muted, #1B2A2F) !important;
+    border-color: var(--candidate-line, #2E4A50) !important;
+    color: var(--candidate-muted, #A9B8C5) !important;
+}
+
+body.dark.candidate-app .payment-history-jobboard .payment-history-table td,
+body.dark.candidate-app .payment-history-jobboard .payment-history-table th {
+    border-color: var(--candidate-line, #2E4A50) !important;
+}
+
+body.dark.candidate-app .payment-history-jobboard .payment-history-table tbody tr:hover {
+    background: var(--muted, #1B2A2F) !important;
+}
+
+body.dark.candidate-app .payment-history-jobboard .payment-history-table .text-muted,
+body.dark.candidate-app .payment-history-jobboard .payment-history-empty .text-muted {
+    color: var(--candidate-muted, #A9B8C5) !important;
 }
 
 body.dark.candidate-app .premium-plans-jobboard .premium-service-ribbon,
@@ -14254,7 +14822,7 @@ body.candidate-app .saved-jobs-jobboard .saved-job-card,
 body.candidate-app .saved-jobs-jobboard .empty-state {
     background: var(--candidate-surface, var(--card, #ffffff)) !important;
     border: 1px solid var(--candidate-line, var(--border, #D9ECE5)) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
 }
 
@@ -14456,7 +15024,7 @@ body.dark.candidate-app .saved-jobs-jobboard .badge {
 body.candidate-app .dashboard-jobboard .dashboard-cta-banner {
     background: var(--candidate-surface, var(--card, #ffffff)) !important;
     border: 1px solid var(--candidate-line, var(--border, #D9ECE5)) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
     overflow: hidden !important;
 }
@@ -14624,7 +15192,7 @@ body.candidate-app .course-modules-jobboard .course-module-card,
 body.candidate-app .course-modules-jobboard .alert-info {
     background: var(--candidate-surface, var(--card, #ffffff)) !important;
     border: 1px solid var(--candidate-line, var(--border, #D9ECE5)) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
 }
 
@@ -14878,7 +15446,7 @@ body.candidate-app .course-content-jobboard .course-lesson-card,
 body.candidate-app .course-content-jobboard .alert-warning {
     background: var(--candidate-surface, var(--card, #ffffff)) !important;
     border: 1px solid var(--candidate-line, var(--border, #D9ECE5)) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
 }
 
@@ -15182,7 +15750,7 @@ body.candidate-app .jobs-page-jobboard .site-section > .container {
 body.candidate-app .jobs-page-jobboard .page-board-header {
     background: var(--candidate-surface, #fff) !important;
     border: 1px solid var(--candidate-line, #D9ECE5) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-section-radius) !important;
     box-shadow: none !important;
     margin: 0 0 18px !important;
     padding: 18px 20px !important;
@@ -15208,14 +15776,20 @@ body.candidate-app .jobs-page-jobboard .jobs-layout:not(.jobs-layout-no-sidebar)
     align-items: start !important;
 }
 
-body.candidate-app .jobs-page-jobboard .sidebar,
 body.candidate-app .jobs-page-jobboard .jobs-search-feedback,
 body.candidate-app .jobs-page-jobboard #tab-all .results-bar,
 body.candidate-app .jobs-page-jobboard #tab-all .job-card,
 body.candidate-app .jobs-page-jobboard .pagination-wrap {
     background: var(--candidate-surface, #fff) !important;
     border: 1px solid var(--candidate-line, #D9ECE5) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .jobs-page-jobboard .sidebar {
+    background: var(--candidate-surface, #fff) !important;
+    border: 1px solid var(--candidate-line, #D9ECE5) !important;
+    border-radius: var(--candidate-section-radius) !important;
     box-shadow: none !important;
 }
 
@@ -15823,7 +16397,7 @@ body.candidate-app .jobs-page-jobboard .jobs-results-summary {
     padding: 16px 18px !important;
     background: var(--candidate-surface, #fff) !important;
     border: 1px solid var(--candidate-line, #D9ECE5) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
     box-sizing: border-box !important;
 }
@@ -16195,7 +16769,7 @@ body.dark.candidate-app .settings-content,
 body.dark.candidate-app .settings-card,
 body.dark.candidate-app .settings-nav-link,
 body.dark.candidate-app .applications-sidebar,
-body.dark.candidate-app .application-detail-panel,
+/* body.dark.candidate-app .application-detail-panel, */
 body.dark.candidate-app .application-detail-card,
 body.dark.candidate-app .notification-card,
 body.dark.candidate-app .saved-job-card,
@@ -16316,7 +16890,7 @@ body.dark.candidate-app .dashboard-jobboard .dashboard-jobs-grid .job-card.dashb
 body.dark.candidate-app .dashboard-jobboard .dashboard-tile-grid .top-company-card,
 body.dark.candidate-app .dashboard-jobboard .top-companies-grid .top-company-card,
 body.dark.candidate-app .dashboard-jobboard .top-company-card {
-    background: var(--candidate-surface-soft) !important;
+    /* background: var(--candidate-surface-soft) !important; */
     border: 1px solid var(--candidate-line) !important;
     color: var(--candidate-ink) !important;
     box-shadow: none !important;
@@ -16363,6 +16937,51 @@ body.dark.candidate-app .dashboard-jobboard .view-details,
 body.dark.candidate-app .dashboard-jobboard .btn-ghost,
 body.dark.candidate-app .dashboard-jobboard .text-primary {
     color: var(--primary-dark) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table-responsive,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table {
+    background: var(--candidate-surface) !important;
+    color: var(--candidate-ink) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table thead,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table thead tr,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table thead th {
+    background: var(--candidate-surface-soft) !important;
+    background-color: var(--candidate-surface-soft) !important;
+    border-color: var(--candidate-line) !important;
+    color: var(--candidate-muted) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table tbody tr,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table tbody td,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table > :not(caption) > * > * {
+    background: transparent !important;
+    background-color: transparent !important;
+    border-color: var(--candidate-line) !important;
+    color: var(--candidate-muted) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table tbody td strong {
+    color: var(--candidate-ink) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .table tbody tr:hover {
+    background: rgba(31, 183, 181, 0.08) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .dashboard-table-icon-link {
+    background: rgba(31, 183, 181, 0.08) !important;
+    border-color: rgba(31, 183, 181, 0.36) !important;
+    color: var(--primary, #1FB7B5) !important;
+}
+
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .dashboard-table-icon-link:hover,
+body.dark.candidate-app .dashboard-jobboard .dashboard-table-wrap .dashboard-table-icon-link:focus {
+    background: rgba(31, 183, 181, 0.16) !important;
+    border-color: var(--primary, #1FB7B5) !important;
 }
 
 body.dark.candidate-app .candidate-workbar {
@@ -16416,23 +17035,18 @@ body.dark.candidate-app [class*="-jobboard"] .container-fluid {
 
 body.dark.candidate-app .page-board-header,
 body.dark.candidate-app [class*="-hero-card"],
-body.dark.candidate-app [class*="-summary"],
 body.dark.candidate-app [class*="-overview"],
-body.dark.candidate-app [class*="-shell"],
-body.dark.candidate-app [class*="-layout"],
-body.dark.candidate-app [class*="-main"],
-body.dark.candidate-app [class*="-side"],
 body.dark.candidate-app [class*="-sidebar"],
 body.dark.candidate-app [class*="-panel"],
-body.dark.candidate-app [class*="-card"],
+/* body.dark.candidate-app [class*="-card"], */
 body.dark.candidate-app [class*="-banner"],
 body.dark.candidate-app [class*="-box"],
-body.dark.candidate-app [class*="-item"],
+/* body.dark.candidate-app [class*="-item"], */
 body.dark.candidate-app [class*="-option"],
 body.dark.candidate-app [class*="-preview"],
 body.dark.candidate-app [class*="-step"],
 body.dark.candidate-app [class*="-task"],
-body.dark.candidate-app [class*="-row"],
+/* body.dark.candidate-app [class*="-row"], */
 body.dark.candidate-app [class*="-strip"],
 body.dark.candidate-app .list-group-item,
 body.dark.candidate-app .card,
@@ -16465,7 +17079,7 @@ body.dark.candidate-app .profile-jobboard .profile-section,
 body.dark.candidate-app .job-details-jobboard .job-detail-card,
 body.dark.candidate-app .course-modules-jobboard .course-module-card,
 body.dark.candidate-app .course-content-jobboard .course-lesson-card {
-    background-color: var(--candidate-surface) !important;
+    /* background-color: var(--candidate-surface) !important; */
     background-image: none !important;
     border-color: var(--candidate-line) !important;
     color: var(--candidate-ink) !important;
@@ -16478,12 +17092,12 @@ body.dark.candidate-app .career-transition-jobboard .career-transition-note,
 body.dark.candidate-app .resume-studio-jobboard .generation-mode-card,
 body.dark.candidate-app .resume-studio-jobboard .template-card,
 body.dark.candidate-app .resume-studio-jobboard .template-preview,
-body.dark.candidate-app .dashboard-jobboard .dashboard-jobs-grid .job-card.dashboard-card,
+/* body.dark.candidate-app .dashboard-jobboard .dashboard-jobs-grid .job-card.dashboard-card, */
 body.dark.candidate-app .dashboard-jobboard .dashboard-tile-grid .top-company-card,
 body.dark.candidate-app .jobs-page-jobboard .job-card,
 body.dark.candidate-app .jobs-page-jobboard .recommended-job-card,
 body.dark.candidate-app .applications-jobboard .application-list-item,
-body.dark.candidate-app .applications-jobboard .application-section-card,
+/* body.dark.candidate-app .applications-jobboard .application-section-card, */
 body.dark.candidate-app .settings-jobboard .settings-nav-link,
 body.dark.candidate-app .settings-jobboard .settings-card {
     background-color: var(--candidate-surface-soft) !important;
@@ -16556,7 +17170,7 @@ body.dark.candidate-app .view-details {
 
 body.dark.candidate-app .badge,
 body.dark.candidate-app [class*="-badge"],
-body.dark.candidate-app [class*="-chip"],
+/* body.dark.candidate-app [class*="-chip"], */
 body.dark.candidate-app [class*="-pill"],
 body.dark.candidate-app .strategy-step-number,
 body.dark.candidate-app .strategy-plan-state,
@@ -20415,6 +21029,344 @@ body.dark.candidate-app .course-service-jobboard .course-lesson-card {
     /* border-color: var(--candidate-line, #2E4A50) !important; */
 }
 
+body.dark.candidate-app .resume-studio-jobboard .resume-version-fade {
+    background: linear-gradient(180deg, rgba(22, 27, 34, 0), #161b22) !important;
+}
+
+/* Candidate blog detail: align with the shared candidate page shell. */
+body.candidate-app .blog-detail-jobboard {
+    background: transparent !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-detail-content-canvas {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-detail-content-canvas > .container-fluid {
+    display: grid !important;
+    gap: 18px !important;
+    max-width: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-detail-header {
+    align-items: center !important;
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 0 !important;
+    border-radius: var(--candidate-section-radius, 30px) !important;
+    box-shadow: none !important;
+    display: flex !important;
+    gap: 18px !important;
+    justify-content: space-between !important;
+    margin: 0 !important;
+    min-height: 140px !important;
+    padding: 24px 28px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .page-board-copy {
+    margin: 0 !important;
+    max-width: 920px !important;
+    min-width: 0 !important;
+}
+
+body.candidate-app .blog-detail-jobboard .page-board-title {
+    font-size: clamp(1.8rem, 2.2vw, 2.6rem) !important;
+    line-height: 1.15 !important;
+    margin: 8px 0 10px !important;
+    max-width: 880px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .page-board-subtitle {
+    max-width: 760px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-back-link {
+    align-items: center !important;
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    display: inline-flex !important;
+    font-size: .88rem !important;
+    font-weight: 800 !important;
+    gap: 8px !important;
+    margin: 0 0 14px !important;
+    text-decoration: none !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-back-link:hover,
+body.candidate-app .blog-detail-jobboard .blog-back-link:focus {
+    color: var(--candidate-accent, #1FB7B5) !important;
+    text-decoration: none !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-meta-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin: 16px 0 0 !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-meta-row span {
+    align-items: center !important;
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: 999px !important;
+    color: var(--candidate-ink, #142033) !important;
+    display: inline-flex !important;
+    font-size: .82rem !important;
+    font-weight: 800 !important;
+    gap: 7px !important;
+    min-height: 34px !important;
+    padding: 6px 12px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-meta-row i {
+    color: var(--candidate-accent, #1FB7B5) !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-detail-layout {
+    align-items: start !important;
+    display: grid !important;
+    gap: 18px !important;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px) !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-article-card,
+body.candidate-app .blog-detail-jobboard .blog-sidebar-card {
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: var(--candidate-card-radius, 22px) !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-featured-image {
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border-bottom: 1px solid var(--candidate-line, #dfe6ee) !important;
+    height: auto !important;
+    margin: 0 !important;
+    max-height: 360px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-featured-image img {
+    display: block !important;
+    height: 100% !important;
+    max-height: 360px !important;
+    object-fit: cover !important;
+    width: 100% !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-article-body {
+    color: var(--candidate-muted, #647184) !important;
+    font-size: 1rem !important;
+    line-height: 1.75 !important;
+    padding: 24px 28px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-article-body h1,
+body.candidate-app .blog-detail-jobboard .blog-article-body h2,
+body.candidate-app .blog-detail-jobboard .blog-article-body h3,
+body.candidate-app .blog-detail-jobboard .blog-article-body h4 {
+    color: var(--candidate-ink, #142033) !important;
+    font-weight: 800 !important;
+    letter-spacing: 0 !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-article-body a,
+body.candidate-app .blog-detail-jobboard .related-post-item span {
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-detail-sidebar {
+    display: grid !important;
+    gap: 14px !important;
+    position: sticky !important;
+    top: 82px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-sidebar-card {
+    padding: 18px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-sidebar-card h3,
+body.candidate-app .blog-detail-jobboard .blog-sidebar-card h4,
+body.candidate-app .blog-detail-jobboard .blog-sidebar-head {
+    color: var(--candidate-ink, #142033) !important;
+    font-weight: 800 !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-sidebar-card p,
+body.candidate-app .blog-detail-jobboard .related-post-item small {
+    color: var(--candidate-muted, #647184) !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-sidebar-card-icon,
+body.candidate-app .blog-detail-jobboard .blog-hero-panel-icon {
+    align-items: center !important;
+    background: var(--candidate-accent-soft, #E8F7F7) !important;
+    border: 1px solid rgba(31, 183, 181, .22) !important;
+    border-radius: var(--candidate-radius, 8px) !important;
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    display: inline-flex !important;
+    height: 42px !important;
+    justify-content: center !important;
+    margin: 0 0 14px !important;
+    width: 42px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .related-post-list {
+    display: grid !important;
+    gap: 10px !important;
+}
+
+body.candidate-app .blog-detail-jobboard .related-post-item {
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: var(--candidate-inner-radius, 16px) !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    padding: 14px !important;
+    text-decoration: none !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-sidebar-cta {
+    background: var(--candidate-surface, #ffffff) !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-secondary-action {
+    align-items: center !important;
+    background: transparent !important;
+    border: 1.5px solid var(--candidate-accent, #1FB7B5) !important;
+    border-radius: var(--candidate-radius, 8px) !important;
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    display: inline-flex !important;
+    font-weight: 800 !important;
+    gap: 8px !important;
+    min-height: 40px !important;
+    padding: 8px 14px !important;
+    text-decoration: none !important;
+}
+
+body.candidate-app .blog-detail-jobboard .blog-secondary-action:hover,
+body.candidate-app .blog-detail-jobboard .blog-secondary-action:focus {
+    background: var(--candidate-accent, #1FB7B5) !important;
+    color: #ffffff !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-detail-header,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-card,
+body.dark.candidate-app .blog-detail-jobboard .blog-sidebar-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-meta-row span,
+body.dark.candidate-app .blog-detail-jobboard .related-post-item,
+body.dark.candidate-app .blog-detail-jobboard .blog-featured-image {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body,
+body.dark.candidate-app .blog-detail-jobboard .blog-sidebar-card p,
+body.dark.candidate-app .blog-detail-jobboard .related-post-item small {
+    color: #8b949e !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body > div,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body > section,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body > article,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body [style*="background"],
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body [style*="background-color"] {
+    background: #161b22 !important;
+    background-color: #161b22 !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body p,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body li,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body span,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body strong,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body b {
+    color: #8b949e !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body strong,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body b {
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body hr,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body table,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body th,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body td {
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body blockquote,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body pre,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body code {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body h1,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body h2,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body h3,
+body.dark.candidate-app .blog-detail-jobboard .blog-article-body h4,
+body.dark.candidate-app .blog-detail-jobboard .blog-sidebar-card h3,
+body.dark.candidate-app .blog-detail-jobboard .blog-sidebar-card h4,
+body.dark.candidate-app .blog-detail-jobboard .blog-sidebar-head,
+body.dark.candidate-app .blog-detail-jobboard .blog-meta-row span {
+    color: #e6edf3 !important;
+}
+
+@media (max-width: 991.98px) {
+    body.candidate-app .blog-detail-jobboard .blog-detail-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    body.candidate-app .blog-detail-jobboard .blog-detail-sidebar {
+        position: static !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    body.candidate-app .blog-detail-jobboard .blog-detail-content-canvas > .container-fluid {
+        gap: 14px !important;
+    }
+
+    body.candidate-app .blog-detail-jobboard .blog-detail-header {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        padding: 20px !important;
+    }
+
+    body.candidate-app .blog-detail-jobboard .page-board-actions {
+        justify-content: flex-start !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    body.candidate-app .blog-detail-jobboard .page-board-actions .btn {
+        width: 100% !important;
+    }
+
+    body.candidate-app .blog-detail-jobboard .blog-article-body {
+        padding: 20px !important;
+    }
+}
+
 @media (max-width: 1199.98px) {
     body.candidate-app .premium-mentor-jobboard .career-transition-simple-layout,
     body.candidate-app .resume-studio-jobboard .resume-studio-layout {
@@ -20477,7 +21429,8 @@ body.candidate-app .career-transition-service-jobboard .career-transition-conten
 
 body.dark.candidate-app .career-transition-service-jobboard .service-content-canvas,
 body.dark.candidate-app .career-transition-service-jobboard .career-transition-content {
-    background: var(--candidate-surface, #142427) !important;
+    background: transparent !important;
+    border-radius: 0 !important;
 }
 
 body.candidate-app .career-transition-service-jobboard .service-content-canvas > .container-fluid,
@@ -20487,19 +21440,50 @@ body.dark.candidate-app .career-transition-service-jobboard .service-content-can
     border-radius: 0 !important;
     box-shadow: none !important;
     box-sizing: border-box !important;
+    display: grid !important;
+    gap: 26px !important;
     max-width: none !important;
-    padding: 26px 28px !important;
+    padding: 0 !important;
     width: 100% !important;
 }
 
 body.candidate-app .career-transition-service-jobboard .page-board-header,
 body.dark.candidate-app .career-transition-service-jobboard .page-board-header {
-    background: transparent !important;
+    align-items: center !important;
+    background: var(--candidate-surface, #ffffff) !important;
     border: 0 !important;
-    border-radius: 0 !important;
+    border-radius: 12px !important;
     box-shadow: none !important;
-    margin: 0 0 16px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    gap: 18px !important;
+    justify-content: space-between !important;
+    margin: 0 !important;
+    min-height: 140px !important;
+    padding: 24px 28px !important;
+    width: 100% !important;
+}
+
+body.dark.candidate-app .career-transition-service-jobboard .page-board-header {
+    background: #161b22 !important;
+}
+
+body.candidate-app .career-transition-service-jobboard .page-board-header .page-board-copy,
+body.dark.candidate-app .career-transition-service-jobboard .page-board-header .page-board-copy {
+    margin: 0 !important;
+    max-width: none !important;
+    min-width: 0 !important;
     padding: 0 !important;
+}
+
+body.candidate-app .career-transition-service-jobboard .page-board-actions,
+body.dark.candidate-app .career-transition-service-jobboard .page-board-actions {
+    align-items: center !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    justify-content: flex-end !important;
+    margin-left: auto !important;
 }
 
 body.candidate-app .career-transition-service-jobboard .career-transition-card,
@@ -20515,7 +21499,7 @@ body.candidate-app .career-transition-service-jobboard .career-transition-simple
 @media (max-width: 991.98px) {
     body.candidate-app .career-transition-service-jobboard .service-content-canvas > .container-fluid,
     body.dark.candidate-app .career-transition-service-jobboard .service-content-canvas > .container-fluid {
-        padding: 20px !important;
+        gap: 20px !important;
     }
 }
 
@@ -20527,7 +21511,22 @@ body.candidate-app .career-transition-service-jobboard .career-transition-simple
 
     body.candidate-app .career-transition-service-jobboard .service-content-canvas > .container-fluid,
     body.dark.candidate-app .career-transition-service-jobboard .service-content-canvas > .container-fluid {
-        padding: 14px !important;
+        gap: 14px !important;
+    }
+
+    body.candidate-app .career-transition-service-jobboard .page-board-header,
+    body.dark.candidate-app .career-transition-service-jobboard .page-board-header {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        padding: 20px !important;
+    }
+
+    body.candidate-app .career-transition-service-jobboard .page-board-actions,
+    body.dark.candidate-app .career-transition-service-jobboard .page-board-actions {
+        justify-content: flex-start !important;
+        margin-left: 0 !important;
+        width: 100% !important;
     }
 }
 
@@ -21300,6 +22299,7 @@ body.dark.candidate-app .service-content-canvas,
 body.dark.candidate-app .resume-studio-content-canvas,
 body.dark.candidate-app .course-service-canvas {
     border: 0 !important;
+    border-radius: var(--candidate-section-radius) !important;
 }
 
 /* Candidate page headers are outer boxes too; keep cards/panels below bordered. */
@@ -21308,6 +22308,7 @@ body.candidate-app .job-details-page-header,
 body.dark.candidate-app .page-board-header,
 body.dark.candidate-app .job-details-page-header {
     border: 0 !important;
+    border-radius: var(--candidate-section-radius) !important;
 }
 
 /* Final pass: non-dashboard candidate outer boxes must not show border lines. */
@@ -21324,6 +22325,7 @@ html body.candidate-app main:not(:has(> .dashboard-jobboard)) .service-content-c
 html body.candidate-app main:not(:has(> .dashboard-jobboard)) .resume-studio-content-canvas,
 html body.candidate-app main:not(:has(> .dashboard-jobboard)) .course-service-canvas {
     border: 0 !important;
+    border-radius: var(--candidate-section-radius) !important;
     border-color: transparent !important;
     box-shadow: none !important;
     outline: 0 !important;
@@ -21350,7 +22352,7 @@ body.candidate-app .course-service-jobboard .course-service-canvas .page-board-h
 body.dark.candidate-app .course-service-jobboard .course-service-canvas .page-board-header {
     background: var(--candidate-surface, #ffffff) !important;
     border: 0 !important;
-    border-radius: 12px !important;
+    border-radius: var(--candidate-section-radius) !important;
     box-shadow: none !important;
     margin: 0 !important;
 }
@@ -21865,7 +22867,7 @@ body.dark.candidate-app .resume-studio-jobboard .page-board-header,
 body.dark.candidate-app .premium-plans-jobboard .page-board-header {
     background: var(--candidate-surface, #ffffff) !important;
     border: 0 !important;
-    border-radius: 12px !important;
+    border-radius: var(--candidate-section-radius) !important;
     box-shadow: none !important;
     margin: 0 !important;
 }
@@ -22003,7 +23005,7 @@ body.candidate-app .saved-jobs-jobboard .recommended-job-grid.saved-job-grid {
 
 body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card {
     border: 1px solid var(--candidate-line, #e8edf3) !important;
-    border-radius: 16px !important;
+    border-radius: var(--candidate-card-radius) !important;
     box-shadow: none !important;
     display: flex !important;
     flex-direction: column !important;
@@ -22823,7 +23825,7 @@ body.candidate-app .companies-directory-jobboard .company-directory-card-arrow:f
 
 
 /* =====================================================
-   DARK MODE � GitHub-style black theme for candidate-app
+   DARK MODE � GitHub-style black theme for candidate-app
    Single consolidated block. Keep this at the END of file.
 ===================================================== */
 
@@ -22888,6 +23890,7 @@ body.dark.candidate-app .onboarding-jobboard,
 body.dark.candidate-app .mock-interview-jobboard,
 body.dark.candidate-app .companies-directory-jobboard,
 body.dark.candidate-app .saved-jobs-jobboard,
+body.dark.candidate-app .company-profile-jobboard,
 body.dark.candidate-app .local-company-page { background-color: #0d1117 !important; color: #e6edf3 !important; }
 
 /* 3. Cards / panels */
@@ -23023,6 +24026,402 @@ body.dark.candidate-app .modal-content { background: #161b22 !important; border-
 body.dark.candidate-app .modal-header { background: #21262d !important; border-color: #30363d !important; }
 body.dark.candidate-app .modal-footer { background: #21262d !important; border-color: #30363d !important; }
 
+/* Smart jobs modal/menu dark-mode fixes */
+body.dark.candidate-app #coverLetterModal .modal-content,
+body.dark.candidate-app #atsAnalysisModal .modal-content {
+    background: #161b22 !important;
+    border: 1px solid #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app #coverLetterModal .modal-header,
+body.dark.candidate-app #atsAnalysisModal .modal-header {
+    background: #21262d !important;
+    border-bottom: 1px solid #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app #coverLetterModal .modal-body,
+body.dark.candidate-app #coverLetterModal .modal-body.bg-light,
+body.dark.candidate-app #atsAnalysisModal .modal-body {
+    background: #161b22 !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app #coverLetterModal .modal-footer,
+body.dark.candidate-app #atsAnalysisModal .modal-footer {
+    background: #21262d !important;
+    border-top: 1px solid #30363d !important;
+}
+
+body.dark.candidate-app #coverLetterModal .close,
+body.dark.candidate-app #atsAnalysisModal .close {
+    color: #e6edf3 !important;
+    opacity: .85 !important;
+    text-shadow: none !important;
+}
+
+body.dark.candidate-app #coverLetterModal .text-muted,
+body.dark.candidate-app #atsAnalysisModal .text-muted,
+body.dark.candidate-app #atsAnalysisModal #atsGap {
+    color: #8b949e !important;
+}
+
+body.dark.candidate-app #coverLetterModal #jobTargetDisplay,
+body.dark.candidate-app #atsAnalysisModal h5,
+body.dark.candidate-app #atsAnalysisModal h6,
+body.dark.candidate-app #atsAnalysisModal .font-weight-bold {
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app #coverLetterModal hr {
+    border-top-color: #30363d !important;
+}
+
+body.dark.candidate-app #coverLetterTextArea {
+    background: #0d1117 !important;
+    border: 1px solid #30363d !important;
+    color: #f0f6fc !important;
+    border-radius: 8px !important;
+    padding: 14px 12px !important;
+}
+
+body.dark.candidate-app #coverLetterModal .btn-light,
+body.dark.candidate-app #atsAnalysisModal .btn-secondary {
+    background: #161b22 !important;
+    border: 1px solid #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app #coverLetterModal .btn-light:hover,
+body.dark.candidate-app #coverLetterModal .btn-light:focus,
+body.dark.candidate-app #atsAnalysisModal .btn-secondary:hover,
+body.dark.candidate-app #atsAnalysisModal .btn-secondary:focus {
+    background: #21262d !important;
+    border-color: #1FB7B5 !important;
+    color: #ffffff !important;
+}
+
+body.candidate-app #atsAnalysisModal .btn-primary,
+body.candidate-app #coverLetterModal .btn-primary {
+    background: transparent !important;
+    background-image: none !important;
+    border: 1.5px solid var(--primary, #1FB7B5) !important;
+    color: var(--primary, #1FB7B5) !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app #atsAnalysisModal .btn-primary:hover,
+body.candidate-app #atsAnalysisModal .btn-primary:focus,
+body.candidate-app #coverLetterModal .btn-primary:hover,
+body.candidate-app #coverLetterModal .btn-primary:focus {
+    background: var(--primary, #1FB7B5) !important;
+    border-color: var(--primary, #1FB7B5) !important;
+    color: #ffffff !important;
+}
+
+body.dark.candidate-app #atsAnalysisModal .badge-light {
+    background: #21262d !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .jobs-page-jobboard .job-card-tools-dropdown {
+    background: #161b22 !important;
+    border: 1px solid #30363d !important;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, .32) !important;
+}
+
+body.dark.candidate-app .jobs-page-jobboard .job-card-tools-item {
+    background: transparent !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .jobs-page-jobboard .job-card-tools-item:hover,
+body.dark.candidate-app .jobs-page-jobboard .job-card-tools-item:focus {
+    background: #21262d !important;
+    color: #1FB7B5 !important;
+}
+
+body.dark.candidate-app .jobs-page-jobboard .job-card-tools-item + .job-card-tools-item {
+    border-top: 1px solid #30363d !important;
+}
+
+/* Onboarding: candidate shell alignment and teal form focus. */
+body.candidate-app .onboarding-jobboard {
+    background: transparent !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-content-canvas {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-content-canvas > .container-fluid {
+    display: grid !important;
+    gap: 18px !important;
+    max-width: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.candidate-app .onboarding-jobboard .page-board-header {
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 0 !important;
+    border-radius: var(--candidate-section-radius, 30px) !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 24px 28px !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-wrap {
+    align-items: start !important;
+    display: grid !important;
+    gap: 18px !important;
+    grid-template-columns: minmax(240px, 300px) minmax(0, 1fr) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-side,
+body.candidate-app .onboarding-jobboard .onboarding-content,
+body.candidate-app .onboarding-jobboard .onboarding-card,
+body.candidate-app .onboarding-jobboard .repeatable-item,
+body.candidate-app .onboarding-jobboard .onboarding-summary-card {
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-side,
+body.candidate-app .onboarding-jobboard .onboarding-content {
+    border-radius: var(--candidate-card-radius, 22px) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-side {
+    padding: 22px !important;
+    position: sticky !important;
+    top: 82px !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-content {
+    padding: 28px 30px !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-card,
+body.candidate-app .onboarding-jobboard .repeatable-item,
+body.candidate-app .onboarding-jobboard .onboarding-summary-card {
+    border-radius: var(--candidate-inner-radius, 16px) !important;
+}
+
+body.candidate-app .onboarding-jobboard .candidate-dashed-card,
+body.candidate-app .onboarding-jobboard .onboarding-card.bg-light.border-primary {
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border: 1px solid rgba(31, 183, 181, .32) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-progress-bar {
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-progress-fill {
+    background: var(--candidate-accent, #1FB7B5) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-step-item {
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: var(--candidate-inner-radius, 16px) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-step-item.is-active {
+    background: var(--candidate-accent, #1FB7B5) !important;
+    border-color: var(--candidate-accent, #1FB7B5) !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-step-item.is-done {
+    background: var(--candidate-accent-soft, #E8F7F7) !important;
+    border-color: rgba(31, 183, 181, .28) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-header {
+    border-bottom: 1px solid var(--candidate-line, #dfe6ee) !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 18px !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-header h2,
+body.candidate-app .onboarding-jobboard .repeatable-item-title {
+    color: var(--candidate-ink, #142033) !important;
+}
+
+body.candidate-app .onboarding-jobboard .onboarding-header p {
+    color: var(--candidate-muted, #647184) !important;
+    margin-bottom: 0 !important;
+}
+
+body.candidate-app .onboarding-jobboard label {
+    color: var(--candidate-ink, #142033) !important;
+    font-weight: 700 !important;
+}
+
+body.candidate-app .onboarding-jobboard .form-control,
+body.candidate-app .onboarding-jobboard .custom-file-label {
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: var(--candidate-radius, 8px) !important;
+    color: var(--candidate-ink, #142033) !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .onboarding-jobboard .form-control:focus,
+body.candidate-app .onboarding-jobboard .custom-file-input:focus ~ .custom-file-label,
+body.candidate-app .onboarding-jobboard .custom-file-input:focus-visible ~ .custom-file-label {
+    border-color: var(--candidate-accent, #1FB7B5) !important;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, .15) !important;
+    outline: 0 !important;
+}
+
+body.candidate-app .onboarding-jobboard .form-control.is-invalid,
+body.candidate-app .onboarding-jobboard .form-control:invalid:not(:placeholder-shown),
+body.candidate-app .onboarding-jobboard .was-validated .form-control:invalid {
+    border-color: var(--candidate-danger, #c03636) !important;
+    box-shadow: 0 0 0 3px rgba(192, 54, 54, .12) !important;
+}
+
+body.candidate-app .onboarding-jobboard .invalid-feedback,
+body.candidate-app .onboarding-jobboard .invalid-tooltip,
+body.candidate-app .onboarding-jobboard .validation-error,
+body.candidate-app .onboarding-jobboard .validation-message,
+body.candidate-app .onboarding-jobboard .field-error,
+body.candidate-app .onboarding-jobboard .error,
+body.candidate-app .onboarding-jobboard .help-block,
+body.candidate-app .onboarding-jobboard .form-control.is-invalid + small,
+body.candidate-app .onboarding-jobboard .form-control:invalid:not(:placeholder-shown) + small {
+    color: var(--candidate-danger, #c03636) !important;
+    font-weight: 700 !important;
+}
+
+body.candidate-app .onboarding-jobboard .custom-file-label::after {
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    border-left-color: var(--candidate-line, #dfe6ee) !important;
+    color: var(--candidate-ink, #142033) !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard,
+body.dark.candidate-app .onboarding-jobboard .onboarding-content-canvas {
+    background: transparent !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .page-board-header,
+body.dark.candidate-app .onboarding-jobboard .onboarding-side,
+body.dark.candidate-app .onboarding-jobboard .onboarding-content,
+body.dark.candidate-app .onboarding-jobboard .onboarding-card,
+body.dark.candidate-app .onboarding-jobboard .repeatable-item,
+body.dark.candidate-app .onboarding-jobboard .onboarding-summary-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .candidate-dashed-card,
+body.dark.candidate-app .onboarding-jobboard .onboarding-card.bg-light.border-primary,
+body.dark.candidate-app .onboarding-jobboard .onboarding-step-item,
+body.dark.candidate-app .onboarding-jobboard .onboarding-progress-bar,
+body.dark.candidate-app .onboarding-jobboard .custom-file-label::after {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .onboarding-step-item.is-active {
+    background: #1FB7B5 !important;
+    border-color: #1FB7B5 !important;
+    color: #ffffff !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .onboarding-step-item.is-done {
+    background: #21262d !important;
+    border-color: rgba(31, 183, 181, .32) !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard label,
+body.dark.candidate-app .onboarding-jobboard .onboarding-header h2,
+body.dark.candidate-app .onboarding-jobboard .repeatable-item-title {
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .onboarding-header {
+    border-bottom-color: #30363d !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .form-control,
+body.dark.candidate-app .onboarding-jobboard .custom-file-label {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .form-control:focus,
+body.dark.candidate-app .onboarding-jobboard .custom-file-input:focus ~ .custom-file-label,
+body.dark.candidate-app .onboarding-jobboard .custom-file-input:focus-visible ~ .custom-file-label {
+    background: #161b22 !important;
+    border-color: #1FB7B5 !important;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, .16) !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .form-control.is-invalid,
+body.dark.candidate-app .onboarding-jobboard .form-control:invalid:not(:placeholder-shown),
+body.dark.candidate-app .onboarding-jobboard .was-validated .form-control:invalid {
+    border-color: #f87171 !important;
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, .14) !important;
+}
+
+body.dark.candidate-app .onboarding-jobboard .invalid-feedback,
+body.dark.candidate-app .onboarding-jobboard .invalid-tooltip,
+body.dark.candidate-app .onboarding-jobboard .validation-error,
+body.dark.candidate-app .onboarding-jobboard .validation-message,
+body.dark.candidate-app .onboarding-jobboard .field-error,
+body.dark.candidate-app .onboarding-jobboard .error,
+body.dark.candidate-app .onboarding-jobboard .help-block,
+body.dark.candidate-app .onboarding-jobboard .form-control.is-invalid + small,
+body.dark.candidate-app .onboarding-jobboard .form-control:invalid:not(:placeholder-shown) + small {
+    color: #f87171 !important;
+}
+
+@media (max-width: 991.98px) {
+    body.candidate-app .onboarding-jobboard .onboarding-wrap {
+        grid-template-columns: 1fr !important;
+    }
+
+    body.candidate-app .onboarding-jobboard .onboarding-side {
+        position: static !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    body.candidate-app .onboarding-jobboard .onboarding-content-canvas > .container-fluid {
+        gap: 14px !important;
+    }
+
+    body.candidate-app .onboarding-jobboard .page-board-header {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+        padding: 20px !important;
+    }
+
+    body.candidate-app .onboarding-jobboard .onboarding-content {
+        padding: 20px !important;
+    }
+}
+
 /* 20. Buttons */
 body.dark.candidate-app .btn-light:hover,
 body.dark.candidate-app .btn-ghost:hover,
@@ -23036,3 +24435,281 @@ body.dark.candidate-app ::-webkit-scrollbar { width: 8px; height: 8px; }
 body.dark.candidate-app ::-webkit-scrollbar-track { background: #0d1117; }
 body.dark.candidate-app ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
 body.dark.candidate-app ::-webkit-scrollbar-thumb:hover { background: #1FB7B5; }
+body.dark.candidate-app .profile-video-empty {
+    background: var(--candidate-surface-soft) !important;
+}
+
+/* Dark mode: keep candidate page headers framed like Local Hiring Companies. */
+body.dark.candidate-app .page-board-header,
+body.dark.candidate-app .job-details-page-header,
+body.dark.candidate-app .applications-page-header,
+body.dark.candidate-app .local-company-page .page-board-header,
+body.dark.candidate-app .notifications-jobboard .page-board-header,
+body.dark.candidate-app .settings-jobboard .page-board-header,
+body.dark.candidate-app .profile-jobboard .page-board-header,
+body.dark.candidate-app .saved-jobs-jobboard .page-board-header,
+body.dark.candidate-app .companies-directory-jobboard .page-board-header,
+body.dark.candidate-app .resume-studio-jobboard .page-board-header,
+body.dark.candidate-app .premium-plans-jobboard .page-board-header,
+body.dark.candidate-app .premium-mentor-jobboard .page-board-header,
+body.dark.candidate-app .course-modules-jobboard .page-board-header,
+body.dark.candidate-app .course-content-jobboard .page-board-header,
+body.dark.candidate-app .career-history-jobboard .page-board-header,
+body.dark.candidate-app .mock-interview-jobboard .page-board-header,
+body.dark.candidate-app .my-bookings-jobboard .page-board-header,
+body.dark.candidate-app .book-slot-jobboard .page-board-header,
+body.dark.candidate-app .strategy-jobboard .page-board-header,
+body.dark.candidate-app .career-transition-service-jobboard .page-board-header,
+body.dark.candidate-app .course-service-jobboard .page-board-header,
+body.dark.candidate-app .onboarding-jobboard .page-board-header {
+    background: #161b22 !important;
+    background-image: none !important;
+    border: 1px solid #30363d !important;
+    border-radius: 28px !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+}
+
+body.dark.candidate-app .page-board-header .page-board-title,
+body.dark.candidate-app .page-board-header h1,
+body.dark.candidate-app .page-board-header h2,
+body.dark.candidate-app .job-details-page-header h1,
+body.dark.candidate-app .job-details-page-header h2 {
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .page-board-header .page-board-subtitle,
+body.dark.candidate-app .page-board-header p,
+body.dark.candidate-app .job-details-page-header p {
+    color: #8b949e !important;
+}
+
+body.dark.candidate-app .premium-mentor-jobboard .career-transition-simple-layout > .dashboard-panel,
+body.dark.candidate-app .premium-mentor-jobboard .career-transition-simple-layout > div > .dashboard-panel,
+body.dark.candidate-app .premium-mentor-jobboard .dashboard-panel,
+body.dark.candidate-app .premium-mentor-jobboard .career-transition-card {
+    background: #161b22 !important;
+    background-image: none !important;
+    border: 1px solid #30363d !important;
+    border-radius: 20px !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+}
+
+body.dark.candidate-app .premium-mentor-jobboard .panel-header {
+    background: #161b22 !important;
+    border-bottom: 1px solid #30363d !important;
+}
+
+body.dark.candidate-app .premium-mentor-jobboard .panel-body,
+body.dark.candidate-app .premium-mentor-jobboard #chat-messages {
+    background: #1f252d !important;
+    border-color: #30363d !important;
+}
+
+body.dark.candidate-app .premium-mentor-jobboard .chat-bot-msg > div,
+body.dark.candidate-app .premium-mentor-jobboard .chat-user-msg > div {
+    background: #111820 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+/* Applications page: application-detail-panel is layout-only; the card inside is the visible surface. */
+body.candidate-app .applications-jobboard .application-detail-panel,
+body.dark.candidate-app .applications-jobboard .application-detail-panel {
+    align-self: start !important;
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+}
+
+body.candidate-app .applications-jobboard .application-detail-card-plain,
+body.dark.candidate-app .applications-jobboard .application-detail-card-plain {
+    background: var(--candidate-surface, #ffffff) !important;
+    border: 1px solid var(--candidate-line, var(--border, #D9ECE5)) !important;
+    border-radius: 20px !important;
+    box-shadow: none !important;
+    padding: 20px !important;
+}
+
+body.dark.candidate-app .applications-jobboard .application-detail-card-plain {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+}
+
+html body.dark.candidate-app main:not(:has(> .dashboard-jobboard)) .applications-page-header,
+html body.dark.candidate-app main:not(:has(> .dashboard-jobboard)) .applications-jobboard .page-board-header {
+    background: #161b22 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 28px !important;
+    box-shadow: none !important;
+}
+
+/* Payment history: align dark header/table with the newer candidate page style. */
+body.candidate-app .payment-history-jobboard .content-wrap {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+body.candidate-app .payment-history-jobboard .payment-history-card,
+body.dark.candidate-app .payment-history-jobboard .payment-history-card {
+    border-radius: 20px !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+}
+
+body.dark.candidate-app .payment-history-jobboard,
+body.dark.candidate-app .payment-history-jobboard .content-wrap {
+    background: #0d1117 !important;
+}
+
+html body.dark.candidate-app main:not(:has(> .dashboard-jobboard)) .payment-history-jobboard .page-board-header,
+body.dark.candidate-app .payment-history-jobboard .page-board-header {
+    background: #161b22 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 28px !important;
+    box-shadow: none !important;
+}
+
+body.dark.candidate-app .payment-history-jobboard .payment-history-card,
+body.dark.candidate-app .payment-history-jobboard .payment-history-empty {
+    background: #161b22 !important;
+    border: 1px solid #30363d !important;
+}
+
+body.dark.candidate-app .payment-history-jobboard .table-responsive,
+body.dark.candidate-app .payment-history-jobboard .payment-history-table {
+    background: #161b22 !important;
+    border: 0 !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .payment-history-jobboard .payment-history-table thead th {
+    background: #1f252d !important;
+    border-color: #30363d !important;
+    color: #9fb0c0 !important;
+}
+
+body.dark.candidate-app .payment-history-jobboard .payment-history-table td,
+body.dark.candidate-app .payment-history-jobboard .payment-history-table th,
+body.dark.candidate-app .payment-history-jobboard .payment-history-table > :not(caption) > * > * {
+    background: transparent !important;
+    border-color: #30363d !important;
+    color: #9fb0c0 !important;
+}
+
+body.dark.candidate-app .payment-history-jobboard .payment-history-table tbody tr:hover {
+    background: rgba(31, 183, 181, 0.08) !important;
+}
+
+body.dark.candidate-app .payment-history-jobboard .payment-history-table .badge-success {
+    background: rgba(31, 183, 181, 0.12) !important;
+    border: 1px solid rgba(31, 183, 181, 0.30) !important;
+    color: #5eead4 !important;
+}
+
+/* Reschedule interview: remove light form canvas and normalize dark surfaces. */
+body.dark.candidate-app .reschedule-slot-jobboard,
+body.dark.candidate-app .reschedule-slot-jobboard .content-wrap,
+body.dark.candidate-app .reschedule-slot-jobboard .content-wrap > .container {
+    background: #0d1117 !important;
+}
+
+html body.dark.candidate-app main:not(:has(> .dashboard-jobboard)) .reschedule-slot-jobboard .page-board-header,
+body.dark.candidate-app .reschedule-slot-jobboard .page-board-header {
+    background: #161b22 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 28px !important;
+    box-shadow: none !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard .slot-form-card {
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard .current-booking-card,
+body.dark.candidate-app .reschedule-slot-jobboard .slot-day-card,
+body.dark.candidate-app .reschedule-slot-jobboard .reschedule-history-card {
+    background: #161b22 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 20px !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard .slot-day-head,
+body.dark.candidate-app .reschedule-slot-jobboard .slot-day-head.danger {
+    background: #1f252d !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard .slot-day-card .card-body {
+    background: #161b22 !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard .slot-label {
+    background: #1f252d !important;
+    border-color: #30363d !important;
+    color: #9fb0c0 !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard .slot-radio:checked + .slot-label {
+    background: rgba(31, 183, 181, 0.12) !important;
+    border-color: #1FB7B5 !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard .form-group label,
+body.dark.candidate-app .reschedule-slot-jobboard .slot-time {
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard .slot-spots,
+body.dark.candidate-app .reschedule-slot-jobboard .text-muted {
+    color: #9fb0c0 !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard textarea.form-control {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard textarea.form-control::placeholder {
+    color: #9fb0c0 !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard .alert-warning.booking-alert {
+    background: rgba(245, 158, 11, 0.12) !important;
+    border-color: rgba(245, 158, 11, 0.35) !important;
+    color: #fbbf24 !important;
+}
+
+body.dark.candidate-app .reschedule-slot-jobboard .alert-danger.booking-alert {
+    background: rgba(248, 113, 113, 0.12) !important;
+    border-color: rgba(248, 113, 113, 0.35) !important;
+    color: #fca5a5 !important;
+}
+
+body.candidate-app:not(.dark) .page-board-header,
+body.candidate-app:not(.dark) .job-details-page-header,
+body.candidate-app:not(.dark) .applications-page-header,
+body.candidate-app:not(.dark) [class*="-jobboard"] .page-board-header {
+    border: 0 !important;
+}
+
+body.candidate-app:not(.dark) .payment-history-jobboard .page-board-header {
+    border: 0 !important;
+}
+
