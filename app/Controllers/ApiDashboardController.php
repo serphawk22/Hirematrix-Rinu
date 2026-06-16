@@ -348,7 +348,7 @@ class ApiDashboardController extends ResourceController
     {
         $db = \Config\Database::connect();
         $rows = $db->table('jobs')
-            ->select('jobs.company as name, jobs.company_id, COUNT(jobs.id) as job_count, companies.logo, companies.industry, companies.hq')
+            ->select('jobs.company as name, jobs.company_id, COUNT(jobs.id) as job_count, companies.logo, companies.industry, companies.hq, companies.website')
             ->join('companies', 'companies.id = jobs.company_id', 'left')
             ->where('jobs.status', 'open')
             ->groupBy('jobs.company')
