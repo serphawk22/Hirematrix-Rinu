@@ -18,7 +18,7 @@ $probs   = json_encode($_SESSION['coding_problems']);
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Coding Round — NexusAI</title>
+<title>Coding Round - HireMatrix AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="css/style.css"/>
 
@@ -61,7 +61,7 @@ body{overflow:hidden}
 
   <!-- HEADER -->
   <div class="coding-header">
-    <span style="font-size:1.1rem;font-weight:800" class="text-gradient">NexusAI</span>
+    <span style="font-size:1.1rem;font-weight:800" class="text-gradient">HireMatrix AI</span>
     <span style="color:var(--border-sub)">|</span>
     <span style="font-size:.82rem;color:var(--t2)">Coding Round — <?= htmlspecialchars($cand['name']) ?></span>
     <div style="flex:1"></div>

@@ -80,6 +80,8 @@ $routes->post('recruiter/register', 'Auth::saveAdmin');
 $routes->get('recruiter/verification', 'Auth::recruiterVerification');
 $routes->post('recruiter/verify-email-code', 'Auth::submitRecruiterEmailCode');
 $routes->post('recruiter/resend-verification-email', 'Auth::resendRecruiterVerificationEmail');
+$routes->post('recruiter/send-phone-otp', 'Auth::sendRecruiterPhoneOtp');
+$routes->post('recruiter/verify-phone-otp', 'Auth::submitRecruiterPhoneOtp');
 $routes->get('company/(:num)', 'CompanyProfile::show/$1', ['filter' => 'auth']);
 $routes->post('company/(:num)/review', 'CompanyProfile::submitReview/$1', ['filter' => 'candidate']);
 

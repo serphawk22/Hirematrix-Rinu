@@ -43,9 +43,9 @@ if ($candidateId > 0) {
     // Connect to ai_job_portal1 database
   $conn = new mysqli(
     "localhost",
-    "flash_643_rinu",
-    "Y%p:.@bD,4e!",
-    "flash_643_ai_job_portal"
+    "root",
+    "",
+    "ai_job_portal1"
 );
     // Check connection
     if ($conn->connect_error) {
@@ -86,14 +86,15 @@ $experience = $_SESSION['experience'] ?? '';
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>NexusAI — Advanced Interview Platform</title>
+<title>HireMatrix AI Interview</title>
 <meta name="description" content="AI-powered technical interview platform with aptitude, reasoning, and role-specific assessment."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../jobboard/css/fontawesome-all.min.css"/>
 <link rel="stylesheet" href="css/style.css"/>
 
 </head>
-<body style="padding: 110px 20px;">
+<body class="hirematrix-app candidate-app ai-interview-candidate-page">
   <!-- RULES POPUP -->
 <div id="rulesPopup" class="rules-overlay" >
   <div class="rules-box">
@@ -152,14 +153,20 @@ $experience = $_SESSION['experience'] ?? '';
 <canvas id="particleCanvas"></canvas>
 <div id="app">
 <div id="screen-container">
-<div class="reg-screen animate-in">
+<div class="reg-screen ai-interview-jobboard animate-in">
   <div class="reg-wrap">
 
-    <!-- Brand -->
-    <div class="brand-header">
-      <div class="brand-logo">🧠</div>
-      <h1 class="brand-title"><span class="text-gradient">NexusAI</span> Interview</h1>
-      <p class="brand-sub">AI-powered assessment platform. 60 questions across aptitude &amp; technical skills. Medium to advanced level.</p>
+    <div class="brand-header page-board-header page-board-header-tight">
+      <div class="page-board-copy">
+        <span class="page-board-kicker">AI assessment</span>
+        <h1 class="brand-title page-board-title"><span class="text-gradient">HireMatrix</span> AI Interview</h1>
+        <p class="brand-sub page-board-subtitle">AI-powered assessment platform. 60 questions across aptitude & technical skills. Medium to advanced level.
+
+</p>
+      </div>
+      <div class="page-board-actions">
+        <a href="guidelines.php" class="btn btn-secondary btn-sm">Guidelines</a>
+      </div>
     </div> 
     <!-- Form -->
     <div class="glass-card reg-card">
@@ -170,6 +177,7 @@ $experience = $_SESSION['experience'] ?? '';
       <?php endif; ?>
 
       <form action="start.php" method="POST" id="regForm" enctype="multipart/form-data">
+        <input type="hidden" name="mode" value="mcq">
 
         <div class="form-grid2">
           <div class="form-group">
@@ -194,7 +202,8 @@ $experience = $_SESSION['experience'] ?? '';
 
         <div class="form-group">
           <label class="form-label" for="experience">Experience Level</label>
-          <select class="form-select" id="experience" name="experience" required>
+          <input type="hidden" name="experience" value="<?= htmlspecialchars($experience, ENT_QUOTES, 'UTF-8') ?>">
+          <select class="form-select" id="experience" disabled>
             <option value="">— Select Level —</option>
             <option value="fresher" <?= ($experience === 'fresher') ? 'selected' : '' ?>>Fresher (0–1 yr)</option>
             <option value="junior" <?= ($experience === 'junior') ? 'selected' : '' ?>>Junior (1–3 yrs)</option>
@@ -225,15 +234,17 @@ $experience = $_SESSION['experience'] ?? '';
               <div class="mode-meta">Conversational · 20 min · Full Report</div>
             </button>
           </div>
-          <div style="text-align:center; margin-top:20px;">
-  <a href="guidelines.php" style="color:#6366f1; font-weight:500;text-decoration:none;">
-    📘 View Full Interview Guidelines
-  </a>
-</div>
           <div id="pdfUploadRow" style="margin-top:14px;display:none">
             <label class="form-label">📄 Upload Resume PDF <span style="color:var(--t3);font-weight:400">(optional — AI will use it for questions)</span></label>
             <input type="file" name="resume_pdf" id="resumePdf" accept=".pdf" class="form-input" style="padding:10px;cursor:pointer">
           </div>
+        </div>
+
+        <div class="assessment-start-row">
+          <button class="btn btn-primary assessment-start-btn" type="submit">
+            <i class="fas fa-play" aria-hidden="true"></i>
+            Start Assessment
+          </button>
         </div>
 
       </form>
@@ -254,6 +265,14 @@ $experience = $_SESSION['experience'] ?? '';
 
 <script src="js/particles.js"></script>
 <script>
+document.querySelectorAll('.mode-card').forEach(btn => {
+  btn.type = 'button';
+  btn.tabIndex = -1;
+  btn.setAttribute('aria-disabled', 'true');
+  btn.removeAttribute('name');
+  btn.removeAttribute('value');
+});
+
 // Show PDF upload row when AI Interview card is hovered/clicked
 const interviewBtn = document.getElementById('modeInterview');
 const pdfRow = document.getElementById('pdfUploadRow');
@@ -267,7 +286,7 @@ document.querySelectorAll('.mode-card').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.mode-card').forEach(b => b.style.borderColor = '');
     btn.style.borderColor = 'var(--accent)';
-    btn.style.background  = 'rgba(99,102,241,.12)';
+    btn.style.background  = '#f0fdfa';
   });
 });
 </script>

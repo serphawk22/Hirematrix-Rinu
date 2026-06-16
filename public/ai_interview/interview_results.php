@@ -10,7 +10,7 @@ $report = $_SESSION['interview_report'];
 <html lang="en">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Interview Report — NexusAI</title>
+<title>Interview Report - HireMatrix AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="css/style.css"/>
 <style>
@@ -44,6 +44,7 @@ $report = $_SESSION['interview_report'];
 .moment-text{font-size:.85rem;color:var(--t2);line-height:1.5}
 .hiring-notes{font-size:.88rem;color:var(--t2);line-height:1.7;font-style:italic;padding:16px;background:rgba(255,255,255,.02);border-left:3px solid var(--accent);border-radius:0 8px 8px 0}
 </style>
+<link rel="stylesheet" href="css/style.css?v=candidate-ui"/>
 </head>
 <body>
   <?php include 'theme-toggle.php'; ?>

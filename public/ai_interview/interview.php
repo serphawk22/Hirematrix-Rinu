@@ -6,7 +6,7 @@ $cand = $_SESSION['candidate'];
 ?>
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>AI Interview — NexusAI</title>
+<title>AI Interview - HireMatrix AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 
 <link rel="stylesheet" href="css/style.css"/>
@@ -98,13 +98,15 @@ body{overflow:hidden;background:#040810}
 
     background: black;
 }
-</style></head><body>
+</style>
+<link rel="stylesheet" href="css/style.css?v=candidate-ui"/>
+</head><body>
   <?php include 'theme-toggle.php'; ?>
 <canvas id="particleCanvas"></canvas>
 
 <!-- Header -->
 <div class="iv-hdr">
-  <span class="brand">NexusAI</span>
+  <span class="brand">HireMatrix AI</span>
   <span style="color:rgba(255,255,255,.15)">|</span>
   <span style="font-size:.8rem;color:#64748b">AI Interview · <?= htmlspecialchars($cand['name']) ?></span>
   <div style="flex:1"></div>

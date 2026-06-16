@@ -19,8 +19,6 @@ class UserModel extends Model
         'email_verified_at',
         'password_reset_token',
         'password_reset_expires_at',
-        'phone_otp',
-        'phone_otp_expires_at',
         'phone_verified_at',
         'onboarding_completed',
         'onboarding_step',

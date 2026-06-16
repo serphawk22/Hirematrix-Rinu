@@ -242,6 +242,7 @@ details {
     color: #94a3b8;
 }
 </style>
+<link rel="stylesheet" href="css/style.css?v=candidate-ui"/>
 
 </head>
 

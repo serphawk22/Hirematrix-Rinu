@@ -17,9 +17,10 @@ $timeout = Q_TIMEOUT;
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Interview in Progress — NexusAI</title>
+<title>Interview in Progress - HireMatrix AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+<link rel="stylesheet" href="../jobboard/css/fontawesome-all.min.css"/>
 <link rel="stylesheet" href="css/style.css"/>
 
 <style>
@@ -188,7 +189,7 @@ const jobrole = <?= json_encode($_SESSION['position'] ?? '') ?>;
 <script src="js/particles.js"></script>
 <script src="js/timer.js"></script>
 <script src="js/questions.js"></script>
-<script src="js/exam.js?v=3"></script> 
+<script src="js/exam.js?v=5"></script> 
 <script src="js/prevent-back.js"></script> 
 <script src="js/theme.js"></script>
 <script>

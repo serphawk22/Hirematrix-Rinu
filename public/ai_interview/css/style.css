@@ -119,6 +119,36 @@ h3{font-size:1.1rem;font-weight:600}
 .intro-card{max-width:620px;width:100%;padding:48px;text-align:center}
 .round-badge{margin-bottom:24px}
 .intro-icon{font-size:4rem;margin-bottom:20px;display:block}
+.intro-icon {
+  align-items: center !important;
+  background: #e8f7f7 !important;
+  border: 1px solid rgba(31, 183, 181, .28) !important;
+  border-radius: 16px !important;
+  color: #0d8a90 !important;
+  display: inline-flex !important;
+  font-size: 1.9rem !important;
+  height: 72px !important;
+  justify-content: center !important;
+  margin-bottom: 22px !important;
+  width: 72px !important;
+}
+.intro-icon i {
+  color: inherit !important;
+  line-height: 1 !important;
+}
+.round-rules .rule-item i,
+.btn i {
+  color: currentColor !important;
+  flex: 0 0 auto !important;
+}
+.round-rules .rule-item {
+  gap: 8px !important;
+}
+body.dark .intro-icon {
+  background: rgba(31, 183, 181, 0.14) !important;
+  border-color: rgba(120, 227, 221, 0.28) !important;
+  color: #78e3dd !important;
+}
 .intro-title{margin-bottom:14px}
 .intro-sub{color:var(--t2);line-height:1.7;margin-bottom:32px;font-size:.95rem}
 .round-rules{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:36px}
@@ -1250,4 +1280,2181 @@ body.light-theme .option.wrong {
     background: #fde8e8;
     border-color: #ef4444;
     color: #b91c1c;
+}
+
+/* ==========================================================
+   Candidate Page Alignment
+   Keeps the interview engine intact while matching HireMatrix
+   candidate pages: light board, white panels, teal actions.
+========================================================== */
+body,
+body.light {
+  --bg: #f4f7fb;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --border-sub: #eef2f7;
+  --accent: #1FB7B5;
+  --accent-l: #0D8A90;
+  --accent-glow: rgba(31, 183, 181, 0.14);
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --t1: #111827;
+  --t2: #475569;
+  --t3: #7b8794;
+  --grad: linear-gradient(135deg, #1FB7B5, #53B86C);
+  --grad-s: linear-gradient(135deg, #53B86C, #22c55e);
+  --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.06);
+  --shadow-a: 0 10px 24px rgba(31, 183, 181, 0.18);
+  background: #f4f7fb !important;
+  color: #111827 !important;
+}
+
+#particleCanvas {
+  display: none !important;
+}
+
+#app,
+#screen-container {
+  background: #f4f7fb !important;
+}
+
+body[style] {
+  padding: 32px 20px !important;
+}
+
+body {
+  display: block !important;
+}
+
+body.ai-interview-candidate-page {
+  --candidate-page-gutter: 16px;
+  background: #f4f7fb !important;
+  min-height: 100vh;
+  padding: 0 !important;
+}
+
+body.ai-interview-candidate-page #app,
+body.ai-interview-candidate-page #screen-container {
+  min-height: auto !important;
+  display: block !important;
+}
+
+body.dark {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --card: #161b22;
+  --border: #30363d;
+  --border-sub: #21262d;
+  --accent: #1FB7B5;
+  --accent-l: #78e3dd;
+  --accent-glow: rgba(31, 183, 181, 0.22);
+  --t1: #e6edf3;
+  --t2: #8b949e;
+  --t3: #6e7681;
+  background: #0d1117 !important;
+  color: #e6edf3 !important;
+}
+
+body.dark #app,
+body.dark #screen-container,
+body.dark .reg-screen,
+body.dark .intro-screen,
+body.dark .loading-screen,
+body.dark .results-screen,
+body.dark .transition-screen,
+body.dark .report-page,
+body.dark .exam-body,
+body.dark .q-screen,
+body.dark .q-body,
+body.dark .coding-body,
+body.dark .coding-layout,
+body.dark .iv-main {
+  background: #0d1117 !important;
+  color: #e6edf3 !important;
+}
+
+.text-gradient {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: currentColor !important;
+  background-clip: initial !important;
+  color: #111827 !important;
+}
+
+.glass-card,
+.result-card,
+.feedback-card,
+.q-review-card,
+.section-card,
+.score-card,
+.overall-card,
+.container,
+.rules-box {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 18px !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06) !important;
+  backdrop-filter: none !important;
+}
+
+.btn,
+.back-btn,
+.rules-actions button {
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  letter-spacing: 0 !important;
+}
+
+.btn-primary,
+.primary,
+.rules-actions button,
+.back-btn {
+  background: transparent !important;
+  background-image: none !important;
+  border: 1.5px solid #1FB7B5 !important;
+  color: #1FB7B5 !important;
+}
+
+.btn-primary:hover,
+.primary:hover,
+.rules-actions button:hover,
+.back-btn:hover {
+  background: #1FB7B5 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
+.btn-secondary,
+.redo-btn,
+.prob-nav-btn,
+.tc-tab {
+  background: #f8fafc !important;
+  border: 1px solid #e5e7eb !important;
+  color: #334155 !important;
+}
+
+.btn-secondary:hover,
+.redo-btn:hover,
+.prob-nav-btn:hover,
+.tc-tab:hover {
+  background: #eef2f7 !important;
+  color: #111827 !important;
+}
+
+.badge,
+.badge-accent,
+.mode-meta,
+.mock-eyebrow {
+  background: #e6fffb !important;
+  border: 1px solid #b6f3eb !important;
+  color: #0D8A90 !important;
+}
+
+.badge-success {
+  background: #dcfce7 !important;
+  border-color: #bbf7d0 !important;
+  color: #166534 !important;
+}
+
+/* Entry / mode select */
+.reg-screen,
+.intro-screen,
+.loading-screen,
+.results-screen,
+.transition-screen,
+.report-page {
+  background: #f4f7fb !important;
+  padding: 32px 20px !important;
+}
+
+.reg-wrap,
+.results-wrap,
+.report-page {
+  max-width: 1120px !important;
+}
+
+.brand-header {
+  text-align: left !important;
+  margin-bottom: 22px !important;
+}
+
+.brand-logo {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 12px !important;
+  background: #e6fffb !important;
+  box-shadow: none !important;
+  color: #0D8A90 !important;
+  font-size: 1.35rem !important;
+}
+
+.brand-title {
+  font-size: clamp(1.8rem, 3vw, 2.4rem) !important;
+  color: #111827 !important;
+  margin-bottom: 8px !important;
+}
+
+.brand-sub,
+.loading-sub,
+.intro-sub,
+.text-muted,
+p,
+li {
+  color: #64748b !important;
+}
+
+.reg-card {
+  padding: 28px !important;
+}
+
+.form-label {
+  color: #64748b !important;
+  letter-spacing: .02em !important;
+}
+
+.form-input,
+.form-select,
+.form-textarea,
+.lang-select {
+  background: #ffffff !important;
+  border: 1px solid #dbe4ef !important;
+  color: #111827 !important;
+  border-radius: 10px !important;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus,
+.lang-select:focus {
+  border-color: #1FB7B5 !important;
+  box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.12) !important;
+}
+
+.form-textarea,
+.code-block,
+.drag-code,
+.line-code,
+.tc-detail,
+.test-results-panel {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.mode-label {
+  color: #111827 !important;
+  font-weight: 700 !important;
+  margin-bottom: 12px !important;
+}
+
+.mode-cards {
+  gap: 14px !important;
+}
+
+.mode-card {
+  background: #fbfdff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #111827 !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+
+.mode-card:hover {
+  border-color: #1FB7B5 !important;
+  background: #f0fdfa !important;
+  transform: translateY(-2px);
+}
+
+.mode-icon {
+  background: #e6fffb !important;
+  color: #0D8A90 !important;
+}
+
+.mode-name {
+  color: #111827 !important;
+}
+
+.mode-desc,
+.hint,
+.info-item {
+  color: #64748b !important;
+}
+
+.info-icon {
+  background: #eef2f7 !important;
+  color: #0D8A90 !important;
+}
+
+/* Rules and guidelines */
+.rules-overlay {
+  background: rgba(15, 23, 42, 0.32) !important;
+}
+
+.rules-box h2,
+h1,
+h2,
+h3 {
+  color: #111827 !important;
+}
+
+.rules-content,
+.rules-content p,
+.rules-content li {
+  color: #475569 !important;
+}
+
+#agreeCheck {
+  accent-color: #1FB7B5;
+}
+
+/* MCQ exam layout */
+.exam-header,
+.q-header,
+.exam-footer,
+.q-footer,
+.coding-header,
+.editor-toolbar,
+.editor-footer,
+.iv-hdr,
+.bottom-bar {
+  background: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04) !important;
+  backdrop-filter: none !important;
+}
+
+.exam-body,
+.q-screen,
+.q-body,
+.coding-body,
+.iv-main {
+  background: #f4f7fb !important;
+}
+
+.exam-sidebar,
+.problem-panel {
+  background: #ffffff !important;
+  border-color: #e5e7eb !important;
+}
+
+.q-card,
+.question-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 18px !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06) !important;
+}
+
+.q-card {
+  padding: 28px !important;
+}
+
+.q-question,
+.question-text,
+.problem-title,
+.cat-name,
+.review-q strong,
+.feedback-title,
+.report-title,
+.score-box {
+  color: #111827 !important;
+}
+
+.mcq-option,
+.drag-item,
+.fill-option,
+.debug-line,
+.review-item,
+.example-box,
+.tc-detail,
+.card,
+.test {
+  background: #fbfdff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #334155 !important;
+  border-radius: 12px !important;
+}
+
+.mcq-option:hover,
+.drag-item:hover,
+.fill-option:hover,
+.debug-line:hover {
+  border-color: #1FB7B5 !important;
+  background: #f0fdfa !important;
+}
+
+.mcq-option.selected,
+.fill-option.selected,
+.prob-nav-btn.active,
+.tc-tab.active {
+  border-color: #1FB7B5 !important;
+  background: #e6fffb !important;
+  color: #0D8A90 !important;
+}
+
+.option-letter,
+.line-num {
+  background: #eef2f7 !important;
+  color: #64748b !important;
+}
+
+.mcq-option.selected .option-letter {
+  background: #1FB7B5 !important;
+  color: #ffffff !important;
+}
+
+.progress-bar-bg,
+.cat-bar-bg,
+.sc-bar,
+.progress {
+  background: #e8eef6 !important;
+}
+
+.progress-bar-fill,
+.progress-bar,
+.sc-fill {
+  background: #1FB7B5 !important;
+}
+
+.timer-chip,
+.round-timer,
+.rtimer-val {
+  color: #111827 !important;
+}
+
+.timer-track {
+  stroke: #e8eef6 !important;
+}
+
+.timer-fill {
+  stroke: #1FB7B5 !important;
+}
+
+/* Coding */
+.coding-layout {
+  background: #f4f7fb !important;
+}
+
+.problem-header,
+.problem-section {
+  border-color: #eef2f7 !important;
+}
+
+.problem-desc,
+.constraint-list li,
+.tc-val,
+.trp-line,
+.feedback-text,
+.sc-feedback,
+.moment-text,
+.hiring-notes {
+  color: #475569 !important;
+}
+
+.problem-section-title,
+.example-label,
+.tc-key,
+.sc-label,
+.section-title {
+  color: #0D8A90 !important;
+}
+
+.editor-panel,
+#monacoEditor {
+  background: #ffffff !important;
+}
+
+.test-results-panel {
+  background: #fbfdff !important;
+  border-color: #e5e7eb !important;
+}
+
+.split-handle {
+  background: #e5e7eb !important;
+}
+
+.split-handle:hover {
+  background: #1FB7B5 !important;
+}
+
+/* AI interview conversation */
+.iv-hdr .brand {
+  background: none !important;
+  -webkit-text-fill-color: #111827 !important;
+  color: #111827 !important;
+}
+
+.iv-hdr span,
+.coding-header span {
+  color: #64748b !important;
+}
+
+.avatar-core,
+.loading-orb {
+  background: #e6fffb !important;
+  color: #0D8A90 !important;
+  box-shadow: none !important;
+}
+
+.ring1,
+.ring2,
+.ring3 {
+  border-color: rgba(31, 183, 181, 0.28) !important;
+}
+
+.state-chip.idle,
+.state-chip.processing,
+.state-chip.speaking,
+.state-chip.listening {
+  background: #f8fafc !important;
+  color: #0D8A90 !important;
+  border: 1px solid #dbe4ef !important;
+}
+
+.transcript-wrap {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #64748b !important;
+  border-radius: 14px !important;
+}
+
+.transcript-wrap.active {
+  background: #f0fdfa !important;
+  border-color: #b6f3eb !important;
+  color: #0f766e !important;
+}
+
+.wb {
+  background: #1FB7B5 !important;
+}
+
+.mic-outer {
+  border-color: #dbe4ef !important;
+}
+
+.mic-btn2 {
+  background: #1FB7B5 !important;
+  color: #ffffff !important;
+}
+
+.end-btn2,
+.failbtn {
+  background: #fff1f2 !important;
+  border: 1px solid #fecdd3 !important;
+  color: #dc2626 !important;
+}
+
+.end-btn2:hover,
+.failbtn:hover {
+  background: #ffe4e6 !important;
+}
+
+#proctoring-container {
+  border-radius: 14px !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16) !important;
+}
+
+#video {
+  border: 3px solid #1FB7B5 !important;
+}
+
+/* Results */
+.results-header,
+.report-header {
+  text-align: left !important;
+}
+
+.results-grid,
+.scores-grid {
+  gap: 20px !important;
+}
+
+.radial-label,
+.cat-score,
+.rank {
+  color: #64748b !important;
+}
+
+.review-list {
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.pill.green,
+.pass,
+.tc-result.pass {
+  background: #dcfce7 !important;
+  border-color: #bbf7d0 !important;
+  color: #166534 !important;
+}
+
+.pill.red,
+.fail,
+.tc-result.fail {
+  background: #fee2e2 !important;
+  border-color: #fecaca !important;
+  color: #991b1b !important;
+}
+
+.pill.blue,
+.tc-result.running {
+  background: #e6fffb !important;
+  border-color: #b6f3eb !important;
+  color: #0D8A90 !important;
+}
+
+.unattempt {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+}
+
+.hiring-notes {
+  background: #fbfdff !important;
+  border-left-color: #1FB7B5 !important;
+}
+
+.theme-toggle-btn {
+  top: 18px !important;
+  right: 18px !important;
+  width: 40px !important;
+  height: 40px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #111827 !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08) !important;
+}
+
+.theme-toggle-icon {
+  display: block;
+  height: 18px;
+  position: relative;
+  width: 18px;
+}
+
+body.light .theme-toggle-icon,
+body:not(.dark) .theme-toggle-icon {
+  background: #1FB7B5;
+  border-radius: 999px;
+}
+
+body.light .theme-toggle-icon::after,
+body:not(.dark) .theme-toggle-icon::after {
+  background: #ffffff;
+  border-radius: 999px;
+  content: "";
+  height: 18px;
+  position: absolute;
+  right: -5px;
+  top: -3px;
+  width: 18px;
+}
+
+body.dark .theme-toggle-icon {
+  background: #78e3dd;
+  border-radius: 999px;
+  box-shadow:
+    0 -8px 0 -6px #78e3dd,
+    0 8px 0 -6px #78e3dd,
+    8px 0 0 -6px #78e3dd,
+    -8px 0 0 -6px #78e3dd,
+    6px 6px 0 -6px #78e3dd,
+    -6px -6px 0 -6px #78e3dd,
+    6px -6px 0 -6px #78e3dd,
+    -6px 6px 0 -6px #78e3dd;
+}
+
+body.dark .theme-toggle-icon::after {
+  content: none;
+}
+
+@media (max-width: 900px) {
+  body[style] {
+    padding: 84px 14px 24px !important;
+  }
+
+  .reg-card,
+  .result-card,
+  .feedback-card,
+  .q-review-card,
+  .section-card,
+  .overall-card,
+  .container {
+    border-radius: 14px !important;
+  }
+
+  .mode-cards {
+    grid-template-columns: 1fr !important;
+  }
+
+  .form-grid2,
+  .results-grid,
+  .scores-grid,
+  .cat-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .coding-body,
+  .exam-body {
+    flex-direction: column !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .problem-panel,
+  .exam-sidebar {
+    width: 100% !important;
+  }
+
+  .split-handle {
+    display: none !important;
+  }
+
+  #proctoring-container {
+    width: 160px !important;
+    height: 116px !important;
+    right: 12px !important;
+    bottom: 86px !important;
+  }
+}
+
+/* Entry page: match candidate jobboard pages more closely */
+body.ai-interview-candidate-page .ai-interview-jobboard {
+  align-items: stretch !important;
+  display: block !important;
+  justify-content: flex-start !important;
+  min-height: auto !important;
+  padding: 16px var(--candidate-page-gutter, 16px) 28px !important;
+  width: 100% !important;
+}
+
+body.ai-interview-candidate-page .reg-wrap {
+  max-width: 1180px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+}
+
+body.ai-interview-candidate-page .page-board-header,
+body.ai-interview-candidate-page .reg-card {
+  background: #ffffff !important;
+  border: 1px solid #d7e4ef !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+body.ai-interview-candidate-page .page-board-header {
+  align-items: center !important;
+  display: flex !important;
+  gap: 18px !important;
+  justify-content: space-between !important;
+  margin: 0 0 14px !important;
+  padding: 20px 22px !important;
+}
+
+body.ai-interview-candidate-page .page-board-copy {
+  min-width: 0;
+}
+
+body.ai-interview-candidate-page .page-board-kicker {
+  color: #0d8a90 !important;
+  display: inline-flex !important;
+  font-size: .76rem !important;
+  font-weight: 800 !important;
+  letter-spacing: .04em !important;
+  margin-bottom: 6px !important;
+  text-transform: uppercase !important;
+}
+
+body.ai-interview-candidate-page .page-board-title {
+  color: #16212b !important;
+  font-size: 2rem !important;
+  font-weight: 650 !important;
+  line-height: 1.18 !important;
+  margin: 0 !important;
+}
+
+body.ai-interview-candidate-page .page-board-subtitle {
+  color: #64748b !important;
+  font-size: .98rem !important;
+  line-height: 1.55 !important;
+  margin: 7px 0 0 !important;
+}
+
+body.ai-interview-candidate-page .page-board-actions {
+  align-items: center !important;
+  display: flex !important;
+  flex: 0 0 auto !important;
+  gap: 10px !important;
+}
+
+body.ai-interview-candidate-page .brand-logo {
+  display: none !important;
+}
+
+body.ai-interview-candidate-page .reg-card {
+  padding: 18px !important;
+}
+
+body.ai-interview-candidate-page .reg-form {
+  gap: 14px !important;
+}
+
+body.ai-interview-candidate-page .form-grid2 {
+  gap: 12px !important;
+}
+
+body.ai-interview-candidate-page .form-group {
+  gap: 6px !important;
+}
+
+body.ai-interview-candidate-page .form-label,
+body.ai-interview-candidate-page .mode-label {
+  color: #0d8a90 !important;
+  font-size: .74rem !important;
+  font-weight: 800 !important;
+  letter-spacing: .04em !important;
+  line-height: 1.2 !important;
+  text-transform: uppercase !important;
+}
+
+body.ai-interview-candidate-page .form-input,
+body.ai-interview-candidate-page .form-select {
+  min-height: 42px !important;
+  padding: 10px 14px !important;
+}
+
+body.ai-interview-candidate-page .form-textarea {
+  min-height: 120px !important;
+  padding: 13px 16px !important;
+}
+
+body.ai-interview-candidate-page .hint {
+  color: #64748b !important;
+  font-size: .82rem !important;
+  margin: 3px 0 0 !important;
+}
+
+body.ai-interview-candidate-page .mode-select {
+  margin-top: 2px !important;
+}
+
+body.ai-interview-candidate-page .mode-cards {
+  display: grid !important;
+  gap: 12px !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+body.ai-interview-candidate-page .mode-card {
+  background: #ffffff !important;
+  border: 1px solid #d7e4ef !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  min-height: 154px !important;
+  padding: 14px !important;
+}
+
+body.ai-interview-candidate-page .mode-card:hover,
+body.ai-interview-candidate-page .mode-card:focus {
+  background: #fbfdff !important;
+  border-color: rgba(31, 183, 181, .48) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+body.ai-interview-candidate-page .mode-icon {
+  align-items: center !important;
+  background: #e8f7f7 !important;
+  border: 1px solid rgba(31, 183, 181, .28) !important;
+  border-radius: 8px !important;
+  color: #0d8a90 !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  font-size: 1.2rem !important;
+  height: 36px !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  margin-bottom: 4px !important;
+  width: 36px !important;
+}
+
+body.ai-interview-candidate-page .mode-icon,
+body.ai-interview-candidate-page .info-icon {
+  font-size: 0 !important;
+}
+
+body.ai-interview-candidate-page .mode-icon::before,
+body.ai-interview-candidate-page .info-icon::before {
+  color: #0d8a90 !important;
+  font-family: "Font Awesome 5 Free" !important;
+  font-size: 15px !important;
+  font-style: normal !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+body.ai-interview-candidate-page #modeMCQ .mode-icon::before {
+  content: "\f46d";
+}
+
+body.ai-interview-candidate-page #modeCoding .mode-icon::before {
+  content: "\f5fc";
+}
+
+body.ai-interview-candidate-page #modeInterview .mode-icon::before {
+  content: "\f3c9";
+}
+
+body.ai-interview-candidate-page .mode-name {
+  color: #16212b !important;
+  font-size: .98rem !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+}
+
+body.ai-interview-candidate-page .mode-desc {
+  color: #64748b !important;
+  font-size: .84rem !important;
+  line-height: 1.45 !important;
+}
+
+body.ai-interview-candidate-page .mode-meta {
+  align-self: flex-start !important;
+  background: transparent !important;
+  border: 0 !important;
+  color: #0d8a90 !important;
+  font-size: .76rem !important;
+  font-weight: 800 !important;
+  margin-top: auto !important;
+  padding: 0 !important;
+}
+
+body.ai-interview-candidate-page .info-strip {
+  align-items: center !important;
+  background: transparent !important;
+  justify-content: flex-start !important;
+  margin: 14px 0 0 !important;
+}
+
+body.ai-interview-candidate-page .info-item {
+  color: #64748b !important;
+  font-size: .82rem !important;
+}
+
+body.ai-interview-candidate-page .info-icon {
+  align-items: center !important;
+  background: #ffffff !important;
+  border: 1px solid #d7e4ef !important;
+  border-radius: 8px !important;
+  color: #0d8a90 !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  height: 28px !important;
+  justify-content: center !important;
+  width: 28px !important;
+}
+
+body.ai-interview-candidate-page .info-item:nth-child(1) .info-icon::before {
+  content: "\f2f2";
+}
+
+body.ai-interview-candidate-page .info-item:nth-child(2) .info-icon::before {
+  content: "\f0ae";
+}
+
+body.ai-interview-candidate-page .info-item:nth-child(3) .info-icon::before {
+  content: "\f544";
+}
+
+body.ai-interview-candidate-page .info-item:nth-child(4) .info-icon::before {
+  content: "\f080";
+}
+
+body.ai-interview-candidate-page .theme-toggle-btn {
+  top: 12px !important;
+  right: 12px !important;
+}
+
+/* Read-only assessment summary on the AI interview entry page */
+body.ai-interview-candidate-page .mode-label {
+  display: none !important;
+}
+
+body.ai-interview-candidate-page .mode-select {
+  margin-top: 0 !important;
+}
+
+body.ai-interview-candidate-page .mode-cards {
+  gap: 12px !important;
+}
+
+body.ai-interview-candidate-page .mode-card {
+  cursor: default !important;
+  gap: 7px !important;
+  min-height: 142px !important;
+  padding: 14px 14px 13px !important;
+  pointer-events: none !important;
+}
+
+body.ai-interview-candidate-page .mode-card:hover,
+body.ai-interview-candidate-page .mode-card:focus {
+  background: #ffffff !important;
+  border-color: #d7e4ef !important;
+  transform: none !important;
+}
+
+body.ai-interview-candidate-page .mode-icon {
+  margin-bottom: 2px !important;
+}
+
+body.ai-interview-candidate-page .mode-name {
+  font-size: .96rem !important;
+  line-height: 1.2 !important;
+}
+
+body.ai-interview-candidate-page .mode-desc {
+  font-size: .83rem !important;
+  line-height: 1.38 !important;
+}
+
+body.ai-interview-candidate-page .mode-meta {
+  font-size: .74rem !important;
+  line-height: 1.25 !important;
+}
+
+body.ai-interview-candidate-page .assessment-start-row {
+  display: flex !important;
+  justify-content: flex-end !important;
+  margin-top: 16px !important;
+}
+
+body.ai-interview-candidate-page .assessment-start-btn {
+  background: #1FB7B5 !important;
+  border: 1.5px solid #1FB7B5 !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+  font-size: .92rem !important;
+  font-weight: 800 !important;
+  min-height: 40px !important;
+  padding: 10px 18px !important;
+}
+
+body.ai-interview-candidate-page .assessment-start-btn:hover,
+body.ai-interview-candidate-page .assessment-start-btn:focus {
+  background: #0D8A90 !important;
+  border-color: #0D8A90 !important;
+  transform: translateY(-1px) !important;
+}
+
+body.ai-interview-candidate-page .info-strip {
+  border-top: 1px solid #d7e4ef !important;
+  gap: 12px !important;
+  margin-top: 14px !important;
+  padding-top: 14px !important;
+}
+
+body.ai-interview-candidate-page .info-item {
+  gap: 7px !important;
+  line-height: 1.25 !important;
+}
+
+body.dark.ai-interview-candidate-page .mode-card:hover,
+body.dark.ai-interview-candidate-page .mode-card:focus {
+  background: #161b22 !important;
+  border-color: #30363d !important;
+}
+
+body.dark.ai-interview-candidate-page .info-strip {
+  border-color: #30363d !important;
+}
+
+/* Spacious full-width candidate form layout */
+body.ai-interview-candidate-page .ai-interview-jobboard {
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+
+body.ai-interview-candidate-page .reg-wrap {
+  max-width: none !important;
+}
+
+body.ai-interview-candidate-page .reg-card {
+  padding: 22px 18px 18px !important;
+}
+
+body.ai-interview-candidate-page .reg-form {
+  gap: 20px !important;
+}
+
+body.ai-interview-candidate-page #regForm {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 22px !important;
+}
+
+body.ai-interview-candidate-page .form-grid2 {
+  gap: 16px !important;
+}
+
+body.ai-interview-candidate-page .form-group {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+body.ai-interview-candidate-page .form-label {
+  display: block !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+
+body.ai-interview-candidate-page .form-input,
+body.ai-interview-candidate-page .form-select,
+body.ai-interview-candidate-page .form-textarea {
+  font-size: .94rem !important;
+  line-height: 1.45 !important;
+}
+
+body.ai-interview-candidate-page .form-input,
+body.ai-interview-candidate-page .form-select {
+  min-height: 44px !important;
+  padding: 11px 14px !important;
+}
+
+body.ai-interview-candidate-page .form-textarea {
+  min-height: 158px !important;
+  padding: 16px !important;
+}
+
+body.ai-interview-candidate-page .hint {
+  line-height: 1.4 !important;
+  margin: 2px 0 0 !important;
+}
+
+body.ai-interview-candidate-page .hint + .form-label {
+  margin-top: 6px !important;
+}
+
+body.ai-interview-candidate-page .mode-cards {
+  gap: 14px !important;
+}
+
+body.ai-interview-candidate-page .mode-card {
+  gap: 9px !important;
+  min-height: 156px !important;
+  padding: 16px !important;
+}
+
+body.ai-interview-candidate-page .mode-desc {
+  line-height: 1.45 !important;
+}
+
+body.ai-interview-candidate-page .assessment-start-row {
+  margin-top: 18px !important;
+}
+
+body.ai-interview-candidate-page .info-strip {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+body.ai-interview-candidate-page #regForm > .form-group {
+  margin-top: 0 !important;
+}
+
+body.ai-interview-candidate-page #regForm > .form-group + .form-group,
+body.ai-interview-candidate-page #regForm > .form-group + .mode-select,
+body.ai-interview-candidate-page #regForm > .mode-select + .assessment-start-row {
+  margin-top: 2px !important;
+}
+
+body.ai-interview-candidate-page #regForm > .form-grid2 + .form-group {
+  margin-top: 4px !important;
+}
+
+body.ai-interview-candidate-page #regForm textarea.form-textarea,
+body.ai-interview-candidate-page #regForm select.form-select,
+body.ai-interview-candidate-page #regForm input.form-input {
+  margin-top: 0 !important;
+}
+
+body.ai-interview-candidate-page #regForm .form-input[readonly],
+body.ai-interview-candidate-page #regForm .form-select:disabled {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  cursor: not-allowed !important;
+  opacity: 1 !important;
+}
+
+body.dark.ai-interview-candidate-page #regForm .form-input[readonly],
+body.dark.ai-interview-candidate-page #regForm .form-select:disabled {
+  background: #0d1117 !important;
+  color: #e6edf3 !important;
+}
+
+/* Results page: candidate-page alignment */
+body.ai-results-page {
+  background: #f4f7fb !important;
+  color: #0f172a !important;
+  font-family: Inter, sans-serif !important;
+  min-height: 100vh !important;
+}
+
+body.ai-results-page #particleCanvas {
+  display: none !important;
+}
+
+body.ai-results-page #app {
+  min-height: 100vh !important;
+}
+
+body.ai-results-page .results-screen {
+  background: #f4f7fb !important;
+  min-height: 100vh !important;
+  padding: 16px 24px 28px !important;
+  width: 100% !important;
+}
+
+body.ai-results-page .results-wrap {
+  margin: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
+}
+
+body.ai-results-page .results-header {
+  align-items: center !important;
+  background: #ffffff !important;
+  border: 1px solid #d7e4ef !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  margin: 0 0 16px !important;
+  padding: 20px 22px !important;
+  text-align: left !important;
+}
+
+body.ai-results-page .results-header .badge {
+  background: #edf8f5 !important;
+  border: 1px solid rgba(31, 183, 181, .24) !important;
+  color: #0d8a90 !important;
+  font-size: .74rem !important;
+  margin: 0 0 8px !important;
+}
+
+body.ai-results-page .results-header h1 {
+  color: #0f172a !important;
+  font-size: clamp(1.55rem, 2vw, 2rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+}
+
+body.ai-results-page .results-header .text-gradient {
+  background: none !important;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+body.ai-results-page .results-header .text-muted {
+  color: #52677a !important;
+  font-size: .95rem !important;
+  line-height: 1.45 !important;
+}
+
+body.ai-results-page .results-grid {
+  display: grid !important;
+  gap: 16px !important;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr) !important;
+  margin: 0 !important;
+}
+
+body.ai-results-page .result-card,
+body.ai-results-page .feedback-card,
+body.ai-results-page .q-review-card {
+  background: #ffffff !important;
+  border: 1px solid #d7e4ef !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  color: #0f172a !important;
+  padding: 20px !important;
+}
+
+body.ai-results-page .feedback-card,
+body.ai-results-page .q-review-card {
+  grid-column: 1 / -1 !important;
+}
+
+body.ai-results-page .result-card:has(.weak-area-list) {
+  grid-column: 1 / -1 !important;
+}
+
+body.ai-results-page .result-card h3,
+body.ai-results-page .feedback-title,
+body.ai-results-page .q-review-card h3 {
+  align-items: center !important;
+  color: #0f172a !important;
+  display: flex !important;
+  font-size: 1.02rem !important;
+  font-weight: 800 !important;
+  gap: 8px !important;
+  letter-spacing: 0 !important;
+  margin: 0 0 16px !important;
+}
+
+body.ai-results-page .result-card h3 i,
+body.ai-results-page .q-review-card h3 i,
+body.ai-results-page .feedback-title i {
+  color: #0d8a90 !important;
+  font-size: .95rem !important;
+}
+
+body.ai-results-page .feedback-title {
+  align-items: center !important;
+  display: flex !important;
+  gap: 8px !important;
+}
+
+body.ai-results-page .feedback-title::before {
+  color: #0d8a90 !important;
+  content: "\f201" !important;
+  font-family: "Font Awesome 5 Free" !important;
+  font-weight: 900 !important;
+}
+
+body.ai-results-page .radial-wrap {
+  min-height: 230px !important;
+}
+
+body.ai-results-page .radial-label div,
+body.ai-results-page .feedback-text,
+body.ai-results-page .review-q,
+body.ai-results-page .cat-score {
+  color: #52677a !important;
+}
+
+body.ai-results-page .cat-name,
+body.ai-results-page .review-q strong {
+  color: #24384a !important;
+  font-weight: 800 !important;
+}
+
+body.ai-results-page .cat-row {
+  gap: 8px !important;
+  padding: 4px 0 !important;
+}
+
+body.ai-results-page .cat-bar-bg {
+  background: #e8eef6 !important;
+  height: 7px !important;
+}
+
+body.ai-results-page .cat-bar-fill {
+  background: #1FB7B5 !important;
+}
+
+body.ai-results-page .result-round-card {
+  background: #fbfdff !important;
+  border: 1px solid #d7e4ef !important;
+  border-radius: 10px !important;
+  padding: 18px !important;
+  text-align: left !important;
+}
+
+body.ai-results-page .result-round-icon {
+  align-items: center !important;
+  background: #edf8f5 !important;
+  border: 1px solid rgba(31, 183, 181, .24) !important;
+  border-radius: 8px !important;
+  color: #0d8a90 !important;
+  display: inline-flex !important;
+  height: 34px !important;
+  justify-content: center !important;
+  margin-bottom: 12px !important;
+  width: 34px !important;
+}
+
+body.ai-results-page .result-round-card > div:nth-child(2) {
+  color: #52677a !important;
+  font-size: .74rem !important;
+  font-weight: 800 !important;
+  letter-spacing: .04em !important;
+  text-transform: uppercase !important;
+}
+
+body.ai-results-page .result-round-card > div:nth-child(3) {
+  color: #0d8a90 !important;
+  font-size: 2rem !important;
+  font-weight: 800 !important;
+  line-height: 1.1 !important;
+  margin: 10px 0 6px !important;
+}
+
+body.ai-results-page .result-round-card > div:nth-child(3) span,
+body.ai-results-page .result-round-card > div:nth-child(4) {
+  color: #52677a !important;
+}
+
+body.ai-results-page .result-round-card > div:nth-child(5) {
+  background: #e8eef6 !important;
+  height: 7px !important;
+  margin-top: 12px !important;
+}
+
+body.ai-results-page .result-round-card > div:nth-child(5) > div {
+  background: #1FB7B5 !important;
+}
+
+body.ai-results-page .weak-area-list {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+body.ai-results-page .weak-area-row {
+  align-items: center !important;
+  background: #fbfdff !important;
+  border: 1px solid #d7e4ef !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  gap: 12px !important;
+  padding: 12px 14px !important;
+}
+
+body.ai-results-page .weak-area-icon {
+  align-items: center !important;
+  background: #edf8f5 !important;
+  border: 1px solid rgba(31, 183, 181, .24) !important;
+  border-radius: 8px !important;
+  color: #0d8a90 !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  height: 28px !important;
+  justify-content: center !important;
+  width: 28px !important;
+}
+
+body.ai-results-page .weak-area-row div[style*="font-weight"] {
+  color: #24384a !important;
+  font-size: .9rem !important;
+  font-weight: 800 !important;
+}
+
+body.ai-results-page .weak-area-score {
+  color: #0d8a90 !important;
+  font-weight: 800 !important;
+}
+
+body.ai-results-page .review-list {
+  display: grid !important;
+  gap: 8px !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+body.ai-results-page .review-item {
+  background: #fbfdff !important;
+  border: 1px solid #d7e4ef !important;
+  border-radius: 10px !important;
+  padding: 12px 14px !important;
+}
+
+body.ai-results-page .review-icon {
+  align-items: center !important;
+  background: #edf8f5 !important;
+  border: 1px solid rgba(31, 183, 181, .24) !important;
+  border-radius: 8px !important;
+  color: #0d8a90 !important;
+  display: inline-flex !important;
+  font-size: .78rem !important;
+  height: 28px !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  overflow: hidden !important;
+  width: 28px !important;
+}
+
+body.ai-results-page .results-actions {
+  align-items: center !important;
+  background: #ffffff !important;
+  border: 1px solid #d7e4ef !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  justify-content: flex-end !important;
+  margin: 16px 0 0 !important;
+  padding: 14px !important;
+}
+
+body.ai-results-page .btn,
+body.ai-results-page .btn-secondary,
+body.ai-results-page .btn-primary {
+  background: transparent !important;
+  border: 1.5px solid #1FB7B5 !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  color: #1FB7B5 !important;
+  font-size: .9rem !important;
+  font-weight: 800 !important;
+  min-height: 40px !important;
+  padding: 10px 16px !important;
+}
+
+body.ai-results-page .btn:hover,
+body.ai-results-page .btn:focus {
+  background: #1FB7B5 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+}
+
+body.ai-results-page .theme-toggle-btn {
+  right: 18px !important;
+  top: 18px !important;
+}
+
+body.dark.ai-results-page {
+  background: #0d181b !important;
+  color: #f1fbfa !important;
+}
+
+body.dark.ai-results-page .results-screen {
+  background: #0d181b !important;
+}
+
+body.dark.ai-results-page .results-header,
+body.dark.ai-results-page .result-card,
+body.dark.ai-results-page .feedback-card,
+body.dark.ai-results-page .q-review-card,
+body.dark.ai-results-page .results-actions,
+body.dark.ai-results-page .review-item {
+  background: #142427 !important;
+  border-color: #2e4a50 !important;
+}
+
+body.dark.ai-results-page .results-header h1,
+body.dark.ai-results-page .results-header .text-gradient,
+body.dark.ai-results-page .result-card h3,
+body.dark.ai-results-page .feedback-title,
+body.dark.ai-results-page .q-review-card h3,
+body.dark.ai-results-page .cat-name,
+body.dark.ai-results-page .review-q strong {
+  color: #f1fbfa !important;
+  -webkit-text-fill-color: #f1fbfa !important;
+}
+
+body.dark.ai-results-page .results-header .text-muted,
+body.dark.ai-results-page .radial-label div,
+body.dark.ai-results-page .feedback-text,
+body.dark.ai-results-page .review-q,
+body.dark.ai-results-page .cat-score {
+  color: #b8cdd2 !important;
+}
+
+body.dark.ai-results-page .cat-bar-bg {
+  background: #26383e !important;
+}
+
+body.dark.ai-results-page .review-icon {
+  background: rgba(31, 183, 181, .16) !important;
+  border-color: rgba(120, 227, 221, .3) !important;
+  color: #78e3dd !important;
+}
+
+body.dark.ai-results-page .result-round-card,
+body.dark.ai-results-page .weak-area-row {
+  background: #1b2a2f !important;
+  border-color: #2e4a50 !important;
+}
+
+body.dark.ai-results-page .result-round-icon,
+body.dark.ai-results-page .weak-area-icon {
+  background: rgba(31, 183, 181, .16) !important;
+  border-color: rgba(120, 227, 221, .3) !important;
+  color: #78e3dd !important;
+}
+
+body.dark.ai-results-page .weak-area-row div[style*="font-weight"],
+body.dark.ai-results-page .result-round-card > div:nth-child(3) {
+  color: #f1fbfa !important;
+}
+
+body.dark.ai-results-page .result-round-card > div:nth-child(2),
+body.dark.ai-results-page .result-round-card > div:nth-child(3) span,
+body.dark.ai-results-page .result-round-card > div:nth-child(4) {
+  color: #b8cdd2 !important;
+}
+
+@media (max-width: 900px) {
+  body.ai-results-page .results-screen {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  body.ai-results-page .results-header {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+
+  body.ai-results-page .results-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.ai-results-page .weak-area-list,
+  body.ai-results-page .review-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.ai-results-page .results-actions,
+  body.ai-results-page .results-actions .btn {
+    justify-content: center !important;
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 900px) {
+  body.ai-interview-candidate-page .ai-interview-jobboard {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  body.ai-interview-candidate-page .assessment-start-row,
+  body.ai-interview-candidate-page .assessment-start-btn {
+    width: 100% !important;
+  }
+}
+
+body.dark .glass-card,
+body.dark .result-card,
+body.dark .feedback-card,
+body.dark .q-review-card,
+body.dark .section-card,
+body.dark .score-card,
+body.dark .overall-card,
+body.dark .container,
+body.dark .rules-box,
+body.dark .q-card,
+body.dark .question-card,
+body.dark .exam-sidebar,
+body.dark .problem-panel,
+body.dark .editor-panel,
+body.dark #monacoEditor,
+body.dark.ai-interview-candidate-page .page-board-header,
+body.dark.ai-interview-candidate-page .reg-card,
+body.dark.ai-interview-candidate-page .mode-card {
+  background: #161b22 !important;
+  border-color: #30363d !important;
+  color: #e6edf3 !important;
+  box-shadow: none !important;
+}
+
+body.dark .exam-header,
+body.dark .q-header,
+body.dark .exam-footer,
+body.dark .q-footer,
+body.dark .coding-header,
+body.dark .editor-toolbar,
+body.dark .editor-footer,
+body.dark .iv-hdr,
+body.dark .bottom-bar {
+  background: #161b22 !important;
+  border-color: #30363d !important;
+}
+
+body.dark .text-gradient,
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark .brand-title,
+body.dark .page-board-title,
+body.dark .q-question,
+body.dark .question-text,
+body.dark .problem-title,
+body.dark .cat-name,
+body.dark .review-q strong,
+body.dark .feedback-title,
+body.dark .report-title,
+body.dark .score-box,
+body.dark.ai-interview-candidate-page .mode-name {
+  color: #e6edf3 !important;
+  -webkit-text-fill-color: #e6edf3 !important;
+}
+
+body.dark p,
+body.dark li,
+body.dark .brand-sub,
+body.dark .page-board-subtitle,
+body.dark .loading-sub,
+body.dark .intro-sub,
+body.dark .text-muted,
+body.dark .mode-desc,
+body.dark .hint,
+body.dark .info-item,
+body.dark .problem-desc,
+body.dark .constraint-list li,
+body.dark .tc-val,
+body.dark .trp-line,
+body.dark .feedback-text,
+body.dark .sc-feedback,
+body.dark .moment-text,
+body.dark .hiring-notes,
+body.dark .rules-content,
+body.dark .rules-content p,
+body.dark .rules-content li {
+  color: #8b949e !important;
+}
+
+body.dark .form-input,
+body.dark .form-select,
+body.dark .form-textarea,
+body.dark .lang-select,
+body.dark .transcript-wrap,
+body.dark .mcq-option,
+body.dark .drag-item,
+body.dark .fill-option,
+body.dark .debug-line,
+body.dark .review-item,
+body.dark .example-box,
+body.dark .tc-detail,
+body.dark .card,
+body.dark .test,
+body.dark .test-results-panel,
+body.dark.ai-interview-candidate-page .info-icon {
+  background: #0d1117 !important;
+  border-color: #30363d !important;
+  color: #e6edf3 !important;
+}
+
+body.dark .form-input:focus,
+body.dark .form-select:focus,
+body.dark .form-textarea:focus,
+body.dark .lang-select:focus {
+  border-color: #1FB7B5 !important;
+  box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.18) !important;
+}
+
+body.dark .btn-secondary,
+body.dark .redo-btn,
+body.dark .prob-nav-btn,
+body.dark .tc-tab {
+  background: #21262d !important;
+  border-color: #30363d !important;
+  color: #e6edf3 !important;
+}
+
+body.dark .btn-secondary:hover,
+body.dark .redo-btn:hover,
+body.dark .prob-nav-btn:hover,
+body.dark .tc-tab:hover,
+body.dark.ai-interview-candidate-page .mode-card:hover {
+  background: rgba(31, 183, 181, 0.12) !important;
+  border-color: rgba(120, 227, 221, 0.36) !important;
+}
+
+body.dark .rules-overlay {
+  background: rgba(1, 4, 9, 0.72) !important;
+}
+
+body.dark .rules-box::-webkit-scrollbar-thumb,
+body.dark .container::-webkit-scrollbar-thumb {
+  background: rgba(31, 183, 181, 0.5) !important;
+}
+
+body.dark .avatar-core,
+body.dark .loading-orb,
+body.dark.ai-interview-candidate-page .mode-icon {
+  background: rgba(31, 183, 181, 0.14) !important;
+  border-color: rgba(120, 227, 221, 0.28) !important;
+  color: #78e3dd !important;
+}
+
+body.dark .progress,
+body.dark .progress-bar-bg,
+body.dark .cat-bar-bg,
+body.dark .sc-bar {
+  background: #21262d !important;
+}
+
+body.dark .theme-toggle-btn {
+  background: #161b22 !important;
+  border-color: #30363d !important;
+  color: #78e3dd !important;
+}
+
+/* Dark exam polish */
+body.dark .exam-layout,
+body.dark .exam-body,
+body.dark .exam-main,
+body.dark .q-screen,
+body.dark .q-body {
+  background: #0d1117 !important;
+}
+
+body.dark .exam-header {
+  color: #e6edf3 !important;
+  gap: 18px !important;
+  min-width: 0 !important;
+  padding-right: 26px !important;
+}
+
+body.dark .eh-left,
+body.dark .eh-center,
+body.dark .eh-right {
+  align-items: center !important;
+  display: flex !important;
+  min-width: 0 !important;
+}
+
+body.dark .eh-left {
+  flex: 0 0 auto !important;
+  gap: 10px !important;
+}
+
+body.dark .eh-center {
+  flex: 1 1 auto !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  max-width: 360px !important;
+}
+
+body.dark .eh-right {
+  flex: 0 0 auto !important;
+  justify-content: flex-end !important;
+}
+
+body.dark .progress-text,
+body.dark .q-num,
+body.dark .sidebar-label,
+body.dark .legend-row,
+body.dark .rtimer-lbl {
+  color: #8b949e !important;
+}
+
+body.dark .progress-text {
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.dark .progress-text strong,
+body.dark .rtimer-val {
+  color: #78e3dd !important;
+}
+
+body.dark .badge-accent,
+body.dark .badge-info,
+body.dark .badge-warning {
+  background: rgba(31, 183, 181, 0.12) !important;
+  border-color: rgba(120, 227, 221, 0.34) !important;
+  color: #78e3dd !important;
+}
+
+body.dark .exam-sidebar {
+  background: #161b22 !important;
+}
+
+body.dark .q-nav-btn {
+  background: #21262d !important;
+  border-color: #30363d !important;
+  color: #8b949e !important;
+}
+
+body.dark .q-nav-btn:hover {
+  background: rgba(31, 183, 181, 0.12) !important;
+  border-color: rgba(120, 227, 221, 0.34) !important;
+  color: #e6edf3 !important;
+}
+
+body.dark .q-nav-btn.qnav-current {
+  background: #2b333d !important;
+  border-color: #4b5966 !important;
+  color: #f1fbfa !important;
+  box-shadow: inset 3px 0 0 #78e3dd !important;
+}
+
+body.dark .q-nav-btn.qnav-answered {
+  background: rgba(34, 197, 94, 0.14) !important;
+  border-color: rgba(34, 197, 94, 0.34) !important;
+  color: #63d889 !important;
+}
+
+body.dark .q-nav-btn.qnav-skipped {
+  background: rgba(245, 158, 11, 0.13) !important;
+  border-color: rgba(245, 158, 11, 0.32) !important;
+  color: #f8c46d !important;
+}
+
+body.dark .q-card {
+  background: #161b22 !important;
+  border-color: #30363d !important;
+}
+
+body.dark .mcq-option {
+  background: #0d1117 !important;
+  border-color: #30363d !important;
+  color: #e6edf3 !important;
+}
+
+body.dark .mcq-option:hover {
+  background: rgba(31, 183, 181, 0.08) !important;
+  border-color: rgba(120, 227, 221, 0.34) !important;
+}
+
+body.dark .mcq-option.selected {
+  background: #1f2933 !important;
+  border-color: #4b5966 !important;
+  color: #e6edf3 !important;
+  box-shadow: inset 3px 0 0 #78e3dd !important;
+}
+
+body.dark .option-letter,
+body.dark .line-num {
+  background: #21262d !important;
+  border: 1px solid #30363d !important;
+  color: #c9d1d9 !important;
+}
+
+body.dark .mcq-option.selected .option-letter {
+  background: #303a46 !important;
+  border-color: #596776 !important;
+  color: #f1fbfa !important;
+}
+
+/* Exam header arrangement */
+.exam-header {
+  display: grid !important;
+  grid-template-columns: minmax(250px, 330px) minmax(280px, 1fr) minmax(110px, 150px) !important;
+  gap: 22px !important;
+  padding: 0 28px 0 20px !important;
+}
+
+.eh-left,
+.eh-center,
+.eh-right {
+  min-width: 0 !important;
+}
+
+.eh-left {
+  align-items: center !important;
+  display: flex !important;
+  gap: 12px !important;
+  width: auto !important;
+}
+
+.eh-left .badge {
+  flex: 0 0 auto !important;
+  line-height: 1.1 !important;
+  padding: 8px 14px !important;
+}
+
+.eh-left > span:not(.badge) {
+  color: #64748b !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  font-size: 0.76rem !important;
+  font-weight: 600 !important;
+  gap: 1px !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+}
+
+.eh-left > span:nth-child(3) {
+  display: none !important;
+}
+
+.eh-left > span strong,
+.progress-text strong {
+  color: #1FB7B5 !important;
+  font-size: 0.86rem !important;
+}
+
+.eh-center {
+  align-items: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  justify-content: center !important;
+  justify-self: center !important;
+  max-width: 460px !important;
+  width: 100% !important;
+}
+
+.exam-header .progress-bar-wrap {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.exam-header .progress-bar-bg {
+  height: 6px !important;
+}
+
+.progress-text {
+  color: #64748b !important;
+  font-size: 0.76rem !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-align: center !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.eh-right {
+  align-items: center !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+.round-timer {
+  align-items: center !important;
+  border-radius: 12px !important;
+  min-width: 96px !important;
+  padding: 4px 10px !important;
+}
+
+.rtimer-val {
+  font-size: 1.14rem !important;
+}
+
+.rtimer-lbl {
+  font-size: 0.58rem !important;
+  margin-top: 2px !important;
+}
+
+body.dark .exam-header {
+  grid-template-columns: minmax(250px, 330px) minmax(280px, 1fr) minmax(110px, 150px) !important;
+  padding: 0 28px 0 20px !important;
+}
+
+body.dark .eh-center {
+  max-width: 460px !important;
+}
+
+body.dark .round-timer {
+  background: rgba(31, 183, 181, 0.08) !important;
+  border: 1px solid rgba(120, 227, 221, 0.2) !important;
+}
+
+body.dark .eh-left > span:not(.badge),
+body.dark .progress-text,
+body.dark .rtimer-lbl {
+  color: #8b949e !important;
+}
+
+@media (max-width: 900px) {
+  .exam-header {
+    grid-template-columns: 1fr auto !important;
+    gap: 10px !important;
+    height: auto !important;
+    min-height: 66px !important;
+    padding: 8px 14px !important;
+  }
+
+  .eh-left {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .eh-center {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    max-width: none !important;
+    order: 3 !important;
+  }
+
+  .eh-right {
+    align-self: start !important;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+}
+
+/* Clean candidate-style theme switch */
+.theme-toggle-btn {
+  align-items: center !important;
+  background: #ffffff !important;
+  border: 1px solid #d8e2ea !important;
+  border-radius: 50% !important;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.14) !important;
+  color: #0D8A90 !important;
+  display: inline-flex !important;
+  height: 42px !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  right: 24px !important;
+  top: 72px !important;
+  width: 42px !important;
+}
+
+.theme-toggle-btn:hover {
+  border-color: #1FB7B5 !important;
+  box-shadow: 0 12px 26px rgba(31, 183, 181, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
+.theme-toggle-icon {
+  background: #1FB7B5 !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  display: block !important;
+  height: 18px !important;
+  position: relative !important;
+  width: 18px !important;
+}
+
+.theme-toggle-icon::after {
+  background: #ffffff !important;
+  border-radius: 50% !important;
+  content: "" !important;
+  height: 18px !important;
+  left: 7px !important;
+  position: absolute !important;
+  top: -3px !important;
+  width: 18px !important;
+}
+
+body.dark .theme-toggle-btn {
+  background: #0d1117 !important;
+  border-color: rgba(120, 227, 221, 0.38) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.34) !important;
+  color: #78e3dd !important;
+}
+
+body.dark .theme-toggle-icon {
+  background: #78e3dd !important;
+  box-shadow: 0 0 0 5px rgba(120, 227, 221, 0.14) !important;
+  height: 16px !important;
+  width: 16px !important;
+}
+
+body.dark .theme-toggle-icon::after {
+  content: none !important;
+}
+
+body.ai-interview-candidate-page .theme-toggle-btn {
+  top: 24px !important;
+}
+
+@media (max-width: 900px) {
+  body.ai-interview-candidate-page .page-board-header {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    padding: 18px !important;
+  }
+
+  body.ai-interview-candidate-page .page-board-actions,
+  body.ai-interview-candidate-page .page-board-actions .btn {
+    width: 100% !important;
+  }
+
+  body.ai-interview-candidate-page .mode-cards,
+  body.ai-interview-candidate-page .form-grid2 {
+    grid-template-columns: 1fr !important;
+  }
 }
