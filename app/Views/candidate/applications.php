@@ -2,6 +2,7 @@
 
 <?php
 $totalApplications = count($applications ?? []);
+$sessionCandidateName = (string) (session()->get('name') ?? session()->get('user_name') ?? '');
 $activeApplications = count(array_filter($applications ?? [], function ($application) {
     return !in_array($application['status'] ?? '', ['filtered_out', 'rejected', 'selected', 'withdrawn', 'hired'], true);
 }));
@@ -208,6 +209,8 @@ $completedApplications = count(array_filter($applications ?? [], function ($appl
                                                     <form action="<?= base_url('ai_interview/index.php') ?>" method="post" class="candidate-inline-form" ref="_blank">
                                                         <input type="hidden" name="candidate_id"
                                                                value="<?= htmlspecialchars($application['candidate_id'], ENT_QUOTES, 'UTF-8') ?>">
+                                                        <input type="hidden" name="candidate_name"
+                                                               value="<?= htmlspecialchars($sessionCandidateName, ENT_QUOTES, 'UTF-8') ?>">
                                                     
                                                         <input type="hidden" name="job_title"
                                                                value="<?= htmlspecialchars($application['job_title'], ENT_QUOTES, 'UTF-8') ?>">
