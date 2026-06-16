@@ -1101,6 +1101,12 @@ function terminateInterview(reason) {
 |--------------------------------------------------------------------------
 */
 
+/*
+|--------------------------------------------------------------------------
+| GET CANDIDATE PROFILE PHOTO DESCRIPTOR
+|--------------------------------------------------------------------------
+*/
+
 async function getProfileDescriptor() {
 
     const res =
@@ -1112,6 +1118,16 @@ async function getProfileDescriptor() {
         await res.json();
 
     if (!data.success) {
+
+        // ← NEW: Check if it's a missing photo error specifically
+        if (
+            data.reason === "no_photo" ||
+            data.message?.toLowerCase().includes("not found") ||
+            data.message?.toLowerCase().includes("no photo") ||
+            data.message?.toLowerCase().includes("no profile")
+        ) {
+            throw { type: "no_photo", message: data.message || "No profile photo found." };
+        }
 
         throw new Error(
             data.message ||
@@ -1234,6 +1250,59 @@ async function verifyCandidateFace() {
 
         console.error(err);
 
+        // ← NEW: Handle missing photo case with Update Profile Photo button
+        if (err.type === "no_photo") {
+
+            const overlay = showVerificationOverlay();
+
+            const msg = overlay.querySelector("#face-verify-message");
+            msg.textContent = "No profile photo found. Please upload your photo before continuing.";
+            msg.classList.add("is-error");
+
+            // Hide the default retry button
+            overlay.querySelector("#face-verify-retry").style.display = "none";
+
+            // Inject Update Profile Photo button if not already there
+            if (!document.getElementById("face-verify-update-photo-btn")) {
+
+                const updateBtn = document.createElement("button");
+                updateBtn.id = "face-verify-update-photo-btn";
+                updateBtn.textContent = "Update Profile Photo";
+
+                // Reuse same styles as retry button
+                updateBtn.style.marginTop      = "24px";
+                updateBtn.style.padding        = "14px 28px";
+                updateBtn.style.border         = "none";
+                updateBtn.style.borderRadius   = "12px";
+                updateBtn.style.fontSize       = "16px";
+                updateBtn.style.fontWeight     = "600";
+                updateBtn.style.cursor         = "pointer";
+                updateBtn.style.background     = "linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%)";
+                updateBtn.style.color          = "#ffffff";
+                updateBtn.style.boxShadow      = "0 10px 25px rgba(31, 183, 181, 0.35)";
+                updateBtn.style.display        = "inline-block";
+
+                updateBtn.onmouseenter = function () {
+                    updateBtn.style.transform = "translateY(-2px) scale(1.02)";
+                };
+                updateBtn.onmouseleave = function () {
+                    updateBtn.style.transform = "translateY(0) scale(1)";
+                };
+
+                updateBtn.onclick = function () {
+                    window.location.href =
+                        "http://localhost/hirematrix.serphawk.in/ai-job-portal/public/candidate/profile";
+                };
+
+                overlay.querySelector("#face-verify-box").appendChild(updateBtn);
+            }
+
+            reportViolation("Face verification failed: No profile photo on file");
+
+            return false;
+        }
+
+        // Original error handling for other failures
         updateVerificationOverlay(
             "Verification failed: " + err.message +
             ". Please contact support before continuing.",
