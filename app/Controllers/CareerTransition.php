@@ -220,9 +220,17 @@ class CareerTransition extends BaseController
         $lessonModel = new CourseLessonModel();
         $activeTransition = $transitionModel->getActiveTransition($candidateId);
         $module = $moduleModel->find($moduleId);
-        if (!$module || $module['transition_id'] != $activeTransition['id']) {
-            return redirect()->to('career-transition/course');
+
+        if (!$activeTransition) {
+            return redirect()->to('career-transition')
+                ->with('error', 'Please create or reactivate a career transition before opening module content.');
         }
+
+        if (!$module || $module['transition_id'] != $activeTransition['id']) {
+            return redirect()->to('career-transition/course')
+                ->with('error', 'That module is not available for your active career transition.');
+        }
+
         $lessons = $lessonModel->getLessonsByModule($moduleId);
         return view('candidate/course_content', ['transition' => $activeTransition, 'module' => $module, 'lessons' => $lessons]);
     }

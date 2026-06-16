@@ -1,6 +1,7 @@
 <?= view('Layouts/candidate_header', ['title' => $title ?? 'Payment History']) ?>
 
-<div class="container content-wrap py-5">
+<div class="payment-history-jobboard">
+<div class="container-fluid content-wrap py-5">
     <div class="page-board-header page-board-header-tight mb-4">
         <div class="page-board-copy">
             <span class="page-board-kicker"><i class="fas fa-receipt"></i> Billing</span>
@@ -12,7 +13,7 @@
     </div>
 
     <?php if (empty($orders)): ?>
-        <div class="text-center bg-white rounded shadow-sm p-5">
+        <div class="payment-history-empty text-center rounded p-5">
             <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
             <h5 class="text-muted">No payments yet</h5>
             <p class="text-muted mb-4">Subscribe to a premium plan to unlock all AI features.</p>
@@ -21,10 +22,10 @@
             </a>
         </div>
     <?php else: ?>
-        <div class="card shadow-sm">
+        <div class="card payment-history-card">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="thead-light">
+                <table class="table table-hover mb-0 payment-history-table">
+                    <thead>
                         <tr>
                             <th>Date</th>
                             <th>Plan</th>
@@ -57,6 +58,7 @@
             </div>
         </div>
     <?php endif; ?>
+</div>
 </div>
 
 <?= view('Layouts/candidate_footer') ?>

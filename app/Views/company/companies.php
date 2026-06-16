@@ -9,69 +9,75 @@ $openJobCount = array_sum(array_map(static fn ($company): int => (int) ($company
 ?>
 
 
-<div class="local-company-page">
+<div class="jobs-page-jobboard local-company-page">
     <div class="local-company-shell">
-        <section class="local-company-hero">
-            <div class="local-company-intro">
-                <div class="local-company-kicker"><i class="fas fa-building"></i> Local company finder</div>
-                <h1>Find companies hiring for your role in your city</h1>
-                <p>Search the companies and jobs already inside HireMatrix first, then use company profiles and open-role links to move faster from discovery to application.</p>
-            </div>
-            <div class="local-company-stats" aria-label="Local company summary">
-                <div class="local-company-stat">
-                    <strong><?= esc((string) $companyCount) ?></strong>
-                    <span>Featured companies</span>
+        <div class="container">
+            <div class="page-board-header page-board-header-tight">
+                <div class="page-board-copy">
+                    <span class="page-board-kicker"><i class="fas fa-building"></i> Local company finder</span>
+                    <h1 class="page-board-title">Local Hiring Companies</h1>
+                    <p class="page-board-subtitle">Find companies hiring for your role in your city, then move from discovery to open roles quickly.</p>
                 </div>
-                <div class="local-company-stat">
-                    <strong><?= esc((string) $openJobCount) ?></strong>
-                    <span>Open jobs represented</span>
+                <div class="page-board-actions">
+                    <a href="<?= base_url('candidate/company-job-discovery') ?>" class="btn btn-primary">
+                        <i class="fas fa-search-plus"></i> Company Discovery
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <section class="site-section pt-0">
+            <div class="container">
+                <div class="local-company-search" aria-label="Search local hiring companies">
+                    <div class="local-company-search-grid">
+                        <div class="local-company-field">
+                            <label for="role">Role or skill</label>
+                            <input type="text" id="role" placeholder="Frontend Developer, PHP, UI UX" autocomplete="off">
+                            <div id="roleSuggest" class="local-company-suggestions" hidden></div>
+                        </div>
+                        <div class="local-company-field">
+                            <label for="city">City</label>
+                            <input type="text" id="city" placeholder="Bangalore, Pune, Hyderabad" autocomplete="off">
+                            <div id="citySuggest" class="local-company-suggestions" hidden></div>
+                        </div>
+                        <button type="button" class="local-company-submit" id="companySearchButton">
+                            <i class="fas fa-search"></i>
+                            <span>Find Companies</span>
+                        </button>
+                    </div>
+
+                    <div class="local-company-chips" aria-label="Popular searches">
+                        <?php foreach (array_slice($popularRoles, 0, 4) as $roleName): ?>
+                            <button type="button" class="local-company-chip" data-role="<?= esc($roleName) ?>"><?= esc($roleName) ?></button>
+                        <?php endforeach; ?>
+                        <?php foreach (array_slice($popularCities, 0, 4) as $cityName): ?>
+                            <button type="button" class="local-company-chip" data-city="<?= esc($cityName) ?>"><?= esc($cityName) ?></button>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="local-company-search" aria-label="Search local hiring companies">
-            <div class="local-company-search-grid">
-                <div class="local-company-field">
-                    <label for="role">Role or skill</label>
-                    <input type="text" id="role" placeholder="Frontend Developer, PHP, UI UX" autocomplete="off">
-                    <div id="roleSuggest" class="local-company-suggestions" hidden></div>
+        <section class="site-section pt-0">
+            <div class="container">
+                <div class="local-company-section-head results-bar">
+                    <span class="results-count">
+                        <i class="fas fa-building"></i>
+                        <strong><?= esc((string) $companyCount) ?></strong>
+                        <span id="companyListTitle">Featured Local Companies</span>
+                    </span>
+                    <span class="results-count local-company-open-count">
+                        <i class="fas fa-briefcase"></i>
+                        <strong><?= esc((string) $openJobCount) ?></strong>
+                        <span id="companyListSubtitle">open jobs represented</span>
+                    </span>
                 </div>
-                <div class="local-company-field">
-                    <label for="city">City</label>
-                    <input type="text" id="city" placeholder="Bangalore, Pune, Hyderabad" autocomplete="off">
-                    <div id="citySuggest" class="local-company-suggestions" hidden></div>
+
+                <div class="local-company-grid" id="companyList">
+                    <?php foreach ($featuredCompanies as $company): ?>
+                        <?= view('company/company_card', ['company' => $company]) ?>
+                    <?php endforeach; ?>
                 </div>
-                <button type="button" class="local-company-submit" id="companySearchButton">
-                    <i class="fas fa-search"></i>
-                    <span>Find Companies</span>
-                </button>
-            </div>
-
-            <div class="local-company-chips" aria-label="Popular searches">
-                <?php foreach (array_slice($popularRoles, 0, 4) as $roleName): ?>
-                    <button type="button" class="local-company-chip" data-role="<?= esc($roleName) ?>"><?= esc($roleName) ?></button>
-                <?php endforeach; ?>
-                <?php foreach (array_slice($popularCities, 0, 4) as $cityName): ?>
-                    <button type="button" class="local-company-chip" data-city="<?= esc($cityName) ?>"><?= esc($cityName) ?></button>
-                <?php endforeach; ?>
-            </div>
-        </section>
-
-        <section>
-            <div class="local-company-section-head">
-                <div>
-                    <h2 id="companyListTitle">Featured Local Companies</h2>
-                    <p id="companyListSubtitle">A starting point for discovering local employers and active openings.</p>
-                </div>
-                <a href="<?= base_url('candidate/company-job-discovery') ?>" class="local-company-secondary" style="padding: 9px 13px; border-radius: 8px; text-decoration: none; font-weight: 800;">
-                    <i class="fas fa-search-plus"></i> Company Discovery
-                </a>
-            </div>
-
-            <div class="local-company-grid" id="companyList">
-                <?php foreach ($featuredCompanies as $company): ?>
-                    <?= view('company/company_card', ['company' => $company]) ?>
-                <?php endforeach; ?>
             </div>
         </section>
     </div>
@@ -114,12 +120,16 @@ function companyCard(company) {
     const description = company.description || "Explore this company and review current opportunities.";
     const openJobs = Number(company.open_jobs || 0);
     const website = company.website || "";
+    const jobsUrl = company.jobs_url || "";
     const logo = company.logo || "";
     const logoHtml = logo
         ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(name)}" onerror="this.parentElement.textContent='${companyInitial(name)}';">`
         : companyInitial(name);
-    const websiteHtml = website
-        ? `<div class="local-company-actions"><a href="${escapeHtml(website)}" target="_blank" rel="noopener" class="local-company-primary"><i class="fas fa-external-link-alt"></i> Website</a></div>`
+    const actionsHtml = (jobsUrl || website)
+        ? `<div class="local-company-actions">
+                ${jobsUrl ? `<a href="${escapeHtml(jobsUrl)}" class="local-company-primary"><i class="fas fa-briefcase"></i> View Jobs</a>` : ""}
+                ${website ? `<a href="${escapeHtml(website)}" target="_blank" rel="noopener" class="local-company-secondary"><i class="fas fa-external-link-alt"></i> Website</a>` : ""}
+           </div>`
         : "";
 
     return `
@@ -136,7 +146,7 @@ function companyCard(company) {
                 <span class="local-company-pill"><i class="fas fa-briefcase"></i> ${openJobs > 0 ? openJobs + " open" : "Verify openings"}</span>
             </div>
             <p class="local-company-description">${escapeHtml(description)}</p>
-            ${websiteHtml}
+            ${actionsHtml}
         </article>
     `;
 }

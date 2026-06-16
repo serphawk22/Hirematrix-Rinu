@@ -84,25 +84,24 @@ $roadmapPhases = [
 ?>
 
 <div class="strategy-jobboard">
-    <div class="container">
-        <div class="page-board-header page-board-header-tight">
-            <div class="page-board-copy">
-                <span class="page-board-kicker"><i class="fas fa-compass"></i> Search guidance</span>
-                <h1 class="page-board-title">Job Search Strategy Coach</h1>
-                <p class="page-board-subtitle">A living roadmap for your next applications, built to help you decide what to do today, this week, and next.</p>
+    <section class="strategy-content-canvas">
+        <div class="container-fluid">
+            <div class="page-board-header page-board-header-tight">
+                <div class="page-board-copy">
+                    <span class="page-board-kicker"><i class="fas fa-compass"></i> Search guidance</span>
+                    <h1 class="page-board-title">Job Search Strategy Coach</h1>
+                    <p class="page-board-subtitle">A living roadmap for your next applications, built to help you decide what to do today, this week, and next.</p>
+                </div>
+                <div class="page-board-actions">
+                    <a href="<?= base_url('jobs?tab=suggested') ?>" class="btn btn-outline-secondary">
+                        <i class="fas fa-briefcase mr-1"></i> Suggested Jobs
+                    </a>
+                    <a href="<?= base_url('candidate/profile') ?>" class="btn btn-primary">
+                        <i class="fas fa-user-edit mr-1"></i> Update Profile
+                    </a>
+                </div>
             </div>
-            <div class="page-board-actions">
-                <a href="<?= base_url('jobs?tab=suggested') ?>" class="btn btn-outline-secondary">
-                    <i class="fas fa-briefcase mr-1"></i> Suggested Jobs
-                </a>
-                <a href="<?= base_url('candidate/profile') ?>" class="btn btn-primary">
-                    <i class="fas fa-user-edit mr-1"></i> Update Profile
-                </a>
-            </div>
-        </div>
-    </div>
 
-    <div class="container py-5">
         <div class="strategy-shell">
             <aside class="strategy-sidebar">
                 <div class="strategy-sidebar-block">
@@ -225,7 +224,8 @@ $roadmapPhases = [
                 <?php endif; ?>
             </div>
         </div>
-    </div>
+        </div>
+    </section>
 </div>
 
 <?= view('Layouts/candidate_footer') ?>

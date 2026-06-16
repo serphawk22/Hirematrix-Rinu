@@ -242,6 +242,7 @@ details {
     color: #94a3b8;
 }
 </style>
+<link rel="stylesheet" href="css/style.css?v=candidate-ui"/>
 
 </head>
 
@@ -346,6 +347,13 @@ Passed: <?= $passedTests ?> / <?= $totalTests ?>
 </div> 
 <script src="js/theme.js"></script>
 <script>
+function appUrl(path) {
+    const marker = '/ai_interview/';
+    const markerIndex = window.location.pathname.indexOf(marker);
+    const appBasePath = markerIndex >= 0 ? window.location.pathname.slice(0, markerIndex) : '';
+    return window.location.origin + appBasePath + '/' + String(path).replace(/^\/+/, '');
+}
+
 document.getElementById("endInterviewBtn").addEventListener("click", async function () {
     const candidate_id = <?= $_SESSION['candidateId']; ?>;
     const job_id = <?= intval($_SESSION['jobid'] ?? 0) ?>;
@@ -366,7 +374,7 @@ document.getElementById("endInterviewBtn").addEventListener("click", async funct
         console.error("Status update failed", e);
     }
 
-    window.location.href = "https://hirematrix.serphawk.in/candidate/applications";
+    window.location.href = appUrl("candidate/applications");
 });
     </script>
 <script>

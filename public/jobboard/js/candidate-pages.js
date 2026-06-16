@@ -4,6 +4,42 @@
         return meta ? meta.getAttribute('content').replace(/\/$/, '') : window.location.origin;
     }
 
+    function removeLegacyCandidateDarkTheme() {
+        var link = document.getElementById('candidate-dark-theme-css');
+        if (link) {
+            link.remove();
+        }
+    }
+
+    function applyCandidateTheme(theme) {
+        var isDark = theme === 'dark';
+        document.body.classList.toggle('dark', isDark);
+        removeLegacyCandidateDarkTheme();
+
+        document.querySelectorAll('input[name="theme-preference"]').forEach(function (input) {
+            input.checked = input.value === theme;
+        });
+    }
+
+    function initCandidateThemeSettings() {
+        var themeInputs = document.querySelectorAll('input[name="theme-preference"]');
+        var savedTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+
+        applyCandidateTheme(savedTheme);
+
+        themeInputs.forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (!input.checked) {
+                    return;
+                }
+
+                var nextTheme = input.value === 'dark' ? 'dark' : 'light';
+                localStorage.setItem('theme', nextTheme);
+                applyCandidateTheme(nextTheme);
+            });
+        });
+    }
+
     function fetchHtml(url) {
         return fetch(url, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -49,6 +85,7 @@
         }
 
         currentFilterForm.replaceWith(newFilterForm);
+        initJobsFilterSelects(newFilterForm);
         if (window.history && window.history.replaceState) {
             window.history.replaceState({}, '', url);
         }
@@ -111,6 +148,108 @@
         if (recommendedStage) {
             recommendedStage.classList.toggle('is-switching', !!isLoading);
         }
+    }
+
+    function closeJobsFilterSelects(except) {
+        document.querySelectorAll('.jobs-filter-select.is-open').forEach(function (select) {
+            if (select !== except) {
+                select.classList.remove('is-open');
+                var button = select.querySelector('.jobs-filter-select__button');
+                if (button) {
+                    button.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+    }
+
+    function initJobsFilterSelects(scope) {
+        var root = scope || document;
+        var selects = root.querySelectorAll('.jobs-page-jobboard .sidebar .filter-section select, .sidebar .filter-section select');
+
+        selects.forEach(function (select) {
+            if (!select.closest('.jobs-page-jobboard')) {
+                return;
+            }
+
+            if (select.dataset.customFilterSelect === '1') {
+                return;
+            }
+
+            select.dataset.customFilterSelect = '1';
+            select.classList.add('jobs-native-filter-select');
+
+            var wrapper = document.createElement('div');
+            wrapper.className = 'jobs-filter-select';
+
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'jobs-filter-select__button';
+            button.setAttribute('aria-haspopup', 'listbox');
+            button.setAttribute('aria-expanded', 'false');
+
+            var valueSpan = document.createElement('span');
+            valueSpan.className = 'jobs-filter-select__value';
+
+            var icon = document.createElement('i');
+            icon.className = 'fas fa-chevron-down';
+            icon.setAttribute('aria-hidden', 'true');
+
+            button.appendChild(valueSpan);
+            button.appendChild(icon);
+
+            var list = document.createElement('div');
+            list.className = 'jobs-filter-select__list';
+            list.setAttribute('role', 'listbox');
+
+            function syncLabel() {
+                var selected = select.options[select.selectedIndex];
+                valueSpan.textContent = selected ? selected.textContent : '';
+            }
+
+            Array.prototype.slice.call(select.options).forEach(function (option) {
+                var item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'jobs-filter-select__option';
+                item.setAttribute('role', 'option');
+                item.dataset.value = option.value;
+                item.textContent = option.textContent;
+                item.classList.toggle('is-selected', option.selected);
+                item.setAttribute('aria-selected', option.selected ? 'true' : 'false');
+
+                item.addEventListener('click', function () {
+                    select.value = option.value;
+                    syncLabel();
+                    list.querySelectorAll('.jobs-filter-select__option').forEach(function (other) {
+                        var selected = other === item;
+                        other.classList.toggle('is-selected', selected);
+                        other.setAttribute('aria-selected', selected ? 'true' : 'false');
+                    });
+                    closeJobsFilterSelects();
+                    select.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+
+                list.appendChild(item);
+            });
+
+            syncLabel();
+            select.parentNode.insertBefore(wrapper, select.nextSibling);
+            wrapper.appendChild(button);
+            wrapper.appendChild(list);
+
+            button.addEventListener('click', function () {
+                var willOpen = !wrapper.classList.contains('is-open');
+                closeJobsFilterSelects(wrapper);
+                wrapper.classList.toggle('is-open', willOpen);
+                button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            });
+
+            button.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    closeJobsFilterSelects();
+                    button.focus();
+                }
+            });
+        });
     }
 
     function showRecommendationPane(recType) {
@@ -188,6 +327,10 @@
     }
 
     document.addEventListener('click', function (event) {
+        if (!event.target.closest('.jobs-filter-select')) {
+            closeJobsFilterSelects();
+        }
+
         var saveButton = event.target.closest('.js-save-job-toggle');
         if (!saveButton) {
             var filterLink = event.target.closest('.jobs-page-jobboard a[data-jobs-filter-link]');
@@ -262,6 +405,11 @@
                 saveButton.removeAttribute('data-saving');
                 saveButton.disabled = false;
             });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initCandidateThemeSettings();
+        initJobsFilterSelects(document);
     });
 
     window.dismissAllSuggestions = function () {

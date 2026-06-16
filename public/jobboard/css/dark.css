@@ -1,349 +1,178 @@
  /* =====================================================
-   🌙 ROOT COLORS (PURPLE + ORANGE SYSTEM)
-===================================================== */
-/* =====================================================
-   🌙 DARK THEME VARIABLES
+   DARK THEME VARIABLES - GitHub-style pure black
 ===================================================== */
 
 :root {
-  --primary: #8b5cf6;          /* main purple */
-  --primary-dark: #6d28d9;     /* deeper purple */
-
-  --secondary: #f97316;        /* orange */
-  --secondary-dark: #c2410c;   /* burnt orange */
-
-  --accent: #a78bfa;           /* soft violet accent */
-  --accent-dark: #7c3aed;
-
-  --background: #15122a;       /* main bg (not black) */
-  --foreground: #f3f4f6;       /* main text */
-
-  --card: #1e1a3d;             /* card bg */
-
-  --muted: #2a254d;            /* muted surfaces */
-  --muted-foreground: #9ca3af;
-
-  --border: #3b3660;           /* soft border */
-
-  --text-light: #c4b5fd;       /* subtle purple text */
+  --primary: #1FB7B5;
+  --primary-dark: #0D8A90;
+  --secondary: #53B86C;
+  --secondary-dark: #3F9E58;
+  --accent: #B5D84E;
+  --accent-dark: #9DC23D;
+  --background: #0d1117;
+  --foreground: #e6edf3;
+  --card: #161b22;
+  --muted: #21262d;
+  --muted-foreground: #8b949e;
+  --border: #30363d;
+  --text-light: #8b949e;
 }
+
 body.dark {
-    --primary: #8b5cf6;
-    --primary-soft: #a78bfa;
-    --accent: #f97316;
-    --accent-soft: #fb923c;
-
-    --bg-main: #15122a;
-    --bg-soft: #1e1a3d;
-    --bg-card: #241f4a;
-
-    --text-main: #f3f4f6;
-    --text-muted: #9ca3af;
-
-    background:
-        repeating-linear-gradient(
-            120deg,
-            rgba(139, 92, 246, 0.04) 0px,
-            rgba(139, 92, 246, 0.04) 1px,
-            transparent 1px,
-            transparent 80px
-        ),
-        linear-gradient(
-            120deg,
-            #15122a,
-            #1a1633,
-            #1e1a3d,
-            #181433
-        );
-
+    --primary: #1FB7B5;
+    --primary-soft: #1FB7B5;
+    --accent: #53B86C;
+    --accent-soft: #B5D84E;
+    --bg-main: #0d1117;
+    --bg-soft: #161b22;
+    --bg-card: #21262d;
+    --text-main: #e6edf3;
+    --text-muted: #8b949e;
+    background: #0d1117;
     color: var(--text-main);
 }
 
 
 /* =====================================================
-   🎯 HERO SECTION
+   HERO SECTION
 ===================================================== */
 
 body.dark .hero {
-    background: linear-gradient(
-        120deg,
-        #1a1633,
-        #221c44,
-        #2a2155,
-        #1a1633
-    );
+    background: #0d1117;
 }
 
+body.dark .hero::before { background: rgba(31,183,181,0.08); }
+body.dark .hero::after  { background: rgba(83,184,108,0.06); }
 
-/* glowing blobs */
-body.dark .hero::before {
-    background: rgba(138, 92, 246, 0.445);
-}
-
-body.dark .hero::after {
-    background: rgba(249,115,22,0.30);
-}
-
-
-/* light sweep */
 body.dark .hero .light-sweep {
-    background: linear-gradient(
-        120deg,
-        transparent,
-        rgba(255,255,255,0.12),
-        transparent
-    );
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.04), transparent);
 }
 
 
 /* =====================================================
-   ✨ TEXT
+   TEXT
 ===================================================== */
 
-body.dark .hero-title {
-    color: #f9fafb;
-}
+body.dark .hero-title    { color: #e6edf3; }
+body.dark .hero-subtitle { color: #8b949e; }
 
-body.dark .hero-subtitle {
-    color: #c4b5fd;
-}
+body.dark .text-muted { color: var(--text-muted) !important; }
 
-body.dark .text-muted {
-    color: var(--text-muted) !important;
-}
-
-
-/* gradient text */
 body.dark .gradient-text,
 body.dark .section-title,
 body.dark .job-card-title,
 body.dark .landing-get-started-title {
-    background: linear-gradient(
-        90deg,
-        #a78bfa,
-        #c4b5fd,
-        #fb923c
-    );
+    background: linear-gradient(90deg, #1FB7B5, #53B86C, #B5D84E);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 
 /* =====================================================
-   🔍 SEARCH PANEL (GLASS)
+   SEARCH PANEL
 ===================================================== */
 
 body.dark .landing-search-panel {
-    background: rgba(30,25,60,0.6);
-    backdrop-filter: blur(18px);
-
-    border: 1px solid rgba(139,92,246,0.2);
-
+    background: #161b22;
+    border: 1px solid #30363d;
     box-shadow: 0 20px 50px rgba(0,0,0,0.6);
 }
 
-body.dark .search-input-group {
-    background: rgba(255,255,255,0.04);
-}
-
-body.dark .search-input-group input {
-    color: #f3f4f6;
-}
+body.dark .search-input-group { background: #21262d; }
+body.dark .search-input-group input { color: #e6edf3; }
 
 
 /* =====================================================
-   🚀 BUTTONS
+   BUTTONS
 ===================================================== */
 
 body.dark .landing-search-submit {
-    background: linear-gradient(
-        135deg,
-        #8b5cf6,
-        #f97316
-    );
-
-    box-shadow: 0 10px 25px rgba(139,92,246,0.4);
+    background: var(--primary);
+    box-shadow: none;
 }
 
 body.dark .landing-search-submit:hover {
     transform: translateY(-2px);
-    box-shadow: 0 15px 35px rgba(249,115,22,0.5);
+    background: var(--primary-dark);
 }
 
 
 /* =====================================================
-   🧩 JOB CARDS
+   JOB CARDS
 ===================================================== */
+
 body.dark #jobs {
-    position: relative;
-    overflow: hidden;
-
-    background: rgba(25, 20, 50, 0.65);
-    backdrop-filter: blur(16px);
-
-    background: rgba(30, 25, 60, 0.55); /* 🔥 glass */
-    backdrop-filter: blur(14px);
-
-    border: 1px solid rgba(139,92,246,0.25);
-
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    background: #161b22;
+    border: 1px solid #30363d;
+    box-shadow: none;
 }
 
- 
 body.dark .job-card:hover {
-    transform: translateY(-6px);
-
-    background: linear-gradient(
-        135deg,
-        rgba(50,35,90,0.95),
-        rgba(80,40,120,0.95)
-    );
-
-    box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+    transform: translateY(-4px);
+    background: #21262d !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 
 
 /* =====================================================
-   📊 PROGRESS BAR
+   PROGRESS BAR
 ===================================================== */
 
 body.dark .progress-bar-custom {
-    background: linear-gradient(
-        90deg,
-        #8b5cf6,
-        #f97316
-    );
+    background: linear-gradient(90deg, #1FB7B5, #53B86C);
 }
 
 
 /* =====================================================
-   🔮 CAREER SECTION
+   CAREER SECTION
 ===================================================== */
 
-body.dark .landing-career-transition {
-    background: linear-gradient(
-        120deg,
-        #1a1633,
-        #221c44,
-        #44261c,
-        #1a1633
-    );
-}
-
-body.dark .landing-career-transition-inner {
-    background: rgba(30,25,60,0.6);
-    border: 1px solid rgba(139,92,246,0.25);
-}
-body.dark .landing-career-transition::before {
-    background: rgba(138, 92, 246, 0.264);
-}
-
-body.dark .landing-career-transition::after {
-    background: rgba(249, 116, 22, 0.221);
-}
+body.dark .landing-career-transition         { background: #0d1117; }
+body.dark .landing-career-transition-inner   { background: #161b22; border: 1px solid #30363d; }
+body.dark .landing-career-transition::before { background: rgba(31,183,181,0.06); }
+body.dark .landing-career-transition::after  { background: rgba(83,184,108,0.05); }
 
 
 /* =====================================================
-   🧱 GET STARTED
+   GET STARTED
 ===================================================== */
 
 body.dark .landing-get-started {
-    position: relative;
-    overflow: hidden;
-
-    background: linear-gradient(
-        120deg,
-        #141028,
-        #1f1638,
-        #2a1a45
-    );
+    background: #0d1117;
 }
 
-/* 🔥 stripes layer */
-body.dark .landing-get-started::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
+body.dark .landing-get-started::before { display: none; }
+body.dark .landing-get-started::after  { display: none; }
 
-    background: repeating-linear-gradient(
-        120deg,
-        rgba(139,92,246,0.07) 0px,
-        rgba(139,92,246,0.07) 2px,
-        transparent 2px,
-        transparent 70px,
-
-        rgba(255,140,90,0.06) 70px,
-        rgba(255,140,90,0.06) 72px,
-        transparent 72px,
-        transparent 140px
-    );
-
-    animation: moveStripes 40s linear infinite;
-}
-
-/* subtle glow blobs */
-body.dark .landing-get-started::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-
-    background:
-        radial-gradient(circle at 20% 30%, rgba(139,92,246,0.15), transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(255,140,90,0.12), transparent 40%);
-}
-
-/* keep content above */
-body.dark .landing-get-started .container {
-    position: relative;
-    z-index: 2;
-}
+body.dark .landing-get-started .container { position: relative; z-index: 2; }
 
 body.dark .landing-start-card {
-    background: rgba(25, 20, 50, 0.55);
-    backdrop-filter: blur(18px);
-
-    border: 1px solid rgba(139,92,246,0.2);
-
-    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    background: #161b22;
+    border: 1px solid #30363d;
+    box-shadow: none;
 }
+
+
+/* =====================================================
+   MICRO ANIMATIONS
+===================================================== */
+
 @keyframes moveStripes {
     from { transform: translateX(0); }
     to   { transform: translateX(-200px); }
 }
 
-/* =====================================================
-   🧭 NAVBAR
-===================================================== */
-
- 
-/* =====================================================
-   ✨ MICRO ANIMATIONS
-===================================================== */
-
 @keyframes glowPulse {
-    0% { box-shadow: 0 0 0 rgba(139,92,246,0.3); }
-    50% { box-shadow: 0 0 25px rgba(249,115,22,0.4); }
-    100% { box-shadow: 0 0 0 rgba(139,92,246,0.3); }
+    0%   { box-shadow: none; }
+    50%  { box-shadow: 0 0 20px rgba(31,183,181,0.2); }
+    100% { box-shadow: none; }
 }
 
-body.dark .landing-search-panel:hover {
-    animation: glowPulse 2.5s ease infinite;
-}
+body.dark .landing-search-panel:hover { animation: none; }
 
-body.dark .landing-career-transition-text{
-color:whitesmoke;
-}
-
-body.dark .landing-career-transition-btn{
-background-color: #1e1a3d;
-}
 
 /* =====================================================
-   🌙 GLOBAL DARK THEME ADDITIONS
-   Add AFTER all existing CSS files
+   GLOBAL DARK WRAPPERS
 ===================================================== */
 
 body.dark,
@@ -355,23 +184,23 @@ body.dark .profile-jobboard,
 body.dark .career-transition-jobboard,
 body.dark .dashboard-jobboard,
 body.dark .settings-jobboard {
-    background: var(--bg-main) !important;
+    background: #0d1117 !important;
     color: var(--text-main) !important;
 }
 
 
 /* =====================================================
-   🧭 NAVBAR DARK THEME
+   NAVBAR
 ===================================================== */
 
 body.dark .navbar,
 body.dark .site-navbar,
 body.dark .candidate-app .site-navbar,
 body.dark .recruiter-jobboard .site-navbar {
-    background: rgba(21, 18, 42, 0.92) !important;
+    background: rgba(13,17,23,0.95) !important;
     backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(139,92,246,0.18) !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    border-bottom: 1px solid #30363d !important;
+    box-shadow: none;
 }
 
 body.dark .site-navbar .site-logo a,
@@ -380,7 +209,7 @@ body.dark .nav-link,
 body.dark .site-navbar .site-navigation .site-menu > li > a,
 body.dark .candidate-app .site-navbar .site-menu > li > a,
 body.dark .recruiter-jobboard .site-navbar .site-menu > li > a {
-    color: #f3f4f6 !important;
+    color: #e6edf3 !important;
 }
 
 body.dark .site-navbar .site-navigation .site-menu > li > a:hover,
@@ -388,40 +217,34 @@ body.dark .site-navbar .site-navigation .site-menu > li > a.active,
 body.dark .candidate-app .site-navbar .site-menu > li > a:hover,
 body.dark .candidate-app .site-navbar .site-menu > li > a.active,
 body.dark .recruiter-jobboard .site-navbar .site-menu > li > a.active {
-    color: #a78bfa !important;
-    background: rgba(139,92,246,0.08);
+    color: #1FB7B5 !important;
+    background: rgba(31,183,181,0.08);
 }
 
-body.dark .site-navbar .site-menu-toggle {
-    color: #fff !important;
-}
-
-/* dropdown */
+body.dark .site-navbar .site-menu-toggle { color: #e6edf3 !important; }
 
 body.dark .site-navbar .site-navigation .site-menu .has-children .dropdown,
 body.dark .recruiter-jobboard .recruiter-avatar-dropdown {
-    background: #1e1a3d !important;
-    border: 1px solid rgba(139,92,246,0.18);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    background: #161b22 !important;
+    border: 1px solid #30363d;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 
 body.dark .site-navbar .site-navigation .site-menu .has-children .dropdown a,
 body.dark .recruiter-jobboard .recruiter-avatar-dropdown a {
-    color: #e5e7eb !important;
+    color: #e6edf3 !important;
     background: transparent !important;
 }
 
 body.dark .site-navbar .site-navigation .site-menu .has-children .dropdown a:hover,
 body.dark .recruiter-jobboard .recruiter-avatar-dropdown a:hover {
-    background: rgba(139,92,246,0.12) !important;
-    color: #c4b5fd !important;
+    background: #21262d !important;
+    color: #1FB7B5 !important;
 }
 
-/* navbar search */
-
 body.dark .landing-header .landing-header-search {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(139,92,246,0.18);
+    background: #21262d;
+    border: 1px solid #30363d;
 }
 
 body.dark .landing-header .landing-header-search strong,
@@ -430,12 +253,12 @@ body.dark .landing-header .landing-header-notification,
 body.dark .landing-header .landing-header-signin,
 body.dark .recruiter-jobboard .recruiter-notification-link,
 body.dark .recruiter-jobboard .recruiter-notification-link .icon-bell {
-    color: #f3f4f6 !important;
+    color: #e6edf3 !important;
 }
 
 
 /* =====================================================
-   📦 CARDS + PANELS
+   CARDS + PANELS
 ===================================================== */
 
 body.dark .card,
@@ -448,48 +271,39 @@ body.dark .settings-side,
 body.dark .settings-content,
 body.dark .landing-start-card,
 body.dark .job-card {
-    background: linear-gradient(
-        145deg,
-        rgba(30,25,60,0.95),
-        rgba(40,32,75,0.95)
-    ) !important;
-
-    border: 1px solid rgba(139,92,246,0.14) !important;
-
-    box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+    background: #161b22 !important;
+    border: 1px solid #30363d !important;
+    box-shadow: none;
 }
 
 body.dark .card-header,
 body.dark .application-head,
 body.dark .profile-jobboard .nav-tabs {
-    background: rgba(255,255,255,0.03) !important;
-    border-bottom: 1px solid rgba(139,92,246,0.12) !important;
+    background: #21262d !important;
+    border-bottom: 1px solid #30363d !important;
 }
 
 body.dark .action-card:hover,
 body.dark .application-card:hover,
 body.dark .job-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.75);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    border-color: #1FB7B5 !important;
 }
 
 
 /* =====================================================
-   📝 TEXT COLORS
+   TEXT COLORS
 ===================================================== */
 
-body.dark h1,
-body.dark h2,
-body.dark h3,
-body.dark h4,
-body.dark h5,
-body.dark h6,
+body.dark h1, body.dark h2, body.dark h3,
+body.dark h4, body.dark h5, body.dark h6,
 body.dark .section-title,
 body.dark .page-board-title,
 body.dark .settings-summary-title,
 body.dark .career-transition-role,
 body.dark .strategy-title {
-    color: #f9fafb !important;
+    color: #e6edf3 !important;
 }
 
 body.dark p,
@@ -501,52 +315,47 @@ body.dark .page-board-subtitle,
 body.dark .strategy-summary,
 body.dark .dashboard-metric-note,
 body.dark .settings-summary-note {
-    color: #b8bfd0 !important;
+    color: #8b949e !important;
 }
 
 
 /* =====================================================
-   🔘 BUTTONS
+   BUTTONS
 ===================================================== */
 
 body.dark .btn-primary,
 body.dark .landing-header .landing-header-cta,
 body.dark .recruiter-jobboard .btn-primary {
-    background: linear-gradient(
-        135deg,
-        #8b5cf6,
-        #f97316
-    ) !important;
-
+    background: #1FB7B5 !important;
     border: none !important;
     color: #fff !important;
-
-    box-shadow: 0 5px 15px rgba(139,92,246,0.35);
+    box-shadow: none;
 }
 
 body.dark .btn-primary:hover,
 body.dark .landing-header .landing-header-cta:hover,
 body.dark .recruiter-jobboard .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 40px rgba(249,115,22,0.35);
+    background: #0D8A90 !important;
+    transform: translateY(-1px);
 }
 
 body.dark .btn-outline-primary,
 body.dark .btn-outline-secondary {
-    background: rgba(255,255,255,0.03) !important;
-    border: 1px solid rgba(139,92,246,0.22) !important;
-    color: #c4b5fd !important;
+    background: transparent !important;
+    border: 1px solid #30363d !important;
+    color: #e6edf3 !important;
 }
 
 body.dark .btn-outline-primary:hover,
 body.dark .btn-outline-secondary:hover {
-    background: rgba(139,92,246,0.12) !important;
-    color: #fff !important;
+    background: #21262d !important;
+    border-color: #1FB7B5 !important;
+    color: #1FB7B5 !important;
 }
 
 
 /* =====================================================
-   📋 FORMS
+   FORMS
 ===================================================== */
 
 body.dark .form-control,
@@ -554,60 +363,46 @@ body.dark input,
 body.dark textarea,
 body.dark select,
 body.dark .search-input-group {
-    background: rgba(255,255,255,0.04) !important;
-    border: 1px solid rgba(139,92,246,0.15) !important;
-    color: #f3f4f6 !important;
+    background: #0d1117 !important;
+    border: 1px solid #30363d !important;
+    color: #e6edf3 !important;
 }
 
 body.dark .form-control:focus,
 body.dark input:focus,
 body.dark textarea:focus,
 body.dark select:focus {
-    border-color: #8b5cf6 !important;
-    box-shadow: 0 0 0 0.2rem rgba(139,92,246,0.22) !important;
-    background: rgba(255,255,255,0.06) !important;
+    border-color: #1FB7B5 !important;
+    box-shadow: 0 0 0 3px rgba(31,183,181,0.15) !important;
+    background: #161b22 !important;
 }
 
-body.dark ::placeholder {
-    color: #9ca3af !important;
-}
+body.dark ::placeholder { color: #6e7681 !important; }
 
 
 /* =====================================================
-   📊 TABLES
+   TABLES
 ===================================================== */
 
 body.dark table,
-body.dark .table {
-    color: #f3f4f6 !important;
-}
+body.dark .table { color: #e6edf3 !important; }
 
 body.dark .table td,
-body.dark .table th {
-    border-color: rgba(139,92,246,0.12) !important;
-}
+body.dark .table th { border-color: #30363d !important; }
 
-body.dark .table-striped tbody tr:nth-of-type(odd) {
-    background: rgba(255,255,255,0.02);
-}
+body.dark .table-striped tbody tr:nth-of-type(odd) { background: #161b22; }
 
 
 /* =====================================================
-   📈 PROGRESS + BADGES
+   PROGRESS + BADGES
 ===================================================== */
 
-body.dark .progress {
-    background: rgba(255,255,255,0.05) !important;
-}
+body.dark .progress { background: #21262d !important; }
 
 body.dark .progress-bar,
 body.dark .settings-progress-bar,
 body.dark .profile-progress-bar {
-    background: linear-gradient(
-        90deg,
-        #8b5cf6,
-        #f97316
-    ) !important;
+    background: linear-gradient(90deg, #1FB7B5, #53B86C) !important;
 }
 
 body.dark .status-badge,
@@ -615,218 +410,155 @@ body.dark .metric-chip,
 body.dark .summary-chip,
 body.dark .profile-chip,
 body.dark .career-transition-chip {
-    background: rgba(139,92,246,0.12) !important;
-    border: 1px solid rgba(139,92,246,0.18);
-    color: #d8ccff !important;
+    background: rgba(31,183,181,0.1) !important;
+    border: 1px solid rgba(31,183,181,0.2);
+    color: #1FB7B5 !important;
 }
 
 
 /* =====================================================
-   📱 MOBILE MENU
+   MOBILE MENU
 ===================================================== */
 
 body.dark .site-mobile-menu {
-    background: #181433 !important;
-    box-shadow: -10px 0 40px rgba(0,0,0,0.7);
+    background: #161b22 !important;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.5);
 }
 
-body.dark .site-mobile-menu a {
-    color: #f3f4f6 !important;
-}
-
-body.dark .site-mobile-menu a:hover {
-    color: #a78bfa !important;
-}
+body.dark .site-mobile-menu a       { color: #e6edf3 !important; }
+body.dark .site-mobile-menu a:hover { color: #1FB7B5 !important; }
 
 
 /* =====================================================
-   🔔 ALERTS
+   ALERTS
 ===================================================== */
 
 body.dark .alert,
 body.dark .alert-success {
-    background: rgba(139,92,246,0.08) !important;
-    border: 1px solid rgba(139,92,246,0.18) !important;
-    color: #e9ddff !important;
+    background: rgba(31,183,181,0.08) !important;
+    border: 1px solid rgba(31,183,181,0.2) !important;
+    color: #e6edf3 !important;
 }
 
 
 /* =====================================================
-   🦶 FOOTER DARK THEME
+   FOOTER
 ===================================================== */
 
 body.dark footer,
 body.dark .site-footer,
 body.dark .footer-area {
-    background: linear-gradient(
-        120deg,
-        #15122a 0%,
-        #291633 50%,
-        #42281a 100%
-    ) !important;
-
-    background-color: transparent !important;
-    background-image: linear-gradient(
-        120deg,
-        #15122a 0%,
-        #291633 50%,
-        #42281a 100%
-    ) !important;
-
-    border-top: 1px solid rgba(139,92,246,0.14);
+    background: #161b22 !important;
+    border-top: 1px solid #30363d;
 }
+
 body.dark .site-footer::before,
 body.dark .site-footer::after,
 body.dark .footer-area::before,
-body.dark .footer-area::after{
-    display:none !important;
-    background:none !important;
-}
+body.dark .footer-area::after { display: none !important; }
 
-body.dark footer h1,
-body.dark footer h2,
-body.dark footer h3,
-body.dark footer h4,
-body.dark footer h5,
-body.dark footer h6,
-body.dark .site-footer h1,
-body.dark .site-footer h2,
-body.dark .site-footer h3,
-body.dark .site-footer h4,
-body.dark .site-footer h5,
-body.dark .site-footer h6 {
-    color: #f8fafc !important;
-}
+body.dark footer h1, body.dark footer h2, body.dark footer h3,
+body.dark footer h4, body.dark footer h5, body.dark footer h6,
+body.dark .site-footer h1, body.dark .site-footer h2,
+body.dark .site-footer h3, body.dark .site-footer h4,
+body.dark .site-footer h5, body.dark .site-footer h6 { color: #e6edf3 !important; }
 
-body.dark footer p,
-body.dark footer li,
-body.dark footer span,
-body.dark footer a,
-body.dark .site-footer p,
-body.dark .site-footer li,
-body.dark .site-footer span,
-body.dark .site-footer a {
-    color: #b6bdd0 !important;
-}
+body.dark footer p, body.dark footer li,
+body.dark footer span, body.dark footer a,
+body.dark .site-footer p, body.dark .site-footer li,
+body.dark .site-footer span, body.dark .site-footer a { color: #8b949e !important; }
 
 body.dark footer a:hover,
-body.dark .site-footer a:hover {
-    color: #c4b5fd !important;
-}
+body.dark .site-footer a:hover { color: #1FB7B5 !important; }
 
 body.dark footer .social-icons a,
 body.dark .site-footer .social-icons a {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(139,92,246,0.12);
+    background: #21262d;
+    border: 1px solid #30363d;
 }
 
 
 /* =====================================================
-   ✨ SCROLLBAR
+   SCROLLBAR
 ===================================================== */
 
-body.dark ::-webkit-scrollbar {
-    width: 10px;
-}
-
-body.dark ::-webkit-scrollbar-track {
-    background: #181433;
-}
-
-body.dark ::-webkit-scrollbar-thumb {
-    background: linear-gradient(
-        180deg,
-        #8b5cf6,
-        #f97316
-    );
-
-    border-radius: 20px;
-}
+body.dark ::-webkit-scrollbar       { width: 8px; }
+body.dark ::-webkit-scrollbar-track { background: #0d1117; }
+body.dark ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+body.dark ::-webkit-scrollbar-thumb:hover { background: #1FB7B5; }
 
 
 /* =====================================================
-   ✨ EXTRA GLOW EFFECTS
+   HOVER BORDERS
 ===================================================== */
 
 body.dark .card:hover,
 body.dark .landing-search-panel:hover,
 body.dark .settings-summary-card:hover {
-    border-color: rgba(167,139,250,0.3) !important;
+    border-color: #1FB7B5 !important;
 }
 
 
 /* =====================================================
-   🔥 RECRUITER SPECIAL DARK FIXES
+   RECRUITER
 ===================================================== */
 
-body.dark .recruiter-jobboard .recruiter-avatar-btn {
-    box-shadow: 0 10px 25px rgba(139,92,246,0.35);
-}
-
-body.dark .recruiter-jobboard .recruiter-avatar-btn:hover {
-    box-shadow: 0 15px 35px rgba(249,115,22,0.4);
-}
+body.dark .recruiter-jobboard .recruiter-avatar-btn { box-shadow: none; }
+body.dark .recruiter-jobboard .recruiter-avatar-btn:hover { box-shadow: none; }
 
 
 /* =====================================================
-   🎯 SETTINGS PAGE DARK
+   SETTINGS PAGE
 ===================================================== */
 
 body.dark .settings-nav-link {
-    background: rgba(255,255,255,0.03) !important;
-    border: 1px solid rgba(139,92,246,0.12) !important;
-    color: #e5e7eb !important;
+    background: transparent !important;
+    border: 1px solid #30363d !important;
+    color: #e6edf3 !important;
 }
 
 body.dark .settings-nav-link:hover,
 body.dark .settings-nav-link.active {
-    background: rgba(139,92,246,0.12) !important;
-    color: #c4b5fd !important;
+    background: #21262d !important;
+    border-color: #1FB7B5 !important;
+    color: #1FB7B5 !important;
 }
 
 
 /* =====================================================
-   📦 TABS
+   TABS
 ===================================================== */
 
-body.dark .nav-tabs {
-    border-color: rgba(139,92,246,0.12) !important;
-}
-
-body.dark .nav-tabs .nav-link {
-    color: #b8bfd0 !important;
-}
+body.dark .nav-tabs { border-color: #30363d !important; }
+body.dark .nav-tabs .nav-link { color: #8b949e !important; }
 
 body.dark .nav-tabs .nav-link.active {
-    background: rgba(139,92,246,0.12) !important;
-    color: #fff !important;
-    border-color: rgba(139,92,246,0.18) !important;
+    background: #21262d !important;
+    color: #e6edf3 !important;
+    border-color: #30363d #30363d #21262d !important;
 }
 
 
 /* =====================================================
-   ✨ GLASS EFFECT
+   GLASS EFFECT
 ===================================================== */
 
 body.dark .glass-effect {
-    background: rgba(255,255,255,0.04);
+    background: rgba(22,27,34,0.8);
     backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid #30363d;
 }
 
-body.dark .btn-google-auth{
-    background: linear-gradient(
-        135deg,
-        #8a5cf673,
-        #f9741678
-    ) !important;
-
-    border: none !important;
-    color: #fff !important;
-
-    box-shadow: 0 0px 2px rgba(139,92,246,0.35);
+body.dark .btn-google-auth {
+    background: #21262d !important;
+    border: 1px solid #30363d !important;
+    color: #e6edf3 !important;
 }
+
 body.dark .btn-google-auth:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 40px rgba(249,115,22,0.35);
+    background: #30363d !important;
+    transform: translateY(-1px);
 }
+
+body.dark .landing-career-transition-text { color: #e6edf3; }
+body.dark .landing-career-transition-btn  { background-color: #21262d; }

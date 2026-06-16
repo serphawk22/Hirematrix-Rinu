@@ -109,7 +109,7 @@ $policy = $policyMap[$policyRaw] ?? $policyMap['REQUIRED_HARD'];
 
 <div class="job-details-jobboard">
     <div class="container">
-        <div class="job-details-page-header">
+        <div class="job-details-page-header page-board-header">
             <div class="page-board-copy">
                 <span class="page-board-kicker"><i class="fas fa-briefcase"></i> Job details</span>
                 <?php if ($isExpired): ?>
@@ -136,12 +136,7 @@ $policy = $policyMap[$policyRaw] ?? $policyMap['REQUIRED_HARD'];
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="job-details-header-actions">
-                <?php if (!$isExternalJob): ?>
-                    <a href="<?= esc($companyProfileUrl) ?>" class="btn btn-outline-secondary">
-                        <i class="fas fa-store mr-1"></i> Company Profile
-                    </a>
-                <?php endif; ?>
+            <div class="job-details-header-actions page-board-actions">
                 <a href="<?= base_url($isSaved ? 'job/unsave/' . $job['id'] : 'job/save/' . $job['id']) ?>"
                    class="btn btn-outline-secondary js-save-job-toggle"
                    data-save-url="<?= base_url($isSaved ? 'job/unsave/' . $job['id'] : 'job/save/' . $job['id']) ?>"
@@ -151,27 +146,11 @@ $policy = $policyMap[$policyRaw] ?? $policyMap['REQUIRED_HARD'];
                    data-save-label-saved="Saved">
                     <span class="js-save-icon <?= $isSaved ? 'fas' : 'far' ?> fa-bookmark mr-1"></span><span class="js-save-label"><?= $isSaved ? 'Saved' : 'Save Job' ?></span>
                 </a>
-                <div id="jobDetailsTopAction">
-                    <?php if ($isExternalJob && $hasExternalApplyUrl): ?>
-                        <a href="<?= esc($externalApplyUrl) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-                            <i class="fas fa-up-right-from-square mr-1"></i> Apply On Source
-                        </a>
-                    <?php elseif ($alreadyApplied): ?>
-                        <button class="btn job-details-applied-btn js-job-details-top-applied" disabled>
-                            <i class="fas fa-check mr-1"></i> Already Applied
-                        </button>
-                        <button type="button" class="btn btn-info ml-2" onclick="generateCoverLetter(<?= (int) $job['id'] ?>)">
-                            <i class="fas fa-magic mr-1"></i> AI Cover Letter
-                        
-                    <?php else: ?>
-                        <a href="#apply-job" class="btn btn-primary js-job-details-apply-link">
-                            <i class="fas fa-paper-plane mr-1"></i> Apply Now
-                        </a>
-                        <button type="button" class="btn btn-info ml-2" onclick="generateCoverLetter(<?= (int) $job['id'] ?>)">
-                            <i class="fas fa-magic mr-1"></i> AI Cover Letter
-                    <?php endif; ?>
-                    
-                </div>
+                <?php if (!$isExternalJob): ?>
+                    <button type="button" class="btn btn-outline-primary" onclick="generateCoverLetter(<?= (int) $job['id'] ?>)">
+                        <i class="fas fa-magic mr-1"></i> AI Cover Letter
+                    </button>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -370,7 +349,7 @@ $policy = $policyMap[$policyRaw] ?? $policyMap['REQUIRED_HARD'];
                         </div>
                     <?php endif; ?>
 
-                    <div class="detail-card" id="apply-job">
+                    <div class="detail-card job-details-apply-card" id="apply-job">
                         <div class="detail-card-title">
                             <span class="detail-card-icon"><i class="fas fa-paper-plane"></i></span>
                             <span>Apply</span>
@@ -473,7 +452,7 @@ $policy = $policyMap[$policyRaw] ?? $policyMap['REQUIRED_HARD'];
 
                     <div class="summary-card">
                         <div class="detail-card-title mb-3">
-                            <span class="detail-card-icon"><i class="fas fa-store"></i></span>
+                            <span class="detail-card-icon"><i class="fas fa-building"></i></span>
                             <span>Company</span>
                         </div>
                         <div class="d-flex align-items-center mb-3">
