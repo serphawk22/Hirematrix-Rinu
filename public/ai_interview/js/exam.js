@@ -250,7 +250,7 @@
     // Fill blank
     document.querySelectorAll('.fill-option').forEach(opt => {
       opt.addEventListener('click', () => {
-        if (document.getElementById('fillOpts')?.dataset.locked) return;
+       // if (document.getElementById('fillOpts')?.dataset.locked) return;
         handleFill(opt, q);
       });
     });
@@ -258,7 +258,7 @@
     // Debug lines
     document.querySelectorAll('.debug-line').forEach(line => {
       line.addEventListener('click', () => {
-        if (document.getElementById('debugLines')?.dataset.locked) return;
+        //if (document.getElementById('debugLines')?.dataset.locked) return;
         handleDebug(line, q);
       });
     });
@@ -278,47 +278,45 @@
   }
 
   /* ── ANSWER HANDLERS ─────────────────────────────────────────────────── */
-  function handleMCQ(el, q){
-    const wrap = document.getElementById('mcqOpts');
-    if (!wrap || wrap.dataset.locked) return;
-    wrap.dataset.locked='1';
-    const chosen = +el.dataset.idx;
-    const correct = chosen===q.correct;
-    // Only highlight selected — no reveal
-    wrap.querySelectorAll('.mcq-option').forEach((o,i)=>{
-      o.classList.toggle('selected', i===chosen);
-    });
-    // No explanation shown during exam
-    saveAnswer(chosen, correct, q);
-  }
+function handleMCQ(el, q){
+  const wrap = document.getElementById('mcqOpts');
+  if (!wrap) return;
+  // wrap.dataset.locked='1';  ← remove
+  const chosen = +el.dataset.idx;
+  const correct = chosen===q.correct;
+  wrap.querySelectorAll('.mcq-option').forEach((o,i)=>{
+    o.classList.toggle('selected', i===chosen);
+  });
+  saveAnswer(chosen, correct, q);
+}
 
-  function handleFill(el, q){
-    const wrap = document.getElementById('fillOpts');
-    if (!wrap || wrap.dataset.locked) return;
-    wrap.dataset.locked='1';
-    const chosen = +el.dataset.idx;
-    const correct = chosen===q.correct;
-    wrap.querySelectorAll('.fill-option').forEach((o,i)=>{
-      o.classList.toggle('selected', i===chosen);
-    });
-    const blank = document.getElementById('blankDisplay');
-    if(blank) blank.textContent = q.options[chosen];
-    // No explanation shown during exam
-    saveAnswer(chosen, correct, q);
-  }
+ function handleFill(el, q){
+  const wrap = document.getElementById('fillOpts');
+  if (!wrap) return;                          // ← remove dataset.locked check
+  // wrap.dataset.locked='1';                 // ← remove this line too
 
-  function handleDebug(el, q){
-    const wrap = document.getElementById('debugLines');
-    if (!wrap || wrap.dataset.locked) return;
-    wrap.dataset.locked='1';
-    const chosen = +el.dataset.idx;
-    const correct = chosen===q.correct;
-    wrap.querySelectorAll('.debug-line').forEach((o,i)=>{
-      o.classList.toggle('selected', i===chosen);
-    });
-    // No explanation shown during exam
-    saveAnswer(chosen, correct, q);
-  }
+  const chosen = +el.dataset.idx;
+  const correct = chosen === q.correct;
+  wrap.querySelectorAll('.fill-option').forEach((o,i)=>{
+    o.classList.toggle('selected', i===chosen);
+  });
+  const blank = document.getElementById('blankDisplay');
+  if(blank) blank.textContent = q.options[chosen];
+  saveAnswer(chosen, correct, q);
+}
+
+function handleDebug(el, q){
+  const wrap = document.getElementById('debugLines');
+  if (!wrap) return;                          // ← remove dataset.locked check
+  // wrap.dataset.locked='1';                 // ← remove this line too
+
+  const chosen = +el.dataset.idx;
+  const correct = chosen === q.correct;
+  wrap.querySelectorAll('.debug-line').forEach((o,i)=>{
+    o.classList.toggle('selected', i===chosen);
+  });
+  saveAnswer(chosen, correct, q);
+}
 
   function handleDragSubmit(q){
     const area = document.getElementById('dragArea');

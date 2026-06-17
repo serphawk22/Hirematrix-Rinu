@@ -63,46 +63,87 @@ function db_connect(): ?mysqli {
     return $conn;
 }
 
-function load_questions_from_db(string $round, int $limit = 30): array {
+function load_questions_from_db(string $round, int $limit = 30): array
+{
     $conn = db_connect();
+
     if (!$conn) {
         return [];
     }
 
-    // Fetch more than needed so we can skip corrupt/incomplete rows and still hit $limit.
+    mysqli_set_charset($conn, "utf8mb4");
+
     $fetchLimit = max($limit * 5, $limit);
-    $stmt = $conn->prepare(
-        "SELECT id, round, skill, question, option_a, option_b, option_c, option_d, correct_answer 
-         FROM ai_interview_questions 
-         WHERE round = ? 
-         ORDER BY RAND() 
-         LIMIT ?"
-    );
+
+    $stmt = $conn->prepare("
+        SELECT
+            id,
+            round,
+            skill,
+            question,
+            option_a,
+            option_b,
+            option_c,
+            option_d,
+            correct_answer
+        FROM ai_interview_questions
+        WHERE round = ?
+        ORDER BY RAND()
+        LIMIT ?
+    ");
+
     if (!$stmt) {
         $conn->close();
         return [];
     }
 
-    $stmt->bind_param('si', $round, $fetchLimit);
+    $stmt->bind_param("si", $round, $fetchLimit);
     $stmt->execute();
+
     $result = $stmt->get_result();
+
     $questions = [];
 
     while ($row = $result->fetch_assoc()) {
-        $options = array_values(array_filter([
-            $row['option_a'] ?? null,
-            $row['option_b'] ?? null,
-            $row['option_c'] ?? null,
-            $row['option_d'] ?? null,
-        ], fn($option) => $option !== null && $option !== ''));
 
-        // Skip broken rows (these cause "invisible options" in the UI).
-        if (empty($row['question']) || count($options) < 4) {
+        // Clean question
+        $question = trim((string)($row['question'] ?? ''));
+        $question = mb_convert_encoding($question, 'UTF-8', 'UTF-8');
+
+        // Clean options
+        $options = [];
+
+        foreach ([
+            $row['option_a'] ?? '',
+            $row['option_b'] ?? '',
+            $row['option_c'] ?? '',
+            $row['option_d'] ?? ''
+        ] as $option) {
+
+            $option = trim((string)$option);
+
+            if ($option === '') {
+                continue;
+            }
+
+            $option = mb_convert_encoding($option, 'UTF-8', 'UTF-8');
+
+            $options[] = $option;
+        }
+
+        if ($question === '' || count($options) < 4) {
+
+            error_log(
+                "Skipped Question ID {$row['id']} | Question: {$question} | Options Found: "
+                . count($options)
+            );
+
             continue;
         }
 
-        $correct = strtoupper(trim($row['correct_answer'] ?? ''));
-        $correctIndex = match($correct) {
+        $correct = strtoupper(trim((string)($row['correct_answer'] ?? '')));
+
+        $correctIndex = match ($correct) {
             'A' => 0,
             'B' => 1,
             'C' => 2,
@@ -110,15 +151,32 @@ function load_questions_from_db(string $round, int $limit = 30): array {
             default => 0,
         };
 
-        $questions[] = [
+        $questionData = [
             'id' => (int)$row['id'],
             'type' => 'mcq',
-            'category' => $row['skill'] ? $row['skill'] : ucfirst($row['round']),
-            'question' => $row['question'] ?? '',
+            'category' => !empty($row['skill'])
+                ? $row['skill']
+                : ucfirst($row['round']),
+            'question' => $question,
             'options' => array_slice($options, 0, 4),
             'correct' => $correctIndex,
-            'explanation' => '',
+            'explanation' => ''
         ];
+
+        // Test JSON encoding for this question
+        if (json_encode($questionData) === false) {
+
+            error_log(
+                "JSON ERROR ON QUESTION ID {$row['id']} : "
+                . json_last_error_msg()
+            );
+
+            error_log(print_r($row, true));
+
+            continue;
+        }
+
+        $questions[] = $questionData;
 
         if (count($questions) >= $limit) {
             break;
@@ -129,9 +187,31 @@ function load_questions_from_db(string $round, int $limit = 30): array {
     $conn->close();
 
     shuffle($questions);
+
     return $questions;
 }
 
+/* TEST 
+
+header('Content-Type: application/json; charset=utf-8');
+
+$questions = load_questions_from_db('technical', 30);
+
+$json = json_encode(
+    $questions,
+    JSON_PRETTY_PRINT |
+    JSON_UNESCAPED_UNICODE |
+    JSON_INVALID_UTF8_SUBSTITUTE
+);
+
+if ($json === false) {
+    die(
+        'JSON ERROR: ' .
+        json_last_error_msg()
+    );
+}
+
+echo $json;*/
 /* Returns parsed JSON — used for question generation */
 function openai_chat(string $prompt, int $timeout = 120): ?array {
     if (OPENAI_KEY === '') {
