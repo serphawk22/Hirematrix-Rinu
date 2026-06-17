@@ -6,10 +6,30 @@ function ai_interview_load_env(): void {
     }
 
     $loaded = true;
-    $envPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . '.env';
-    if (!is_file($envPath) || !is_readable($envPath)) {
+    $GLOBALS['ai_interview_env_path'] = null;
+
+    $envCandidates = [
+        dirname(__DIR__) . DIRECTORY_SEPARATOR . 'ai-job-portal' . DIRECTORY_SEPARATOR . '.env',
+        dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'ai-job-portal' . DIRECTORY_SEPARATOR . '.env',
+        dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . '.env',
+        dirname(__DIR__) . DIRECTORY_SEPARATOR . '.env',
+        dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . '.env',
+        __DIR__ . DIRECTORY_SEPARATOR . '.env',
+    ];
+
+    $envPath = null;
+    foreach ($envCandidates as $candidate) {
+        if (is_file($candidate) && is_readable($candidate)) {
+            $envPath = $candidate;
+            break;
+        }
+    }
+
+    if ($envPath === null) {
         return;
     }
+
+    $GLOBALS['ai_interview_env_path'] = $envPath;
 
     foreach (file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
         $line = trim($line);
@@ -40,25 +60,87 @@ function ai_env(string $key, ?string $default = null): ?string {
     return $_ENV[$key] ?? $_SERVER[$key] ?? $default;
 }
 
+function ai_mask_debug_value(?string $value): array {
+    $value = (string) ($value ?? '');
+    $length = strlen($value);
+
+    if ($length === 0) {
+        return [
+            'present' => false,
+            'length' => 0,
+            'preview' => '',
+        ];
+    }
+
+    if ($length <= 6) {
+        $preview = str_repeat('*', $length);
+    } else {
+        $preview = substr($value, 0, 3) . str_repeat('*', max($length - 6, 0)) . substr($value, -3);
+    }
+
+    return [
+        'present' => true,
+        'length' => $length,
+        'preview' => $preview,
+    ];
+}
+
+function ai_interview_debug_snapshot(): array {
+    ai_interview_load_env();
+
+    return [
+        'env_path' => $GLOBALS['ai_interview_env_path'] ?? null,
+        'resolved' => [
+            'db_host' => DB_HOST,
+            'db_name' => DB_NAME,
+            'db_user' => ai_mask_debug_value(DB_USER),
+            'db_pass' => ai_mask_debug_value(DB_PASS),
+            'openai_key' => ai_mask_debug_value(OPENAI_KEY),
+            'openai_model' => OPENAI_MODEL,
+        ],
+        'raw_env_presence' => [
+            'AI_INTERVIEW_DB_HOST' => ai_mask_debug_value(ai_env('AI_INTERVIEW_DB_HOST', '')),
+            'AI_INTERVIEW_DB_NAME' => ai_mask_debug_value(ai_env('AI_INTERVIEW_DB_NAME', '')),
+            'AI_INTERVIEW_DB_USER' => ai_mask_debug_value(ai_env('AI_INTERVIEW_DB_USER', '')),
+            'AI_INTERVIEW_DB_PASS' => ai_mask_debug_value(ai_env('AI_INTERVIEW_DB_PASS', '')),
+            'AI_INTERVIEW_OPENAI_API_KEY' => ai_mask_debug_value(ai_env('AI_INTERVIEW_OPENAI_API_KEY', '')),
+            'database.default.hostname' => ai_mask_debug_value(ai_env('database.default.hostname', '')),
+            'database.default.database' => ai_mask_debug_value(ai_env('database.default.database', '')),
+            'database.default.username' => ai_mask_debug_value(ai_env('database.default.username', '')),
+            'database.default.password' => ai_mask_debug_value(ai_env('database.default.password', '')),
+            'OPENAI_API_KEY' => ai_mask_debug_value(ai_env('OPENAI_API_KEY', '')),
+        ],
+    ];
+}
+
 define('OPENAI_KEY',   ai_env('AI_INTERVIEW_OPENAI_API_KEY', ai_env('OPENAI_API_KEY', '')));
 define('OPENAI_MODEL', ai_env('OPENAI_MODEL', 'gpt-4o'));
 define('APP_NAME',     'NexusAI Interview');
 define('Q_TIMEOUT',    90);
 
-define('DB_HOST', ai_env('database.default.hostname', ai_env('DB_HOST', '')));
-define('DB_USER', ai_env('database.default.username', ai_env('DB_USER', '')));
-define('DB_PASS', ai_env('database.default.password', ai_env('DB_PASS', '')));
-define('DB_NAME', ai_env('database.default.database', ai_env('DB_NAME', '')));
+define('DB_HOST', ai_env('AI_INTERVIEW_DB_HOST', ai_env('database.default.hostname', ai_env('DB_HOST', ''))));
+define('DB_USER', ai_env('AI_INTERVIEW_DB_USER', ai_env('database.default.username', ai_env('DB_USER', ''))));
+define('DB_PASS', ai_env('AI_INTERVIEW_DB_PASS', ai_env('database.default.password', ai_env('DB_PASS', ''))));
+define('DB_NAME', ai_env('AI_INTERVIEW_DB_NAME', ai_env('database.default.database', ai_env('DB_NAME', ''))));
  
 function db_connect(): ?mysqli {
     if (DB_HOST === '' || DB_USER === '' || DB_NAME === '') {
         return null;
     }
 
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $previousReportMode = mysqli_report(MYSQLI_REPORT_OFF);
+    try {
+        $conn = @new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    } catch (mysqli_sql_exception $e) {
+        mysqli_report($previousReportMode);
+        return null;
+    }
+
+    mysqli_report($previousReportMode);
     if ($conn->connect_error) {
         return null;
     }
+
     $conn->set_charset('utf8mb4');
     return $conn;
 }
