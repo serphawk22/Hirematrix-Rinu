@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Models\CompanyModel;
 use CodeIgniter\RESTful\ResourceController;
 
 class ApiAuthController extends ResourceController
@@ -223,7 +224,215 @@ class ApiAuthController extends ResourceController
         ]);
     }
 
-    public function changePassword()
+    
+    public function registerRecruiter()
+    {
+        $rules = [
+            'company_name'   => 'required|min_length[2]',
+            'recruiter_type' => 'required|in_list[direct_employer,consultancy]',
+            'name'           => 'required|min_length[3]',
+            'designation'    => 'required|min_length[2]',
+            'email'          => 'required|valid_email|is_unique[users.email]',
+            'phone'          => 'required|numeric|min_length[10]|max_length[15]',
+            'password'       => 'required|min_length[6]',
+        ];
+
+        $json = $this->request->getJSON();
+        if ($json) {
+            $data = (array) $json;
+            if (!$this->validateData($data, $rules)) {
+                return $this->failValidationErrors($this->validator->getErrors());
+            }
+        } else {
+            if (!$this->validate($rules)) {
+                return $this->failValidationErrors($this->validator->getErrors());
+            }
+            $json = (object) $this->request->getPost();
+        }
+
+        $email = strtolower(trim((string) $json->email));
+        $companyName = trim((string) $json->company_name);
+        $designation = trim((string) $json->designation);
+        $recruiterType = (string) $json->recruiter_type;
+        $recruiterType = in_array($recruiterType, ['direct_employer', 'consultancy'], true) ? $recruiterType : 'direct_employer';
+        $agencyRegistrationNumber = trim((string) ($json->agency_registration_number ?? ''));
+        $gstNumber = trim((string) ($json->gst_number ?? ''));
+        $website = trim((string) ($json->website ?? ''));
+        $officialEmail = trim((string) ($json->official_email ?? ''));
+
+        // Skipping free email domain validation for mobile app as requested.
+
+        $companyModel = new \App\Models\CompanyModel();
+        $company = $companyModel->where('LOWER(name)', strtolower($companyName))->first();
+        if (!$company) {
+            $companyModel->insert([
+                'name' => $companyName,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+            $companyId = (int) $companyModel->getInsertID();
+        } else {
+            $companyId = (int) $company['id'];
+        }
+
+        $model = new \App\Models\UserModel();
+        $verificationToken = (string) random_int(100000, 999999);
+
+        $model->insert([
+            'company_id'               => $companyId,
+            'name'                     => $json->name,
+            'email'                    => $email,
+            'phone'                    => $json->phone,
+            'password'                 => password_hash($json->password, PASSWORD_DEFAULT),
+            'role'                     => 'recruiter',
+            'email_verification_token' => $verificationToken
+        ]);
+
+        $newRecruiterId = (int) $model->getInsertID();
+        $model->upsertRecruiterProfile($newRecruiterId, [
+            'name'                       => (string) $json->name,
+            'phone'                      => (string) $json->phone,
+            'designation'                => $designation,
+            'company_name'               => $companyName,
+            'recruiter_type'             => $recruiterType,
+            'verification_status'        => $recruiterType === 'consultancy' ? 'pending' : 'verified',
+            'agency_registration_number' => $agencyRegistrationNumber !== '' ? $agencyRegistrationNumber : null,
+            'gst_number'                 => $gstNumber !== '' ? $gstNumber : null,
+            'website'                    => $website !== '' ? $website : null,
+            'official_email'             => $officialEmail !== '' ? $officialEmail : null,
+        ]);
+
+        // Send verification email
+        $emailService = \Config\Services::email();
+        $emailService->setTo($email);
+        $emailService->setSubject('Verify your Recruiter Account');
+        $emailService->setMessage("Your verification token is: <strong>{$verificationToken}</strong>");
+        $emailService->send();
+
+        return $this->respondCreated([
+            'status'  => 'success',
+            'message' => 'Recruiter registered successfully. Please verify your email.',
+            'data'    => [
+                'user_id' => $newRecruiterId
+            ]
+        ]);
+    }
+
+
+    public function verifyRecruiterEmail()
+    {
+        $rules = [
+            'user_id' => 'required|numeric',
+            'token'   => 'required'
+        ];
+
+        $json = $this->request->getJSON();
+        if ($json) {
+            $data = (array) $json;
+            if (!$this->validateData($data, $rules)) {
+                return $this->failValidationErrors($this->validator->getErrors());
+            }
+        } else {
+            if (!$this->validate($rules)) {
+                return $this->failValidationErrors($this->validator->getErrors());
+            }
+            $json = (object) $this->request->getPost();
+        }
+
+        $userId = (int) $json->user_id;
+        $token = (string) $json->token;
+
+        $model = new \App\Models\UserModel();
+        $user = $model->find($userId);
+
+        if (!$user || $user['role'] !== 'recruiter') {
+            return $this->failNotFound('Recruiter not found.');
+        }
+
+        if (!empty($user['email_verified_at'])) {
+            return $this->respond([
+                'status'  => 'success',
+                'message' => 'Email is already verified.'
+            ]);
+        }
+
+        if ($user['email_verification_token'] !== $token) {
+            return $this->fail('Invalid verification code.');
+        }
+
+        $model->update($userId, [
+            'email_verified_at' => date('Y-m-d H:i:s'),
+            'email_verification_token' => null
+        ]);
+
+        return $this->respond([
+            'status'  => 'success',
+            'message' => 'Email successfully verified!'
+        ]);
+    }
+
+
+    public function resendRecruiterVerification()
+    {
+        $json = $this->request->getJSON();
+        $userId = (int) ($json->user_id ?? $this->request->getVar('user_id'));
+
+        if (!$userId) {
+            return $this->fail('user_id is required.');
+        }
+
+        $model = new \App\Models\UserModel();
+        $user = $model->find($userId);
+
+        if (!$user || $user['role'] !== 'recruiter') {
+            return $this->failNotFound('Recruiter not found.');
+        }
+
+        if (!empty($user['email_verified_at'])) {
+            return $this->respond([
+                'status'  => 'success',
+                'message' => 'Email is already verified.'
+            ]);
+        }
+
+        $verificationToken = (string) random_int(100000, 999999);
+        $model->update($userId, ['email_verification_token' => $verificationToken]);
+
+        try {
+            $emailConfig = config('Email');
+            $emailService = \Config\Services::email(null, false);
+            $emailService->clear(true);
+            $emailService->setMailType('html');
+
+            if ($emailConfig->fromEmail !== '') {
+                $emailService->setFrom($emailConfig->fromEmail, $emailConfig->fromName ?: 'HireMatrix');
+            }
+
+            $emailService->setTo((string) $user['email']);
+            $emailService->setSubject('Your HireMatrix Verification Code');
+            $emailService->setMessage("
+                <div style='font-family:sans-serif;padding:24px;'>
+                    <h2>Recruiter Email Verification</h2>
+                    <p>Hi {$user['name']},</p>
+                    <p>Your new verification code is:</p>
+                    <div style='font-size:32px;font-weight:800;letter-spacing:8px;padding:16px;background:#f8fafc;border-radius:8px;display:inline-block;'>
+                        {$verificationToken}
+                    </div>
+                    <p style='margin-top:16px;color:#64748b;'>This code expires once a new one is requested.</p>
+                </div>
+            ");
+            $emailService->send(false);
+        } catch (\Throwable $e) {
+            log_message('error', 'Resend verification email failed: ' . $e->getMessage());
+        }
+
+        return $this->respond([
+            'status'  => 'success',
+            'message' => 'A new verification code has been sent to your email.'
+        ]);
+    }
+
+public function changePassword()
     {
         $rules = [
             'user_id'          => 'required',
@@ -432,3 +641,4 @@ class ApiAuthController extends ResourceController
         }
     }
 }
+

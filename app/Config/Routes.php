@@ -79,6 +79,9 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->post('login', 'ApiAuthController::login');
     $routes->post('google-login', 'ApiAuthController::googleLogin');
     $routes->post('register', 'ApiAuthController::register');
+    $routes->post('recruiter/register', 'ApiAuthController::registerRecruiter');
+    $routes->post('recruiter/verify-email', 'ApiAuthController::verifyRecruiterEmail');
+    $routes->post('recruiter/resend-verification', 'ApiAuthController::resendRecruiterVerification');
     $routes->post('onboarding/(:segment)', 'ApiOnboardingController::saveStep/$1');
     $routes->get('profile/(:num)', 'ApiProfileController::getProfile/$1');
     $routes->post('profile/update_personal', 'ApiProfileController::updatePersonal');
