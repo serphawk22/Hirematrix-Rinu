@@ -56,7 +56,7 @@
     <div class="intro-screen animate-in">
       <div class="glass-card intro-card">
         <div class="round-badge"><span class="badge badge-accent">Round ${round} of 2</span></div>
-        <span class="intro-icon">${isR1?'🧠':'💻'}</span>
+        <span class="intro-icon ${isR1 ? 'intro-icon-aptitude' : 'intro-icon-technical'}" aria-hidden="true"><i class="fas ${isR1 ? 'fa-graduation-cap' : 'fa-laptop'}" aria-hidden="true"></i></span>
         <h2 class="intro-title text-gradient">${isR1?'Aptitude Assessment':'Technical Assessment'}</h2>
         <p class="intro-sub">
           ${isR1
@@ -64,16 +64,31 @@
             : `30 technical questions for <strong>${CANDIDATE.position}</strong>. Includes MCQ, code ordering, fill-in-logic, and debug challenges.`}
         </p>
         <div class="round-rules">
-          <div class="rule-item">⏱️ 25 minutes total</div>
-          <div class="rule-item">📋 30 questions</div>
-          <div class="rule-item">↩️ Review &amp; change answers</div>
-          <div class="rule-item">⚡ Auto-submit on timeout</div>
+          <div class="rule-item"><i class="far fa-clock" aria-hidden="true"></i><span>25 minutes total</span></div>
+          <div class="rule-item"><i class="fas fa-clipboard" aria-hidden="true"></i><span>30 questions</span></div>
+          <div class="rule-item"><i class="fas fa-undo-alt" aria-hidden="true"></i><span>Review &amp; change answers</span></div>
+          <div class="rule-item"><i class="fas fa-bolt" aria-hidden="true"></i><span>Auto-submit on timeout</span></div>
         </div>
         <button class="btn btn-primary btn-lg" id="startRoundBtn">
-          ${isR1?'🚀 Start Round 1':'⚡ Start Round 2'}
+          <i class="fas ${isR1 ? 'fa-rocket' : 'fa-bolt'}" aria-hidden="true"></i><span>${isR1 ? 'Start Round 1' : 'Start Round 2'}</span>
         </button>
       </div>
     </div>`;
+    const introIcon = sc.querySelector('.intro-icon');
+    if (introIcon) {
+      introIcon.classList.add(isR1 ? 'intro-icon-aptitude' : 'intro-icon-technical');
+      introIcon.innerHTML = `<i class="fas ${isR1 ? 'fa-graduation-cap' : 'fa-laptop'}" aria-hidden="true"></i>`;
+    }
+    const ruleItems = sc.querySelectorAll('.round-rules .rule-item');
+    const ruleIcons = ['far fa-clock', 'fas fa-clipboard', 'fas fa-undo-alt', 'fas fa-bolt'];
+    const ruleLabels = ['25 minutes total', '30 questions', 'Review & change answers', 'Auto-submit on timeout'];
+    ruleItems.forEach((item, index) => {
+      item.innerHTML = `<i class="${ruleIcons[index] || 'fas fa-circle'}" aria-hidden="true"></i><span>${ruleLabels[index] || item.textContent}</span>`;
+    });
+    const startBtn = document.getElementById('startRoundBtn');
+    if (startBtn) {
+      startBtn.innerHTML = `<i class="fas ${isR1 ? 'fa-rocket' : 'fa-bolt'}" aria-hidden="true"></i><span>${isR1 ? 'Start Round 1' : 'Start Round 2'}</span>`;
+    }
     document.getElementById('startRoundBtn').addEventListener('click',()=>{
       state.idx = roundStart[state.roundIdx];
       state.qStart = Date.now();

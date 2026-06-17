@@ -18,6 +18,253 @@ const ctx = canvas.getContext("2d");
 
 let previousFrame = null;
 
+let modelsLoaded = false;
+
+const FACE_MATCH_THRESHOLD = 0.5; // lower = stricter. 0.45 - 0.6 is a reasonable range
+
+const INTERVIEW_EXIT_URL = "http://localhost/hirematrix.serphawk.in/ai-job-portal/public/candidate/applications"; // <-- page the candidate is redirected to after being removed
+
+/*
+|--------------------------------------------------------------------------
+| THEME VARIABLES (LIGHT + DARK)
+|--------------------------------------------------------------------------
+*/
+
+function injectThemeVariables() {
+
+    if (
+        document.getElementById(
+            "theme-vars-style"
+        )
+    ) {
+        return;
+    }
+
+    const themeStyle =
+        document.createElement("style");
+
+    themeStyle.id =
+        "theme-vars-style";
+
+    themeStyle.innerHTML = `
+
+        /*
+        |--------------------------------------------------------------------------
+        | PERMISSION POPUP
+        |--------------------------------------------------------------------------
+        */
+
+        #camera-permission-popup {
+            background: rgba(248, 252, 251, 0.88);
+        }
+
+        body.dark #camera-permission-popup {
+            background: rgba(17, 17, 17, 0.88);
+        }
+
+        #permission-box {
+            background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%);
+            border: 1px solid #D9ECE5;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        body.dark #permission-box {
+            background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%);
+            border: 1px solid #23343A;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        #permission-icon {
+            background: rgba(31, 183, 181, 0.16);
+            border: 1px solid rgba(31, 183, 181, 0.35);
+            box-shadow: 0 0 25px rgba(31, 183, 181, 0.35);
+        }
+
+        body.dark #permission-icon {
+            background: rgba(31, 183, 181, 0.2);
+            border: 1px solid rgba(31, 183, 181, 0.4);
+            box-shadow: 0 0 25px rgba(31, 183, 181, 0.4);
+        }
+
+        #permission-box h2 {
+            color: #16212B;
+        }
+
+        body.dark #permission-box h2 {
+            color: #F8FAFC;
+        }
+
+        #permission-box p {
+            color: #64748B;
+        }
+
+        body.dark #permission-box p {
+            color: #94A3B8;
+        }
+
+        #grant-permission-btn {
+            background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(31, 183, 181, 0.35);
+        }
+
+        body.dark #grant-permission-btn {
+            background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(31, 183, 181, 0.45);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | VERIFICATION OVERLAY
+        |--------------------------------------------------------------------------
+        */
+
+        #face-verify-overlay {
+            background: rgba(248, 252, 251, 0.92);
+        }
+
+        body.dark #face-verify-overlay {
+            background: rgba(17, 17, 17, 0.92);
+        }
+
+        #face-verify-box {
+            background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%);
+            border: 1px solid #D9ECE5;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        body.dark #face-verify-box {
+            background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%);
+            border: 1px solid #23343A;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        #face-verify-icon {
+            background: rgba(31, 183, 181, 0.16);
+            border: 1px solid rgba(31, 183, 181, 0.35);
+            box-shadow: 0 0 25px rgba(31, 183, 181, 0.35);
+        }
+
+        body.dark #face-verify-icon {
+            background: rgba(31, 183, 181, 0.2);
+            border: 1px solid rgba(31, 183, 181, 0.4);
+            box-shadow: 0 0 25px rgba(31, 183, 181, 0.4);
+        }
+
+        #face-verify-box h2 {
+            color: #16212B;
+        }
+
+        body.dark #face-verify-box h2 {
+            color: #F8FAFC;
+        }
+
+        #face-verify-message {
+            color: #64748B;
+        }
+
+        body.dark #face-verify-message {
+            color: #94A3B8;
+        }
+
+        #face-verify-message.is-error {
+            color: #E0524F;
+        }
+
+        body.dark #face-verify-message.is-error {
+            color: #E0524F;
+        }
+
+        #face-verify-preview {
+            border: 1px solid #D9ECE5;
+        }
+
+        body.dark #face-verify-preview {
+            border: 1px solid #23343A;
+        }
+
+        #face-verify-retry {
+            background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(31, 183, 181, 0.35);
+        }
+
+        body.dark #face-verify-retry {
+            background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(31, 183, 181, 0.45);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | TERMINATION OVERLAY
+        |--------------------------------------------------------------------------
+        */
+
+        #face-terminate-overlay {
+            background: rgba(248, 252, 251, 0.96);
+        }
+
+        body.dark #face-terminate-overlay {
+            background: rgba(17, 17, 17, 0.96);
+        }
+
+        #face-terminate-box {
+            background: #FFFFFF;
+            border: 1px solid rgba(224, 82, 79, 0.35);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        body.dark #face-terminate-box {
+            background: #162327;
+            border: 1px solid rgba(224, 82, 79, 0.4);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+        }
+
+        #face-terminate-icon {
+            background: rgba(224, 82, 79, 0.16);
+            border: 1px solid rgba(224, 82, 79, 0.35);
+            box-shadow: 0 0 25px rgba(224, 82, 79, 0.35);
+        }
+
+        body.dark #face-terminate-icon {
+            background: rgba(224, 82, 79, 0.2);
+            border: 1px solid rgba(224, 82, 79, 0.4);
+            box-shadow: 0 0 25px rgba(224, 82, 79, 0.4);
+        }
+
+        #face-terminate-box h2 {
+            color: #16212B;
+        }
+
+        body.dark #face-terminate-box h2 {
+            color: #F8FAFC;
+        }
+
+        #face-terminate-message {
+            color: #E0524F;
+        }
+
+        body.dark #face-terminate-message {
+            color: #E0524F;
+        }
+
+        #face-terminate-countdown {
+            color: #94A3B8;
+        }
+
+        body.dark #face-terminate-countdown {
+            color: #7A8B96;
+        }
+
+    `;
+
+    document.head.appendChild(
+        themeStyle
+    );
+}
+
 /*
 |--------------------------------------------------------------------------
 | WARNING SYSTEM
@@ -25,6 +272,8 @@ let previousFrame = null;
 */
 
 function showWarning(message) {
+
+    injectThemeVariables();
 
     /*
     |--------------------------------------------------------------------------
@@ -57,10 +306,10 @@ function showWarning(message) {
 
             .custom-warning {
 
-                background: #fff3cd;
-                color: #856404;
-                border: 1px solid #ffeeba;
-                border-left: 5px solid #ff9800;
+                background: #FFFFFF;
+                color: #16212B;
+                border: 1px solid #D9ECE5;
+                border-left: 5px solid #B5D84E;
 
                 padding: 15px 20px;
 
@@ -79,11 +328,25 @@ function showWarning(message) {
                 position: relative;
             }
 
+            body.dark .custom-warning {
+
+                background: #162327;
+                color: #F8FAFC;
+                border: 1px solid #23343A;
+                border-left: 5px solid #B5D84E;
+            }
+
             .custom-warning-title {
 
                 font-weight: bold;
                 margin-bottom: 5px;
                 font-size: 16px;
+                color: #0D8A90;
+            }
+
+            body.dark .custom-warning-title {
+
+                color: #1FB7B5;
             }
 
             .custom-warning-close {
@@ -96,7 +359,12 @@ function showWarning(message) {
 
                 font-size: 18px;
 
-                color: #856404;
+                color: #64748B;
+            }
+
+            body.dark .custom-warning-close {
+
+                color: #94A3B8;
             }
 
             @keyframes slideIn {
@@ -225,6 +493,961 @@ function showWarning(message) {
 
     reportViolation(message);
 }
+
+/*
+|--------------------------------------------------------------------------
+| LOAD FACE-API MODELS (ONCE)
+|--------------------------------------------------------------------------
+*/
+
+async function loadModels() {
+
+    if (modelsLoaded) return;
+const MODEL_URL =
+"http://localhost/hirematrix.serphawk.in/ai-job-portal/public/ai_interview/models";
+  try {
+    await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+    console.log("SSD Loaded");
+} catch(e) {
+    console.error("SSD Error", e);
+}
+
+try {
+    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+    console.log("Landmark Loaded");
+} catch(e) {
+    console.error("Landmark Error", e);
+}
+
+try {
+    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+    console.log("Recognition Loaded");
+} catch(e) {
+    console.error("Recognition Error", e);
+}
+    modelsLoaded = true;
+
+    console.log("Face Models Loaded");
+}
+
+/*
+|--------------------------------------------------------------------------
+| IDENTITY VERIFICATION OVERLAY (UI)
+|--------------------------------------------------------------------------
+*/
+
+function showVerificationOverlay() {
+
+    injectThemeVariables();
+
+    let overlay =
+        document.getElementById(
+            "face-verify-overlay"
+        );
+
+    if (overlay) return overlay;
+
+    overlay =
+        document.createElement("div");
+
+    overlay.id =
+        "face-verify-overlay";
+
+    overlay.innerHTML = `
+
+        <div id="face-verify-box">
+
+            <div id="face-verify-icon">
+                🪪
+            </div>
+
+            <h2>
+                Identity Verification
+            </h2>
+
+            <p id="face-verify-message">
+                Preparing verification...
+            </p>
+
+            <video
+                id="face-verify-preview"
+                autoplay
+                muted
+                playsinline
+            ></video>
+
+            <button
+                id="face-verify-retry"
+                style="display:none;"
+            >
+                Try Again
+            </button>
+
+        </div>
+    `;
+
+    document.body.appendChild(
+        overlay
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | OVERLAY BACKGROUND
+    |--------------------------------------------------------------------------
+    */
+
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+
+    overlay.style.display = "flex";
+
+    overlay.style.justifyContent =
+        "center";
+
+    overlay.style.alignItems =
+        "center";
+
+    overlay.style.backdropFilter =
+        "blur(12px)";
+
+    overlay.style.zIndex =
+        "999999999";
+
+    /*
+    |--------------------------------------------------------------------------
+    | BOX STYLE
+    |--------------------------------------------------------------------------
+    */
+
+    const box =
+        document.getElementById(
+            "face-verify-box"
+        );
+
+    box.style.width =
+        "460px";
+
+    box.style.maxWidth =
+        "92%";
+
+    box.style.padding =
+        "38px";
+
+    box.style.borderRadius =
+        "24px";
+
+    box.style.textAlign =
+        "center";
+
+    box.style.fontFamily =
+        "'Inter', sans-serif";
+
+    box.style.position =
+        "relative";
+
+    box.style.overflow =
+        "hidden";
+
+    /*
+    |--------------------------------------------------------------------------
+    | ICON
+    |--------------------------------------------------------------------------
+    */
+
+    const icon =
+        document.getElementById(
+            "face-verify-icon"
+        );
+
+    icon.style.width =
+        "85px";
+
+    icon.style.height =
+        "85px";
+
+    icon.style.margin =
+        "0 auto 22px";
+
+    icon.style.borderRadius =
+        "50%";
+
+    icon.style.display =
+        "flex";
+
+    icon.style.alignItems =
+        "center";
+
+    icon.style.justifyContent =
+        "center";
+
+    icon.style.fontSize =
+        "42px";
+
+    /*
+    |--------------------------------------------------------------------------
+    | TITLE
+    |--------------------------------------------------------------------------
+    */
+
+    const title =
+        box.querySelector("h2");
+
+    title.style.fontSize =
+        "28px";
+
+    title.style.fontWeight =
+        "700";
+
+    title.style.marginBottom =
+        "14px";
+
+    /*
+    |--------------------------------------------------------------------------
+    | TEXT
+    |--------------------------------------------------------------------------
+    */
+
+    const text =
+        document.getElementById(
+            "face-verify-message"
+        );
+
+    text.style.fontSize =
+        "16px";
+
+    text.style.lineHeight =
+        "1.9";
+
+    /*
+    |--------------------------------------------------------------------------
+    | PREVIEW VIDEO
+    |--------------------------------------------------------------------------
+    */
+
+    const preview =
+        document.getElementById(
+            "face-verify-preview"
+        );
+
+    preview.style.width =
+        "100%";
+
+    preview.style.marginTop =
+        "18px";
+
+    preview.style.borderRadius =
+        "12px";
+
+    preview.style.transform =
+        "scaleX(-1)"; /* mirror, feels natural to the candidate */
+
+    /*
+    |--------------------------------------------------------------------------
+    | RETRY BUTTON
+    |--------------------------------------------------------------------------
+    */
+
+    const retryBtn =
+        document.getElementById(
+            "face-verify-retry"
+        );
+
+    retryBtn.style.marginTop =
+        "24px";
+
+    retryBtn.style.padding =
+        "14px 28px";
+
+    retryBtn.style.border =
+        "none";
+
+    retryBtn.style.borderRadius =
+        "12px";
+
+    retryBtn.style.fontSize =
+        "16px";
+
+    retryBtn.style.fontWeight =
+        "600";
+
+    retryBtn.style.cursor =
+        "pointer";
+
+    retryBtn.onclick = () => {
+
+        location.reload();
+    };
+
+    return overlay;
+}
+
+function updateVerificationOverlay(
+    message,
+    isError = false,
+    showRetry = false
+) {
+
+    const overlay =
+        showVerificationOverlay();
+
+    const msg =
+        overlay.querySelector(
+            "#face-verify-message"
+        );
+
+    msg.textContent = message;
+
+    msg.classList.toggle(
+        "is-error",
+        isError
+    );
+
+    overlay.querySelector(
+        "#face-verify-retry"
+    ).style.display =
+        showRetry ? "inline-block" : "none";
+}
+
+function hideVerificationOverlay() {
+
+    const overlay =
+        document.getElementById(
+            "face-verify-overlay"
+        );
+
+    if (overlay) {
+
+        overlay.remove();
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| STOP CAMERA + MIC STREAM
+|--------------------------------------------------------------------------
+*/
+
+function stopMediaStream() {
+
+    if (video.srcObject) {
+
+        video.srcObject
+            .getTracks()
+            .forEach(
+                (track) => track.stop()
+            );
+
+        video.srcObject = null;
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| TERMINATION OVERLAY (CANDIDATE REMOVED FROM INTERVIEW)
+|--------------------------------------------------------------------------
+*/
+
+function showTerminationOverlay(
+    message,
+    redirectSeconds = 5
+) {
+
+    injectThemeVariables();
+
+    hideVerificationOverlay();
+
+    const existing =
+        document.getElementById(
+            "face-terminate-overlay"
+        );
+
+    if (existing) {
+
+        existing.remove();
+    }
+
+    const overlay =
+        document.createElement("div");
+
+    overlay.id =
+        "face-terminate-overlay";
+
+    overlay.innerHTML = `
+
+        <div id="face-terminate-box">
+
+            <div id="face-terminate-icon">
+                ⛔
+            </div>
+
+            <h2>
+                Identity Verification Failed
+            </h2>
+
+            <p id="face-terminate-message">
+                ${message}
+            </p>
+
+            <p id="face-terminate-countdown"></p>
+
+        </div>
+    `;
+
+    document.body.appendChild(
+        overlay
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | OVERLAY BACKGROUND
+    |--------------------------------------------------------------------------
+    */
+
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+
+    overlay.style.display = "flex";
+
+    overlay.style.justifyContent =
+        "center";
+
+    overlay.style.alignItems =
+        "center";
+
+    overlay.style.backdropFilter =
+        "blur(12px)";
+
+    overlay.style.zIndex =
+        "9999999999";
+
+    /*
+    |--------------------------------------------------------------------------
+    | BOX STYLE
+    |--------------------------------------------------------------------------
+    */
+
+    const box =
+        document.getElementById(
+            "face-terminate-box"
+        );
+
+    box.style.width =
+        "460px";
+
+    box.style.maxWidth =
+        "92%";
+
+    box.style.padding =
+        "38px";
+
+    box.style.borderRadius =
+        "24px";
+
+    box.style.textAlign =
+        "center";
+
+    box.style.fontFamily =
+        "'Inter', sans-serif";
+
+    /*
+    |--------------------------------------------------------------------------
+    | ICON
+    |--------------------------------------------------------------------------
+    */
+
+    const icon =
+        document.getElementById(
+            "face-terminate-icon"
+        );
+
+    icon.style.width =
+        "85px";
+
+    icon.style.height =
+        "85px";
+
+    icon.style.margin =
+        "0 auto 22px";
+
+    icon.style.borderRadius =
+        "50%";
+
+    icon.style.display =
+        "flex";
+
+    icon.style.alignItems =
+        "center";
+
+    icon.style.justifyContent =
+        "center";
+
+    icon.style.fontSize =
+        "42px";
+
+    /*
+    |--------------------------------------------------------------------------
+    | TITLE
+    |--------------------------------------------------------------------------
+    */
+
+    const title =
+        box.querySelector("h2");
+
+    title.style.fontSize =
+        "28px";
+
+    title.style.fontWeight =
+        "700";
+
+    title.style.marginBottom =
+        "14px";
+
+    /*
+    |--------------------------------------------------------------------------
+    | TEXT
+    |--------------------------------------------------------------------------
+    */
+
+    const text =
+        document.getElementById(
+            "face-terminate-message"
+        );
+
+    text.style.fontSize =
+        "16px";
+
+    text.style.lineHeight =
+        "1.9";
+
+    /*
+    |--------------------------------------------------------------------------
+    | COUNTDOWN
+    |--------------------------------------------------------------------------
+    */
+
+    const countdown =
+        document.getElementById(
+            "face-terminate-countdown"
+        );
+
+    countdown.style.fontSize =
+        "14px";
+
+    countdown.style.marginTop =
+        "18px";
+
+    let secondsLeft = redirectSeconds;
+
+    countdown.textContent =
+        `Redirecting in ${secondsLeft}s...`;
+
+    const countdownTimer =
+        setInterval(() => {
+
+            secondsLeft--;
+
+            if (secondsLeft <= 0) {
+
+                clearInterval(
+                    countdownTimer
+                );
+
+                window.location.href =
+                    INTERVIEW_EXIT_URL;
+
+            } else {
+
+                countdown.textContent =
+                    `Redirecting in ${secondsLeft}s...`;
+            }
+
+        }, 1000);
+}
+
+/*
+|--------------------------------------------------------------------------
+| TERMINATE INTERVIEW (FACE DID NOT MATCH PROFILE PHOTO)
+|--------------------------------------------------------------------------
+*/
+
+function terminateInterview(reason) {
+
+    stopMediaStream();
+
+    showWarning(
+        "No face matched. You are being removed from this interview."
+    );
+
+    reportViolation(reason);
+
+    showTerminationOverlay(
+        "Your face does not match the profile photo on file for this account. " +
+        "For security reasons, this interview session has been ended. " +
+        "Please contact support if you believe this is an error."
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| GET CANDIDATE PROFILE PHOTO DESCRIPTOR
+|--------------------------------------------------------------------------
+*/
+
+/*
+|--------------------------------------------------------------------------
+| GET CANDIDATE PROFILE PHOTO DESCRIPTOR
+|--------------------------------------------------------------------------
+*/
+
+async function getProfileDescriptor() {
+
+    const res =
+        await fetch(
+            `api/get_candidate_photo.php?candidate_id=${candidate_id}`
+        );
+
+    const data =
+        await res.json();
+
+    if (!data.success) {
+
+        // ← NEW: Check if it's a missing photo error specifically
+        if (
+            data.reason === "no_photo" ||
+            data.message?.toLowerCase().includes("not found") ||
+            data.message?.toLowerCase().includes("no photo") ||
+            data.message?.toLowerCase().includes("no profile")
+        ) {
+            throw { type: "no_photo", message: data.message || "No profile photo found." };
+        }
+
+        throw new Error(
+            data.message ||
+            "Profile photo not found"
+        );
+    }
+
+    const img =
+        await faceapi.fetchImage(
+            data.image
+        );
+
+    const detection =
+        await faceapi
+            .detectSingleFace(
+                img,
+                new faceapi.SsdMobilenetv1Options({
+                    minConfidence: 0.5
+                })
+            )
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+    if (!detection) {
+
+        throw new Error(
+            "No face detected in profile photo"
+        );
+    }
+
+    return detection.descriptor;
+}
+
+/*
+|--------------------------------------------------------------------------
+| GET LIVE CAMERA FACE DESCRIPTOR
+|--------------------------------------------------------------------------
+*/
+
+async function getLiveDescriptor() {
+
+    if (
+        video.paused ||
+        video.ended ||
+        video.readyState < 2
+    ) {
+
+        return null;
+    }
+
+    const detection =
+        await faceapi
+            .detectSingleFace(
+                video,
+                new faceapi.SsdMobilenetv1Options({
+                    minConfidence: 0.5
+                })
+            )
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+    return detection
+        ? detection.descriptor
+        : null;
+}
+
+/*
+|--------------------------------------------------------------------------
+| VERIFY CANDIDATE IDENTITY (FACE MATCH VS PROFILE PHOTO)
+|--------------------------------------------------------------------------
+*/
+
+async function verifyCandidateFace() {
+
+    showVerificationOverlay();
+
+    document.getElementById(
+        "face-verify-preview"
+    ).srcObject = video.srcObject;
+
+    updateVerificationOverlay(
+        "Loading verification models..."
+    );
+
+    try {
+
+        await loadModels();
+
+    } catch (err) {
+
+         console.error("MODEL ERROR:", err);
+
+    alert(err.message);
+
+    updateVerificationOverlay(
+        err.message,
+        true,
+        true
+    );
+
+        reportViolation(
+            "Face verification model load failed: " + err.message
+        );
+
+        return false;
+    }
+
+    updateVerificationOverlay(
+        "Loading your profile photo..."
+    );
+
+    let profileDescriptor;
+
+    try {
+
+        profileDescriptor =
+            await getProfileDescriptor();
+
+    } catch (err) {
+
+        console.error(err);
+
+        // ← NEW: Handle missing photo case with Update Profile Photo button
+        if (err.type === "no_photo") {
+
+            const overlay = showVerificationOverlay();
+
+            const msg = overlay.querySelector("#face-verify-message");
+            msg.textContent = "No profile photo found. Please upload your photo before continuing.";
+            msg.classList.add("is-error");
+
+            // Hide the default retry button
+            overlay.querySelector("#face-verify-retry").style.display = "none";
+
+            // Inject Update Profile Photo button if not already there
+            if (!document.getElementById("face-verify-update-photo-btn")) {
+
+                const updateBtn = document.createElement("button");
+                updateBtn.id = "face-verify-update-photo-btn";
+                updateBtn.textContent = "Update Profile Photo";
+
+                // Reuse same styles as retry button
+                updateBtn.style.marginTop      = "24px";
+                updateBtn.style.padding        = "14px 28px";
+                updateBtn.style.border         = "none";
+                updateBtn.style.borderRadius   = "12px";
+                updateBtn.style.fontSize       = "16px";
+                updateBtn.style.fontWeight     = "600";
+                updateBtn.style.cursor         = "pointer";
+                updateBtn.style.background     = "linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%)";
+                updateBtn.style.color          = "#ffffff";
+                updateBtn.style.boxShadow      = "0 10px 25px rgba(31, 183, 181, 0.35)";
+                updateBtn.style.display        = "inline-block";
+
+                updateBtn.onmouseenter = function () {
+                    updateBtn.style.transform = "translateY(-2px) scale(1.02)";
+                };
+                updateBtn.onmouseleave = function () {
+                    updateBtn.style.transform = "translateY(0) scale(1)";
+                };
+
+                updateBtn.onclick = function () {
+                    window.location.href =
+                        "http://localhost/hirematrix.serphawk.in/ai-job-portal/public/candidate/profile";
+                };
+
+                overlay.querySelector("#face-verify-box").appendChild(updateBtn);
+            }
+
+            reportViolation("Face verification failed: No profile photo on file");
+
+            return false;
+        }
+
+        // Original error handling for other failures
+        updateVerificationOverlay(
+            "Verification failed: " + err.message +
+            ". Please contact support before continuing.",
+            true,
+            true
+        );
+
+        reportViolation(
+            "Face verification setup failed: " + err.message
+        );
+
+        return false;
+    }
+
+    updateVerificationOverlay(
+        "Please look directly at the camera. Verifying your identity..."
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | WAIT FOR VIDEO TO BE READY
+    |--------------------------------------------------------------------------
+    */
+
+    await new Promise((resolve) => {
+
+        if (video.readyState >= 3) {
+
+            resolve();
+
+        } else {
+
+            video.onloadedmetadata =
+                () => resolve();
+        }
+    });
+
+    try {
+
+        await video.play();
+
+    } catch (err) {
+
+        console.warn(
+            "Video play warning:",
+            err
+        );
+    }
+
+    const maxAttempts = 6;
+
+    let matched = false;
+
+    let lastDistance = null;
+
+    for (
+        let attempt = 1;
+        attempt <= maxAttempts;
+        attempt++
+    ) {
+
+        updateVerificationOverlay(
+            `Verifying your identity... (${attempt}/${maxAttempts})`
+        );
+
+        let liveDescriptor = null;
+
+        try {
+
+            liveDescriptor =
+                await getLiveDescriptor();
+
+        } catch (err) {
+
+            console.error(err);
+        }
+
+        if (liveDescriptor) {
+
+            lastDistance =
+                faceapi.euclideanDistance(
+                    profileDescriptor,
+                    liveDescriptor
+                );
+
+            console.log(
+                `Attempt ${attempt}: distance = ${lastDistance.toFixed(3)}`
+            );
+
+            if (lastDistance < FACE_MATCH_THRESHOLD) {
+
+                matched = true;
+
+                break;
+            }
+
+        } else {
+
+            console.log(
+                `Attempt ${attempt}: no face detected in camera`
+            );
+        }
+
+        await new Promise(
+            (r) => setTimeout(r, 1200)
+        );
+    }
+
+    if (matched) {
+
+        updateVerificationOverlay(
+            "Identity verified. Starting your interview..."
+        );
+
+        reportViolation(
+            "Face verification passed (distance: " +
+            lastDistance.toFixed(3) +
+            ")"
+        );
+
+        await new Promise(
+            (r) => setTimeout(r, 800)
+        );
+
+        hideVerificationOverlay();
+
+        return true;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | NO MATCH AFTER ALL ATTEMPTS -> THROW CANDIDATE OUT OF INTERVIEW
+    |--------------------------------------------------------------------------
+    */
+
+    terminateInterview(
+        "Face verification failed - no face match" +
+        (lastDistance !== null
+            ? " (distance: " + lastDistance.toFixed(3) + ")"
+            : " (no face detected)")
+    );
+
+    return false;
+}
+
 /*
 |--------------------------------------------------------------------------
 | START CAMERA + MIC
@@ -246,13 +1469,11 @@ async function startCamera() {
 
         video.srcObject = stream;
 
-        console.log("Camera started");  
+        await video.play();
 
-        detectNoise(stream);
+        console.log("Camera started");
 
-        detectMovement();
-
-        startFaceDetection(); /*
+        /*
         |--------------------------------------------------------------------------
         | REMOVE POPUP IF EXISTS
         |--------------------------------------------------------------------------
@@ -268,6 +1489,30 @@ async function startCamera() {
             popup.remove();
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | VERIFY IDENTITY BEFORE STARTING PROCTORING / INTERVIEW
+        |--------------------------------------------------------------------------
+        */
+
+        const verified =
+            await verifyCandidateFace();
+
+        if (verified) {
+
+            detectNoise(stream);
+
+            detectMovement();
+
+            startFaceDetection();
+
+        }
+        /*
+        |--------------------------------------------------------------------------
+        | IF NOT VERIFIED, OVERLAY STAYS UP WITH "TRY AGAIN" BUTTON
+        |--------------------------------------------------------------------------
+        */
+
     } catch (error) {
 
         console.error(error);
@@ -276,6 +1521,8 @@ async function startCamera() {
     }
 }
 function showPermissionPopup() {
+
+    injectThemeVariables();
 
     /*
     |--------------------------------------------------------------------------
@@ -369,9 +1616,6 @@ function showPermissionPopup() {
     popup.style.alignItems =
         "center";
 
-    popup.style.background =
-        "rgba(3, 7, 18, 0.88)";
-
     popup.style.backdropFilter =
         "blur(12px)";
 
@@ -400,15 +1644,6 @@ function showPermissionPopup() {
 
     box.style.borderRadius =
         "24px";
-
-    box.style.background =
-        "linear-gradient(145deg, #0f172a, #111c34)";
-
-    box.style.border =
-        "1px solid rgba(108,99,255,0.25)";
-
-    box.style.boxShadow =
-        "0 20px 60px rgba(0,0,0,0.55)";
 
     box.style.textAlign =
         "center";
@@ -457,15 +1692,6 @@ function showPermissionPopup() {
     icon.style.fontSize =
         "42px";
 
-    icon.style.background =
-        "rgba(108,99,255,0.16)";
-
-    icon.style.border =
-        "1px solid rgba(108,99,255,0.35)";
-
-    icon.style.boxShadow =
-        "0 0 25px rgba(108,99,255,0.35)";
-
     /*
     |--------------------------------------------------------------------------
     | TITLE
@@ -474,9 +1700,6 @@ function showPermissionPopup() {
 
     const title =
         box.querySelector("h2");
-
-    title.style.color =
-        "#ffffff";
 
     title.style.fontSize =
         "28px";
@@ -495,9 +1718,6 @@ function showPermissionPopup() {
 
     const text =
         box.querySelector("p");
-
-    text.style.color =
-        "#94a3b8";
 
     text.style.fontSize =
         "16px";
@@ -528,12 +1748,6 @@ function showPermissionPopup() {
     button.style.borderRadius =
         "12px";
 
-    button.style.background =
-        "linear-gradient(90deg, #6c63ff, #4f46e5)";
-
-    button.style.color =
-        "#ffffff";
-
     button.style.fontSize =
         "16px";
 
@@ -542,9 +1756,6 @@ function showPermissionPopup() {
 
     button.style.cursor =
         "pointer";
-
-    button.style.boxShadow =
-        "0 10px 25px rgba(108,99,255,0.35)";
 
     button.style.transition =
         "all 0.25s ease";
@@ -590,13 +1801,27 @@ function showPermissionPopup() {
 
             video.srcObject = stream;
 
-            popup.remove(); 
+            await video.play();
 
-            detectNoise(stream);
+            popup.remove();
 
-            detectMovement();
+            /*
+            |--------------------------------------------------------------------------
+            | VERIFY IDENTITY BEFORE STARTING PROCTORING / INTERVIEW
+            |--------------------------------------------------------------------------
+            */
 
-            startFaceDetection();
+            const verified =
+                await verifyCandidateFace();
+
+            if (verified) {
+
+                detectNoise(stream);
+
+                detectMovement();
+
+                startFaceDetection();
+            }
 
         } catch (err) {
 
@@ -913,7 +2138,7 @@ e.preventDefault();
 
         if (e.key === "F12") {
 
-            e.preventDefault(); 
+           e.preventDefault(); 
               reportViolation(
                 "Developer tools detected"
             );
@@ -931,7 +2156,7 @@ e.preventDefault();
             e.key === "I"
         ) {
 
-            e.preventDefault(); 
+           // e.preventDefault(); 
               reportViolation(
                 "Developer tools detected"
             );
@@ -958,13 +2183,6 @@ document.addEventListener(
         }
     }
 );
-/*
-|--------------------------------------------------------------------------
-| DEVTOOLS DETECTION
-|--------------------------------------------------------------------------
-*/
-
- 
 
 /*
 |--------------------------------------------------------------------------
@@ -1149,21 +2367,11 @@ async function startFaceDetection() {
 
     /*
     |--------------------------------------------------------------------------
-    | LOAD MODELS
+    | LOAD MODELS (NO-OP IF ALREADY LOADED DURING VERIFICATION)
     |--------------------------------------------------------------------------
     */
 
-    await Promise.all([
-
-        faceapi.nets.ssdMobilenetv1
-            .loadFromUri("models"),
-
-        faceapi.nets.faceLandmark68Net
-            .loadFromUri("models")
-
-    ]);
-
-    console.log("Face Models Loaded");
+    await loadModels();
 
     /*
     |--------------------------------------------------------------------------
@@ -1354,17 +2562,6 @@ async function startFaceDetection() {
 
     }, 1000);
 }
-
-/*
-|--------------------------------------------------------------------------
-| DISABLE RIGHT CLICK
-|--------------------------------------------------------------------------
-*/
-
-document.addEventListener(
-    "contextmenu",
-    e => e.preventDefault()
-);
 
 /*
 |--------------------------------------------------------------------------
