@@ -247,6 +247,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+<<<<<<< HEAD
+=======
+$_SESSION['jobid'] = $jobid;
+$sessionCandidateName = $_SESSION['name']
+    ?? $_SESSION['user_name']
+    ?? $_SESSION['candidate_name']
+    ?? $_SESSION['candidateName']
+    ?? '';
+$candidateName = trim($_POST['candidate_name'] ?? $sessionCandidateName);
+
+if ($candidateId > 0) {
+    $conn = db_connect();
+    if ($conn) {
+        $stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
+        if ($stmt) {
+            $stmt->bind_param('i', $candidateId);
+            $stmt->execute();
+            $stmt->bind_result($candidateName);
+            $stmt->fetch();
+            $stmt->close();
+        }
+
+        $conn->close();
+    }
+}
+
+if ($candidateName === '') {
+    $candidateName = $sessionCandidateName;
+}
+ 
+$selectedJobTitle = $_POST['job_title'] ?? '';
+$highlightSkills = $_POST['highlight_skills'] ?? '';
+$experience = $_POST['experience'] ?? '';
+$_SESSION['jobrole'] = $selectedJobTitle;
+$_SESSION['candidateName'] = $candidateName;
+$_SESSION['highlight_skills'] = $highlightSkills;
+$_SESSION['experience'] = $experience;
+}
+else{
+$candidateName = $_SESSION['candidateName']
+    ?? $_SESSION['name']
+    ?? $_SESSION['user_name']
+    ?? $_SESSION['candidate_name']
+    ?? '';
+$selectedJobTitle = $_SESSION['position'] ?? '';
+$highlightSkills = $_SESSION['highlight_skills'] ?? '';
+$experience = $_SESSION['experience'] ?? '';
+//echo $selectedJobTitle;
+}
+>>>>>>> a45b839080c0d98ed1b38aefe937538e7e0d2a9b
 //echo $_SESSION['highlight_skills'];
 ?>
 <!DOCTYPE html>
