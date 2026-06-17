@@ -21,8 +21,31 @@ let previousFrame = null;
 let modelsLoaded = false;
 
 const FACE_MATCH_THRESHOLD = 0.5; // lower = stricter. 0.45 - 0.6 is a reasonable range
+const APP_BASE_PATH = (() => {
+    const marker = "/ai_interview/";
+    const pathname = window.location.pathname;
+    const markerIndex = pathname.indexOf(marker);
+    return markerIndex >= 0
+        ? pathname.slice(0, markerIndex).replace(/\/+$/, "")
+        : "";
+})();
 
-const INTERVIEW_EXIT_URL = "http://localhost/hirematrix.serphawk.in/ai-job-portal/public/candidate/applications"; // <-- page the candidate is redirected to after being removed
+function appUrl(path = "") {
+    const cleanPath = String(path).replace(/^\/+/, "");
+    return window.location.origin + APP_BASE_PATH + "/" + cleanPath;
+}
+
+function aiInterviewUrl(path = "") {
+    return appUrl("ai_interview/" + String(path).replace(/^\/+/, ""));
+}
+
+function aiInterviewApiUrl(path = "") {
+    return aiInterviewUrl("api/" + String(path).replace(/^\/+/, ""));
+}
+
+const INTERVIEW_EXIT_URL = appUrl("candidate/applications");
+const CANDIDATE_PROFILE_URL = appUrl("candidate/profile");
+const MODEL_URL = aiInterviewUrl("models");
 
 /*
 |--------------------------------------------------------------------------
@@ -129,27 +152,27 @@ function injectThemeVariables() {
         }
 
         #face-verify-box {
-            background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%);
-            border: 1px solid #D9ECE5;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
         }
 
         body.dark #face-verify-box {
-            background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%);
-            border: 1px solid #23343A;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            background: #161B22;
+            border: 1px solid #30363D;
+            box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34);
         }
 
         #face-verify-icon {
-            background: rgba(31, 183, 181, 0.16);
-            border: 1px solid rgba(31, 183, 181, 0.35);
-            box-shadow: 0 0 25px rgba(31, 183, 181, 0.35);
+            background: #E8F7F7;
+            border: 1px solid rgba(31, 183, 181, 0.28);
+            box-shadow: none;
         }
 
         body.dark #face-verify-icon {
-            background: rgba(31, 183, 181, 0.2);
-            border: 1px solid rgba(31, 183, 181, 0.4);
-            box-shadow: 0 0 25px rgba(31, 183, 181, 0.4);
+            background: rgba(31, 183, 181, 0.14);
+            border: 1px solid rgba(120, 227, 221, 0.28);
+            box-shadow: none;
         }
 
         #face-verify-box h2 {
@@ -503,8 +526,6 @@ function showWarning(message) {
 async function loadModels() {
 
     if (modelsLoaded) return;
-const MODEL_URL =
-"http://localhost/hirematrix.serphawk.in/ai-job-portal/public/ai_interview/models";
   try {
     await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
     console.log("SSD Loaded");
@@ -1111,7 +1132,7 @@ async function getProfileDescriptor() {
 
     const res =
         await fetch(
-            `api/get_candidate_photo.php?candidate_id=${candidate_id}`
+            aiInterviewApiUrl(`get_candidate_photo.php?candidate_id=${candidate_id}`)
         );
 
     const data =
@@ -1291,7 +1312,7 @@ async function verifyCandidateFace() {
 
                 updateBtn.onclick = function () {
                     window.location.href =
-                        "http://localhost/hirematrix.serphawk.in/ai-job-portal/public/candidate/profile";
+                        CANDIDATE_PROFILE_URL;
                 };
 
                 overlay.querySelector("#face-verify-box").appendChild(updateBtn);
@@ -1845,7 +1866,7 @@ function reportViolation(message) {
 
     console.log("Violation:", message);
 
-    fetch("api/report_violation.php", {
+    fetch(aiInterviewApiUrl("report_violation.php"), {
 
         method: "POST",
 

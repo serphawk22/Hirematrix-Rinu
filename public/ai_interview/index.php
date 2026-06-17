@@ -38,25 +38,31 @@ if (is_numeric($experienceInput)) {
     }
 }
 $_SESSION['jobid'] = $jobid;
-$candidateName = $_POST['candidate_name'] ?? '';
+$sessionCandidateName = $_SESSION['name']
+    ?? $_SESSION['user_name']
+    ?? $_SESSION['candidate_name']
+    ?? $_SESSION['candidateName']
+    ?? '';
+$candidateName = trim($_POST['candidate_name'] ?? $sessionCandidateName);
 
 if ($candidateId > 0) {
     $conn = db_connect();
-    // Check connection
-    if (!$conn) {
-        die('Database connection failed.');
-    }
+    if ($conn) {
+        $stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
+        if ($stmt) {
+            $stmt->bind_param('i', $candidateId);
+            $stmt->execute();
+            $stmt->bind_result($candidateName);
+            $stmt->fetch();
+            $stmt->close();
+        }
 
-    // Safe query using prepared statement
-    $stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
-    if ($stmt) {
-        $stmt->bind_param('i', $candidateId);
-        $stmt->execute();
-        $stmt->bind_result($candidateName);
-        $stmt->fetch();
-        $stmt->close();
+        $conn->close();
     }
-    $conn->close();
+}
+
+if ($candidateName === '') {
+    $candidateName = $sessionCandidateName;
 }
  
 $selectedJobTitle = $_POST['job_title'] ?? '';
@@ -68,7 +74,11 @@ $_SESSION['highlight_skills'] = $highlightSkills;
 $_SESSION['experience'] = $experience;
 }
 else{
-$candidateName = $_SESSION['candidateName'] ?? '';
+$candidateName = $_SESSION['candidateName']
+    ?? $_SESSION['name']
+    ?? $_SESSION['user_name']
+    ?? $_SESSION['candidate_name']
+    ?? '';
 $selectedJobTitle = $_SESSION['position'] ?? '';
 $highlightSkills = $_SESSION['highlight_skills'] ?? '';
 $experience = $_SESSION['experience'] ?? '';
