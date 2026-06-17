@@ -30,6 +30,11 @@ class ApiOnboardingController extends ResourceController
 
         $candidateId = (int) $json->user_id;
 
+        // Flutter app posts to /onboarding/save-step with {"step": "personal", ...}
+        if ($step === 'save-step' && isset($json->step)) {
+            $step = $json->step;
+        }
+
         switch ($step) {
             case 'personal':
                 return $this->savePersonal($candidateId, $json);

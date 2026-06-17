@@ -579,8 +579,10 @@ class ApiProfileController extends ResourceController
     {
         $userModel = model('UserModel');
         $skillsModel = new CandidateSkillsModel();
+        $githubModel = model('GithubAnalysisModel');
         $user = $userModel->findCandidateWithProfile($candidateId) ?? [];
         $skillsRow = $skillsModel->where('candidate_id', $candidateId)->first() ?? [];
+        $github = $githubModel->where('candidate_id', $candidateId)->first() ?? [];
 
         $profileFields = [
             !empty($user['name']),
@@ -588,12 +590,11 @@ class ApiProfileController extends ResourceController
             !empty($user['phone']),
             !empty($user['profile_photo']),
             !empty($user['resume_path']),
-            !empty($user['bio']),
-            !empty($user['location']),
-            !empty($user['preferred_job_titles']),
-            !empty($user['preferred_locations']),
-            !empty($user['preferred_employment_type']),
+            !empty($user['intro_video_path']),
+            !empty($github['github_username']),
             !empty($skillsRow['skill_name']),
+            !empty($user['location']),
+            !empty($user['bio'])
         ];
 
         $filled = array_sum($profileFields);
