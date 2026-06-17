@@ -471,8 +471,9 @@ body.dark .recruiter-job-form label, body.dark h6 {
                         <select name="status" class="form-control">
                             <option value="">All</option>
                             <?php foreach ($statusOptions as $status): ?>
+                                <?php $statusFilterLabel = $status === 'ai_interview_completed' ? 'AI Interview Completed' : ucwords(str_replace('_', ' ', $status)); ?>
                                 <option value="<?= esc($status) ?>" <?= ($filters['status'] ?? '') === $status ? 'selected' : '' ?>>
-                                    <?= esc(ucwords(str_replace('_', ' ', $status))) ?>
+                                    <?= esc($statusFilterLabel) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -589,6 +590,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
                                         $statusColors = [
                                             'pending' => 'warning',
                                             'applied' => 'warning',
+                                            'ai_interview_completed' => 'info',
                                             'shortlisted' => 'success',
                                             'hold' => 'secondary',
                                             'filtered_out' => 'dark',
@@ -600,6 +602,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
                                         $statusLabels = [
                                             'pending' => 'Applied',
                                             'applied' => 'Applied',
+                                            'ai_interview_completed' => 'AI Interview Completed',
                                             'shortlisted' => 'Shortlisted',
                                             'hold' => 'On Hold',
                                             'filtered_out' => 'Filtered Out',

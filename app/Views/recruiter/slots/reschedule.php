@@ -137,6 +137,141 @@ body.dark .recruiter-job-form label, body.dark h6 {
     padding-left: 34px !important;
     padding-right: 34px !important;
 }
+
+.recruiter-slot-picker {
+    display: grid;
+    gap: 1rem;
+}
+
+.recruiter-slot-date-group {
+    border: 1px solid #D9ECE5;
+    border-radius: 18px;
+    background: #FFFFFF;
+    padding: 0.95rem 1rem 0.3rem;
+}
+
+.recruiter-slot-date-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.9rem;
+    color: #1F3B73;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.recruiter-slot-date-head i {
+    color: #1F3B73;
+}
+
+.recruiter-slot-radio {
+    min-height: 100%;
+    padding-left: 1.8rem;
+}
+
+.recruiter-slot-radio .custom-control-label {
+    position: relative;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.recruiter-slot-radio .custom-control-label::before,
+.recruiter-slot-radio .custom-control-label::after {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.recruiter-slot-option {
+    display: block;
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border: 1px solid #D9ECE5;
+    border-radius: 14px;
+    background: #FFFFFF;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.recruiter-slot-option:hover {
+    border-color: #1FB7B5;
+    background: #F7FBFA;
+}
+
+.recruiter-slot-radio .custom-control-input:checked ~ .custom-control-label.recruiter-slot-option {
+    border-color: #1FB7B5;
+    background: #EFFAF8;
+    box-shadow: 0 0 0 1px rgba(31, 183, 181, 0.08);
+}
+
+.recruiter-slot-radio .custom-control-input:focus ~ .custom-control-label.recruiter-slot-option {
+    box-shadow: 0 0 0 2px rgba(31, 183, 181, 0.12);
+}
+
+.recruiter-slot-radio .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #1FB7B5;
+    border-color: #1FB7B5;
+}
+
+.recruiter-slot-radio .badge-success {
+    background: rgba(31, 183, 181, 0.12) !important;
+    color: #0D8A90 !important;
+    border: 1px solid rgba(31, 183, 181, 0.2);
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+body.dark .recruiter-slot-date-group {
+    background: #111111 !important;
+    border-color: #23343A !important;
+}
+
+body.dark .recruiter-slot-date-head,
+body.dark .recruiter-slot-date-head i {
+    color: #F8FAFC !important;
+}
+
+body.dark .recruiter-slot-option {
+    background: #161D21 !important;
+    border-color: #23343A !important;
+}
+
+body.dark .recruiter-slot-option:hover {
+    background: #1A2328 !important;
+    border-color: #1FB7B5 !important;
+}
+
+body.dark .recruiter-slot-radio .custom-control-input:checked ~ .custom-control-label.recruiter-slot-option {
+    background: #17252A !important;
+    border-color: #1FB7B5 !important;
+    box-shadow: 0 0 0 1px rgba(31, 183, 181, 0.14);
+}
+
+body.dark .recruiter-slot-radio .custom-control-input:focus ~ .custom-control-label.recruiter-slot-option {
+    box-shadow: 0 0 0 2px rgba(31, 183, 181, 0.18);
+}
+
+body.dark .recruiter-slot-radio .custom-control-label::before {
+    background: #111111 !important;
+    border-color: #4A5C63 !important;
+}
+
+body.dark .recruiter-slot-radio .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #1FB7B5 !important;
+    border-color: #1FB7B5 !important;
+}
+
+body.dark .recruiter-slot-radio .badge-success {
+    background: rgba(31, 183, 181, 0.14) !important;
+    color: #57D3D1 !important;
+    border-color: rgba(31, 183, 181, 0.24) !important;
+}
+
+body.dark .custom-control-label,
+body.dark .custom-control-label strong,
+body.dark .custom-control-label .text-primary {
+    color: #F8FAFC !important;
+}
 </style>
 <div class="recruiter-slot-reschedule-jobboard">
     <div class="container-fluid py-5">

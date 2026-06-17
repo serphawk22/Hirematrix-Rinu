@@ -227,6 +227,8 @@ $completedApplications = count(array_filter($applications ?? [], function ($appl
                                                         </button>
                                                     </form> 
                                                 <?php endif; ?>
+                                            <?php elseif ($status === 'ai_interview_completed'): ?>
+                                                <span class="badge badge-info p-2">AI interview submitted. Recruiter review is in progress.</span>
                                             <?php elseif ($status === 'shortlisted'): ?>
                                                 <a href="<?= base_url('candidate/book-slot/' . $application['id']) ?>"
                                                     class="btn btn-warning btn-sm btn-block"><i class="fas fa-calendar-plus"></i>
@@ -269,6 +271,7 @@ function getStatusBadgeColor($status)
 {
     $colors = [
         'applied' => 'warning',
+        'ai_interview_completed' => 'info',
         'shortlisted' => 'success',
         'hold' => 'secondary',
         'filtered_out' => 'dark',
@@ -286,6 +289,7 @@ function getStatusLabel(string $status): string
 {
     $labels = [
         'applied' => 'Applied',
+        'ai_interview_completed' => 'AI Interview Completed',
         'shortlisted' => 'Shortlisted',
         'hold' => 'On Hold',
         'filtered_out' => 'Filtered Out',
@@ -303,6 +307,7 @@ function getStatusMessage(string $status): string
 {
     return match ($status) {
         'applied' => 'Your application has been submitted and is under recruiter review.',
+        'ai_interview_completed' => 'Your AI interview is complete. The recruiter is reviewing your results.',
         'shortlisted' => 'You have been shortlisted. Book your next interview slot to continue.',
         'hold' => 'Your application is on hold for now. Recruiters may review it again later.',
         'filtered_out' => 'This application did not meet one or more mandatory screening criteria.',
@@ -319,6 +324,7 @@ function buildApplicationTimeline(string $status): array
 {
     $steps = [
         ['key' => 'applied', 'label' => 'Applied', 'note' => 'Application submitted successfully.'],
+        ['key' => 'ai_interview_completed', 'label' => 'AI Interview Completed', 'note' => 'Your AI interview was submitted successfully.'],
         ['key' => 'shortlisted', 'label' => 'Shortlisted', 'note' => 'Recruiter moved your profile forward.'],
         ['key' => 'interview_slot_booked', 'label' => 'Interview Booked', 'note' => 'Interview slot scheduled.'],
         ['key' => 'selected', 'label' => 'Selected', 'note' => 'You cleared the hiring process.'],
@@ -330,10 +336,11 @@ function buildApplicationTimeline(string $status): array
         'filtered_out' => 0,
         'rejected' => 0,
         'withdrawn' => 0,
-        'shortlisted' => 1,
-        'interview_slot_booked' => 2,
-        'selected' => 3,
-        'hired' => 3,
+        'ai_interview_completed' => 1,
+        'shortlisted' => 2,
+        'interview_slot_booked' => 3,
+        'selected' => 4,
+        'hired' => 4,
     ];
 
     $currentIndex = $progressMap[$status] ?? 0;

@@ -291,6 +291,65 @@
             color: #7A8B96 !important;
         }
 
+        .recruiter-dashboard-jobboard .alert-warning {
+            background: #FEF7D8 !important;
+            border: 1px solid #F4E29A !important;
+            color: #8A6A08 !important;
+            border-radius: 10px !important;
+        }
+
+        .recruiter-dashboard-jobboard .alert-warning .badge-warning {
+            background: #FFE45C !important;
+            color: #6B5300 !important;
+            border-radius: 999px;
+            padding: 0.35rem 0.55rem;
+            font-weight: 700;
+        }
+
+        .recruiter-dashboard-jobboard .alert-warning .badge-primary {
+            background: rgba(31, 183, 181, 0.14) !important;
+            color: #0D8A90 !important;
+            border-radius: 999px;
+            padding: 0.35rem 0.55rem;
+            font-weight: 700;
+        }
+
+        .recruiter-dashboard-jobboard .alert-warning .close,
+        .recruiter-dashboard-jobboard .alert-warning .close span {
+            color: #8A6A08 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+        }
+
+        body.dark .recruiter-dashboard-jobboard .alert-warning {
+            background: #171a14 !important;
+            border: 1px solid #3A3420 !important;
+            color: #D8C27A !important;
+        }
+
+        body.dark .recruiter-dashboard-jobboard .alert-warning i {
+            color: #E1C15B !important;
+        }
+
+        body.dark .recruiter-dashboard-jobboard .alert-warning .badge-warning {
+            background: #2B2515 !important;
+            color: #E9CF74 !important;
+            border: 1px solid #4A4020 !important;
+        }
+
+        body.dark .recruiter-dashboard-jobboard .alert-warning .badge-primary {
+            background: rgba(31, 183, 181, 0.14) !important;
+            color: #57D3D1 !important;
+            border: 1px solid rgba(31, 183, 181, 0.24) !important;
+        }
+
+        body.dark .recruiter-dashboard-jobboard .alert-warning .close,
+        body.dark .recruiter-dashboard-jobboard .alert-warning .close span {
+            color: #D8C27A !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+        }
+
         /* ══════════════════════════════════════════════
            TABLES
         ══════════════════════════════════════════════ */
@@ -676,7 +735,7 @@
                         <a href="<?= $jobsUrl ?>" class="btn btn-outline-primary btn-sm">Review Jobs</a>
                     </div>
                     <div class="card-body">
-                        <?php $screeningCompleted = (int) ($funnel['shortlisted'] ?? 0) + (int) ($funnel['rejected'] ?? 0); ?>
+                        <?php $screeningCompleted = (int) ($funnel['ai_interview_completed'] ?? 0) + (int) ($funnel['shortlisted'] ?? 0) + (int) ($funnel['rejected'] ?? 0); ?>
                         <div class="row text-center recruiter-pipeline-stats align-items-center">
                             <div class="col-md col-6 mb-3 mb-md-0">
                                 <div class="pipeline-stat">

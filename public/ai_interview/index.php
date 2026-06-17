@@ -3,86 +3,249 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once __DIR__ . '/config.php';
- 
-// Redirect if already in exam
-//if (!empty($_SESSION['exam_ready'])) { header('Location: exam.php'); exit; }
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-$candidateId = $_POST['candidate_id'] ?? '';
-$_SESSION['candidateId'] = $candidateId;  
-//echo $_SESSION['candidateId'];
-$jobid = $_POST['jobid'] ?? '';
-$experienceInput = $_POST['experience'] ?? '';
-$experience = '';
 
-if (is_numeric($experienceInput)) {
-
-    $years = (float)$experienceInput;
-
-    if ($years >= 0 && $years <= 1) {
-        $experience = 'fresher';
-    } elseif ($years > 1 && $years <= 3) {
-        $experience = 'junior';
-    } elseif ($years > 3 && $years <= 6) {
-        $experience = 'mid';
-    } else {
-        $experience = 'senior';
+function ai_interview_pick_first_non_empty(...$values): string
+{
+    foreach ($values as $value) {
+        $value = trim((string) $value);
+        if ($value !== '') {
+            return $value;
+        }
     }
 
-} else {
+    return '';
+}
 
-    // if already sending string values like fresher/junior/mid/senior
-    $allowed = ['fresher', 'junior', 'mid', 'senior'];
+function ai_interview_table_exists(mysqli $conn, string $table): bool
+{
+    $safeTable = $conn->real_escape_string($table);
+    $result = $conn->query("SHOW TABLES LIKE '{$safeTable}'");
 
-    if (in_array($experienceInput, $allowed)) {
-        $experience = $experienceInput;
+    if (!$result) {
+        return false;
+    }
+
+    $exists = $result->num_rows > 0;
+    $result->close();
+
+    return $exists;
+}
+
+function ai_interview_append_skill_tokens(array &$collector, string $rawSkills): void
+{
+    $parts = preg_split('/\s*,\s*/', trim($rawSkills));
+
+    foreach ($parts as $skill) {
+        $skill = trim((string) $skill);
+        if ($skill === '') {
+            continue;
+        }
+
+        $collector[strtolower($skill)] = $skill;
     }
 }
-$_SESSION['jobid'] = $jobid;
-$sessionCandidateName = $_SESSION['name']
-    ?? $_SESSION['user_name']
-    ?? $_SESSION['candidate_name']
-    ?? $_SESSION['candidateName']
-    ?? '';
-$candidateName = trim($_POST['candidate_name'] ?? $sessionCandidateName);
 
-if ($candidateId > 0) {
-    $conn = db_connect();
-    if ($conn) {
-        $stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
+function ai_interview_fetch_candidate_highlight_skills(mysqli $conn, int $candidateId, int $jobId = 0): string
+{
+    if ($candidateId <= 0) {
+        return '';
+    }
+
+    if (ai_interview_table_exists($conn, 'candidate_resume_versions')) {
+        if ($jobId > 0) {
+            $stmt = $conn->prepare(
+                "SELECT highlight_skills
+                 FROM candidate_resume_versions
+                 WHERE candidate_id = ?
+                   AND job_id = ?
+                   AND highlight_skills IS NOT NULL
+                   AND TRIM(highlight_skills) <> ''
+                 ORDER BY is_primary DESC, updated_at DESC, id DESC
+                 LIMIT 1"
+            );
+
+            if ($stmt) {
+                $stmt->bind_param('ii', $candidateId, $jobId);
+                $stmt->execute();
+                $stmt->bind_result($jobSkills);
+                if ($stmt->fetch()) {
+                    $stmt->close();
+                    return trim((string) $jobSkills);
+                }
+                $stmt->close();
+            }
+        }
+
+        $stmt = $conn->prepare(
+            "SELECT highlight_skills
+             FROM candidate_resume_versions
+             WHERE candidate_id = ?
+               AND highlight_skills IS NOT NULL
+               AND TRIM(highlight_skills) <> ''
+             ORDER BY is_primary DESC, updated_at DESC, id DESC
+             LIMIT 1"
+        );
+
         if ($stmt) {
             $stmt->bind_param('i', $candidateId);
             $stmt->execute();
-            $stmt->bind_result($candidateName);
-            $stmt->fetch();
+            $stmt->bind_result($resumeSkills);
+            if ($stmt->fetch()) {
+                $stmt->close();
+                return trim((string) $resumeSkills);
+            }
             $stmt->close();
         }
-
-        $conn->close();
     }
+
+    if (ai_interview_table_exists($conn, 'candidate_skills')) {
+        $stmt = $conn->prepare(
+            "SELECT skill_name
+             FROM candidate_skills
+             WHERE candidate_id = ?
+               AND skill_name IS NOT NULL
+               AND TRIM(skill_name) <> ''
+             ORDER BY skill_name ASC"
+        );
+
+        if ($stmt) {
+            $stmt->bind_param('i', $candidateId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $skills = [];
+
+            if ($result) {
+                while ($row = $result->fetch_assoc()) {
+                    ai_interview_append_skill_tokens($skills, (string) ($row['skill_name'] ?? ''));
+                }
+                $result->free();
+            }
+
+            $stmt->close();
+
+            if ($skills !== []) {
+                return implode(', ', array_values($skills));
+            }
+        }
+    }
+
+    return '';
 }
 
-if ($candidateName === '') {
-    $candidateName = $sessionCandidateName;
+function ai_interview_normalize_experience($experienceInput): string
+{
+    if (is_numeric($experienceInput)) {
+        $years = (float) $experienceInput;
+
+        if ($years >= 0 && $years <= 1) {
+            return 'fresher';
+        }
+        if ($years > 1 && $years <= 3) {
+            return 'junior';
+        }
+        if ($years > 3 && $years <= 6) {
+            return 'mid';
+        }
+
+        return 'senior';
+    }
+
+    $value = strtolower(trim((string) $experienceInput));
+    return in_array($value, ['fresher', 'junior', 'mid', 'senior'], true) ? $value : '';
 }
- 
-$selectedJobTitle = $_POST['job_title'] ?? '';
-$highlightSkills = $_POST['highlight_skills'] ?? '';
-$experience = $_POST['experience'] ?? '';
-$_SESSION['jobrole'] = $selectedJobTitle;
-$_SESSION['candidateName'] = $candidateName;
-$_SESSION['highlight_skills'] = $highlightSkills;
-$_SESSION['experience'] = $experience;
-}
-else{
-$candidateName = $_SESSION['candidateName']
-    ?? $_SESSION['name']
-    ?? $_SESSION['user_name']
-    ?? $_SESSION['candidate_name']
-    ?? '';
-$selectedJobTitle = $_SESSION['position'] ?? '';
-$highlightSkills = $_SESSION['highlight_skills'] ?? '';
-$experience = $_SESSION['experience'] ?? '';
-//echo $selectedJobTitle;
+
+$candidateId = (int) ($_SESSION['candidateId'] ?? 0);
+$jobid = (int) ($_SESSION['jobid'] ?? 0);
+
+// Redirect if already in exam
+//if (!empty($_SESSION['exam_ready'])) { header('Location: exam.php'); exit; }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $candidateId = (int) ($_POST['candidate_id'] ?? 0);
+    $jobid = (int) ($_POST['jobid'] ?? 0);
+    $_SESSION['candidateId'] = $candidateId;
+    $_SESSION['jobid'] = $jobid;
+
+    $experience = ai_interview_normalize_experience($_POST['experience'] ?? '');
+    $sessionCandidateName = $_SESSION['name']
+        ?? $_SESSION['user_name']
+        ?? $_SESSION['candidate_name']
+        ?? $_SESSION['candidateName']
+        ?? '';
+    $candidateName = trim((string) ($_POST['candidate_name'] ?? $sessionCandidateName));
+
+    if ($candidateId > 0) {
+        $conn = db_connect();
+        if ($conn) {
+            $stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
+            if ($stmt) {
+                $stmt->bind_param('i', $candidateId);
+                $stmt->execute();
+                $stmt->bind_result($dbCandidateName);
+                if ($stmt->fetch()) {
+                    $candidateName = trim((string) $dbCandidateName);
+                }
+                $stmt->close();
+            }
+
+            $conn->close();
+        }
+    }
+
+    if ($candidateName === '') {
+        $candidateName = $sessionCandidateName;
+    }
+
+    $selectedJobTitle = ai_interview_pick_first_non_empty(
+        $_POST['job_title'] ?? '',
+        $_POST['position'] ?? '',
+        $_SESSION['jobrole'] ?? '',
+        $_SESSION['position'] ?? ''
+    );
+
+    $highlightSkills = ai_interview_pick_first_non_empty(
+        $_POST['highlight_skills'] ?? '',
+        $_SESSION['highlight_skills'] ?? ''
+    );
+
+    if ($candidateId > 0 && $highlightSkills === '') {
+        $conn = db_connect();
+        if ($conn) {
+            $highlightSkills = ai_interview_fetch_candidate_highlight_skills($conn, $candidateId, $jobid);
+            $conn->close();
+        }
+    }
+
+    $_SESSION['jobrole'] = $selectedJobTitle;
+    $_SESSION['position'] = $selectedJobTitle;
+    $_SESSION['candidateName'] = $candidateName;
+    if ($highlightSkills !== '' || !isset($_SESSION['highlight_skills'])) {
+        $_SESSION['highlight_skills'] = $highlightSkills;
+    }
+    $_SESSION['experience'] = $experience;
+} else {
+    $candidateName = $_SESSION['candidateName']
+        ?? $_SESSION['name']
+        ?? $_SESSION['user_name']
+        ?? $_SESSION['candidate_name']
+        ?? '';
+    $selectedJobTitle = ai_interview_pick_first_non_empty(
+        $_SESSION['jobrole'] ?? '',
+        $_SESSION['position'] ?? ''
+    );
+    $highlightSkills = trim((string) ($_SESSION['highlight_skills'] ?? ''));
+    $experience = trim((string) ($_SESSION['experience'] ?? ''));
+
+    if ($candidateId > 0 && $highlightSkills === '') {
+        $conn = db_connect();
+        if ($conn) {
+            $highlightSkills = ai_interview_fetch_candidate_highlight_skills($conn, $candidateId, $jobid);
+            $conn->close();
+        }
+
+        if ($highlightSkills !== '') {
+            $_SESSION['highlight_skills'] = $highlightSkills;
+        }
+    }
 }
 //echo $_SESSION['highlight_skills'];
 ?>
@@ -188,12 +351,12 @@ $experience = $_SESSION['experience'] ?? '';
           <div class="form-group">
             <label class="form-label" for="candidate_name">Full Name</label>
             <input class="form-input" type="text" id="candidate_name" name="candidate_name"
-                   placeholder="e.g. Arjun Sharma" required autocomplete="off" value="<?php echo $candidateName ?? $_SESSION['candidateName']; ?>" readonly />
+                   placeholder="e.g. Arjun Sharma" required autocomplete="off" value="<?= htmlspecialchars((string) ($candidateName ?? $_SESSION['candidateName'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" readonly />
           </div>
         <div class="form-group">
     <label class="form-label" for="position">Position Applied For</label>
      <input class="form-input" type="text" id="position" name="position"
-                   placeholder="Job Role" required autocomplete="off" value="<?php echo $selectedJobTitle ?? $_SESSION['position'] ?? $_SESSION['jobrole']; ?>" readonly />
+                   placeholder="Job Role" required autocomplete="off" value="<?= htmlspecialchars((string) ($selectedJobTitle ?? $_SESSION['position'] ?? $_SESSION['jobrole'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" readonly />
      
 </div>
         </div>
@@ -201,7 +364,7 @@ $experience = $_SESSION['experience'] ?? '';
         <div class="form-group">
           <label class="form-label" for="resume">Paste Your Resume / Key Skills</label>
           <textarea class="form-textarea" id="resume" name="resume" rows="6"
-                    placeholder="Paste your resume text here — skills, experience, technologies you've worked with. The AI uses this to tailor your technical round questions..."  required><?php echo $highlightSkills ?? $_SESSION['highlight_skills']; ?></textarea>
+                    placeholder="Paste your resume text here — skills, experience, technologies you've worked with. The AI uses this to tailor your technical round questions..."  required><?= htmlspecialchars((string) ($highlightSkills ?? $_SESSION['highlight_skills'] ?? ''), ENT_QUOTES, 'UTF-8') ?></textarea>
           <p class="hint">💡 The more detail you provide, the more personalised your questions will be.</p>
         </div>
 

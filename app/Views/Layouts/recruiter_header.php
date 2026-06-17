@@ -87,6 +87,586 @@
         margin: 0; padding: 0;
         background: var(--hm-surface-grad);
     }
+
+    body.dark.recruiter-jobboard {
+        --hm-bg: #111111;
+        --hm-bg-2: #111111;
+        --hm-surface-grad: #111111;
+        --hm-card: #111111;
+        --hm-text: #F8FAFC;
+        --hm-muted: #94A3B8;
+        --hm-light: #7A8B96;
+        --hm-border: #23343A;
+        --hm-active-bg: #162327;
+        --hm-hover-bg: #151D21;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SHARED TYPOGRAPHY
+       Align recruiter pages with candidate page rhythm
+    ═══════════════════════════════════════════════════ */
+    body.recruiter-jobboard,
+    body.recruiter-jobboard button,
+    body.recruiter-jobboard input,
+    body.recruiter-jobboard select,
+    body.recruiter-jobboard textarea,
+    body.recruiter-jobboard table,
+    body.recruiter-jobboard th,
+    body.recruiter-jobboard td {
+        font-family: var(--portal-font-family, "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+        letter-spacing: 0 !important;
+    }
+
+    body.recruiter-jobboard h1,
+    body.recruiter-jobboard h2,
+    body.recruiter-jobboard h3,
+    body.recruiter-jobboard h4,
+    body.recruiter-jobboard h5,
+    body.recruiter-jobboard h6,
+    body.recruiter-jobboard .page-board-title,
+    body.recruiter-jobboard .section-title,
+    body.recruiter-jobboard .card-header h5,
+    body.recruiter-jobboard .card-header h6,
+    body.recruiter-jobboard .modal-title,
+    body.recruiter-jobboard .dashboard-metric-title {
+        font-family: var(--portal-font-family, "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+        letter-spacing: 0 !important;
+        text-transform: none;
+    }
+
+    body.recruiter-jobboard .page-board-title,
+    body.recruiter-jobboard h1 {
+        font-size: 1.85rem !important;
+        line-height: 1.2 !important;
+        font-weight: 750 !important;
+    }
+
+    body.recruiter-jobboard .section-title,
+    body.recruiter-jobboard h2 {
+        font-size: 1.45rem !important;
+        line-height: 1.25 !important;
+        font-weight: 720 !important;
+    }
+
+    body.recruiter-jobboard .card-header h5,
+    body.recruiter-jobboard .card-header h6,
+    body.recruiter-jobboard h3,
+    body.recruiter-jobboard .modal-title {
+        font-size: 1rem !important;
+        line-height: 1.35 !important;
+        font-weight: 700 !important;
+    }
+
+    body.recruiter-jobboard .page-board-subtitle,
+    body.recruiter-jobboard .text-muted,
+    body.recruiter-jobboard small,
+    body.recruiter-jobboard p,
+    body.recruiter-jobboard li,
+    body.recruiter-jobboard td,
+    body.recruiter-jobboard .form-control,
+    body.recruiter-jobboard .btn {
+        line-height: 1.55 !important;
+        letter-spacing: 0 !important;
+    }
+
+    body.recruiter-jobboard .page-board-subtitle,
+    body.recruiter-jobboard .text-muted,
+    body.recruiter-jobboard small {
+        font-size: 0.94rem !important;
+    }
+
+    body.recruiter-jobboard .page-board-kicker,
+    body.recruiter-jobboard .section-eyebrow,
+    body.recruiter-jobboard .settings-side-title,
+    body.recruiter-jobboard .hm-sb-section {
+        font-size: 0.75rem !important;
+        line-height: 1.2 !important;
+        font-weight: 750 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.06em !important;
+    }
+
+    body.recruiter-jobboard label,
+    body.recruiter-jobboard .recruiter-summary-label,
+    body.recruiter-jobboard .recruiter-info-label,
+    body.recruiter-jobboard .dashboard-metric-title,
+    body.recruiter-jobboard .status-pill,
+    body.recruiter-jobboard .badge,
+    body.recruiter-jobboard .btn,
+    body.recruiter-jobboard .custom-control-label,
+    body.recruiter-jobboard .action-item-label,
+    body.recruiter-jobboard .hm-sb-item .sb-label,
+    body.recruiter-jobboard .card-header .font-weight-bold {
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+    }
+
+    body.recruiter-jobboard .recruiter-dashboard-main .recruiter-stat-card .dashboard-metric-title,
+    body.recruiter-jobboard .recruiter-dashboard-main .recruiter-stat-card .text-primary.dashboard-metric-title,
+    body.recruiter-jobboard .recruiter-dashboard-main .recruiter-stat-card .text-info.dashboard-metric-title,
+    body.recruiter-jobboard .recruiter-dashboard-main .recruiter-stat-card .text-warning.dashboard-metric-title,
+    body.recruiter-jobboard .recruiter-dashboard-main .recruiter-stat-card .text-success.dashboard-metric-title {
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+    }
+
+    @media (max-width: 767.98px) {
+        body.recruiter-jobboard .page-board-title,
+        body.recruiter-jobboard h1 {
+            font-size: 1.55rem !important;
+        }
+
+        body.recruiter-jobboard .section-title,
+        body.recruiter-jobboard h2 {
+            font-size: 1.28rem !important;
+        }
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SHARED SURFACES & CONTROLS
+       Keep recruiter pages visually consistent
+    ═══════════════════════════════════════════════════ */
+    body.recruiter-jobboard .card,
+    body.recruiter-jobboard .dashboard-panel,
+    body.recruiter-jobboard .recruiter-dashboard-panel-card,
+    body.recruiter-jobboard .recruiter-table-card,
+    body.recruiter-jobboard .recruiter-filter-card,
+    body.recruiter-jobboard .recruiter-form-card,
+    body.recruiter-jobboard .recruiter-help-card,
+    body.recruiter-jobboard .recruiter-info-card,
+    body.recruiter-jobboard .recruiter-review-card,
+    body.recruiter-jobboard .recruiter-review-summary-card,
+    body.recruiter-jobboard .recruiter-alert,
+    body.recruiter-jobboard .recruiter-notification-card,
+    body.recruiter-jobboard .recruiter-notification-empty,
+    body.recruiter-jobboard .recruiter-action-center-empty,
+    body.recruiter-jobboard .table-responsive,
+    body.recruiter-jobboard .table-responsive-wrap {
+        background: var(--hm-card) !important;
+        border-color: var(--hm-border) !important;
+        box-shadow: none !important;
+    }
+
+    body.recruiter-jobboard .page-board-header,
+    body.recruiter-jobboard .page-board-header.page-board-header-tight,
+    body.recruiter-jobboard .recruiter-page-board-header {
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    body.recruiter-jobboard .card,
+    body.recruiter-jobboard .dashboard-panel,
+    body.recruiter-jobboard .recruiter-dashboard-panel-card,
+    body.recruiter-jobboard .recruiter-table-card,
+    body.recruiter-jobboard .recruiter-filter-card,
+    body.recruiter-jobboard .recruiter-form-card,
+    body.recruiter-jobboard .recruiter-help-card,
+    body.recruiter-jobboard .recruiter-info-card,
+    body.recruiter-jobboard .recruiter-review-card,
+    body.recruiter-jobboard .recruiter-review-summary-card,
+    body.recruiter-jobboard .recruiter-notification-card,
+    body.recruiter-jobboard .recruiter-notification-empty {
+        border: 1px solid var(--hm-border) !important;
+    }
+
+    body.recruiter-jobboard .card-header,
+    body.recruiter-jobboard .card-footer,
+    body.recruiter-jobboard .recruiter-section-header,
+    body.recruiter-jobboard .thead-light th,
+    body.recruiter-jobboard .table thead th {
+        background: var(--hm-card) !important;
+        border-color: var(--hm-border) !important;
+        color: var(--hm-muted) !important;
+        font-size: 12.5px !important;
+        font-weight: 700 !important;
+        line-height: 1.3 !important;
+        letter-spacing: 0.04em !important;
+    }
+
+    body.recruiter-jobboard .card-body,
+    body.recruiter-jobboard .card-footer,
+    body.recruiter-jobboard .modal-body,
+    body.recruiter-jobboard .modal-footer {
+        background: transparent !important;
+    }
+
+    body.recruiter-jobboard .table th,
+    body.recruiter-jobboard .table td,
+    body.recruiter-jobboard tbody tr,
+    body.recruiter-jobboard tbody td {
+        border-color: var(--hm-border) !important;
+    }
+
+    body.recruiter-jobboard .table td,
+    body.recruiter-jobboard .table tbody td,
+    body.recruiter-jobboard p,
+    body.recruiter-jobboard li {
+        color: var(--hm-text) !important;
+        font-size: 13.5px !important;
+        line-height: 1.45 !important;
+    }
+
+    body.recruiter-jobboard .text-muted,
+    body.recruiter-jobboard small,
+    body.recruiter-jobboard .page-board-subtitle,
+    body.recruiter-jobboard .form-text,
+    body.recruiter-jobboard .recruiter-summary-label,
+    body.recruiter-jobboard .recruiter-info-label {
+        color: var(--hm-muted) !important;
+    }
+
+    body.recruiter-jobboard label,
+    body.recruiter-jobboard .custom-control-label,
+    body.recruiter-jobboard th,
+    body.recruiter-jobboard .card-header .font-weight-bold {
+        color: var(--hm-muted) !important;
+    }
+
+    body.recruiter-jobboard .form-control,
+    body.recruiter-jobboard .custom-select,
+    body.recruiter-jobboard select,
+    body.recruiter-jobboard textarea,
+    body.recruiter-jobboard input[type="text"],
+    body.recruiter-jobboard input[type="email"],
+    body.recruiter-jobboard input[type="number"],
+    body.recruiter-jobboard input[type="date"],
+    body.recruiter-jobboard input[type="time"] {
+        background: var(--hm-card) !important;
+        color: var(--hm-text) !important;
+        border: 1px solid var(--hm-border) !important;
+        box-shadow: none !important;
+    }
+
+    body.recruiter-jobboard .form-control::placeholder,
+    body.recruiter-jobboard textarea::placeholder,
+    body.recruiter-jobboard input::placeholder {
+        color: var(--hm-light) !important;
+    }
+
+    body.recruiter-jobboard .form-control:focus,
+    body.recruiter-jobboard .custom-select:focus,
+    body.recruiter-jobboard select:focus,
+    body.recruiter-jobboard textarea:focus,
+    body.recruiter-jobboard input:focus {
+        border-color: var(--hm-primary-dark) !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    body.recruiter-jobboard select option,
+    body.recruiter-jobboard .custom-select option {
+        background: var(--hm-card) !important;
+        color: var(--hm-text) !important;
+    }
+
+    body.recruiter-jobboard select option:checked,
+    body.recruiter-jobboard select option:hover,
+    body.recruiter-jobboard select option:focus,
+    body.recruiter-jobboard .custom-select option:checked,
+    body.recruiter-jobboard .custom-select option:hover,
+    body.recruiter-jobboard .custom-select option:focus {
+        background: var(--hm-primary) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 0 0 999px var(--hm-primary) inset !important;
+    }
+
+    body.recruiter-jobboard .btn-primary,
+    body.recruiter-jobboard .btn-outline-primary {
+        background: transparent !important;
+        color: var(--hm-primary) !important;
+        border: 1.5px solid var(--hm-primary) !important;
+        box-shadow: none !important;
+    }
+
+    body.recruiter-jobboard .btn-primary:hover,
+    body.recruiter-jobboard .btn-primary:focus,
+    body.recruiter-jobboard .btn-outline-primary:hover,
+    body.recruiter-jobboard .btn-outline-primary:focus {
+        background: var(--hm-primary) !important;
+        color: #FFFFFF !important;
+        border-color: var(--hm-primary) !important;
+        box-shadow: none !important;
+    }
+
+    body.recruiter-jobboard .btn-outline-secondary {
+        background: transparent !important;
+        color: var(--hm-muted) !important;
+        border: 1px solid var(--hm-border) !important;
+        box-shadow: none !important;
+    }
+
+    body.recruiter-jobboard .btn-outline-secondary:hover,
+    body.recruiter-jobboard .btn-outline-secondary:focus {
+        background: var(--hm-hover-bg) !important;
+        color: var(--hm-text) !important;
+        border-color: var(--hm-primary) !important;
+    }
+
+    body.recruiter-jobboard .btn-link {
+        color: var(--hm-primary) !important;
+        text-decoration: none !important;
+        box-shadow: none !important;
+    }
+
+    body.recruiter-jobboard .btn-link:hover,
+    body.recruiter-jobboard .btn-link:focus {
+        color: var(--hm-primary-dark) !important;
+        text-decoration: none !important;
+    }
+
+    body.recruiter-jobboard .portal-pagination-wrap,
+    body.recruiter-jobboard .pagination-wrap {
+        align-items: center !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 12px !important;
+        justify-content: space-between !important;
+        margin-top: 18px !important;
+        padding: 14px 0 0 !important;
+    }
+
+    body.recruiter-jobboard .portal-pagination-meta span,
+    body.recruiter-jobboard .pagination-wrap span {
+        color: var(--hm-muted) !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+    }
+
+    body.recruiter-jobboard .portal-pagination,
+    body.recruiter-jobboard .custom-pagination {
+        align-items: center !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        justify-content: flex-end !important;
+        margin-left: auto !important;
+    }
+
+    body.recruiter-jobboard .portal-pagination a,
+    body.recruiter-jobboard .custom-pagination a {
+        align-items: center !important;
+        background: var(--hm-card) !important;
+        border: 1.5px solid rgba(31, 183, 181, 0.38) !important;
+        border-radius: 6px !important;
+        color: var(--hm-primary) !important;
+        display: inline-flex !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        height: 34px !important;
+        justify-content: center !important;
+        line-height: 1 !important;
+        min-width: 34px !important;
+        padding: 0 11px !important;
+        text-decoration: none !important;
+        transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease !important;
+    }
+
+    body.recruiter-jobboard .portal-pagination a.prev,
+    body.recruiter-jobboard .portal-pagination a.next,
+    body.recruiter-jobboard .custom-pagination a.prev,
+    body.recruiter-jobboard .custom-pagination a.next {
+        min-width: 64px !important;
+    }
+
+    body.recruiter-jobboard .portal-pagination a.active,
+    body.recruiter-jobboard .portal-pagination a:hover,
+    body.recruiter-jobboard .portal-pagination a:focus,
+    body.recruiter-jobboard .custom-pagination a.active,
+    body.recruiter-jobboard .custom-pagination a:hover,
+    body.recruiter-jobboard .custom-pagination a:focus {
+        background: var(--hm-primary) !important;
+        border-color: var(--hm-primary) !important;
+        color: #ffffff !important;
+        outline: none !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    body.dark.recruiter-jobboard .portal-pagination a,
+    body.dark.recruiter-jobboard .custom-pagination a {
+        background: #162327 !important;
+        border-color: rgba(45, 212, 191, 0.36) !important;
+        color: #7dd3fc !important;
+    }
+
+    body.dark.recruiter-jobboard .portal-pagination a.active,
+    body.dark.recruiter-jobboard .portal-pagination a:hover,
+    body.dark.recruiter-jobboard .portal-pagination a:focus,
+    body.dark.recruiter-jobboard .custom-pagination a.active,
+    body.dark.recruiter-jobboard .custom-pagination a:hover,
+    body.dark.recruiter-jobboard .custom-pagination a:focus {
+        background: var(--hm-primary) !important;
+        border-color: var(--hm-primary) !important;
+        color: #ffffff !important;
+    }
+
+    @media (max-width: 767.98px) {
+        body.recruiter-jobboard .portal-pagination-wrap,
+        body.recruiter-jobboard .pagination-wrap {
+            align-items: stretch !important;
+            flex-direction: column !important;
+            text-align: center !important;
+        }
+
+        body.recruiter-jobboard .portal-pagination,
+        body.recruiter-jobboard .custom-pagination {
+            justify-content: center !important;
+            margin-left: 0 !important;
+        }
+    }
+
+    body.recruiter-jobboard .text-danger,
+    body.recruiter-jobboard .btn-link.text-danger,
+    body.recruiter-jobboard a.text-danger {
+        color: #EF4444 !important;
+    }
+
+    body.recruiter-jobboard .status-pill,
+    body.recruiter-jobboard .badge-primary,
+    body.recruiter-jobboard .badge-info {
+        background: rgba(31, 183, 181, 0.12) !important;
+        color: var(--hm-primary-dark) !important;
+        border: 1px solid rgba(31, 183, 181, 0.18) !important;
+    }
+
+    body.recruiter-jobboard .badge,
+    body.recruiter-jobboard .status-pill {
+        border-radius: 999px !important;
+        box-shadow: none !important;
+    }
+
+    body.recruiter-jobboard .badge-secondary,
+    body.recruiter-jobboard .badge-light {
+        background: rgba(22, 33, 43, 0.06) !important;
+        color: var(--hm-muted) !important;
+        border: 1px solid var(--hm-border) !important;
+    }
+
+    body.recruiter-jobboard .badge-warning {
+        background: rgba(245, 158, 11, 0.12) !important;
+        color: #B45309 !important;
+        border: 1px solid rgba(245, 158, 11, 0.2) !important;
+    }
+
+    body.recruiter-jobboard .badge-danger {
+        background: rgba(239, 68, 68, 0.12) !important;
+        color: #DC2626 !important;
+        border: 1px solid rgba(239, 68, 68, 0.2) !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select {
+        width: 100% !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select.form-control,
+    body.recruiter-jobboard .bootstrap-select.custom-select {
+        height: auto !important;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select > .dropdown-toggle {
+        min-height: 46px;
+        background: var(--hm-card) !important;
+        color: var(--hm-text) !important;
+        border: 1px solid var(--hm-border) !important;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+        padding: 0.7rem 2.25rem 0.7rem 1rem !important;
+        font-weight: 400 !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select > .dropdown-toggle:focus,
+    body.recruiter-jobboard .bootstrap-select > .dropdown-toggle:hover,
+    body.recruiter-jobboard .bootstrap-select.show > .dropdown-toggle {
+        background: var(--hm-card) !important;
+        color: var(--hm-text) !important;
+        border-color: var(--hm-primary-dark) !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select .filter-option,
+    body.recruiter-jobboard .bootstrap-select .filter-option-inner,
+    body.recruiter-jobboard .bootstrap-select .filter-option-inner-inner {
+        color: inherit !important;
+        line-height: 1.4 !important;
+        font-weight: 400 !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select > .dropdown-toggle.bs-placeholder,
+    body.recruiter-jobboard .bootstrap-select > .dropdown-toggle.bs-placeholder .filter-option-inner-inner {
+        color: var(--hm-light) !important;
+        font-weight: 400 !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select .bs-caret,
+    body.recruiter-jobboard .bootstrap-select .caret {
+        color: var(--hm-muted) !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select .dropdown-menu {
+        background: var(--hm-card) !important;
+        border: 1px solid var(--hm-border) !important;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin-top: 2px !important;
+        overflow: hidden !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select .dropdown-menu .inner {
+        background: transparent !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select .dropdown-item,
+    body.recruiter-jobboard .bootstrap-select .dropdown-menu li a,
+    body.recruiter-jobboard .bootstrap-select .dropdown-menu li a span.text {
+        color: var(--hm-text) !important;
+        background: transparent !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select .dropdown-item,
+    body.recruiter-jobboard .bootstrap-select .dropdown-menu li a {
+        padding: 0.7rem 1rem !important;
+        font-weight: 400 !important;
+        line-height: 1.4 !important;
+        border: 0 !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select .dropdown-item:hover,
+    body.recruiter-jobboard .bootstrap-select .dropdown-item:focus,
+    body.recruiter-jobboard .bootstrap-select .dropdown-menu li a:hover,
+    body.recruiter-jobboard .bootstrap-select .dropdown-menu li a:focus {
+        background: rgba(31, 183, 181, 0.1) !important;
+        color: var(--hm-primary-dark) !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select .dropdown-item.active,
+    body.recruiter-jobboard .bootstrap-select .dropdown-item:active,
+    body.recruiter-jobboard .bootstrap-select .selected a,
+    body.recruiter-jobboard .bootstrap-select .selected a:hover,
+    body.recruiter-jobboard .bootstrap-select .selected a:focus {
+        background: var(--hm-primary) !important;
+        color: #FFFFFF !important;
+        font-weight: 400 !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select .dropdown-item.active span,
+    body.recruiter-jobboard .bootstrap-select .dropdown-item:active span,
+    body.recruiter-jobboard .bootstrap-select .selected a span,
+    body.recruiter-jobboard .bootstrap-select .selected a .text {
+        color: #FFFFFF !important;
+        font-weight: 400 !important;
+    }
+
+    body.recruiter-jobboard .bootstrap-select .bs-ok-default:after,
+    body.recruiter-jobboard .bootstrap-select .check-mark {
+        color: #FFFFFF !important;
+    }
     body.recruiter-jobboard .site-navbar,
     body.recruiter-jobboard .site-mobile-menu { display: none !important; }
     body.recruiter-jobboard .site-wrap {
