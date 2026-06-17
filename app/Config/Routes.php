@@ -7,7 +7,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 
 $routes->get('/', 'Home::index');
-
+$routes->post('recruiter/get-ai-report', 'Recruiter::getAiReport');
 // Route to serve the standalone portal trailer page
 $routes->get('portal-trailer', function() {
     $path = ROOTPATH . 'standalone/portal-trailer.html';

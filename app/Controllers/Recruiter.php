@@ -289,7 +289,77 @@ class Recruiter extends BaseController
 
         return null;
     }
+public function getAiReport()
+{
+    try {
+        // Read JSON payload sent from fetch()
+        $data = $this->request->getJSON(true);
 
+        $candidateId = (int)($data['candidate_id'] ?? 0);
+        $jobrole     = trim($data['jobrole'] ?? '');
+
+        if (!$candidateId) {
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON([
+                    'success' => false,
+                    'message' => 'Candidate ID is required.'
+                ]);
+        }
+
+        $db = \Config\Database::connect();
+
+        // ==========================
+        // Interview Results
+        // ==========================
+        $resultsBuilder = $db->table('interview_results')
+            ->select('round_name, score, total_questions, percentage')
+            ->where('candidate_id', $candidateId);
+
+        if (!empty($jobrole)) {
+            $resultsBuilder->where('jobrole', $jobrole);
+        }
+
+        $results = $resultsBuilder
+            ->orderBy('id', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        // ==========================
+        // Violations
+        // ==========================
+        $violationsBuilder = $db->table('violations')
+            ->select('message, COUNT(*) as total')
+            ->where('candidate_id', $candidateId);
+
+        if (!empty($jobrole)) {
+            $violationsBuilder->where('jobrole', $jobrole);
+        }
+
+        $violations = $violationsBuilder
+            ->groupBy('message')
+            ->orderBy('total', 'DESC')
+            ->get()
+            ->getResultArray();
+
+        return $this->response->setJSON([
+            'success'    => true,
+            'results'    => $results,
+            'violations' => $violations
+        ]);
+
+    } catch (\Throwable $e) {
+
+        log_message('error', 'AI Report Error: ' . $e->getMessage());
+
+        return $this->response
+            ->setStatusCode(500)
+            ->setJSON([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+    }
+}
     private function normalizeOption(string $value, array $allowed, string $default): string
     {
         $value = trim($value);

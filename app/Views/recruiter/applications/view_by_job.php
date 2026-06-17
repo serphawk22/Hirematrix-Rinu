@@ -839,7 +839,7 @@ document.addEventListener('click', function (e) {
                 violationsHtml += `
                     <tr>
                         <td>${v.message ?? '-'}</td>
-                        <td><span class="badge badge-danger">${v.total ?? 0}</span></td>
+                        <td><span class="status-pill">${v.total ?? 0}</span></td>
                     </tr>`;
             });
         } else {
@@ -858,7 +858,7 @@ document.addEventListener('click', function (e) {
                         <td>${r.round_name ?? '-'}</td>
                         <td>${r.score ?? 0}</td>
                         <td>${r.total_questions ?? 0}</td>
-                        <td><span class="badge badge-success">${r.percentage ?? 0}%</span></td>
+                        <td><span class="status-pill">${r.percentage ?? 0}%</span></td>
                     </tr>`;
             });
         } else {
@@ -903,7 +903,7 @@ document.addEventListener('click', function (e) {
                 <div class="col-md-5">
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-white">
-                            <h5 class="mb-0 text-danger">Violations</h5>
+                            <h5 class="mb-0">Violations</h5>
                         </div>
                         <div class="card-body p-0">
                             <table class="table mb-0">
