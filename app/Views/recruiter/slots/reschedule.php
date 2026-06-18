@@ -27,7 +27,7 @@
     body.dark .page-board-title{
         font-size: 26px !important;
     font-weight: 700 !important;
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
     margin: 0;
     }
       .status-pill {
@@ -46,7 +46,7 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #111111 !important;
+    background: #000000 !important;
     color: #0D8A90;
     border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
@@ -61,16 +61,16 @@ body.dark .status-pill {
     ) !important;
 }
 body.dark .hm-page-content,body.dark .recruiter-slot-reschedule-jobboard,body.dark .recruiter-form-card,body.dark .card-header,body.dark .recruiter-info-card,body.dark .recruiter-help-card,body.dark .recruiter-tip-item,body.dark .recruiter-alert{
-    background: #111111 !important;
+    background: #000000 !important;
     border: 1px solid #23343A !important;
 } 
-.recruiter-info-card,.recruiter-info-label,.recruiter-form-card,h6.m-0.font-weight-bold.text-primary,.mb-0.small.recruiter-help-list,.recruiter-tip-item{
+.recruiter-info-card,.recruiter-info-label,.recruiter-form-card,h6.m-0.font-weight-bold.text-primary,.recruiter-help-list,.recruiter-tip-item{
      font-size: 1rem;
     font-weight: 500 !important;
     color: var(--foreground, #16212B);
 }
-body.dark .recruiter-info-card,body.dark .recruiter-info-label,body.dark .recruiter-form-card,body.dark h6.m-0.font-weight-bold.text-primary,body.dark .mb-0.small.recruiter-help-list,body.dark .recruiter-tip-item,body.dark .recruiter-alert{
-  color:#94A3B8 !important;
+body.dark .recruiter-info-card,body.dark .recruiter-info-label,body.dark .recruiter-form-card,body.dark h6.m-0.font-weight-bold.text-primary,body.dark .recruiter-help-list,body.dark .recruiter-tip-item,body.dark .recruiter-alert{
+  color:#FFFFFF !important; 
 }
 /* ── Input focus border ── */
 .recruiter-job-form .form-control:focus {
@@ -89,8 +89,8 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #111111 !important;
-    color: #F8FAFC !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
 }
 /* ── Labels — match h6 style ── */
 .recruiter-job-form label {
@@ -102,8 +102,8 @@ body.dark .recruiter-job-form .form-control {
     line-height: 1.5;
 }
 body.dark .recruiter-tip-item{
-     background: #111111 !important;
-    color: #7A8B96 !important;
+     background: #000000 !important;
+    color: #FFFFFF !important;
      border: 1px solid #23343A !important;
       font-weight: 400 !important;   
 }
@@ -116,7 +116,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
     margin-bottom: 6px;
     display: block;
     line-height: 1.5;
-    color:#94A3B8;;
+    color:#FFFFFF !important;
 }
 /* ── Kill Bootstrap's orange/default focus first ── */
 /* ── Kill Bootstrap's orange/default focus first ── */
@@ -136,6 +136,141 @@ body.dark .recruiter-job-form label, body.dark h6 {
     max-width: 100% !important;
     padding-left: 34px !important;
     padding-right: 34px !important;
+}
+
+.recruiter-slot-picker {
+    display: grid;
+    gap: 1rem;
+}
+
+.recruiter-slot-date-group {
+    border: 1px solid #D9ECE5;
+    border-radius: 18px;
+    background: #FFFFFF;
+    padding: 0.95rem 1rem 0.3rem;
+}
+
+.recruiter-slot-date-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.9rem;
+    color: #1F3B73;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.recruiter-slot-date-head i {
+    color: #1F3B73;
+}
+
+.recruiter-slot-radio {
+    min-height: 100%;
+    padding-left: 1.8rem;
+}
+
+.recruiter-slot-radio .custom-control-label {
+    position: relative;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.recruiter-slot-radio .custom-control-label::before,
+.recruiter-slot-radio .custom-control-label::after {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.recruiter-slot-option {
+    display: block;
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border: 1px solid #D9ECE5;
+    border-radius: 14px;
+    background: #FFFFFF;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.recruiter-slot-option:hover {
+    border-color: #1FB7B5;
+    background: #F7FBFA;
+}
+
+.recruiter-slot-radio .custom-control-input:checked ~ .custom-control-label.recruiter-slot-option {
+    border-color: #1FB7B5;
+    background: #EFFAF8;
+    box-shadow: 0 0 0 1px rgba(31, 183, 181, 0.08);
+}
+
+.recruiter-slot-radio .custom-control-input:focus ~ .custom-control-label.recruiter-slot-option {
+    box-shadow: 0 0 0 2px rgba(31, 183, 181, 0.12);
+}
+
+.recruiter-slot-radio .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #1FB7B5;
+    border-color: #1FB7B5;
+}
+
+.recruiter-slot-radio .badge-success {
+    background: rgba(31, 183, 181, 0.12) !important;
+    color: #0D8A90 !important;
+    border: 1px solid rgba(31, 183, 181, 0.2);
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+body.dark .recruiter-slot-date-group {
+    background: #000000 !important;
+    border-color: #23343A !important;
+}
+
+body.dark .recruiter-slot-date-head,
+body.dark .recruiter-slot-date-head i {
+    color: #FFFFFF !important;
+}
+
+body.dark .recruiter-slot-option {
+    background: #000000 !important;
+    border-color: #23343A !important;
+}
+
+body.dark .recruiter-slot-option:hover {
+    background: #1A2328 !important;
+    border-color: #1FB7B5 !important;
+}
+
+body.dark .recruiter-slot-radio .custom-control-input:checked ~ .custom-control-label.recruiter-slot-option {
+    background: #000000 !important;
+    border-color: #1FB7B5 !important;
+    box-shadow: 0 0 0 1px rgba(31, 183, 181, 0.14);
+}
+
+body.dark .recruiter-slot-radio .custom-control-input:focus ~ .custom-control-label.recruiter-slot-option {
+    box-shadow: 0 0 0 2px rgba(31, 183, 181, 0.18);
+}
+
+body.dark .recruiter-slot-radio .custom-control-label::before {
+    background: #000000 !important;
+    border-color: #4A5C63 !important;
+}
+
+body.dark .recruiter-slot-radio .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #000000 !important;
+    border-color: #1FB7B5 !important;
+}
+
+body.dark .recruiter-slot-radio .badge-success {
+    background: rgba(31, 183, 181, 0.14) !important;
+    color: #57D3D1 !important;
+    border-color: rgba(31, 183, 181, 0.24) !important;
+}
+
+body.dark .custom-control-label,
+body.dark .custom-control-label strong,
+body.dark .custom-control-label .text-primary,body.dark span {
+    color: #FFFFFF !important;
 }
 </style>
 <div class="recruiter-slot-reschedule-jobboard">
@@ -301,13 +436,13 @@ body.dark .recruiter-job-form label, body.dark h6 {
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Important</h6>
                     </div>
-                    <div class="card-body">
-                        <ul class="mb-0 small recruiter-help-list">
-                            <li>The candidate will be notified automatically.</li>
-                            <li>This action cannot be undone.</li>
-                            <li>Provide a clear reason for rescheduling.</li>
-                            <li>The old slot will be released for others.</li>
-                        </ul>
+                    <div class="card-body"> 
+                    <div class="recruiter-tip-stack">
+                            <div class="recruiter-tip-item">The candidate will be notified automatically.</div>
+                            <div class="recruiter-tip-item">This action cannot be undone.</div>
+                            <div class="recruiter-tip-item">Provide a clear reason for rescheduling.</div>
+                            <div class="recruiter-tip-item">The old slot will be released for others.</div> 
+                            </div>
                     </div>
                 </div>
 

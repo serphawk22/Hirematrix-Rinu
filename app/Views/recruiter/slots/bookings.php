@@ -45,7 +45,7 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #111111 !important;
+    background: #000000 !important;
     color: #0D8A90;
     border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
@@ -54,7 +54,7 @@ body.dark .status-pill {
 }
      
 body.dark .m-0.font-weight-bold{
-    color:#F8FCFB !important;
+    color:#FFFFFF !important;
 }
 .hm-page-content,.recruiter-slot-bookings-jobboard{
          background: linear-gradient(
@@ -64,7 +64,7 @@ body.dark .m-0.font-weight-bold{
     ) !important;
 }
 body.dark .hm-page-content,body.dark .recruiter-slot-bookings-jobboard, body.dark .recruiter-summary-card, body.dark .recruiter-filter-card,body.dark .recruiter-table-card,body.dark .card-header,body.dark .table.table-bordered.table-hover.recruiter-bookings-table{
-    background: #111111 !important;
+    background: #000000 !important;
     border: 1px solid #23343A !important;
 } 
 /* Replace your existing tr,td,th block with this: */
@@ -79,23 +79,23 @@ tr, td, th {
 body.dark tr,
 body.dark td,
 body.dark th {
-   background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important; 
-    color:#94A3B8 !important;
+   background: #000000 !important; 
+    color:#FFFFFF !important;
     border-color: #23343A !important;
 }
 
 body.dark .table-secondary td,
 body.dark .table-secondary th,
 body.dark .table-secondary {
-   background: #111111 !important;
+   background: #000000 !important;
 }
 
 body.dark thead th {
-   background: #111111 !important;
-    color: #94A3B8 !important;
+   background: #000000 !important;
+    color: #FFFFFF !important;
 }
  body.dark .recruiter-summary-card{
-   color:#94A3B8 !important;
+   color:#FFFFFF !important;
  }
  /* ── Input focus border ── */
 .recruiter-job-form .form-control:focus {
@@ -114,8 +114,8 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background:#111111 !important;
-    color: #F8FAFC !important;
+    background:#000000 !important;
+    color: #FFFFFF !important;
 }
 /* ── Labels — match h6 style ── */
 .recruiter-job-form label {
@@ -133,10 +133,10 @@ body.dark .recruiter-job-form label, body.dark h6 {
     margin-bottom: 6px;
     display: block;
     line-height: 1.5;
-    color:#94A3B8 !important;
+    color:#FFFFFF !important;
 }
 body.dark .m-0.font-weight-bold,body.dark .recruiter-summary-item{
-     color:#94A3B8 !important;
+     color:#FFFFFFF !important;
 }
 /* ── Kill Bootstrap's orange/default focus first ── */
 /* ── Kill Bootstrap's orange/default focus first ── */
@@ -156,6 +156,9 @@ body.dark .m-0.font-weight-bold,body.dark .recruiter-summary-item{
     max-width: 100% !important;
     padding-left: 34px !important;
     padding-right: 34px !important;
+}
+body.dark span{
+    color:#FFFFFF !important;
 }
 </style>
 <div class="recruiter-slot-bookings-jobboard">
@@ -358,9 +361,9 @@ body.dark .m-0.font-weight-bold,body.dark .recruiter-summary-item{
                     </table>
                 </div>
 
-                <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links')): ?>
+                <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links') && $pager->getPageCount() > 1): ?>
                     <div class="mt-3">
-                        <?= $pager->links() ?>
+                        <?= $pager->links('default', 'portal_full') ?>
                     </div>
                 <?php endif; ?>
             </div>

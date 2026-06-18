@@ -14,7 +14,7 @@
     body.dark .page-board-title{
         font-size: 26px !important;
     font-weight: 700 !important;
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
     margin: 0;
     }
     .status-pill {
@@ -33,7 +33,7 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #111111 !important;
+    background: #000000 !important;
     color: #0D8A90;
     border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
@@ -57,7 +57,7 @@ body.dark .status-pill {
     margin: 0;
 }
 body.dark .page-board-title {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 
 /* ── Page subtitle ── */
@@ -66,7 +66,7 @@ body.dark .page-board-title {
     font-size: 1rem;
 }
 body.dark .page-board-subtitle {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* ── Card borders ── */
@@ -85,7 +85,7 @@ body.dark .recruiter-filter-card {
 body.dark .card,
 body.dark .card-header,
 body.dark .card-body {
-    border-color: #111111 !important;
+    border-color: #000000 !important;
 }
 body.dark .card.shadow-sm {
     box-shadow: none !important;
@@ -104,7 +104,7 @@ body.dark .recruiter-filter-card .card-body h6,
 body.dark .recruiter-filter-card .card-body h6.font-weight-bold,
 body.dark .recruiter-table-card .card-header h6,
 body.dark .recruiter-table-card .card-header h6.font-weight-bold {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 
 /* ── Muted text inside cards ── */
@@ -115,7 +115,7 @@ body.dark .recruiter-table-card .card-header h6.font-weight-bold {
 }
 body.dark .recruiter-filter-card .text-muted,
 body.dark .recruiter-table-card .text-muted {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* ── Stat cards — kill ::before accent bar ── */
@@ -133,7 +133,7 @@ body.dark .card.recruiter-stat-card.recruiter-stat-applications::before {
     color: #64748B;
 }
 body.dark .recruiter-stat-card .text-xs {
-    color: #94A3B8;
+    color: #FFFFFF !important;
 }
 .recruiter-stat-card .h5 {
     font-size: 1.25rem;
@@ -141,7 +141,7 @@ body.dark .recruiter-stat-card .text-xs {
     color: #16212B !important;
 }
 body.dark .recruiter-stat-card .h5 {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 
 /* ── Filter form labels ── */
@@ -154,7 +154,7 @@ body.dark .recruiter-stat-card .h5 {
     line-height: 1.5;
 }
 body.dark .recruiter-slot-filter-form label {
-    color: #F8FAFC;
+    color: #FFFFFF !important;
 }
 
 /* ── Filter form inputs ── */
@@ -168,8 +168,8 @@ body.dark .recruiter-slot-filter-form label {
 }
 body.dark .recruiter-slot-filter-form .form-control {
     border: 1px solid #23343A !important;
-    background: #1B2A2F !important;
-    color: #F8FAFC !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
 }
 
 /* ── Kill Bootstrap focus glow, apply brand border ── */
@@ -218,7 +218,7 @@ body.dark .recruiter-slot-filter-form .form-control:focus,
     transition: opacity .15s;
 }
 body.dark .status-pill {
-    background: #7a8b9650;
+    background: #000000;
     color: #0D8A90;
 }
 .status-pill:hover {
@@ -241,7 +241,7 @@ body.dark .card.shadow-sm.recruiter-table-card,
 body.dark .hm-page-content,
 body.dark .card.shadow-sm.recruiter-filter-card,
 body.dark .card-header {
-    background: #111111 !important;
+    background: #000000 !important;
 }
  
 /* ── Page title ── */
@@ -252,7 +252,7 @@ body.dark .card-header {
     margin: 0;
 }
 body.dark .page-board-title {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 
 /* ── Page subtitle ── */
@@ -261,7 +261,7 @@ body.dark .page-board-title {
     font-size: 1rem;
 }
 body.dark .page-board-subtitle {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════
@@ -276,7 +276,7 @@ body.dark .page-board-subtitle {
 }
 body.dark .recruiter-stat-card,
 body.dark .card.recruiter-stat-card {
-    background: #111111 !important;
+    background: #000000 !important;
     border: 1px solid #23343A !important;
     box-shadow: none !important;
 }
@@ -321,7 +321,7 @@ body.dark .card.recruiter-stat-card::after {
     color: #64748B !important;
 }
 body.dark .recruiter-stat-card .text-xs {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* Stat values */
@@ -334,7 +334,7 @@ body.dark .recruiter-stat-card .text-xs {
 }
 body.dark .recruiter-stat-card .h5,
 body.dark .recruiter-stat-card h5 {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 
 /* Stat icons */
@@ -342,7 +342,7 @@ body.dark .recruiter-stat-card h5 {
     color: #D9ECE5 !important;
 }
 body.dark .recruiter-stat-card .fa-2x {
-    color: #23343A !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════
@@ -385,7 +385,7 @@ body.dark .recruiter-filter-card .card-body h6,
 body.dark .recruiter-filter-card .card-body h6.font-weight-bold,
 body.dark .recruiter-table-card .card-header h6,
 body.dark .recruiter-table-card .card-header h6.font-weight-bold {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 
 /* ── Muted text ── */
@@ -396,12 +396,12 @@ body.dark .recruiter-table-card .card-header h6.font-weight-bold {
 }
 body.dark .recruiter-filter-card .text-muted,
 body.dark .recruiter-table-card .text-muted {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* ── d-flex header text dark ── */
 body.dark .d-flex.align-items-start.justify-content-between.flex-wrap h6 {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════
@@ -416,7 +416,7 @@ body.dark .d-flex.align-items-start.justify-content-between.flex-wrap h6 {
     line-height: 1.5;
 }
 body.dark .recruiter-slot-filter-form label {
-    color: #F8FAFC;
+    color: #FFFFFF !important;
 }
 
 .recruiter-slot-filter-form .form-control {
@@ -429,8 +429,8 @@ body.dark .recruiter-slot-filter-form label {
 }
 body.dark .recruiter-slot-filter-form .form-control {
     border: 1px solid #23343A !important;
-    background: #111111 !important;
-    color: #F8FAFC !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
 }
 
 .recruiter-slot-filter-form .form-control:focus,
@@ -452,39 +452,14 @@ body.dark .recruiter-slot-filter-form .form-control:focus,
 /* ══════════════════════════════════════
    STATUS PILL
 ══════════════════════════════════════ */
-.status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 14px;
-    border-radius: 50px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    background: #16212b14;
-    color: #0D8A90;
-    border: none;
-    text-decoration: none !important;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: opacity .15s;
-}
-body.dark .status-pill {
-    background: #7a8b9650;
-    color: #0D8A90;
-}
-.status-pill:hover {
-    opacity: .85;
-    color: #0D8A90;
-    text-decoration: none !important;
-}
-
+ 
 /* ══════════════════════════════════════
    TABLE — full reset, clean design
 ══════════════════════════════════════ */
 .recruiter-slots-table {
     width: 100%;
     border-collapse: collapse !important;
-    font-size: 1rem;
+    font-size: 13.5px;
     border: none !important;
 }
 
@@ -505,7 +480,7 @@ body.dark .status-pill {
 }
 .recruiter-slots-table thead th {
     padding: 13px 16px !important;
-    font-size: 0.875rem !important;
+    font-size: 12.5px !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     letter-spacing: .5px !important;
@@ -516,11 +491,11 @@ body.dark .status-pill {
     box-shadow: none !important;
 }
 body.dark .recruiter-slots-table thead tr ,body.dark .recruiter-slots-table thead th{
-    background: #111111 !important;
+    background: #000000 !important;
     border-bottom: 2px solid #23343A !important;
 }
 body.dark .recruiter-slots-table thead th {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* tbody rows — clean white, only bottom separator */
@@ -536,7 +511,7 @@ body.dark .recruiter-slots-table thead th {
     background: #F4FBFA !important;
 }
 body.dark .recruiter-slots-table tbody tr {
-    background: #111111 !important;
+    background: #000000 !important;
     border-bottom: 1px solid #23343A !important;
 }
 body.dark .recruiter-slots-table tbody tr:hover {
@@ -547,24 +522,26 @@ body.dark .recruiter-slots-table tbody tr:hover {
 .recruiter-slots-table tbody td {
     padding: 14px 16px !important;
     vertical-align: middle !important;
-    font-size: 1rem !important;
+    font-size: 13.5px !important;
+    line-height: 1.45 !important;
     color: #16212B !important;
     border: none !important;
     background: white !important;
 }
 body.dark .recruiter-slots-table tbody td {
-    color: #E2E8F0 !important;
+    color: #FFFFFF !important;
+    background: transparent !important;
 }
 
 /* secondary / small text */
 .recruiter-slots-table tbody td small {
     display: block;
     margin-top: 2px;
-    font-size: 0.875rem;
+    font-size: 12.5px;
     color: #64748B !important;
 }
 body.dark .recruiter-slots-table tbody td small {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* ── Past row — subtle grey tint, NOT full grey band ── */
@@ -575,8 +552,8 @@ body.dark .recruiter-slots-table tbody td small {
 }
 body.dark .recruiter-slots-table tr.table-secondary,
 body.dark .recruiter-slots-table tr.table-secondary td {
-    background: #111111 !important;
-    color: #7A8B96 !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
 }
 
 /* ── Full/warning row — very subtle accent tint ── */
@@ -586,12 +563,21 @@ body.dark .recruiter-slots-table tr.table-secondary td {
 }
 body.dark .recruiter-slots-table tr.table-warning,
 body.dark .recruiter-slots-table tr.table-warning td {
-    background: rgba(181, 216, 78, 0.04) !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
+}
+body.dark .recruiter-slots-table tr.table-warning:hover,
+body.dark .recruiter-slots-table tr.table-warning:hover td {
+    background: #1b221e !important;
+}
+body.dark .recruiter-slots-table tr.table-secondary:hover,
+body.dark .recruiter-slots-table tr.table-secondary:hover td {
+    background: #191f24 !important;
 }
 
 /* ── Bootstrap badge overrides inside table ── */
 .recruiter-slots-table .badge {
-    font-size: 0.8rem;
+    font-size: 12.5px;
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 50px;
@@ -640,10 +626,10 @@ body.dark .recruiter-slots-table .badge-warning {
 /* ── "Has bookings" muted text ── */
 .recruiter-slots-table .text-muted {
     color: #94A3B8 !important;
-    font-size: 0.875rem;
+    font-size: 12.5px;
 }
 body.dark .recruiter-slots-table .text-muted {
-    color: #7A8B96 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════
@@ -671,6 +657,7 @@ body.dark ul.pagination li.page-item a.page-link {
 body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header {
     border: none !important;
 }
+
 </style>
 <div class="recruiter-slots-jobboard">
 <div class="container-fluid py-5">
@@ -885,9 +872,9 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
                 </table>
             </div>
 
-            <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links')): ?>
+            <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links') && $pager->getPageCount() > 1): ?>
                 <div class="mt-3">
-                    <?= $pager->links() ?>
+                    <?= $pager->links('default', 'portal_full') ?>
                 </div>
             <?php endif; ?>
         </div>

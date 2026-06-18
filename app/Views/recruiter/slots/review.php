@@ -27,7 +27,7 @@
     body.dark .page-board-title{
         font-size: 26px !important;
     font-weight: 700 !important;
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
     margin: 0;
     }
     .status-pill {
@@ -46,7 +46,7 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #111111 !important;
+    background: #000000 !important;
     color: #0D8A90;
     border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
@@ -58,7 +58,7 @@ body.dark .status-pill {
 body.dark .recruiter-summary-item, body.dark .recruiter-summary-label{
      font-size: 1rem;
     font-weight: 500 !important;
-    color: var(--foreground, #F8FAFC) !important;
+    color: var(--foreground, #FFFFFF) !important;
 }
 .hm-page-content,.recruiter-slot-bookings-jobboard.recruiter-slot-review-jobboard{
          background: linear-gradient(
@@ -68,7 +68,7 @@ body.dark .recruiter-summary-item, body.dark .recruiter-summary-label{
     ) !important;
 }
 body.dark .hm-page-content,body.dark .recruiter-slot-bookings-jobboard.recruiter-slot-review-jobboard{
-    background: #111111 !important;
+    background: #000000 !important;
     border: 1px solid #23343A !important;
 } 
 .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
@@ -91,8 +91,8 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #111111 !important;
-    color: #F8FAFC !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
 }
 /* ── Labels — match h6 style ── */
 .recruiter-job-form label {
@@ -110,7 +110,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
     margin-bottom: 6px;
     display: block;
     line-height: 1.5;
-    color:#94A3B8;;
+    color:#FFFFFF !important;
 }
 /* ── Kill Bootstrap's orange/default focus first ── */
 /* ── Kill Bootstrap's orange/default focus first ── */
@@ -127,12 +127,12 @@ body.dark .recruiter-job-form label, body.dark h6 {
     border-color: #0D8A90;
 }
 body.dark .recruiter-review-summary-card, body.dark .recruiter-review-card, body.dark .recruiter-review-card,body.dark .card-header{
-     background: #111111 !important;
+     background: #000000 !important;
     border: 1px solid #23343A !important;
-    color:#94A3B8 !important;
+    color:#FFFFFF !important;
 }
 body.dark .recruiter-summary-item,body.darl li, body.dark h6.m-0,body.dark .recruiter-summary-label{
-     color:#94A3B8 !important;
+     color:#FFFFFF !important;
 }
  .container-fluid {
     max-width: 100% !important;
@@ -140,7 +140,7 @@ body.dark .recruiter-summary-item,body.darl li, body.dark h6.m-0,body.dark .recr
     padding-right: 34px !important;
 }
 body.dark .alert.alert-info{
-    background:#111111 !important;
+    background:#000000 !important;
       border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
 </style>

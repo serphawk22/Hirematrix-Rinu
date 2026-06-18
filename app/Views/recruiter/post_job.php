@@ -14,7 +14,7 @@
     overflow: hidden;
 }
 body.dark .recruiter-post-jobboard,body.dark .form-contact.contact_form.recruiter-job-form,body.dark .recruiter-form-card{
-    background: #111111 !important;
+    background: #000000 !important;
 }
     .page-board-title{
         font-size: 26px !important; 
@@ -25,7 +25,7 @@ body.dark .recruiter-post-jobboard,body.dark .form-contact.contact_form.recruite
     body.dark .page-board-title{
         font-size: 26px !important;
     font-weight: 700 !important;
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
     margin: 0;
     }
 
@@ -66,21 +66,21 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #111111 !important;
-    color: #F8FAFC !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
 }
 /* ── Labels — match h6 style ── */
 .recruiter-job-form label {
     font-size: 1rem;        /* same as Bootstrap h6 */
     font-weight: 500 !important;       /* same as h6 */
-    color: var(--foreground, #16212B);
+    color: #FFFFFF !important;
     margin-bottom: 6px;
     display: block;
     line-height: 1.5;
 }
 body.dark .recruiter-tip-item{
-     background:#111111 !important;
-    color: #7A8B96 !important;
+     background:#000000 !important;
+    color: #FFFFFF !important;
      border: 1px solid #23343A !important;
       font-weight: 400 !important;   
 }
@@ -93,7 +93,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
     margin-bottom: 6px;
     display: block;
     line-height: 1.5;
-    color:#94A3B8;;
+    color:#FFFFFF !important;
 }
 /* ── Kill Bootstrap's orange/default focus first ── */
 /* ── Kill Bootstrap's orange/default focus first ── */
@@ -118,6 +118,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
     padding-left: 24px !important;
     padding-right: 24px !important;
 }
+
 </style>
 <?php
 $questionnaireRows = old('questionnaire');
@@ -188,7 +189,7 @@ $payrollType = old('payroll_type', '');
                                         <option value="own_company" <?= $postedFor === 'own_company' ? 'selected' : '' ?>>Own company</option>
                                         <option value="client" <?= $postedFor === 'client' ? 'selected' : '' ?>>Client company</option>
                                     </select>
-                                    <small class="text-muted">Consultancies should choose client company when hiring for a client.</small>
+                                    <small>Consultancies should choose client company when hiring for a client.</small>
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -207,7 +208,7 @@ $payrollType = old('payroll_type', '');
                                 <div class="form-group">
                                     <label>Client Company Name</label>
                                     <input class="form-control" name="client_company_name" id="client_company_name" type="text" value="<?= old('client_company_name') ?>" placeholder="Client company name">
-                                    <small class="text-muted">Required when posting for a client.</small>
+                                    <small >Required when posting for a client.</small>
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -217,7 +218,7 @@ $payrollType = old('payroll_type', '');
                                         <option value="visible" <?= $clientDisclosure === 'visible' ? 'selected' : '' ?>>Visible to candidates</option>
                                         <option value="confidential" <?= $clientDisclosure === 'confidential' ? 'selected' : '' ?>>Confidential</option>
                                     </select>
-                                    <small class="text-muted">Candidate fees are never allowed on this portal.</small>
+                                    <small >Candidate fees are never allowed on this portal.</small>
                                 </div>
                             </div>
                             <div class="col-sm-12">
@@ -285,7 +286,7 @@ $payrollType = old('payroll_type', '');
                                 <div class="form-group">
                                     <label>Application Deadline</label>
                                     <input class="form-control" name="application_deadline" id="application_deadline" type="date" value="<?= old('application_deadline') ?>" title="Application Deadline">
-                                    <small class="text-muted">Application deadline (optional)</small>
+                                    <small  >Application deadline (optional)</small>
                                     <small class="text-danger" id="application_deadline-error"></small>
                                 </div>
                             </div>
@@ -299,7 +300,7 @@ $payrollType = old('payroll_type', '');
                                         <option value="OPTIONAL" <?= $selectedPolicy === 'OPTIONAL' ? 'selected' : '' ?>>AI Interview: Optional</option>
                                         <option value="OFF" <?= $selectedPolicy === 'OFF' ? 'selected' : '' ?>>AI Interview: Not Required</option>
                                     </select>
-                                    <small class="text-muted d-block mt-2">
+                                    <small class=" d-block mt-2">
                                         Choose how AI interview affects applications: strict reject, recruiter override, optional, or disabled.
                                     </small>
                                 </div>
@@ -330,7 +331,7 @@ $payrollType = old('payroll_type', '');
                                     <div class="d-flex flex-wrap align-items-center justify-content-between mb-2" style="gap: 10px;">
                                         <div>
                                             <label class="mb-0">Application Questionnaire</label>
-                                            <small class="text-muted d-block">Add optional screening prompts. You can use this for a cover letter, notice period, motivation, or any short written response.</small>
+                                            <small class="d-block">Add optional screening prompts. You can use this for a cover letter, notice period, motivation, or any short written response.</small>
                                         </div>
                                         <div class="d-flex flex-wrap" style="gap: 8px;">
                                             <button type="button" class="btn btn-sm btn-outline-primary" id="addCoverLetterQuestion">
@@ -344,7 +345,7 @@ $payrollType = old('payroll_type', '');
                                     <div id="questionnaireBuilder"
                                          data-next-index="<?= count($questionnaireRows) ?>"
                                          data-initial-items="<?= esc(json_encode(array_values($questionnaireRows)), 'attr') ?>"></div>
-                                    <small class="text-muted d-block mt-2">Candidates will answer these questions inside the Apply form.</small>
+                                    <small class="d-block mt-2">Candidates will answer these questions inside the Apply form.</small>
                                 </div>
                             </div>
                         </div>
@@ -372,7 +373,7 @@ $payrollType = old('payroll_type', '');
             <div class="card shadow-sm recruiter-form-card">
                 <div class="card-body">
                     <h6 class="mb-3"><i class="fas fa-shield-alt"></i> AI interview policy</h6>
-                    <p class="text-muted mb-0">Strict and soft modes keep screening automated. Optional lets recruiters review more manually. OFF disables AI screening for the role.</p>
+                    <p class="mb-0">Strict and soft modes keep screening automated. Optional lets recruiters review more manually. OFF disables AI screening for the role.</p>
                 </div>
             </div>
         </div>

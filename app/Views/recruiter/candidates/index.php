@@ -40,7 +40,7 @@
     body.dark .page-board-title{
         font-size: 26px;
     font-weight: 700;
-    color: #F8FAFC !important;
+    color: #ffffff !important;
     margin: 0;
     }
 
@@ -71,7 +71,7 @@ body.dark .card.shadow-sm.recruiter-table-card,
 body.dark .hm-page-content,
 body.dark .card.shadow-sm.recruiter-filter-card,
 body.dark .card-header {
-    background: #111111 !important;
+    background: #000000 !important;
 }
 
 /* ── Page title ── */
@@ -82,7 +82,7 @@ body.dark .card-header {
     margin: 0;
 }
 body.dark .page-board-title {
-    color: #F8FAFC !important;
+    color: #ffffff !important;
 }
 
 /* ── Card ── */
@@ -121,11 +121,11 @@ body.dark .recruiter-filter-card {
     background: transparent !important;
 }
 body.dark .recruiter-candidates-table thead tr {
-    background: #111111 !important;
+    background: #000000 !important;
     border-bottom-color: #23343A !important;
 }
 body.dark .recruiter-candidates-table thead th {
-    color: #7A8B96 !important;
+    color: #ffffff !important;
 }
 
 /* ── Table body rows ── */
@@ -156,7 +156,7 @@ body.dark .recruiter-candidates-table tbody tr:hover {
     border: none !important;
 }
 body.dark .recruiter-candidates-table tbody td {
-    color: #E2E8F0 !important;
+    color: #ffffff !important;
 }
 
 /* ── Candidate name ── */
@@ -166,7 +166,7 @@ body.dark .recruiter-candidates-table tbody td {
     color: #16212B;
 }
 body.dark .recruiter-candidates-table tbody td strong {
-    color: #F8FAFC;
+    color: #ffffff;
 }
 
 /* ── Secondary text (location, date, email) ── */
@@ -179,7 +179,7 @@ body.dark .recruiter-candidates-table tbody td strong {
 body.dark .recruiter-candidates-table tbody td small,
 body.dark .recruiter-candidates-table tbody td:nth-child(2),
 body.dark .recruiter-candidates-table tbody td:nth-child(6) {
-    color: #94A3B8 !important;
+    color: #ffffff !important;
 }
 .recruiter-candidates-table tbody td small {
     display: block;
@@ -237,7 +237,7 @@ body.dark .badge-resume-no {
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #111111 !important;
+    background: #000000 !important;
     color: #0D8A90;
     border: 1px solid rgba(31, 183, 181, 0.15) !important;
 } 
@@ -265,7 +265,7 @@ body.dark .status-pill {
     color: #64748B;
 }
 body.dark .recruiter-candidate-filter-form label.small {
-    color: #94A3B8;
+    color: #ffffff;
 }
 
 /* ── Filter form inputs ── */
@@ -286,7 +286,7 @@ body.dark .recruiter-candidate-filter-form label.small {
     margin-bottom: 6px;
 }
 body.dark .recruiter-candidates-table td.text-center h5 {
-    color: #F8FAFC;
+    color: #ffffff;
 } 
 body.dark .title{
     font-size: 1rem;        /* same as Bootstrap h6 */
@@ -346,8 +346,8 @@ body.dark .recruiter-candidate-filter-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #111111 !important;
-    color: #F8FAFC !important;
+    background: #000000 !important;
+    color: #ffffff !important;
 }
 /* ── Kill Bootstrap's orange/default focus first ── */
 /* ── Kill Bootstrap's orange/default focus first ── */
@@ -365,16 +365,16 @@ body.dark .recruiter-candidate-filter-form .form-control {
 }
 body.dark .recruiter-filter-card .card-body h6,
 body.dark .recruiter-filter-card .card-body h6.font-weight-bold {
-    color: #F8FAFC !important;
+    color: #ffffff !important;
 }
 
 body.dark .recruiter-table-card .card-header h6,
 body.dark .recruiter-table-card .card-header h6.font-weight-bold {
-    color: #F8FAFC !important;
+    color: #ffffff !important;
 }
 body.dark .recruiter-filter-card .text-muted,
 body.dark .recruiter-table-card .text-muted {
-    color: #7A8B96 !important;
+    color: #ffffff !important;
 }
 body.dark .card.shadow-sm.recruiter-table-card,
 body.dark .card.shadow-sm.recruiter-filter-card {
@@ -382,7 +382,7 @@ body.dark .card.shadow-sm.recruiter-filter-card {
     box-shadow: none !important;       /* removes Bootstrap shadow-sm white glow */
 }
 body.dark .d-flex.align-items-start.justify-content-between.flex-wrap h6{
-    color: #F8FAFC !important;
+    color: #ffffff !important;
 }
 /* Nuclear override for pagination links */
 ul.pagination li.page-item a.page-link,
@@ -402,7 +402,7 @@ ul.pagination li.page-item.active a.page-link {
 }
 
 body.dark ul.pagination li.page-item a.page-link {
-    border-color: #23343A !important;
+    border-color: #ffffff !important;
 }
 body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
     border:none !important;
@@ -615,9 +615,9 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
                         </table>
                     </div>
 
-                    <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links')): ?>
-                        <div style="color:#0D8A90;">
-                            <?= $pager->links() ?>
+                    <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links') && $pager->getPageCount() > 1): ?>
+                        <div>
+                            <?= $pager->links('default', 'portal_full') ?>
                         </div>
                     <?php endif; ?>
                 <?php endif; ?>

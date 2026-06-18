@@ -35,7 +35,7 @@
 
         body.dark .recruiter-dashboard-jobboard,
         body.dark .hm-page-content {
-            background:  #111111 !important;
+            background:  #000000 !important;
         }
 
         /* ── Full-width container ── */
@@ -65,7 +65,7 @@
         body.dark .recruiter-pipeline-card,
         body.dark .recruiter-stat-card,
         body.dark .recruiter-action-center-empty {
-               background: #111111 !important;
+               background: #000000 !important;
     border: 1px solid #2E2E2E !important;
         }
 
@@ -82,7 +82,7 @@
 
         body.dark .card-header,
         body.dark .recruiter-section-header {
-            background: #111111 !important;
+            background: #000000 !important;
             border-bottom: 1px solid #23343A !important;
         }
 
@@ -90,7 +90,7 @@
         body.dark .card-header .font-weight-bold,
         body.dark h6.text-primary,
         body.dark .font-weight-bold.text-primary {
-            color: #1FB7B5 !important;
+            color: #FFFFFF !important;
         }
 
         /* ══════════════════════════════════════════════
@@ -132,7 +132,7 @@
         body.dark .recruiter-dashboard-main .recruiter-stat-card .text-primary.dashboard-metric-title,
         body.dark .recruiter-dashboard-main .recruiter-stat-card .text-info.dashboard-metric-title,
         body.dark .recruiter-dashboard-main .recruiter-stat-card .text-warning.dashboard-metric-title {
-            color: #7A8B96 !important;
+            color: #FFFFFF !important;
         }
 
         /* Large number */
@@ -145,7 +145,7 @@
         }
 
         body.dark .recruiter-dashboard-main .recruiter-stat-card .h4 {
-            color: #F8FAFC !important;
+            color: #FFFFFF !important;
         }
 
         /* Sub-label */
@@ -156,7 +156,7 @@
         }
 
         body.dark .recruiter-dashboard-main .recruiter-stat-card small.text-muted {
-            color: #7A8B96 !important;
+            color: #FFFFFF !important;
         }
 
         /* All icons inside stat cards → teal */
@@ -176,7 +176,7 @@
 
         body.dark .recruiter-dashboard-main .recruiter-stat-card .col-auto i,
         body.dark .recruiter-dashboard-main .recruiter-stat-card i.fa-2x {
-            color: #1FB7B5 !important;
+            color: #FFFFFF !important;
         }
 
         /* Stat icon bubble */
@@ -212,11 +212,11 @@
         }
 
         body.dark .recruiter-pipeline-stats .pipeline-stat h3 {
-            color: #F8FAFC !important;
+            color: #FFFFFF !important;
         }
 
         body.dark .recruiter-pipeline-stats .text-muted {
-            color: #7A8B96 !important;
+            color: #FFFFFF !important;
         }
 
         .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon {
@@ -241,12 +241,12 @@
 
         body.dark .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon,
         body.dark .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon[class*="bg-"] {
-            background: #1B3035 !important;
+            background: #000000 !important;
         }
 
         body.dark .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon i,
         body.dark .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon .fas {
-            color: #1FB7B5 !important;
+            color: #FFFFFF !important;
         }
 
         /* Pipeline conversion text */
@@ -257,7 +257,7 @@
 
         body.dark .recruiter-dashboard-main .recruiter-pipeline-stats .text-success,
         body.dark .recruiter-dashboard-main .recruiter-pipeline-stats small.text-success {
-            color: #1FB7B5 !important;
+            color: #FFFFFF !important;
         }
 
         /* Pipeline divider arrows between stages */
@@ -271,7 +271,7 @@
         }
 
         body.dark .pipeline-connector {
-            color: #23343A;
+            color: #FFFFFF !important;
         }
 
         /* Pipeline note */
@@ -286,9 +286,68 @@
         body.dark .recruiter-pipeline-note,
         body.dark .alert-light,
         body.dark .recruiter-alert {
-            background: #1B2A2F !important;
+            background: #000000 !important;
             border: 1px solid #23343A !important;
-            color: #7A8B96 !important;
+            color: #FFFFFF !important;
+        }
+
+        .recruiter-dashboard-jobboard .alert-warning {
+            background: #FEF7D8 !important;
+            border: 1px solid #F4E29A !important;
+            color: #8A6A08 !important;
+            border-radius: 10px !important;
+        }
+
+        .recruiter-dashboard-jobboard .alert-warning .badge-warning {
+            background: #FFE45C !important;
+            color: #6B5300 !important;
+            border-radius: 999px;
+            padding: 0.35rem 0.55rem;
+            font-weight: 700;
+        }
+
+        .recruiter-dashboard-jobboard .alert-warning .badge-primary {
+            background: rgba(31, 183, 181, 0.14) !important;
+            color: #0D8A90 !important;
+            border-radius: 999px;
+            padding: 0.35rem 0.55rem;
+            font-weight: 700;
+        }
+
+        .recruiter-dashboard-jobboard .alert-warning .close,
+        .recruiter-dashboard-jobboard .alert-warning .close span {
+            color: #8A6A08 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+        }
+
+        body.dark .recruiter-dashboard-jobboard .alert-warning {
+            background: #171a14 !important;
+            border: 1px solid #3A3420 !important;
+            color: #D8C27A !important;
+        }
+
+        body.dark .recruiter-dashboard-jobboard .alert-warning i {
+            color: #E1C15B !important;
+        }
+
+        body.dark .recruiter-dashboard-jobboard .alert-warning .badge-warning {
+            background: #2B2515 !important;
+            color: #E9CF74 !important;
+            border: 1px solid #4A4020 !important;
+        }
+
+        body.dark .recruiter-dashboard-jobboard .alert-warning .badge-primary {
+            background: rgba(31, 183, 181, 0.14) !important;
+            color: #57D3D1 !important;
+            border: 1px solid rgba(31, 183, 181, 0.24) !important;
+        }
+
+        body.dark .recruiter-dashboard-jobboard .alert-warning .close,
+        body.dark .recruiter-dashboard-jobboard .alert-warning .close span {
+            color: #D8C27A !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
         }
 
         /* ══════════════════════════════════════════════
@@ -313,15 +372,15 @@
 
         body.dark .table th,
         body.dark .table td {
-            color: #94A3B8 !important;
+            color: #FFFFFF !important;
             background: transparent !important;
             border-color: #23343A !important;
         }
 
         body.dark .thead-light th,
         body.dark thead th {
-            background: #111111 !important;
-            color: #7A8B96 !important;
+            background: #000000 !important;
+            color: #FFFFFF !important;
             border-color: #23343A !important;
         }
 
@@ -348,7 +407,7 @@
         }
 
         body.dark .status-pill {
-            background: #111111 !important;
+            background: #000000 !important;
             color: #1FB7B5;
             border-color: rgba(31, 183, 181, 0.15);
         }
@@ -404,7 +463,7 @@
         }
 
         body.dark .recruiter-action-center-empty h6 {
-            color: #F8FAFC !important;
+            color: #FFFFFF !important;
         }
 
         .recruiter-action-center-empty-icon {
@@ -454,7 +513,7 @@
         }
 
         body.dark .conversion-summary-card {
-            background: #111111 !important;
+            background: #000000 !important;
             border-color: #23343A !important;
         }
 
@@ -468,7 +527,7 @@
             margin-bottom: 4px;
         }
 
-        body.dark .conversion-summary-label { color: #7A8B96 !important; }
+        body.dark .conversion-summary-label { color: #FFFFFF !important; }
 
         .conversion-summary-value {
             font-size: 1.2rem !important;
@@ -477,15 +536,15 @@
             line-height: 1.1;
         }
 
-        body.dark .conversion-summary-value { color: #F8FAFC !important; }
+        body.dark .conversion-summary-value { color: #FFFFFF !important; }
 
         .conversion-summary-note  {
             color: #16212B;
             font-size: 14px;
         }
 
-        body.dark .conversion-summary-note   { color: #94A3B8 !important; }
-        body.dark .conversion-summary-note p.text-muted { color: #7A8B96 !important; }
+        body.dark .conversion-summary-note   { color: #FFFFFF !important; }
+        body.dark .conversion-summary-note p.text-muted { color: #FFFFFF !important; }
 
         .conversion-table thead th {
             background: #EDF8F5 !important;
@@ -498,18 +557,18 @@
         }
 
         body.dark .conversion-table thead th {
-            background: #111111 !important;
-            color: #7A8B96 !important;
+            background: #000000 !important;
+            color: #FFFFFF !important;
             border-color: #23343A !important;
         }
 
         body.dark .conversion-table td {
-            color: #94A3B8 !important;
+            color: #FFFFFF !important;
             border-color: #23343A !important;
         }
 
         body.dark .conversion-table tr.font-weight-bold td {
-            color: #F8FAFC !important;
+            color: #FFFFFF !important;
         }
 
         /* ══════════════════════════════════════════════
@@ -539,14 +598,14 @@
         /* ══════════════════════════════════════════════
            GENERAL DARK MODE HELPERS
         ══════════════════════════════════════════════ */
-        body.dark .text-muted { color: #7A8B96 !important; }
+        body.dark .text-muted { color: #FFFFFF !important; }
 
         body.dark .card-header,
         body.dark .recruiter-leaderboard-card,
         body.dark .recruiter-filter-card,
         body.dark .recruiter-alert,
         body.dark .alert-light {
-            background: #111111 !important;
+            background: #000000 !important;
             border: 1px solid #23343A !important;
         }
 
@@ -676,7 +735,7 @@
                         <a href="<?= $jobsUrl ?>" class="btn btn-outline-primary btn-sm">Review Jobs</a>
                     </div>
                     <div class="card-body">
-                        <?php $screeningCompleted = (int) ($funnel['shortlisted'] ?? 0) + (int) ($funnel['rejected'] ?? 0); ?>
+                        <?php $screeningCompleted = (int) ($funnel['ai_interview_completed'] ?? 0) + (int) ($funnel['shortlisted'] ?? 0) + (int) ($funnel['rejected'] ?? 0); ?>
                         <div class="row text-center recruiter-pipeline-stats align-items-center">
                             <div class="col-md col-6 mb-3 mb-md-0">
                                 <div class="pipeline-stat">
