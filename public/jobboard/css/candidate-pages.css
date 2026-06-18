@@ -15727,10 +15727,10 @@ body.dark.candidate-app .settings-jobboard .settings-nav-link {
     border-color: var(--candidate-line, #272727) !important;
 }
 
-body.dark.candidate-app .settings-jobboard .settings-nav-link:hover,
+/* body.dark.candidate-app .settings-jobboard .settings-nav-link:hover,
 body.dark.candidate-app .settings-jobboard .settings-nav-link.is-active {
     background: rgba(31, 183, 181, 0.10) !important;
-}
+} */
 
 /* Browse jobs results: align filtered search mode with the candidate app shell. */
 body.candidate-app .jobs-page-jobboard {
