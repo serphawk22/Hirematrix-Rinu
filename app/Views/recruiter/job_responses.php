@@ -15,7 +15,7 @@
 body.dark .recruiter-jobs-jobboard,
 body.dark .recruiter-jobs-jobboard .page-board-header,
 body.dark .recruiter-jobs-jobboard,body.dark .hm-page-content {
-    background: #111111 !important;
+    background: #000000 !important;
 }
 
 /* ══════════════════════════════════════════
@@ -30,7 +30,7 @@ body.dark .recruiter-jobs-jobboard,body.dark .hm-page-content {
 }
 body.dark .recruiter-jobs-jobboard h1,
 body.dark .recruiter-jobs-jobboard .page-board-title {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 .recruiter-jobs-jobboard .page-board-subtitle,
 .recruiter-jobs-jobboard p.text-muted {
@@ -39,7 +39,7 @@ body.dark .recruiter-jobs-jobboard .page-board-title {
 }
 body.dark .recruiter-jobs-jobboard .page-board-subtitle,
 body.dark .recruiter-jobs-jobboard p.text-muted {
-    color: #7A8B96 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════════
@@ -54,7 +54,7 @@ body.dark .recruiter-jobs-jobboard p.text-muted {
 }
 body.dark .recruiter-jobs-jobboard .recruiter-filter-card,
 body.dark .recruiter-jobs-jobboard .card.bg-light {
-    background:  #111111 !important;
+    background:  #000000 !important;
     border-color: #23343A !important;
 }
 
@@ -67,7 +67,7 @@ body.dark .recruiter-jobs-jobboard .card.bg-light {
 }
 body.dark .recruiter-jobs-jobboard .recruiter-filter-card label,
 body.dark .recruiter-jobs-jobboard .card.bg-light label {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* Filter card inputs & selects */
@@ -81,12 +81,12 @@ body.dark .recruiter-jobs-jobboard .card.bg-light label {
 }
 body.dark .recruiter-jobs-jobboard .recruiter-filter-card .form-control,
 body.dark .recruiter-jobs-jobboard .card.bg-light .form-control {
-    background-color: #111111 !important;
-    color: #E2E8F0 !important;
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
     border-color: #2E4A52 !important;
 }
 body.dark .recruiter-jobs-jobboard .form-control::placeholder {
-    color: #3D5560 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════════
@@ -102,7 +102,7 @@ body.dark .recruiter-jobs-jobboard .form-control::placeholder {
 }
 body.dark .recruiter-jobs-jobboard .recruiter-table-card,
 body.dark .recruiter-jobs-jobboard .table-responsive.recruiter-table-card {
-    background:  #111111 !important;
+    background:  #000000 !important;
     border-color: #23343A !important;
 }
 
@@ -136,12 +136,12 @@ body.dark .recruiter-jobs-jobboard .table-responsive.recruiter-table-card {
     background: transparent !important;
 }
 body.dark .recruiter-jobs-jobboard .recruiter-jobs-table thead tr {
-    background: #1B2A2F !important;
+    background: #000000 !important;
     border-bottom-color: #23343A !important;
 }
 body.dark .recruiter-jobs-jobboard .recruiter-jobs-table thead th {
-    color: #7A8B96 !important;
-    background:  #111111 !important;
+    color: #FFFFFF !important;
+    background:  #000000 !important;
 }
 
 /* ── Body rows ── */
@@ -174,7 +174,7 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody tr:hover {
     background: transparent !important;
 }
 body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody td {
-    color: #E2E8F0 !important;
+    color: #000000 !important;
 }
 
 /* ── Job title strong ── */
@@ -186,7 +186,7 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody td {
 }
 body.dark .recruiter-jobs-jobboard .recruiter-jobs-table .job-title,
 body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody td .font-weight-bold {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 
 /* ── Small / muted text in cells ── */
@@ -199,7 +199,7 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody td .font-weight-b
 }
 body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody td small,
 body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody td .text-muted {
-    color: #7A8B96 !important;
+    color: #FFFFFF !important;
 }
 
 /* ── Applicant count ── */
@@ -208,7 +208,7 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody td .text-muted {
     font-size: 1rem;
 }
 body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody td:nth-child(3) {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════════
@@ -269,7 +269,7 @@ body.dark .recruiter-jobs-jobboard .badge-secondary {
     cursor: pointer;
 }
 body.dark .recruiter-jobs-jobboard .status-pill {
-    background:  #111111 !important;
+    background:  #000000 !important;
     color: #0D8A90;
 }
 .recruiter-jobs-jobboard .btn-outline-primary {
@@ -305,13 +305,13 @@ body.dark .recruiter-jobs-jobboard .btn-outline-primary {
 }
 
 body.dark .recruiter-jobs-jobboard .btn-outline-primary:hover {
-    background: #111111 !important;
+    background: #000000 !important;
     border: 1px solid rgba(31, 183, 181, 0.15) !important;
     color: #ffffff !important;
 }
 body.dark .recruiter-jobs-jobboard .status-pill,
 body.dark .recruiter-jobs-jobboard .btn-outline-primary {
-    background: #111111 !important;
+    background: #000000 !important;
     color: #1FB7B5 !important;
     border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
@@ -378,7 +378,7 @@ body.dark .recruiter-jobs-jobboard .alert-info {
 }
 body.dark .recruiter-jobs-jobboard ul.pagination li.page-item a.page-link,
 body.dark .recruiter-jobs-jobboard ul.pagination li.page-item span.page-link {
-    color: #1FB7B5 !important;
+    color: #FFFFFF !important;
     background-color: transparent !important;
     border-color: #23343A !important;
 }

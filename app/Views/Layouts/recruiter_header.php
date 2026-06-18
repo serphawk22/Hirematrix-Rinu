@@ -88,12 +88,12 @@
         background: var(--hm-surface-grad);
     }
 
-    body.dark.recruiter-jobboard {
-        --hm-bg: #111111;
-        --hm-bg-2: #111111;
-        --hm-surface-grad: #111111;
-        --hm-card: #111111;
-        --hm-text: #F8FAFC;
+    body.dark.recruiter-jobboard { 
+        --hm-bg: #000000 !important;
+        --hm-bg-2: #000000 !important;
+        --hm-surface-grad: #000000 !important;
+        --hm-card: #000000 !important;
+        --hm-text: #FFFFFF !important; 
         --hm-muted: #94A3B8;
         --hm-light: #7A8B96;
         --hm-border: #23343A;
@@ -301,8 +301,8 @@
     body.recruiter-jobboard .table td,
     body.recruiter-jobboard .table tbody td,
     body.recruiter-jobboard p,
-    body.recruiter-jobboard li {
-        color: var(--hm-text) !important;
+    body.recruiter-jobboard li { 
+        color: #FFFFFF !important; 
         font-size: 13.5px !important;
         line-height: 1.45 !important;
     }
@@ -312,8 +312,8 @@
     body.recruiter-jobboard .page-board-subtitle,
     body.recruiter-jobboard .form-text,
     body.recruiter-jobboard .recruiter-summary-label,
-    body.recruiter-jobboard .recruiter-info-label {
-        color: var(--hm-muted) !important;
+    body.recruiter-jobboard .recruiter-info-label { 
+        color: #FFFFFF !important; 
     }
 
     body.recruiter-jobboard label,
@@ -359,7 +359,7 @@
         background: var(--hm-card) !important;
         color: var(--hm-text) !important;
     }
-
+ 
     body.recruiter-jobboard .btn-primary,
     body.recruiter-jobboard .btn-outline-primary {
         background: transparent !important;
@@ -633,7 +633,7 @@
         background: rgba(31, 183, 181, 0.1) !important;
         color: var(--hm-primary-dark) !important;
     }
-
+ 
     body.recruiter-jobboard .site-navbar,
     body.recruiter-jobboard .site-mobile-menu { display: none !important; }
     body.recruiter-jobboard .site-wrap {
@@ -740,7 +740,7 @@
         padding: 10px 13px !important;
         margin: 2px 8px !important;
         border-radius: 10px !important;
-        color: var(--hm-muted) !important;
+         color: var(--hm-text) !important;
         font-size: 14.5px !important;
         font-weight: 500 !important;
         text-decoration: none !important;
@@ -769,7 +769,7 @@
         width: 21px !important;
         text-align: center !important;
         flex-shrink: 0 !important;
-        color: inherit !important;
+         color: var(--hm-text) !important;
         line-height: 1 !important;
     }
     body.recruiter-jobboard .hm-sidebar .hm-sb-item.active .sb-icon {
@@ -787,7 +787,7 @@
         transition: opacity .2s, max-width .28s cubic-bezier(.4,0,.2,1) !important;
         max-width: 160px !important;
         font-size: 14.5px !important;
-        color: inherit !important;
+         color: var(--hm-text) !important;
     }
     .hm-sidebar.sb-collapsed .hm-sb-item .sb-label { opacity: 0; max-width: 0; }
 
@@ -1173,7 +1173,7 @@
 
 :root.dark .hm-sidebar,
 body.dark .hm-sidebar {
-  background: #111111 !important;
+  background: #000000 !important;
     border-right-color: #23343A;
 }
 
@@ -1254,7 +1254,7 @@ body.dark .hm-sidebar .sb-tooltip::before {
 
 /* ── Profile submenu ── */
 body.dark .hm-sidebar .hm-sb-profile-sub {
-  background: #111111 !important;
+  background: #000000 !important;
     border-top-color: #23343A;
 }
 body.dark .hm-sidebar .hm-sb-profile-sub a {
@@ -1310,7 +1310,7 @@ body.dark .hm-sb-translate-row select:hover {
 
 /* ── Profile card (bottom) ── */
 body.dark .hm-sidebar .hm-sb-profile {
-   background: #111111 !important;
+   background: #000000 !important;
     border-top-color: #23343A;
 }
 body.dark .hm-sidebar .hm-sb-profile:hover {

@@ -14,7 +14,7 @@
     body.dark .page-board-title{
         font-size: 26px !important;
     font-weight: 700 !important;
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
     margin: 0;
     }
     .status-pill {
@@ -33,7 +33,7 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #111111 !important;
+    background: #000000 !important;
     color: #0D8A90;
     border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
@@ -63,7 +63,7 @@ body.dark .status-pill {
 }
 
 body.dark .hm-page-content,body.dark .recruiter-slot-edit-jobboard, body.dark .recruiter-form-card,body.dark .recruiter-tip-item,body.dark .recruiter-info-card{
-    background: #111111 !important;
+    background: #000000 !important;
     border: 1px solid #23343A; !important;
 } 
 .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
@@ -92,8 +92,8 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #111111 !important;
-    color: #F8FAFC !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
 }
 /* ── Labels — match h6 style ── */
 .recruiter-job-form label {
@@ -110,7 +110,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
     margin-bottom: 6px;
     display: block;
     line-height: 1.5;
-    color:#94A3B8;;
+    color:#FFFFFF !important;
 }
 /* ── Kill Bootstrap's orange/default focus first ── */
 /* ── Kill Bootstrap's orange/default focus first ── */
@@ -130,16 +130,12 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
     border:none !important;
 }
 body.dark .recruiter-summary-card{
-    background: linear-gradient(
-      135deg,
-      #162327 0%,
-      #1B2A2F 100%
-    );
-    color:#94A3B8;
+    background: #000000 !important;
+    color:#FFFFFF !important;
     border:1px solid #23343A;
 }
 body.dark .recruiter-info-card,body.dark .recruiter-tip-item{
-    color:#94A3B8;
+    color:#FFFFFF !important;
 }
 </style>
 <div class="recruiter-slot-edit-jobboard">

@@ -8,7 +8,7 @@
     min-height: 100vh;
 }
 body.dark .recruiter-edit-jobboard,body.dark .card-body {
-   background: #111111 !important;
+   background: #000000 !important;
     border: 1px solid #23343A !important;
 }
 
@@ -28,7 +28,7 @@ body.dark .recruiter-edit-jobboard,body.dark .card-body {
     margin: 0;
 }
 body.dark .recruiter-edit-jobboard .page-board-title {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 
 .recruiter-edit-jobboard .page-board-subtitle {
@@ -38,7 +38,7 @@ body.dark .recruiter-edit-jobboard .page-board-title {
     margin-bottom: 0;
 }
 body.dark .recruiter-edit-jobboard .page-board-subtitle {
-    color: #7A8B96 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════════
@@ -79,7 +79,7 @@ body.dark .recruiter-edit-jobboard .page-board-subtitle {
 }
 body.dark .recruiter-edit-jobboard .card,
 body.dark .recruiter-edit-jobboard .recruiter-form-card {
-background: #111111 !important;
+background: #000000 !important;
     border: 1px solid #23343A !important; 
     box-shadow: none !important;
 }
@@ -98,7 +98,7 @@ background: #111111 !important;
 }
 body.dark .recruiter-edit-jobboard label,
 body.dark .recruiter-edit-jobboard .recruiter-job-form label {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* Small label inside questionnaire rows */
@@ -110,7 +110,7 @@ body.dark .recruiter-edit-jobboard .recruiter-job-form label {
 }
 body.dark .recruiter-edit-jobboard label.small,
 body.dark .recruiter-edit-jobboard .small.text-muted {
-    color: #7A8B96 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════════
@@ -125,8 +125,8 @@ body.dark .recruiter-edit-jobboard .small.text-muted {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 body.dark .recruiter-edit-jobboard .form-control {
- background: #111111 !important; 
-    color: #E2E8F0 !important;
+ background: #000000 !important; 
+    color: #FFFFFF !important;
     border-color: #2E4A52 !important;
 }
 
@@ -135,7 +135,7 @@ body.dark .recruiter-edit-jobboard .form-control {
     color: #94A3B8 !important;
 }
 body.dark .recruiter-edit-jobboard .form-control::placeholder {
-    color: #3D5560 !important;
+    color: #FFFFFF !important;
 }
 
 /* Focus state */
@@ -168,7 +168,7 @@ body.dark .recruiter-edit-jobboard select.form-control {
 }
 body.dark .recruiter-edit-jobboard .form-group small.text-muted,
 body.dark .recruiter-edit-jobboard small.text-muted {
-    color: #7A8B96 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════════
@@ -189,7 +189,7 @@ body.dark .recruiter-edit-jobboard small.text-muted {
     margin-bottom: 0.75rem !important;
 }
 body.dark .recruiter-edit-jobboard .questionnaire-row {
- background: #111111 !important;
+ background: #000000 !important;
     border: 1px solid #23343A !important;  
 }
 
@@ -201,7 +201,7 @@ body.dark .recruiter-edit-jobboard .questionnaire-row {
     cursor: pointer;
 }
 body.dark .recruiter-edit-jobboard .custom-control-label {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* Custom checkbox accent */
@@ -308,7 +308,7 @@ body.dark .recruiter-edit-jobboard .btn-outline-danger:hover {
     margin-bottom: 0.75rem;
 }
 body.dark .recruiter-edit-jobboard .recruiter-form-side h6 {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 
 .recruiter-edit-jobboard .recruiter-tip-list {
@@ -328,9 +328,9 @@ body.dark .recruiter-edit-jobboard .recruiter-form-side h6 {
     line-height: 1.5;
 }
 body.dark .recruiter-edit-jobboard .recruiter-tip-item {
-    background: #111111 !important;
+    background: #000000 !important;
     border: 1px solid #23343A !important;  
-    color: #7A8B96 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════════
@@ -352,7 +352,7 @@ body.dark .recruiter-edit-jobboard .alert-danger {
    background: white !important; 
 }
 body.dark #editJobForm,body.dark .card-body{
-   background: #111111 !important;
+   background: #000000 !important;
 }
 .card-body{
     border: 1px solid #D9ECE5;
