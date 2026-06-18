@@ -135,6 +135,7 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     
     // Main Dashboard
     $routes->get('dashboard', 'DashboardController::index');
+    $routes->get('settings', 'Recruiter::settings');
     
     // Leaderboard
     $routes->get('dashboard/leaderboard', 'DashboardController::leaderboard');
