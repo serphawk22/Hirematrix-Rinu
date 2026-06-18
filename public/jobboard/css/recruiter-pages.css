@@ -2910,7 +2910,7 @@ body.recruiter-jobboard .recruiter-settings-card-copy h6 {
 }
 
 body.recruiter-jobboard .recruiter-settings-card-copy p {
-    color: var(--hm-muted-text, #58708a);
+    color: var(--hm-muted-text, #58708a) !important;
     margin-bottom: 0;
 }
 
