@@ -91,6 +91,9 @@ body.dark h5{
     color:#64748B !important;
     font-size:12px !important;
 }
+.page-board-copy .page-board-subtitle{
+     color:#64748B !important;
+}
 body.dark .page-board-subtitle,body.dark small.text-muted,body.dark p.mb-3{
     color:#FFFFFF !important;
     font-size:12px !important;
@@ -106,7 +109,7 @@ body.dark .page-board-subtitle,body.dark small.text-muted,body.dark p.mb-3{
     <div class="page-board-header page-board-header-tight recruiter-page-board-header">
         <div class="page-board-copy"> 
             <h1 class="page-board-title">All Notifications</h1>
-            <p class="page-board-subtitle">Track candidate activity, applications, and recruiter actions in one place.</p>
+            <p class="page-board-subtitle" style="color:#64748B !important;">Track candidate activity, applications, and recruiter actions in one place.</p>
             <div class="company-profile-meta">
                 <span class="status-pill"><strong id="recruiterUnreadCount"><?= number_format((int) $unread_count) ?></strong> Unread</span>
                 <span class="status-pill"><strong><?= number_format(count($notifications ?? [])) ?></strong> Total</span>
@@ -148,10 +151,10 @@ body.dark .page-board-subtitle,body.dark small.text-muted,body.dark p.mb-3{
                                             <span class="badge badge-primary">New</span>
                                         <?php endif; ?>
                                     </h5>
-                                    <small class="text-muted"><?= time_ago($notification['created_at']) ?></small>
+                                    <small class="text-muted" style="color:#64748B !important;font-size:12px;"><?= time_ago($notification['created_at']) ?></small>
                                 </div>
 
-                                <p class="mb-3"><?= esc($notification['message']) ?></p>
+                                <p class="mb-3" style="color:#64748B !important;font-size:12px;"><?= esc($notification['message']) ?></p>
 
                                 <div class="recruiter-notification-actions">
                                     <?php if ($notification['action_link']): ?>
