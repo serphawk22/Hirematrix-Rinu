@@ -193,10 +193,10 @@ class DashboardController extends BaseController
 
 
         // Conversion Metrics
-        $conversionMetrics = $this->calculateConversionMetrics();
+        $conversionMetrics = $this->calculateConversionMetrics($jobIds);
 
         // Monthly Trends (Last 6 months)
-        $monthlyTrends = $this->getMonthlyTrends();
+        $monthlyTrends = $this->getMonthlyTrends($jobIds);
 
         return view('recruiter/dashboard/index', [
             'funnel' => $funnel,

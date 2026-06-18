@@ -179,6 +179,7 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         $routes->get('dashboard/leaderboard', 'API_RecruiterController::getLeaderboard');
         $routes->get('jobs', 'API_RecruiterController::getJobs');
         $routes->post('jobs/add', 'API_RecruiterController::addJob');
+        $routes->post('jobs/update', 'API_RecruiterController::updateJob');
         $routes->get('applications', 'API_RecruiterController::getApplications');
         $routes->get('candidates', 'API_RecruiterController::getCandidateDatabase');
         $routes->post('candidates/invite', 'API_RecruiterController::inviteCandidate');

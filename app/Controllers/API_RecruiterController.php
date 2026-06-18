@@ -70,8 +70,14 @@ class API_RecruiterController extends ResourceController
             }
         }
 
-        // Calculate Conversion Rate (Hired / Total Apps)
-        $conversionRate = $totalApps > 0 ? round(($pipeline['Hired'] / $totalApps) * 100) : 0;
+        // Calculate Conversion Rate (Selected/Hired / Total Apps)
+        $selectedHiredCount = 0;
+        if (!empty($jobIds)) {
+            $selectedHiredCount = $appModel->whereIn('job_id', $jobIds)
+                ->whereIn('status', ['selected', 'hired'])
+                ->countAllResults();
+        }
+        $conversionRate = $totalApps > 0 ? round(($selectedHiredCount / $totalApps) * 100, 1) : 0.0;
 
         // Calculate Time to Hire (Average days from Applied to Hired)
         $db = \Config\Database::connect();
@@ -175,6 +181,17 @@ class API_RecruiterController extends ResourceController
                 'applications_count' => (int)$appModel->where('job_id', $job['id'])->countAllResults(),
                 'shortlisted_count' => (int)$appModel->where('job_id', $job['id'])->where('status', 'shortlisted')->countAllResults(),
                 'created_at'=> $job['created_at'],
+                'category' => $job['category'],
+                'required_skills' => $job['required_skills'],
+                'posted_for' => $job['posted_for'] ?? 'own_company',
+                'client_company_name' => $job['client_company_name'],
+                'client_disclosure' => $job['client_disclosure'] ?? 'visible',
+                'payroll_type' => $job['payroll_type'] ?? '',
+                'application_deadline' => $job['application_deadline'],
+                'openings' => (int)($job['openings'] ?? 1),
+                'ai_interview_policy' => $job['ai_interview_policy'] ?? 'REQUIRED_HARD',
+                'min_ai_cutoff_score' => (int)($job['min_ai_cutoff_score'] ?? 0),
+                'application_questionnaire' => $job['application_questionnaire'],
             ];
         }
 
@@ -756,6 +773,106 @@ class API_RecruiterController extends ResourceController
         }
 
         return $this->fail('Failed to post job');
+    }
+
+    public function updateJob()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        $jobId = $this->request->getVar('job_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+        if (!$jobId) return $this->fail('Job ID required');
+
+        $userModel = new UserModel();
+        $recruiter = $userModel->findRecruiterWithProfile((int)$recruiterId) ?? $userModel->find((int)$recruiterId);
+        if (!$recruiter) return $this->failNotFound('Recruiter not found');
+
+        $jobModel = new JobModel();
+        $job = $jobModel->where('id', $jobId)->where('recruiter_id', $recruiterId)->first();
+        if (!$job) {
+            return $this->failNotFound('Job not found or access denied');
+        }
+
+        $title = trim((string) $this->request->getVar('title'));
+        $category = trim((string) $this->request->getVar('category'));
+        $description = trim((string) $this->request->getVar('description'));
+        $location = trim((string) $this->request->getVar('location'));
+        $requiredSkills = trim((string) $this->request->getVar('required_skills'));
+        $experienceLevel = trim((string) $this->request->getVar('experience_level'));
+        $employmentType = trim((string) $this->request->getVar('employment_type'));
+        $salaryRange = trim((string) $this->request->getVar('salary_range'));
+        $applicationDeadlineRaw = trim((string) $this->request->getVar('application_deadline'));
+        $postedFor = trim((string) $this->request->getVar('posted_for'));
+        $clientCompanyName = trim((string) $this->request->getVar('client_company_name'));
+        $clientDisclosure = trim((string) $this->request->getVar('client_disclosure'));
+        $payrollType = trim((string) $this->request->getVar('payroll_type'));
+        $aiInterviewPolicy = JobModel::normalizeAiPolicy($this->request->getVar('ai_interview_policy'));
+        $minAiCutoffRaw = trim((string) $this->request->getVar('min_ai_cutoff_score'));
+        $minAiCutoff = $minAiCutoffRaw === '' ? null : (int) $minAiCutoffRaw;
+        $openings = (int) $this->request->getVar('openings');
+        
+        $questionnaireRaw = $this->request->getVar('questionnaire');
+        $questionnaireArray = is_string($questionnaireRaw) ? json_decode($questionnaireRaw, true) : $questionnaireRaw;
+        if (!is_array($questionnaireArray)) $questionnaireArray = [];
+
+        if ($title === '' || $category === '' || $description === '' || $location === '') {
+            return $this->fail('Title, category, description and location are required.');
+        }
+
+        if ($openings <= 0) {
+            return $this->fail('Openings must be greater than 0.');
+        }
+
+        if ($postedFor === 'client' && $clientCompanyName === '') {
+            return $this->fail('Client company name is required when posting for a client.');
+        }
+
+        if ($aiInterviewPolicy !== JobModel::AI_POLICY_OFF) {
+            if ($minAiCutoff === null) {
+                return $this->fail('Minimum AI cutoff score is required when AI interview is enabled.');
+            }
+            if ($minAiCutoff < 0 || $minAiCutoff > 100) {
+                return $this->fail('Minimum AI cutoff score must be between 0 and 100.');
+            }
+        } else {
+            $minAiCutoff = 0;
+        }
+
+        $applicationDeadline = null;
+        if ($applicationDeadlineRaw !== '') {
+            $parsedDate = \DateTime::createFromFormat('Y-m-d', $applicationDeadlineRaw);
+            if ($parsedDate) {
+                $applicationDeadline = $parsedDate->format('Y-m-d');
+            }
+        }
+
+        $data = [
+            'title' => $title,
+            'category' => $category,
+            'description' => $description,
+            'location' => $location,
+            'required_skills' => $requiredSkills,
+            'experience_level' => $experienceLevel,
+            'employment_type' => $employmentType !== '' ? $employmentType : null,
+            'salary_range' => $salaryRange !== '' ? $salaryRange : null,
+            'application_deadline' => $applicationDeadline,
+            'posted_for' => in_array($postedFor, ['own_company', 'client']) ? $postedFor : 'own_company',
+            'client_company_name' => $postedFor === 'client' ? $clientCompanyName : null,
+            'client_disclosure' => in_array($clientDisclosure, ['visible', 'confidential']) ? $clientDisclosure : 'visible',
+            'payroll_type' => in_array($payrollType, ['company_payroll', 'client_payroll', 'consultancy_payroll', 'third_party_contract']) ? $payrollType : null,
+            'ai_interview_policy' => $aiInterviewPolicy,
+            'min_ai_cutoff_score' => $minAiCutoff,
+            'openings' => $openings,
+            'application_questionnaire' => !empty($questionnaireArray) ? json_encode($questionnaireArray) : null,
+        ];
+
+        if ($jobModel->update($jobId, $data)) {
+            return $this->respond([
+                'success' => true,
+                'message' => 'Job updated successfully'
+            ]);
+        }
+
+        return $this->fail('Failed to update job');
     }
 
     public function getActivity()
