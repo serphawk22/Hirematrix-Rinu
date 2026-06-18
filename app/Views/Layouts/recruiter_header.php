@@ -302,18 +302,9 @@
     body.recruiter-jobboard .table tbody td,
     body.recruiter-jobboard p,
     body.recruiter-jobboard li { 
-        color: #FFFFFF !important; 
+        /* color: #FFFFFF !important;  */
         font-size: 13.5px !important;
         line-height: 1.45 !important;
-    }
-
-    body.recruiter-jobboard .text-muted,
-    body.recruiter-jobboard small,
-    body.recruiter-jobboard .page-board-subtitle,
-    body.recruiter-jobboard .form-text,
-    body.recruiter-jobboard .recruiter-summary-label,
-    body.recruiter-jobboard .recruiter-info-label { 
-        color: #FFFFFF !important; 
     }
 
     body.recruiter-jobboard label,
