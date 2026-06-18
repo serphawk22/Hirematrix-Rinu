@@ -1401,8 +1401,9 @@ body.dark .hm-knob {
     display: flex; align-items: center; justify-content: center;
     font-size: 14px; z-index: 1; flex-shrink: 0;
 }
-.hm-tp-sun  { color: #F59E0B; }
+.hm-tp-sun  { color: var(--hm-teal); }
 .hm-tp-moon { color: #7A8B96; }
+body.dark .hm-tp-sun { color: var(--hm-primary); }
 body.dark .hm-tp-moon { color: #94A3B8; }
 
 /* Keep the global recruiter loader on the HireMatrix teal theme. */
@@ -1538,26 +1539,10 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                    class="<?= $isActive('recruiter/company-profile') ?>">
                     <i class="fas fa-building"></i> Company Profile
                 </a>
-                <a href="<?= base_url('account/change-password') ?>"
-                   class="<?= $isActive('account/change-password') ?>">
-                    <i class="fas fa-lock"></i> Change Password
+                <a href="<?= base_url('recruiter/settings') ?>"
+                   class="<?= $isActive('recruiter/settings') ?>">
+                    <i class="fas fa-cog"></i> Settings
                 </a>
-                <div class="hm-sb-translate-row">
-                    <i class="fas fa-globe"></i>
-                    <div class="translate-widget-wrap">
-                        <?= view('components/google_translate_widget') ?>
-                    </div>
-                </div>
-                 <div class="hm-sb-theme-row">
-    <i class="fas fa-adjust"></i>
-    <span class="hm-theme-label">Theme</span>
-    <div class="hm-theme-pill" id="hmThemePill" onclick="hmToggleTheme()"
-         role="switch" aria-checked="false" aria-label="Toggle dark mode">
-        <div class="hm-knob"></div>
-        <div class="hm-tp-icon hm-tp-sun">☀️</div>
-        <div class="hm-tp-icon hm-tp-moon">🌙</div>
-    </div>
-</div>
                 <a href="<?= base_url('logout') ?>" class="prof-logout">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>

@@ -22,6 +22,24 @@ class Recruiter extends BaseController
         return view('recruiter/post_job');
     }
 
+    public function settings()
+    {
+        $redirect = $this->ensureVerifiedRecruiter();
+        if ($redirect !== null) {
+            return $redirect;
+        }
+
+        $activeTab = (string) ($this->request->getGet('tab') ?? 'account');
+        $allowedTabs = ['account', 'appearance', 'language'];
+        if (!in_array($activeTab, $allowedTabs, true)) {
+            $activeTab = 'account';
+        }
+
+        return view('recruiter/settings', [
+            'activeTab' => $activeTab,
+        ]);
+    }
+
     public function saveJob()
     {
         $redirect = $this->ensureVerifiedRecruiter();
