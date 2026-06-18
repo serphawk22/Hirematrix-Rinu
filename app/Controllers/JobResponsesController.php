@@ -118,7 +118,7 @@ class JobResponsesController extends BaseController
             'activeStage' => $activeStage,
             'pager' => $pager,
             'statuses' => [
-                'applied' => 'Applied', 'shortlisted' => 'Shortlisted', 'interview_scheduled' => 'Interview Scheduled',
+                'applied' => 'Applied', 'ai_interview_completed' => 'AI Interview Completed', 'shortlisted' => 'Shortlisted', 'interview_scheduled' => 'Interview Scheduled',
                 'interviewed' => 'Interviewed', 'offered' => 'Offered', 'hired' => 'Hired',
                 'rejected' => 'Rejected', 'withdrawn' => 'Withdrawn', 'on_hold' => 'On Hold', 'filtered_out' => 'Filtered Out'
             ],
@@ -299,6 +299,8 @@ class JobResponsesController extends BaseController
 
         // Status mapping to normalize database values for the recruiter UI
         $statusMap = [
+            'pending' => 'applied',
+            'ai_evaluated' => 'ai_interview_completed',
             'interview_slot_booked' => 'interview_scheduled',
             'selected' => 'offered',
             'hold' => 'on_hold',
@@ -361,6 +363,7 @@ class JobResponsesController extends BaseController
     {
         $grouped = [
             'applied' => [],
+            'ai_interview_completed' => [],
             'shortlisted' => [],
             'interview_scheduled' => [],
             'interviewed' => [],
@@ -579,7 +582,7 @@ class JobResponsesController extends BaseController
             return false;
         }
 
-        return in_array($applicationStatus, ['applied', 'shortlisted', 'rejected', 'pending', 'hold', 'on_hold', 'filtered_out'], true);
+        return in_array($applicationStatus, ['applied', 'ai_interview_completed', 'shortlisted', 'rejected', 'pending', 'hold', 'on_hold', 'filtered_out'], true);
     }
 
     private function normalizeSkillTokens($skills): array

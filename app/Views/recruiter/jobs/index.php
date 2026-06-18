@@ -282,7 +282,7 @@ body.dark .status-pill{
                                     </td>
                                     <td>
                                        <?php $statusColor = $job['status'] == 'open' ? '#1FB7B5' : '#ef4444'; ?>
-<span style="color: <?= $statusColor ?>; font-weight: 600; font-size:1rem;">
+<span style="color: <?= $statusColor ?>; font-weight: 600;">
     <?= ucfirst($job['status']) ?> 
                                     </td>
                                     <td><?= date('M d, Y', strtotime($job['created_at'])) ?></td>

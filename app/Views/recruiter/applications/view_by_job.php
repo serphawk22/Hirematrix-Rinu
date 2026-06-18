@@ -471,8 +471,9 @@ body.dark .recruiter-job-form label, body.dark h6 {
                         <select name="status" class="form-control">
                             <option value="">All</option>
                             <?php foreach ($statusOptions as $status): ?>
+                                <?php $statusFilterLabel = $status === 'ai_interview_completed' ? 'AI Interview Completed' : ucwords(str_replace('_', ' ', $status)); ?>
                                 <option value="<?= esc($status) ?>" <?= ($filters['status'] ?? '') === $status ? 'selected' : '' ?>>
-                                    <?= esc(ucwords(str_replace('_', ' ', $status))) ?>
+                                    <?= esc($statusFilterLabel) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -589,6 +590,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
                                         $statusColors = [
                                             'pending' => 'warning',
                                             'applied' => 'warning',
+                                            'ai_interview_completed' => 'info',
                                             'shortlisted' => 'success',
                                             'hold' => 'secondary',
                                             'filtered_out' => 'dark',
@@ -600,6 +602,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
                                         $statusLabels = [
                                             'pending' => 'Applied',
                                             'applied' => 'Applied',
+                                            'ai_interview_completed' => 'AI Interview Completed',
                                             'shortlisted' => 'Shortlisted',
                                             'hold' => 'On Hold',
                                             'filtered_out' => 'Filtered Out',
@@ -839,7 +842,7 @@ document.addEventListener('click', function (e) {
                 violationsHtml += `
                     <tr>
                         <td>${v.message ?? '-'}</td>
-                        <td><span class="badge badge-danger">${v.total ?? 0}</span></td>
+                        <td><span class="status-pill">${v.total ?? 0}</span></td>
                     </tr>`;
             });
         } else {
@@ -858,7 +861,7 @@ document.addEventListener('click', function (e) {
                         <td>${r.round_name ?? '-'}</td>
                         <td>${r.score ?? 0}</td>
                         <td>${r.total_questions ?? 0}</td>
-                        <td><span class="badge badge-success">${r.percentage ?? 0}%</span></td>
+                        <td><span class="status-pill">${r.percentage ?? 0}%</span></td>
                     </tr>`;
             });
         } else {
@@ -903,7 +906,7 @@ document.addEventListener('click', function (e) {
                 <div class="col-md-5">
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-white">
-                            <h5 class="mb-0 text-danger">Violations</h5>
+                            <h5 class="mb-0">Violations</h5>
                         </div>
                         <div class="card-body p-0">
                             <table class="table mb-0">

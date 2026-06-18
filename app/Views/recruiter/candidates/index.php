@@ -615,9 +615,9 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
                         </table>
                     </div>
 
-                    <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links')): ?>
-                        <div style="color:#0D8A90;">
-                            <?= $pager->links() ?>
+                    <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links') && $pager->getPageCount() > 1): ?>
+                        <div>
+                            <?= $pager->links('default', 'portal_full') ?>
                         </div>
                     <?php endif; ?>
                 <?php endif; ?>

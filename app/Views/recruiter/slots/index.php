@@ -484,7 +484,7 @@ body.dark .status-pill {
 .recruiter-slots-table {
     width: 100%;
     border-collapse: collapse !important;
-    font-size: 1rem;
+    font-size: 13.5px;
     border: none !important;
 }
 
@@ -505,7 +505,7 @@ body.dark .status-pill {
 }
 .recruiter-slots-table thead th {
     padding: 13px 16px !important;
-    font-size: 0.875rem !important;
+    font-size: 12.5px !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     letter-spacing: .5px !important;
@@ -547,20 +547,22 @@ body.dark .recruiter-slots-table tbody tr:hover {
 .recruiter-slots-table tbody td {
     padding: 14px 16px !important;
     vertical-align: middle !important;
-    font-size: 1rem !important;
+    font-size: 13.5px !important;
+    line-height: 1.45 !important;
     color: #16212B !important;
     border: none !important;
     background: white !important;
 }
 body.dark .recruiter-slots-table tbody td {
     color: #E2E8F0 !important;
+    background: transparent !important;
 }
 
 /* secondary / small text */
 .recruiter-slots-table tbody td small {
     display: block;
     margin-top: 2px;
-    font-size: 0.875rem;
+    font-size: 12.5px;
     color: #64748B !important;
 }
 body.dark .recruiter-slots-table tbody td small {
@@ -575,7 +577,7 @@ body.dark .recruiter-slots-table tbody td small {
 }
 body.dark .recruiter-slots-table tr.table-secondary,
 body.dark .recruiter-slots-table tr.table-secondary td {
-    background: #111111 !important;
+    background: #15191d !important;
     color: #7A8B96 !important;
 }
 
@@ -586,12 +588,21 @@ body.dark .recruiter-slots-table tr.table-secondary td {
 }
 body.dark .recruiter-slots-table tr.table-warning,
 body.dark .recruiter-slots-table tr.table-warning td {
-    background: rgba(181, 216, 78, 0.04) !important;
+    background: #171d1a !important;
+    color: #E2E8F0 !important;
+}
+body.dark .recruiter-slots-table tr.table-warning:hover,
+body.dark .recruiter-slots-table tr.table-warning:hover td {
+    background: #1b221e !important;
+}
+body.dark .recruiter-slots-table tr.table-secondary:hover,
+body.dark .recruiter-slots-table tr.table-secondary:hover td {
+    background: #191f24 !important;
 }
 
 /* ── Bootstrap badge overrides inside table ── */
 .recruiter-slots-table .badge {
-    font-size: 0.8rem;
+    font-size: 12.5px;
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 50px;
@@ -640,7 +651,7 @@ body.dark .recruiter-slots-table .badge-warning {
 /* ── "Has bookings" muted text ── */
 .recruiter-slots-table .text-muted {
     color: #94A3B8 !important;
-    font-size: 0.875rem;
+    font-size: 12.5px;
 }
 body.dark .recruiter-slots-table .text-muted {
     color: #7A8B96 !important;
@@ -885,9 +896,9 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
                 </table>
             </div>
 
-            <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links')): ?>
+            <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links') && $pager->getPageCount() > 1): ?>
                 <div class="mt-3">
-                    <?= $pager->links() ?>
+                    <?= $pager->links('default', 'portal_full') ?>
                 </div>
             <?php endif; ?>
         </div>
