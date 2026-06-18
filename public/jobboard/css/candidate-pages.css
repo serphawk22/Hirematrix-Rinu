@@ -18975,6 +18975,11 @@ body.dark.candidate-app .job-details-jobboard .job-details-gallery img {
     border-color: #272727 !important;
 }
 
+body.candidate-app .job-details-jobboard #candidateApplicationAjaxAlert .alert.alert-success,
+body.candidate-app .job-details-jobboard .content-wrap > .container > .alert.alert-success {
+    border-radius: 0 !important;
+}
+
 @media (max-width: 991.98px) {
     body.candidate-app .job-details-layout {
         grid-template-columns: 1fr !important;

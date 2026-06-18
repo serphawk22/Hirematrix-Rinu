@@ -63,11 +63,7 @@
     @media (prefers-color-scheme: dark) {
         .site-legal-footer {
             border-top-color: #23343A;
-<<<<<<< HEAD
-            background: #0d1117;
-=======
-            background: #111111 !important;
->>>>>>> a45b839080c0d98ed1b38aefe937538e7e0d2a9b
+            background: #111111;
         }
 
         .site-legal-footer__inner {
@@ -93,6 +89,7 @@
 
     .site-legal-footer--landing {
         border-top: 0;
+        margin-top: 0;
         background: transparent;
         padding: 24px 20px 10px;
     }
@@ -105,11 +102,7 @@
         gap: 16px 24px;
         padding: 14px 18px;
         border-radius: 22px;
-<<<<<<< HEAD
-        background: linear-gradient(135deg, #ffffff 0%, #f4fbfa 100%);
-=======
         background: #ffffff !important;
->>>>>>> a45b839080c0d98ed1b38aefe937538e7e0d2a9b
         border: 1px solid #d9ece5;
         box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
     }
@@ -142,13 +135,6 @@
     }
 
     @media (prefers-color-scheme: dark) {
-<<<<<<< HEAD
-        .site-legal-footer--landing .site-legal-footer__inner {
-            background: #11161d;
-            border-color: #23343A;
-            box-shadow: none;
-        }
-=======
        .site-legal-footer.site-legal-footer--landing {
         background: #111111 !important;
     }
@@ -158,7 +144,6 @@
         border-color: #23343A;
         box-shadow: none;
     }
->>>>>>> a45b839080c0d98ed1b38aefe937538e7e0d2a9b
 
         .site-legal-footer--landing .site-legal-footer__copy {
             color: #E2E8F0;
@@ -169,8 +154,9 @@
         }
 
         .site-legal-footer--landing .site-legal-footer__links a:hover {
-            background: rgba(31, 183, 181, 0.14);
-            color: #7EE3DD !important;
+            background: transparent;
+            color: #E2E8F0 !important;
+            transform: none;
         }
     }
 
