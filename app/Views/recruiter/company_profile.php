@@ -14,7 +14,7 @@
     body.dark .page-board-title{
         font-size: 26px !important;
     font-weight: 700 !important;
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
     margin: 0;
     }
     .status-pill {
@@ -33,7 +33,7 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #111111 !important;
+    background: #000000 !important;
     color: #0D8A90;
     border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
@@ -62,7 +62,7 @@ body.dark .status-pill {
     ) !important;
 }
 body.dark .hm-page-content,body.dark .recruiter-company-edit-jobboard, body.dark .company-edit-card,body.dark .checklist-item{
-    background: #111111 !important; 
+    background: #000000 !important; 
     border: 1px solid #23343A; !important;
 } 
 .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
@@ -82,10 +82,10 @@ body.dark .recruiter-job-form label, body.dark h6 {
     margin-bottom: 6px;
     display: block;
     line-height: 1.5;
-    color:#94A3B8 !important;
+    color:#FFFFFF !important;
 }
 body.dark h5,body.dark .checklist-item{
-    color:#94A3B8 !important;
+    color:#FFFFFF !important;
 }
 body.dark img{
     transition:none !important;
@@ -122,8 +122,8 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-    background: #111111 !important;
-    color: #F8FAFC !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
 }
 /* ── Labels — match h6 style ── */
 .recruiter-job-form label {

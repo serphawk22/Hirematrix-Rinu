@@ -27,7 +27,7 @@
     body.dark .page-board-title{
         font-size: 26px !important;
     font-weight: 700 !important;
-    color: #F8FAFC !important;
+    color: #ffffff !important;
     margin: 0;
     }
       .status-pill {
@@ -46,7 +46,7 @@
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #111111 !important;
+    background: #000000 !important;
     color: #0D8A90;
     border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
@@ -64,21 +64,21 @@ tr, td, th, .col-md-3 {
 body.dark tr,
 body.dark td,
 body.dark th, body.dark .col-md-3  {
-background: #111111 !important;
-    color:#94A3B8 !important;
+background: #000000 !important;
+    color:#FFFFFF !important;
  border: 1px solid #23343A !important;
 }
 
 body.dark .table-secondary td,
 body.dark .table-secondary th,
 body.dark .table-secondary {
-   background:  #162327 !important; 
+   background:  #000000 !important; 
    border: 1px solid #23343A !important;
 }
 
 body.dark thead th {
 border: 1px solid #23343A !important;
-    color: #94A3B8 !important;
+    color: #ffffff !important;
 }
 .hm-page-content,.recruiter-leaderboard-jobboard{
          background: linear-gradient(
@@ -88,11 +88,11 @@ border: 1px solid #23343A !important;
     ) !important;
 }
 body.dark .hm-page-content,body.dark .recruiter-leaderboard-jobboard,body.dark .card-header,body.dark .recruiter-leaderboard-card,body.dark .recruiter-alert, body.dark .alert-light{
-  background: #111111 !important;
+  background: #000000 !important;
     border: none !important;
 } 
 body.dark .card-header, body.dark .recruiter-filter-card,body.dark .recruiter-alert,body.dark h6.m-0.font-weight-bold{
-    color:#94A3B8 !important;
+    color:#ffffff !important;
 }
 .page-board-header.page-board-header-tight.recruiter-page-board-header, body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .card-body,body.dark .row mt-4,body.dark .col-md-3{
       border: none !important;
@@ -114,8 +114,8 @@ body.dark .recruiter-job-form .form-control {
     border: 1px solid #23343A !important;
     border-radius: 6px;
     transition: border-color .2s, box-shadow .2s;
-   background: #111111 !important;
-    color: #F8FAFC !important;
+   background: #000000 !important;
+    color: #ffffff !important;
 }
 /* ── Labels — match h6 style ── */
 .recruiter-job-form label {
@@ -127,8 +127,8 @@ body.dark .recruiter-job-form .form-control {
     line-height: 1.5;
 }
 body.dark .recruiter-tip-item{
-   background: #111111 !important;
-    color: #7A8B96 !important;
+   background: #000000 !important;
+    color: #ffffff !important;
      border: 1px solid #23343A !important;
       font-weight: 400 !important;   
 }
@@ -141,7 +141,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
     margin-bottom: 6px;
     display: block;
     line-height: 1.5;
-    color:#94A3B8;
+    color:#ffffff !important;
 }
 /* ── Kill Bootstrap's orange/default focus first ── */
 /* ── Kill Bootstrap's orange/default focus first ── */
@@ -168,16 +168,16 @@ body.dark .recruiter-job-form label, body.dark h6 {
 /* ── Summary cards below leaderboard table ── */
 body.dark .card,
 body.dark .card.bg-light {
-  background: #111111 !important;
+  background: #000000 !important;
     border: 1px solid #23343A !important;
 }
 
 body.dark .card .card-body {
-   background: #111111 !important;
+   background: #000000 !important;
 }
 
 body.dark .card .card-body h5.text-muted {
-    color: #7A8B96 !important;
+    color: #ffffff !important;
 }
 
 body.dark .card .card-body h3.text-primary {

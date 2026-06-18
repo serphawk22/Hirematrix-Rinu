@@ -8,7 +8,7 @@
     min-height: 100vh;
 }
 body.dark .recruiter-edit-jobboard,body.dark .card-body {
-   background: #111111 !important;
+   background: #000000 !important;
     border: 1px solid #23343A !important;
 }
 
@@ -28,7 +28,7 @@ body.dark .recruiter-edit-jobboard,body.dark .card-body {
     margin: 0;
 }
 body.dark .recruiter-edit-jobboard .page-board-title {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 
 .recruiter-edit-jobboard .page-board-subtitle {
@@ -38,7 +38,7 @@ body.dark .recruiter-edit-jobboard .page-board-title {
     margin-bottom: 0;
 }
 body.dark .recruiter-edit-jobboard .page-board-subtitle {
-    color: #7A8B96 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════════
@@ -79,7 +79,7 @@ body.dark .recruiter-edit-jobboard .page-board-subtitle {
 }
 body.dark .recruiter-edit-jobboard .card,
 body.dark .recruiter-edit-jobboard .recruiter-form-card {
-background: #111111 !important;
+background: #000000 !important;
     border: 1px solid #23343A !important; 
     box-shadow: none !important;
 }
@@ -98,7 +98,7 @@ background: #111111 !important;
 }
 body.dark .recruiter-edit-jobboard label,
 body.dark .recruiter-edit-jobboard .recruiter-job-form label {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* Small label inside questionnaire rows */
@@ -110,7 +110,7 @@ body.dark .recruiter-edit-jobboard .recruiter-job-form label {
 }
 body.dark .recruiter-edit-jobboard label.small,
 body.dark .recruiter-edit-jobboard .small.text-muted {
-    color: #7A8B96 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════════
@@ -125,8 +125,8 @@ body.dark .recruiter-edit-jobboard .small.text-muted {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 body.dark .recruiter-edit-jobboard .form-control {
- background: #111111 !important; 
-    color: #E2E8F0 !important;
+ background: #000000 !important; 
+    color: #FFFFFF !important;
     border-color: #2E4A52 !important;
 }
 
@@ -135,7 +135,7 @@ body.dark .recruiter-edit-jobboard .form-control {
     color: #94A3B8 !important;
 }
 body.dark .recruiter-edit-jobboard .form-control::placeholder {
-    color: #3D5560 !important;
+    color: #FFFFFF !important;
 }
 
 /* Focus state */
@@ -168,7 +168,7 @@ body.dark .recruiter-edit-jobboard select.form-control {
 }
 body.dark .recruiter-edit-jobboard .form-group small.text-muted,
 body.dark .recruiter-edit-jobboard small.text-muted {
-    color: #7A8B96 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════════
@@ -189,7 +189,7 @@ body.dark .recruiter-edit-jobboard small.text-muted {
     margin-bottom: 0.75rem !important;
 }
 body.dark .recruiter-edit-jobboard .questionnaire-row {
- background: #111111 !important;
+ background: #000000 !important;
     border: 1px solid #23343A !important;  
 }
 
@@ -201,7 +201,7 @@ body.dark .recruiter-edit-jobboard .questionnaire-row {
     cursor: pointer;
 }
 body.dark .recruiter-edit-jobboard .custom-control-label {
-    color: #94A3B8 !important;
+    color: #FFFFFF !important;
 }
 
 /* Custom checkbox accent */
@@ -308,7 +308,7 @@ body.dark .recruiter-edit-jobboard .btn-outline-danger:hover {
     margin-bottom: 0.75rem;
 }
 body.dark .recruiter-edit-jobboard .recruiter-form-side h6 {
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
 }
 
 .recruiter-edit-jobboard .recruiter-tip-list {
@@ -328,9 +328,9 @@ body.dark .recruiter-edit-jobboard .recruiter-form-side h6 {
     line-height: 1.5;
 }
 body.dark .recruiter-edit-jobboard .recruiter-tip-item {
-    background: #111111 !important;
+    background: #000000 !important;
     border: 1px solid #23343A !important;  
-    color: #7A8B96 !important;
+    color: #FFFFFF !important;
 }
 
 /* ══════════════════════════════════════════
@@ -352,7 +352,7 @@ body.dark .recruiter-edit-jobboard .alert-danger {
    background: white !important; 
 }
 body.dark #editJobForm,body.dark .card-body{
-   background: #111111 !important;
+   background: #000000 !important;
 }
 .card-body{
     border: 1px solid #D9ECE5;
@@ -393,6 +393,8 @@ $jobCategoryOptions = [
 ];
 $selectedCategory = (string) old('category', $job['category'] ?? '');
 $hasCustomCategory = $selectedCategory !== '' && !in_array($selectedCategory, $jobCategoryOptions, true);
+$aiInterviewCategories = ['Software Development', 'Data Science', 'DevOps', 'Quality Assurance', 'UI/UX Design', 'Cybersecurity'];
+$aiInterviewAllowed = in_array(strtolower($selectedCategory), array_map('strtolower', $aiInterviewCategories), true);
 $postedFor = (string) old('posted_for', $job['posted_for'] ?? 'own_company');
 $clientDisclosure = (string) old('client_disclosure', $job['client_disclosure'] ?? 'visible');
 $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
@@ -474,7 +476,7 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
 
                         <div class="form-group">
                             <label>Category *</label>
-                            <select name="category" class="form-control" required>
+                            <select name="category" id="category" class="form-control" required>
                                 <option value="">Select Job Category</option>
                                 <?php if ($hasCustomCategory): ?>
                                     <option value="<?= esc($selectedCategory) ?>" selected>
@@ -566,10 +568,16 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
                                  data-initial-items="<?= esc(json_encode(array_values($questionnaireRows)), 'attr') ?>"></div>
                         </div>
 
-                        <div class="form-group">
-                            <?php $policy = strtoupper(old('ai_interview_policy', $job['ai_interview_policy'] ?? 'REQUIRED_HARD')); ?>
+                        <div class="form-group" id="aiInterviewUnavailableWrap" <?= $aiInterviewAllowed ? 'style="display: none;"' : '' ?>>
+                            <div class="alert alert-info py-2 mb-0">
+                                AI interview settings are available only for software and technical jobs.
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
+                            <?php $policy = $aiInterviewAllowed ? strtoupper(old('ai_interview_policy', $job['ai_interview_policy'] ?? 'REQUIRED_HARD')) : 'OFF'; ?>
                             <label>AI Interview Policy *</label>
-                            <select name="ai_interview_policy" id="ai_interview_policy" class="form-control">
+                            <select name="ai_interview_policy" id="ai_interview_policy" class="form-control" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>
                                 <option value="REQUIRED_HARD" <?= $policy === 'REQUIRED_HARD' ? 'selected' : '' ?>>Required Hard (strict)</option>
                                 <option value="REQUIRED_SOFT" <?= $policy === 'REQUIRED_SOFT' ? 'selected' : '' ?>>Required Soft (recruiter override)</option>
                                 <option value="OPTIONAL" <?= $policy === 'OPTIONAL' ? 'selected' : '' ?>>Optional</option>
@@ -577,9 +585,9 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
                             </select>
                         </div>
 
-                        <div class="form-group" id="minAiCutoffWrap">
+                        <div class="form-group" id="minAiCutoffWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
                             <label>Minimum AI Cutoff Score</label>
-                            <input type="number" name="min_ai_cutoff_score" id="min_ai_cutoff_score" class="form-control" min="0" max="100" value="<?= esc(old('min_ai_cutoff_score', $job['min_ai_cutoff_score'] ?? '')) ?>" placeholder="0 to 100">
+                            <input type="number" name="min_ai_cutoff_score" id="min_ai_cutoff_score" class="form-control" min="0" max="100" value="<?= esc(old('min_ai_cutoff_score', $job['min_ai_cutoff_score'] ?? '')) ?>" placeholder="0 to 100" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>
                             <small class="text-muted">Required if AI interview policy is not OFF.</small>
                         </div>
 
@@ -607,6 +615,55 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
     </div>
 </div>
 <script>
+(function () {
+    const aiInterviewCategories = [
+        'Software Development',
+        'Data Science',
+        'DevOps',
+        'Quality Assurance',
+        'UI/UX Design',
+        'Cybersecurity'
+    ];
+    const categorySelect = document.getElementById('category');
+    const unavailableWrap = document.getElementById('aiInterviewUnavailableWrap');
+    const policyWrap = document.getElementById('aiInterviewPolicyWrap');
+    const policySelect = document.getElementById('ai_interview_policy');
+    const cutoffWrap = document.getElementById('minAiCutoffWrap');
+    const cutoffInput = document.getElementById('min_ai_cutoff_score');
+
+    if (!categorySelect || !policySelect || !cutoffInput) {
+        return;
+    }
+
+    function syncAiInterviewSettings() {
+        const selectedCategory = categorySelect.value.trim().toLowerCase();
+        const allowed = aiInterviewCategories.some(function (category) {
+            return category.toLowerCase() === selectedCategory;
+        });
+
+        if (unavailableWrap) {
+            unavailableWrap.style.display = allowed ? 'none' : '';
+        }
+        if (policyWrap) {
+            policyWrap.style.display = allowed ? '' : 'none';
+        }
+        if (cutoffWrap) {
+            cutoffWrap.style.display = allowed ? '' : 'none';
+        }
+
+        policySelect.disabled = !allowed;
+        cutoffInput.disabled = !allowed;
+
+        if (!allowed) {
+            policySelect.value = 'OFF';
+            cutoffInput.value = '';
+        }
+    }
+
+    categorySelect.addEventListener('change', syncAiInterviewSettings);
+    syncAiInterviewSettings();
+})();
+
 (function () {
     const builder = document.getElementById('questionnaireBuilder');
     const addButton = document.getElementById('addQuestionnaireRow');

@@ -64,11 +64,11 @@
         html.hm-dark-preload,
         html.hm-dark-preload body,
         body.dark.candidate-app {
-            background: #0d1117;
+            background: #0f0f0f;
         }
         html.hm-dark-preload #overlayer,
         body.dark.candidate-app #overlayer {
-            background: #0d1117 !important;
+            background: #0f0f0f !important;
         }
         html.hm-dark-preload .loader .spinner-border,
         body.dark.candidate-app .loader .spinner-border {

@@ -9,7 +9,7 @@
     body.dark .page-board-title{
         font-size: 26px !important;
     font-weight: 700 !important;
-    color: #F8FAFC !important;
+    color: #FFFFFF !important;
     margin: 0;
     }
     .hm-page-content,.recruiter-notifications-jobboard{
@@ -20,10 +20,10 @@
     ) !important;
 }
 body.dark .hm-page-content,body.dark .recruiter-notifications-jobboard {
-    background: #111111 !important; 
+    background: #000000 !important; 
 } 
 body.dark .recruiter-notification-card{
-    background: #111111 !important;
+    background: #000000 !important;
     border: 1px solid #23343A; !important;
 } 
 .status-pill {
@@ -42,7 +42,7 @@ body.dark .recruiter-notification-card{
     cursor: pointer;
 }
 body.dark .status-pill {
-    background: #111111 !important;
+    background: #000000 !important;
     color: #0D8A90;
       border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
@@ -70,7 +70,7 @@ h5{
     color:#16212B !important;
 }
 body.dark h5{
-    color:#F8FAFC !important;
+    color:#FFFFFF !important;
 }
 .text-muted{
     color:#64748B !important;
@@ -87,7 +87,17 @@ body.dark h5{
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 16px !important;
 }
-
+ small.text-muted,p.mb-3{
+    color:#64748B !important;
+    font-size:12px !important;
+}
+.page-board-copy .page-board-subtitle{
+     color:#64748B !important;
+}
+body.dark .page-board-subtitle,body.dark small.text-muted,body.dark p.mb-3{
+    color:#FFFFFF !important;
+    font-size:12px !important;
+}
 @media (max-width: 768px) {
     .recruiter-notification-list {
         grid-template-columns: 1fr !important;
@@ -99,7 +109,7 @@ body.dark h5{
     <div class="page-board-header page-board-header-tight recruiter-page-board-header">
         <div class="page-board-copy"> 
             <h1 class="page-board-title">All Notifications</h1>
-            <p class="page-board-subtitle">Track candidate activity, applications, and recruiter actions in one place.</p>
+            <p class="page-board-subtitle" style="color:#64748B !important;">Track candidate activity, applications, and recruiter actions in one place.</p>
             <div class="company-profile-meta">
                 <span class="status-pill"><strong id="recruiterUnreadCount"><?= number_format((int) $unread_count) ?></strong> Unread</span>
                 <span class="status-pill"><strong><?= number_format(count($notifications ?? [])) ?></strong> Total</span>
@@ -141,10 +151,10 @@ body.dark h5{
                                             <span class="badge badge-primary">New</span>
                                         <?php endif; ?>
                                     </h5>
-                                    <small class="text-muted" style="font-size:12px;color:#64748B !important;"><?= time_ago($notification['created_at']) ?></small>
+                                    <small class="text-muted" style="color:#64748B !important;font-size:12px;"><?= time_ago($notification['created_at']) ?></small>
                                 </div>
 
-                                <p class="mb-3" style="font-size:13px;color:#64748B !important;"><?= esc($notification['message']) ?></p>
+                                <p class="mb-3" style="color:#64748B !important;font-size:12px;"><?= esc($notification['message']) ?></p>
 
                                 <div class="recruiter-notification-actions">
                                     <?php if ($notification['action_link']): ?>

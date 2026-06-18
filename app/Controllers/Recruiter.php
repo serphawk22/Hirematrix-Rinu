@@ -22,6 +22,24 @@ class Recruiter extends BaseController
         return view('recruiter/post_job');
     }
 
+    public function settings()
+    {
+        $redirect = $this->ensureVerifiedRecruiter();
+        if ($redirect !== null) {
+            return $redirect;
+        }
+
+        $activeTab = (string) ($this->request->getGet('tab') ?? 'account');
+        $allowedTabs = ['account', 'appearance', 'language'];
+        if (!in_array($activeTab, $allowedTabs, true)) {
+            $activeTab = 'account';
+        }
+
+        return view('recruiter/settings', [
+            'activeTab' => $activeTab,
+        ]);
+    }
+
     public function saveJob()
     {
         $redirect = $this->ensureVerifiedRecruiter();
@@ -81,6 +99,11 @@ class Recruiter extends BaseController
 
         if ($questionnaireError !== null) {
             return redirect()->back()->withInput()->with('error', $questionnaireError);
+        }
+
+        if (!JobModel::supportsAiInterviewForCategory($category)) {
+            $aiInterviewPolicy = JobModel::AI_POLICY_OFF;
+            $minAiCutoff = 0;
         }
 
         if ($aiInterviewPolicy !== JobModel::AI_POLICY_OFF) {
