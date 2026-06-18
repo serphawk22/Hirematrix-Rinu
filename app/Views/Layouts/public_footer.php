@@ -1,4 +1,4 @@
-    
+<?= view('Layouts/legal_footer_links', ['footer_variant' => 'landing']) ?>
 </div>
 
 <script src="<?= base_url('jobboard/js/jquery.min.js') ?>"></script>

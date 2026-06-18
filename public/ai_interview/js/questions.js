@@ -1,14 +1,10 @@
-// Pure HTML renderers — NO setTimeout, events handled by delegation in exam.js
 const QRenderer = {
 
   mcq(q, saved) {
-    const L = ['A','B','C','D'], sel = saved?.answer ?? -1, locked = sel !== -1;
+    const L = ['A','B','C','D'], sel = saved?.answer ?? -1;
     const raw = Array.isArray(q?.options) ? q.options : [];
-    // Filter out null/empty options to avoid rendering "invisible" choices.
     const clean = raw.map(v => (v == null ? '' : String(v))).map(v => v.trim()).filter(v => v !== '');
     if (clean.length < 2) {
-      // Keep the exam usable even if a DB row is missing options.
-      console.warn('[Exam] MCQ has missing/invalid options:', q);
       return `
         <div class="glass-card" style="padding:16px;border-radius:12px;border:1px solid rgba(239,68,68,.25);background:rgba(239,68,68,.06)">
           <div style="font-weight:800;color:#fca5a5;margin-bottom:6px">Question data issue</div>
@@ -17,15 +13,19 @@ const QRenderer = {
           </div>
         </div>`;
     }
-    const opts = clean.slice(0, 4).map((o,i) => {
-      const cls = 'mcq-option' + (i===sel ? ' selected' : '');
-      return `<div class="${cls}" data-idx="${i}"><div class="option-letter">${L[i]}</div><div class="option-text">${o}</div></div>`;
-    }).join('');
-    return `<div class="mcq-options" id="mcqOpts" ${locked?'data-locked="1"':''}>${opts}</div>`;
+const opts = clean.slice(0, 4).map((o,i) => {
+  const cls = 'mcq-option' + (i===sel ? ' selected' : '');
+  return `<div class="${cls}" data-idx="${i}">
+      <div class="option-letter">${L[i]}</div>
+      <div class="option-text">${escHtml(o)}</div>
+  </div>`;
+}).join('');
+    // ✅ FIXED: removed data-locked — MCQ can be changed before moving to next question
+    return `<div class="mcq-options" id="mcqOpts">${opts}</div>`;
   },
 
   fill_blank(q, saved) {
-    const sel = saved?.answer ?? -1, locked = sel !== -1;
+    const sel = saved?.answer ?? -1;
     const filled = sel>=0 ? escHtml(q.options[sel]) : '___';
     const code = (q.code_template||'').replace(/___/g,
       `<span class="code-blank" id="blankDisplay">${filled}</span>`);
@@ -33,20 +33,22 @@ const QRenderer = {
       const cls = 'fill-option' + (i===sel ? ' selected' : '');
       return `<div class="${cls}" data-idx="${i}">${escHtml(o)}</div>`;
     }).join('');
+    // ✅ FIXED: removed data-locked
     return `<div class="code-block"><code>${code}</code></div>
       <p class="drag-intro" style="margin-bottom:10px">👆 Click the correct option to fill the blank:</p>
-      <div class="fill-options" id="fillOpts" ${locked?'data-locked="1"':''}>${opts}</div>`;
+      <div class="fill-options" id="fillOpts">${opts}</div>`;
   },
 
   debug(q, saved) {
-    const sel = saved?.answer ?? -1, locked = sel !== -1;
+    const sel = saved?.answer ?? -1;
     const lines = (q.code_lines||[]).map((ln,i) => {
       const cls = 'debug-line' + (i===sel ? ' selected' : '');
       return `<div class="${cls}" data-idx="${i}">
         <div class="line-num">${i+1}</div><div class="line-code">${escHtml(ln)}</div></div>`;
     }).join('');
+    // ✅ FIXED: removed data-locked
     return `<p class="debug-intro">🐛 Click the line that contains the bug:</p>
-      <div class="debug-lines" id="debugLines" ${locked?'data-locked="1"':''}>${lines}</div>`;
+      <div class="debug-lines" id="debugLines">${lines}</div>`;
   },
 
   drag_drop(q, saved) {
