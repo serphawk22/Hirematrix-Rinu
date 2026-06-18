@@ -360,17 +360,6 @@
         color: var(--hm-text) !important;
     }
 
-    body.recruiter-jobboard select option:checked,
-    body.recruiter-jobboard select option:hover,
-    body.recruiter-jobboard select option:focus,
-    body.recruiter-jobboard .custom-select option:checked,
-    body.recruiter-jobboard .custom-select option:hover,
-    body.recruiter-jobboard .custom-select option:focus {
-        background: var(--hm-primary) !important;
-        color: #FFFFFF !important;
-        box-shadow: 0 0 0 999px var(--hm-primary) inset !important;
-    }
-
     body.recruiter-jobboard .btn-primary,
     body.recruiter-jobboard .btn-outline-primary {
         background: transparent !important;
@@ -645,28 +634,6 @@
         color: var(--hm-primary-dark) !important;
     }
 
-    body.recruiter-jobboard .bootstrap-select .dropdown-item.active,
-    body.recruiter-jobboard .bootstrap-select .dropdown-item:active,
-    body.recruiter-jobboard .bootstrap-select .selected a,
-    body.recruiter-jobboard .bootstrap-select .selected a:hover,
-    body.recruiter-jobboard .bootstrap-select .selected a:focus {
-        background: var(--hm-primary) !important;
-        color: #FFFFFF !important;
-        font-weight: 400 !important;
-    }
-
-    body.recruiter-jobboard .bootstrap-select .dropdown-item.active span,
-    body.recruiter-jobboard .bootstrap-select .dropdown-item:active span,
-    body.recruiter-jobboard .bootstrap-select .selected a span,
-    body.recruiter-jobboard .bootstrap-select .selected a .text {
-        color: #FFFFFF !important;
-        font-weight: 400 !important;
-    }
-
-    body.recruiter-jobboard .bootstrap-select .bs-ok-default:after,
-    body.recruiter-jobboard .bootstrap-select .check-mark {
-        color: #FFFFFF !important;
-    }
     body.recruiter-jobboard .site-navbar,
     body.recruiter-jobboard .site-mobile-menu { display: none !important; }
     body.recruiter-jobboard .site-wrap {

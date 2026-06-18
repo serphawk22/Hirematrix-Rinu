@@ -76,43 +76,6 @@ body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td .text-muted {
 <script src="<?= base_url('jobboard/js/custom.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/recruiter-pages.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/notification-actions.js?v=' . @filemtime(FCPATH . 'jobboard/js/notification-actions.js')) ?>"></script>
-<script>
-(function ($) {
-    function initRecruiterSelects(scope) {
-        if (!$ || !$.fn || !$.fn.selectpicker) {
-            return;
-        }
-
-        var $root = scope ? $(scope) : $(document);
-        $root.find('select').each(function () {
-            var $select = $(this);
-
-            if ($select.hasClass('bs-select-hidden') ||
-                $select.hasClass('selectpicker') ||
-                $select.hasClass('goog-te-combo') ||
-                $select.closest('.bootstrap-select').length ||
-                $select.prop('multiple')) {
-                return;
-            }
-
-            $select
-                .addClass('selectpicker')
-                .attr('data-style', 'recruiter-select-toggle')
-                .attr('data-width', '100%');
-
-            try {
-                $select.selectpicker();
-            } catch (error) {}
-        });
-    }
-
-    $(function () {
-        initRecruiterSelects(document);
-    });
-
-    window.initRecruiterSelects = initRecruiterSelects;
-})(window.jQuery);
-</script>
 
 </div>
 </body>

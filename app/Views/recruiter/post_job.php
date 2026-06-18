@@ -142,6 +142,8 @@ $jobCategoryOptions = [
     'Cybersecurity',
 ];
 $selectedCategory = old('category');
+$aiInterviewCategories = ['Software Development', 'Data Science', 'DevOps', 'Quality Assurance', 'UI/UX Design', 'Cybersecurity'];
+$aiInterviewAllowed = in_array(strtolower((string) $selectedCategory), array_map('strtolower', $aiInterviewCategories), true);
 $postedFor = old('posted_for', 'own_company');
 $clientDisclosure = old('client_disclosure', 'visible');
 $payrollType = old('payroll_type', '');
@@ -289,11 +291,16 @@ $payrollType = old('payroll_type', '');
                                     <small class="text-danger" id="application_deadline-error"></small>
                                 </div>
                             </div>
-                            <?php $selectedPolicy = old('ai_interview_policy', 'REQUIRED_HARD'); ?>
-                            <div class="col-sm-6">
+                            <?php $selectedPolicy = $aiInterviewAllowed ? old('ai_interview_policy', 'REQUIRED_HARD') : 'OFF'; ?>
+                            <div class="col-12" id="aiInterviewUnavailableWrap" <?= $aiInterviewAllowed ? 'style="display: none;"' : '' ?>>
+                                <div class="alert alert-info py-2 mb-3">
+                                    AI interview settings are available only for software and technical jobs.
+                                </div>
+                            </div>
+                            <div class="col-sm-6" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
                                 <div class="form-group">
                                     <label>AI Interview Policy</label>
-                                    <select class="form-control" name="ai_interview_policy" id="ai_interview_policy">
+                                    <select class="form-control" name="ai_interview_policy" id="ai_interview_policy" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>
                                         <option value="REQUIRED_HARD" <?= $selectedPolicy === 'REQUIRED_HARD' ? 'selected' : '' ?>>AI Interview: Mandatory (Strict)</option>
                                         <option value="REQUIRED_SOFT" <?= $selectedPolicy === 'REQUIRED_SOFT' ? 'selected' : '' ?>>AI Interview: Mandatory (Recruiter Can Override)</option>
                                         <option value="OPTIONAL" <?= $selectedPolicy === 'OPTIONAL' ? 'selected' : '' ?>>AI Interview: Optional</option>
@@ -304,10 +311,10 @@ $payrollType = old('payroll_type', '');
                                     </small>
                                 </div>
                             </div>
-                            <div class="col-sm-6" id="minAiCutoffWrap">
+                            <div class="col-sm-6" id="minAiCutoffWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
                                 <div class="form-group">
                                     <label>Minimum AI Cutoff Score</label>
-                                    <input class="form-control" name="min_ai_cutoff_score" id="min_ai_cutoff_score" type="number" min="0" max="100" value="<?= old('min_ai_cutoff_score') ?>" placeholder="Minimum AI Cutoff Score">
+                                    <input class="form-control" name="min_ai_cutoff_score" id="min_ai_cutoff_score" type="number" min="0" max="100" value="<?= old('min_ai_cutoff_score') ?>" placeholder="Minimum AI Cutoff Score" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>
                                     <small class="text-danger" id="min_ai_cutoff_score-error"></small>
                                 </div>
                             </div>
@@ -379,6 +386,55 @@ $payrollType = old('payroll_type', '');
     </div>
 </div>
 <script>
+(function () {
+    const aiInterviewCategories = [
+        'Software Development',
+        'Data Science',
+        'DevOps',
+        'Quality Assurance',
+        'UI/UX Design',
+        'Cybersecurity'
+    ];
+    const categorySelect = document.getElementById('category');
+    const unavailableWrap = document.getElementById('aiInterviewUnavailableWrap');
+    const policyWrap = document.getElementById('aiInterviewPolicyWrap');
+    const policySelect = document.getElementById('ai_interview_policy');
+    const cutoffWrap = document.getElementById('minAiCutoffWrap');
+    const cutoffInput = document.getElementById('min_ai_cutoff_score');
+
+    if (!categorySelect || !policySelect || !cutoffInput) {
+        return;
+    }
+
+    function syncAiInterviewSettings() {
+        const selectedCategory = categorySelect.value.trim().toLowerCase();
+        const allowed = aiInterviewCategories.some(function (category) {
+            return category.toLowerCase() === selectedCategory;
+        });
+
+        if (unavailableWrap) {
+            unavailableWrap.style.display = allowed ? 'none' : '';
+        }
+        if (policyWrap) {
+            policyWrap.style.display = allowed ? '' : 'none';
+        }
+        if (cutoffWrap) {
+            cutoffWrap.style.display = allowed ? '' : 'none';
+        }
+
+        policySelect.disabled = !allowed;
+        cutoffInput.disabled = !allowed;
+
+        if (!allowed) {
+            policySelect.value = 'OFF';
+            cutoffInput.value = '';
+        }
+    }
+
+    categorySelect.addEventListener('change', syncAiInterviewSettings);
+    syncAiInterviewSettings();
+})();
+
 (function () {
     const builder = document.getElementById('questionnaireBuilder');
     const addButton = document.getElementById('addQuestionnaireRow');

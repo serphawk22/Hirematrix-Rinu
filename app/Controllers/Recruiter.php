@@ -83,6 +83,11 @@ class Recruiter extends BaseController
             return redirect()->back()->withInput()->with('error', $questionnaireError);
         }
 
+        if (!JobModel::supportsAiInterviewForCategory($category)) {
+            $aiInterviewPolicy = JobModel::AI_POLICY_OFF;
+            $minAiCutoff = 0;
+        }
+
         if ($aiInterviewPolicy !== JobModel::AI_POLICY_OFF) {
             if ($minAiCutoff === null) {
                 return redirect()->back()->withInput()->with('error', 'Minimum AI cutoff score is required when AI interview is enabled.');
