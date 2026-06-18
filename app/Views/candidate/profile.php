@@ -199,7 +199,7 @@ $formatExperienceDisplay = static function (int $months): string {
                                     <div class="profile-readonly-field"><?= $isFresherCandidate ? 'Fresher' : 'Experienced' ?></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label"><i class="fas fa-briefcase"></i> Total Experience</label>
+                                    <label class="form-label">Total Experience</label>
                                     <div class="profile-readonly-field"><?= esc($formatExperienceDisplay($totalExperienceMonths)) ?></div>
                                 </div>
                             </div>
@@ -229,27 +229,27 @@ $formatExperienceDisplay = static function (int $months): string {
                                 <div class="profile-read-view">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-user"></i> Full Name</label>
+                                            <label class="form-label">Full Name</label>
                                             <div class="profile-readonly-field<?= empty(session()->get('user_name')) ? ' is-empty' : '' ?>"><?= !empty(session()->get('user_name')) ? esc(session()->get('user_name')) : 'Not provided' ?></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                                            <label class="form-label">Email</label>
                                             <div class="profile-readonly-field<?= empty($user['email']) ? ' is-empty' : '' ?>"><?= !empty($user['email']) ? esc($user['email']) : 'Not provided' ?></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-phone"></i> Phone</label>
+                                            <label class="form-label">Phone</label>
                                             <div class="profile-readonly-field<?= empty($user['phone']) ? ' is-empty' : '' ?>"><?= !empty($user['phone']) ? esc($user['phone']) : 'Not provided' ?></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-map-marker-alt"></i> Location</label>
+                                            <label class="form-label">Location</label>
                                             <div class="profile-readonly-field<?= empty($user['location']) ? ' is-empty' : '' ?>"><?= !empty($user['location']) ? esc($user['location']) : 'Not provided' ?></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-venus-mars"></i> Gender</label>
+                                            <label class="form-label">Gender</label>
                                             <div class="profile-readonly-field<?= empty($user['gender']) ? ' is-empty' : '' ?>"><?= !empty($user['gender']) ? esc($user['gender']) : 'Not provided' ?></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-calendar-alt"></i> Date of Birth</label>
+                                            <label class="form-label">Date of Birth</label>
                                             <div class="profile-readonly-field<?= empty($user['date_of_birth']) ? ' is-empty' : '' ?>"><?= !empty($user['date_of_birth']) ? esc($user['date_of_birth']) : 'Not provided' ?></div>
                                         </div>
 
@@ -321,19 +321,19 @@ $formatExperienceDisplay = static function (int $months): string {
                                 <div class="profile-read-view">
                                     <div class="row">
                                         <div class="col-12 mb-3">
-                                            <label class="form-label"><i class="fas fa-heading"></i> Resume Headline</label>
+                                            <label class="form-label">Resume Headline</label>
                                             <div class="profile-readonly-field<?= empty($user['resume_headline']) ? ' is-empty' : '' ?>"><?= !empty($user['resume_headline']) ? esc($user['resume_headline']) : 'Not provided' ?></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-user-tag"></i> Candidate Type</label>
+                                            <label class="form-label">Candidate Type</label>
                                             <div class="profile-readonly-field"><?= (int)($user['is_fresher_candidate'] ?? 0) === 1 ? 'Fresher' : 'Experienced' ?></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-clock"></i> Notice Period</label>
+                                            <label class="form-label">Notice Period</label>
                                             <div class="profile-readonly-field<?= empty($user['notice_period']) ? ' is-empty' : '' ?>"><?= !empty($user['notice_period']) ? esc($user['notice_period']) : 'Not provided' ?></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-rupee-sign"></i> Current Salary (LPA)</label>
+                                            <label class="form-label">Current Salary (LPA)</label>
                                             <div class="profile-readonly-field<?= empty($user['current_salary']) ? ' is-empty' : '' ?>"><?= !empty($user['current_salary']) ? esc($user['current_salary']) : 'Not provided' ?></div>
                                         </div>
                                     </div>
@@ -454,19 +454,19 @@ $formatExperienceDisplay = static function (int $months): string {
                                 <div class="profile-read-view">
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-bullseye"></i> Preferred Job Titles</label>
+                                            <label class="form-label">Preferred Job Titles</label>
                                             <div class="profile-readonly-field<?= empty($user['preferred_job_titles']) ? ' is-empty' : '' ?>"><?= !empty($user['preferred_job_titles']) ? esc($user['preferred_job_titles']) : 'Not provided' ?></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-map-marker-alt"></i> Preferred Locations</label>
+                                            <label class="form-label">Preferred Locations</label>
                                             <div class="profile-readonly-field<?= empty($user['preferred_locations']) ? ' is-empty' : '' ?>"><?= !empty($user['preferred_locations']) ? esc($user['preferred_locations']) : 'Not provided' ?></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-briefcase"></i> Preferred Employment Type</label>
+                                            <label class="form-label">Preferred Employment Type</label>
                                             <div class="profile-readonly-field<?= empty($user['preferred_employment_type']) ? ' is-empty' : '' ?>"><?= !empty($user['preferred_employment_type']) ? esc($user['preferred_employment_type']) : 'Not provided' ?></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label"><i class="fas fa-rupee-sign"></i> Expected Salary (LPA)</label>
+                                            <label class="form-label">Expected Salary (LPA)</label>
                                             <div class="profile-readonly-field<?= empty($user['expected_salary']) ? ' is-empty' : '' ?>"><?= !empty($user['expected_salary']) ? esc($user['expected_salary']) : 'Not provided' ?></div>
                                         </div>
                                     </div>
@@ -551,7 +551,7 @@ $formatExperienceDisplay = static function (int $months): string {
                                     <div class="border rounded p-4 mt-4">
                                         <div class="d-flex justify-content-between align-items-start flex-wrap candidate-flex-gap-12">
                                             <div>
-                                                <h6 class="mb-1"><i class="fas fa-magic"></i> AI Resume Studio</h6>
+                                                <h6 class="mb-1">AI Resume Studio</h6>
                                                 <p class="text-muted mb-0">Create premium AI resume versions, choose templates, manage job-specific resumes, and export polished PDFs from a dedicated page.</p>
                                             </div>
                                             <a href="<?= base_url('candidate/resume-studio') ?>" class="btn btn-dark btn-sm">
@@ -607,7 +607,7 @@ $formatExperienceDisplay = static function (int $months): string {
 
                                 <div class="profile-read-view">
                                     <div class="mb-3">
-                                        <label class="form-label"><i class="fab fa-github"></i> GitHub Username</label>
+                                        <label class="form-label">GitHub Username</label>
                                         <div class="profile-readonly-field<?= empty($github['github_username']) ? ' is-empty' : '' ?>">
                                             <?= !empty($github['github_username']) ? 'github.com/' . esc($github['github_username']) : 'Not connected' ?>
                                         </div>
@@ -617,7 +617,7 @@ $formatExperienceDisplay = static function (int $months): string {
                                 <form method="post" action="<?= base_url('candidate/analyze_github') ?>" data-loading-form class="profile-edit-form">
                                     <?= csrf_field() ?>
                                     <div class="mb-3">
-                                        <label class="form-label"><i class="fab fa-github"></i> GitHub Username</label>
+                                        <label class="form-label">GitHub Username</label>
                                         <div class="input-group">
                                             <span class="input-group-text">github.com/</span>
                                             <input type="text" name="github_username" class="form-control" value="<?= esc($github['github_username'] ?? '') ?>" placeholder="your-username">
@@ -865,7 +865,7 @@ $formatExperienceDisplay = static function (int $months): string {
                             </div>
                             <div class="card-body">
                                 <p class="text-muted mb-3">
-                                    <i class="fas fa-info-circle mr-1"></i> Your <strong>Total Experience</strong> shown in the summary is automatically calculated from the entries below.
+                                    Your <strong>Total Experience</strong> shown in the summary is automatically calculated from the entries below.
                                 </p>
                                 <?php if (!empty($workExperiences)): ?>
                                     <?php foreach($workExperiences as $exp): ?>
@@ -1086,7 +1086,7 @@ $formatExperienceDisplay = static function (int $months): string {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <small class="text-muted mr-auto"><i class="fas fa-calculator mr-1"></i> Updates Total Experience automatically</small>
+                    <small class="text-muted mr-auto">Updates Total Experience automatically</small>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
