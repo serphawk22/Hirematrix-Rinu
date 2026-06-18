@@ -221,18 +221,23 @@ body.dark .recruiter-job-form label, body.dark h6 {
     letter-spacing: 0.04em;
 }
 
-body.dark .recruiter-slot-date-group {
-    background: #000000 !important;
+body.dark .recruiter-slot-date-group { 
+    background: #000000 !important; 
     border-color: #23343A !important;
 }
 
 body.dark .recruiter-slot-date-head,
-body.dark .recruiter-slot-date-head i {
+body.dark .recruiter-slot-date-head i { 
     color: #FFFFFF !important;
 }
 
 body.dark .recruiter-slot-option {
-    background: #000000 !important;
+    background: #000000 !important; 
+    color: #F8FAFC !important;
+}
+
+body.dark .recruiter-slot-option {
+    background: #161D21 !important; 
     border-color: #23343A !important;
 }
 
@@ -241,8 +246,8 @@ body.dark .recruiter-slot-option:hover {
     border-color: #1FB7B5 !important;
 }
 
-body.dark .recruiter-slot-radio .custom-control-input:checked ~ .custom-control-label.recruiter-slot-option {
-    background: #000000 !important;
+body.dark .recruiter-slot-radio .custom-control-input:checked ~ .custom-control-label.recruiter-slot-option { 
+    background: #000000 !important; 
     border-color: #1FB7B5 !important;
     box-shadow: 0 0 0 1px rgba(31, 183, 181, 0.14);
 }
@@ -252,12 +257,14 @@ body.dark .recruiter-slot-radio .custom-control-input:focus ~ .custom-control-la
 }
 
 body.dark .recruiter-slot-radio .custom-control-label::before {
-    background: #000000 !important;
+ 
+    background: #000000 !important; 
     border-color: #4A5C63 !important;
 }
 
-body.dark .recruiter-slot-radio .custom-control-input:checked ~ .custom-control-label::before {
-    background-color: #000000 !important;
+body.dark .recruiter-slot-radio .custom-control-input:checked ~ .custom-control-label::before { 
+ 
+    background-color: #1FB7B5 !important; 
     border-color: #1FB7B5 !important;
 }
 
@@ -268,9 +275,12 @@ body.dark .recruiter-slot-radio .badge-success {
 }
 
 body.dark .custom-control-label,
-body.dark .custom-control-label strong,
+body.dark .custom-control-label strong, 
 body.dark .custom-control-label .text-primary,body.dark span {
     color: #FFFFFF !important;
+}
+body.dark .custom-control-label .text-primary {
+    color: #FFFFFF !important; 
 }
 </style>
 <div class="recruiter-slot-reschedule-jobboard">

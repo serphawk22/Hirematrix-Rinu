@@ -274,35 +274,7 @@ document.addEventListener("DOMContentLoaded", function(){
                 </div>
 
                 <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
-                    <div class="row pagination-wrap mt-4">
-                        <div class="col-md-6 text-center text-md-left mb-3 mb-md-0">
-                            <span>Showing page <?= $pager->getCurrentPage() ?> of <?= $pager->getPageCount() ?></span>
-                        </div>
-                        <div class="col-md-6 text-center text-md-right">
-                            <div class="custom-pagination ml-auto">
-                                <?php
-                                $cur   = $pager->getCurrentPage();
-                                $total = $pager->getPageCount();
-                                $base  = preg_replace('/[?&]page=\d+/', '', current_url(true)->__toString());
-                                $sep   = strpos($base, '?') !== false ? '&' : '?';
-                                if ($cur > 1): ?>
-                                    <a class="prev" href="<?= $base . $sep . 'page=' . ($cur - 1) ?>">Prev</a>
-                                <?php endif; ?>
-                                <div class="d-inline-block">
-                                    <?php for ($i = 1; $i <= $total; $i++): ?>
-                                        <?php if ($i == $cur): ?>
-                                            <a class="active" href="#"><?= $i ?></a>
-                                        <?php else: ?>
-                                            <a href="<?= $base . $sep . 'page=' . $i ?>"><?= $i ?></a>
-                                        <?php endif; ?>
-                                    <?php endfor; ?>
-                                </div>
-                                <?php if ($cur < $total): ?>
-                                    <a class="next" href="<?= $base . $sep . 'page=' . ($cur + 1) ?>">Next</a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
+                    <?= $pager->links('default', 'portal_full') ?>
                 <?php endif; ?>
 
                 <?php if (!empty(trim((string) ($filters['q'] ?? '')))): ?>

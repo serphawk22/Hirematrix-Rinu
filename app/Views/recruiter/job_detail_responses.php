@@ -1262,6 +1262,239 @@ body.dark .ai-modal .spinner {
   border-top-color: #57D3D1;
 }
 
+.ai-modal .modal-content {
+  border-radius: 18px !important;
+  overflow: hidden;
+}
+
+.ai-modal .ai-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.35rem;
+}
+
+.ai-modal .ai-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.ai-modal .ai-icon {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #DDF5F1;
+  color: #0D8A90;
+  flex: 0 0 2.35rem;
+}
+
+.ai-modal .ai-title h5 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #16212B;
+  line-height: 1.2;
+}
+
+.ai-modal .ai-title small {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.95rem;
+  color: #64748B;
+  line-height: 1.5;
+}
+
+.ai-modal .ai-close {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.8rem;
+  border: 1px solid #D9ECE5;
+  background: #FFFFFF;
+  color: #64748B;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.ai-modal .ai-close:hover,
+.ai-modal .ai-close:focus {
+  background: #EDF8F5;
+  color: #16212B;
+  outline: none;
+}
+
+.ai-modal .ai-body {
+  padding: 1rem 1rem 1.2rem;
+  background: #F7FBFA !important;
+}
+
+.ai-modal #aiReportContent .card {
+  border: 1px solid #D9ECE5 !important;
+  border-radius: 16px !important;
+  background: #FFFFFF !important;
+  box-shadow: none !important;
+}
+
+.ai-modal #aiReportContent .card-header,
+.ai-modal #aiReportContent .card-body {
+  background: transparent !important;
+}
+
+.ai-modal #aiReportContent .card-header {
+  border-bottom: 1px solid #D9ECE5 !important;
+  padding: 1rem 1.15rem;
+}
+
+.ai-modal #aiReportContent .card-body {
+  padding: 1.15rem;
+}
+
+.ai-modal #aiReportContent h4,
+.ai-modal #aiReportContent h5,
+.ai-modal #aiReportContent strong {
+  color: #16212B !important;
+}
+
+.ai-modal #aiReportContent .table {
+  margin-bottom: 0;
+  color: #16212B;
+  background: transparent;
+}
+
+.ai-modal #aiReportContent .table thead th {
+  background: #F6FAFC;
+  color: #41587B;
+  font-size: 0.92rem;
+  font-weight: 700;
+  border-top: 0 !important;
+  border-bottom: 1px solid #D9ECE5 !important;
+  padding: 0.95rem 0.85rem;
+}
+
+.ai-modal #aiReportContent .table td {
+  padding: 0.95rem 0.85rem;
+  border-top: 1px solid #E8F2EF !important;
+  color: #16212B;
+  vertical-align: middle;
+}
+
+.ai-modal .ai-loader,
+.ai-modal .ai-error {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  min-height: 240px;
+  padding: 1.5rem;
+  color: #64748B;
+}
+
+.ai-modal .ai-error i {
+  font-size: 1.5rem;
+  color: #F59E0B;
+  margin-bottom: 0.75rem;
+}
+
+.ai-modal .spinner {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  border: 3px solid #D9ECE5;
+  border-top-color: #0D8A90;
+  animation: aiReportSpin 0.8s linear infinite;
+  margin-bottom: 0.9rem;
+}
+
+@keyframes aiReportSpin {
+  to { transform: rotate(360deg); }
+}
+
+body.dark .ai-modal .modal-content {
+  background: #162327 !important;
+  border-color: #23343A !important;
+}
+
+body.dark .ai-modal .ai-header {
+  background: #18262B !important;
+  border-bottom-color: #23343A !important;
+}
+
+body.dark .ai-modal .ai-icon {
+  background: rgba(31, 183, 181, 0.14);
+  color: #57D3D1;
+}
+
+body.dark .ai-modal .ai-title h5 {
+  color: #F8FAFC !important;
+}
+
+body.dark .ai-modal .ai-title small {
+  color: #94A3B8 !important;
+}
+
+body.dark .ai-modal .ai-close {
+  background: #111B1F;
+  border-color: #23343A;
+  color: #94A3B8;
+}
+
+body.dark .ai-modal .ai-close:hover,
+body.dark .ai-modal .ai-close:focus {
+  background: #1B2A2F;
+  color: #F8FAFC;
+}
+
+body.dark .ai-modal .ai-body {
+  background: #162327 !important;
+}
+
+body.dark .ai-modal #aiReportContent .card {
+  background: #111B1F !important;
+  border-color: #23343A !important;
+}
+
+body.dark .ai-modal #aiReportContent .card-header {
+  border-bottom-color: #23343A !important;
+}
+
+body.dark .ai-modal #aiReportContent h4,
+body.dark .ai-modal #aiReportContent h5,
+body.dark .ai-modal #aiReportContent strong,
+body.dark .ai-modal #aiReportContent .table,
+body.dark .ai-modal #aiReportContent .table td {
+  color: #F8FAFC !important;
+}
+
+body.dark .ai-modal #aiReportContent .table thead th {
+  background: #162327;
+  color: #B7C6D2;
+  border-bottom-color: #23343A !important;
+}
+
+body.dark .ai-modal #aiReportContent .table td {
+  border-top-color: #23343A !important;
+}
+
+body.dark .ai-modal #aiReportContent .text-muted,
+body.dark .ai-modal #aiReportContent small.text-muted,
+body.dark .ai-modal .ai-loader,
+body.dark .ai-modal .ai-error {
+  color: #94A3B8 !important;
+}
+
+body.dark .ai-modal .spinner {
+  border-color: #23343A;
+  border-top-color: #57D3D1;
+}
+
 /* ══════════════════════════════════════════
    ALERTS
 ══════════════════════════════════════════ */

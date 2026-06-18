@@ -10,6 +10,14 @@ class JobModel extends Model
     public const AI_POLICY_OPTIONAL = 'OPTIONAL';
     public const AI_POLICY_REQUIRED_SOFT = 'REQUIRED_SOFT';
     public const AI_POLICY_REQUIRED_HARD = 'REQUIRED_HARD';
+    public const AI_INTERVIEW_CATEGORIES = [
+        'Software Development',
+        'Data Science',
+        'DevOps',
+        'Quality Assurance',
+        'UI/UX Design',
+        'Cybersecurity',
+    ];
     public const EXTERNAL_SYSTEM_RECRUITER_EMAIL = 'external.jobs@system.local';
     public const EXTERNAL_SYSTEM_RECRUITER_NAME = 'External Jobs';
 
@@ -60,6 +68,18 @@ class JobModel extends Model
         ];
 
         return in_array($value, $allowed, true) ? $value : self::AI_POLICY_REQUIRED_HARD;
+    }
+
+    public static function supportsAiInterviewForCategory(?string $category): bool
+    {
+        $normalizedCategory = strtolower(trim((string) $category));
+        foreach (self::AI_INTERVIEW_CATEGORIES as $allowedCategory) {
+            if ($normalizedCategory === strtolower($allowedCategory)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static function applyApplicationDeadlineFilter($builder, string $column = 'application_deadline'): void

@@ -528,8 +528,8 @@ body.dark .recruiter-slots-table tbody tr:hover {
     border: none !important;
     background: white !important;
 }
-body.dark .recruiter-slots-table tbody td {
-    color: #FFFFFF !important;
+body.dark .recruiter-slots-table tbody td { 
+    color: #FFFFFF !important; 
     background: transparent !important;
 }
 
@@ -551,9 +551,9 @@ body.dark .recruiter-slots-table tbody td small {
     color: #94A3B8 !important;
 }
 body.dark .recruiter-slots-table tr.table-secondary,
-body.dark .recruiter-slots-table tr.table-secondary td {
+body.dark .recruiter-slots-table tr.table-secondary td { 
     background: #000000 !important;
-    color: #FFFFFF !important;
+    color: #FFFFFF !important; 
 }
 
 /* ── Full/warning row — very subtle accent tint ── */
@@ -562,9 +562,9 @@ body.dark .recruiter-slots-table tr.table-secondary td {
     background: rgba(181, 216, 78, 0.06) !important;
 }
 body.dark .recruiter-slots-table tr.table-warning,
-body.dark .recruiter-slots-table tr.table-warning td {
+body.dark .recruiter-slots-table tr.table-warning td { 
     background: #000000 !important;
-    color: #FFFFFF !important;
+    color: #FFFFFF !important; 
 }
 body.dark .recruiter-slots-table tr.table-warning:hover,
 body.dark .recruiter-slots-table tr.table-warning:hover td {

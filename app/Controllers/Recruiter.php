@@ -83,6 +83,11 @@ class Recruiter extends BaseController
             return redirect()->back()->withInput()->with('error', $questionnaireError);
         }
 
+        if (!JobModel::supportsAiInterviewForCategory($category)) {
+            $aiInterviewPolicy = JobModel::AI_POLICY_OFF;
+            $minAiCutoff = 0;
+        }
+
         if ($aiInterviewPolicy !== JobModel::AI_POLICY_OFF) {
             if ($minAiCutoff === null) {
                 return redirect()->back()->withInput()->with('error', 'Minimum AI cutoff score is required when AI interview is enabled.');
@@ -292,7 +297,6 @@ class Recruiter extends BaseController
 public function getAiReport()
 {
     try {
-        // Read JSON payload sent from fetch()
         $data = $this->request->getJSON(true);
 
         $candidateId = (int)($data['candidate_id'] ?? 0);
@@ -308,39 +312,49 @@ public function getAiReport()
         }
 
         $db = \Config\Database::connect();
+        $results = [];
+        $violations = [];
 
-        // ==========================
-        // Interview Results
-        // ==========================
-        $resultsBuilder = $db->table('interview_results')
-            ->select('round_name, score, total_questions, percentage')
-            ->where('candidate_id', $candidateId);
+        if ($db->tableExists('interview_results')) {
+            $resultsBuilder = $db->table('interview_results')
+                ->select('round_name, score, total_questions, percentage')
+                ->where('candidate_id', $candidateId);
 
-        if (!empty($jobrole)) {
-            $resultsBuilder->where('jobrole', $jobrole);
+            if ($jobrole !== '' && $db->fieldExists('jobrole', 'interview_results')) {
+                $resultsBuilder->where('jobrole', $jobrole);
+            }
+
+            $resultsQuery = $resultsBuilder
+                ->orderBy('id', 'ASC')
+                ->get();
+
+            if ($resultsQuery !== false) {
+                $results = $resultsQuery->getResultArray();
+            } else {
+                log_message('error', 'AI Report: failed to fetch interview_results for candidate ' . $candidateId);
+            }
         }
 
-        $results = $resultsBuilder
-            ->orderBy('id', 'ASC')
-            ->get()
-            ->getResultArray();
+        if ($db->tableExists('violations')) {
+            $violationsBuilder = $db->table('violations')
+                ->select('message, COUNT(*) as total')
+                ->where('candidate_id', $candidateId);
 
-        // ==========================
-        // Violations
-        // ==========================
-        $violationsBuilder = $db->table('violations')
-            ->select('message, COUNT(*) as total')
-            ->where('candidate_id', $candidateId);
+            if ($jobrole !== '' && $db->fieldExists('jobrole', 'violations')) {
+                $violationsBuilder->where('jobrole', $jobrole);
+            }
 
-        if (!empty($jobrole)) {
-            $violationsBuilder->where('jobrole', $jobrole);
+            $violationsQuery = $violationsBuilder
+                ->groupBy('message')
+                ->orderBy('total', 'DESC')
+                ->get();
+
+            if ($violationsQuery !== false) {
+                $violations = $violationsQuery->getResultArray();
+            } else {
+                log_message('error', 'AI Report: failed to fetch violations for candidate ' . $candidateId);
+            }
         }
-
-        $violations = $violationsBuilder
-            ->groupBy('message')
-            ->orderBy('total', 'DESC')
-            ->get()
-            ->getResultArray();
 
         return $this->response->setJSON([
             'success'    => true,

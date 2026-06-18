@@ -393,6 +393,8 @@ $jobCategoryOptions = [
 ];
 $selectedCategory = (string) old('category', $job['category'] ?? '');
 $hasCustomCategory = $selectedCategory !== '' && !in_array($selectedCategory, $jobCategoryOptions, true);
+$aiInterviewCategories = ['Software Development', 'Data Science', 'DevOps', 'Quality Assurance', 'UI/UX Design', 'Cybersecurity'];
+$aiInterviewAllowed = in_array(strtolower($selectedCategory), array_map('strtolower', $aiInterviewCategories), true);
 $postedFor = (string) old('posted_for', $job['posted_for'] ?? 'own_company');
 $clientDisclosure = (string) old('client_disclosure', $job['client_disclosure'] ?? 'visible');
 $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
@@ -474,7 +476,7 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
 
                         <div class="form-group">
                             <label>Category *</label>
-                            <select name="category" class="form-control" required>
+                            <select name="category" id="category" class="form-control" required>
                                 <option value="">Select Job Category</option>
                                 <?php if ($hasCustomCategory): ?>
                                     <option value="<?= esc($selectedCategory) ?>" selected>
@@ -566,10 +568,16 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
                                  data-initial-items="<?= esc(json_encode(array_values($questionnaireRows)), 'attr') ?>"></div>
                         </div>
 
-                        <div class="form-group">
-                            <?php $policy = strtoupper(old('ai_interview_policy', $job['ai_interview_policy'] ?? 'REQUIRED_HARD')); ?>
+                        <div class="form-group" id="aiInterviewUnavailableWrap" <?= $aiInterviewAllowed ? 'style="display: none;"' : '' ?>>
+                            <div class="alert alert-info py-2 mb-0">
+                                AI interview settings are available only for software and technical jobs.
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
+                            <?php $policy = $aiInterviewAllowed ? strtoupper(old('ai_interview_policy', $job['ai_interview_policy'] ?? 'REQUIRED_HARD')) : 'OFF'; ?>
                             <label>AI Interview Policy *</label>
-                            <select name="ai_interview_policy" id="ai_interview_policy" class="form-control">
+                            <select name="ai_interview_policy" id="ai_interview_policy" class="form-control" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>
                                 <option value="REQUIRED_HARD" <?= $policy === 'REQUIRED_HARD' ? 'selected' : '' ?>>Required Hard (strict)</option>
                                 <option value="REQUIRED_SOFT" <?= $policy === 'REQUIRED_SOFT' ? 'selected' : '' ?>>Required Soft (recruiter override)</option>
                                 <option value="OPTIONAL" <?= $policy === 'OPTIONAL' ? 'selected' : '' ?>>Optional</option>
@@ -577,9 +585,9 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
                             </select>
                         </div>
 
-                        <div class="form-group" id="minAiCutoffWrap">
+                        <div class="form-group" id="minAiCutoffWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
                             <label>Minimum AI Cutoff Score</label>
-                            <input type="number" name="min_ai_cutoff_score" id="min_ai_cutoff_score" class="form-control" min="0" max="100" value="<?= esc(old('min_ai_cutoff_score', $job['min_ai_cutoff_score'] ?? '')) ?>" placeholder="0 to 100">
+                            <input type="number" name="min_ai_cutoff_score" id="min_ai_cutoff_score" class="form-control" min="0" max="100" value="<?= esc(old('min_ai_cutoff_score', $job['min_ai_cutoff_score'] ?? '')) ?>" placeholder="0 to 100" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>
                             <small class="text-muted">Required if AI interview policy is not OFF.</small>
                         </div>
 
@@ -607,6 +615,55 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
     </div>
 </div>
 <script>
+(function () {
+    const aiInterviewCategories = [
+        'Software Development',
+        'Data Science',
+        'DevOps',
+        'Quality Assurance',
+        'UI/UX Design',
+        'Cybersecurity'
+    ];
+    const categorySelect = document.getElementById('category');
+    const unavailableWrap = document.getElementById('aiInterviewUnavailableWrap');
+    const policyWrap = document.getElementById('aiInterviewPolicyWrap');
+    const policySelect = document.getElementById('ai_interview_policy');
+    const cutoffWrap = document.getElementById('minAiCutoffWrap');
+    const cutoffInput = document.getElementById('min_ai_cutoff_score');
+
+    if (!categorySelect || !policySelect || !cutoffInput) {
+        return;
+    }
+
+    function syncAiInterviewSettings() {
+        const selectedCategory = categorySelect.value.trim().toLowerCase();
+        const allowed = aiInterviewCategories.some(function (category) {
+            return category.toLowerCase() === selectedCategory;
+        });
+
+        if (unavailableWrap) {
+            unavailableWrap.style.display = allowed ? 'none' : '';
+        }
+        if (policyWrap) {
+            policyWrap.style.display = allowed ? '' : 'none';
+        }
+        if (cutoffWrap) {
+            cutoffWrap.style.display = allowed ? '' : 'none';
+        }
+
+        policySelect.disabled = !allowed;
+        cutoffInput.disabled = !allowed;
+
+        if (!allowed) {
+            policySelect.value = 'OFF';
+            cutoffInput.value = '';
+        }
+    }
+
+    categorySelect.addEventListener('change', syncAiInterviewSettings);
+    syncAiInterviewSettings();
+})();
+
 (function () {
     const builder = document.getElementById('questionnaireBuilder');
     const addButton = document.getElementById('addQuestionnaireRow');
