@@ -1,6 +1,7 @@
 <?php
 $statusTones = $statusTones ?? [
     'applied' => 'neutral',
+    'ai_interview_completed' => 'info',
     'shortlisted' => 'success',
     'interview_scheduled' => 'info',
     'interviewed' => 'violet',
@@ -13,6 +14,7 @@ $statusTones = $statusTones ?? [
 ];
 $stageIcons = $stageIcons ?? [
     'applied' => 'fa-inbox',
+    'ai_interview_completed' => 'fa-robot',
     'shortlisted' => 'fa-check-circle',
     'interview_scheduled' => 'fa-calendar-check',
     'interviewed' => 'fa-user-check',
@@ -389,39 +391,6 @@ body.dark .activity-stack span i { color: #4A5C63; }
     white-space: nowrap;
 }
 
-/* Status select */
-.pipeline-status-select {
-    font-size: 0.78rem;
-    font-weight: 600;
-    padding: 5px 8px;
-    border-radius: 6px;
-    border: 1.5px solid #D9ECE5;
-    background: #FFFFFF;
-    color: #16212B;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    max-width: 130px;
-    appearance: auto;
-}
-.pipeline-status-select:focus {
-    outline: none;
-    box-shadow: none;
-    border-color: #0D8A90;
-}
-.pipeline-status-select:hover { border-color: #1FB7B5; }
-
-body.dark .pipeline-status-select {
-    background: #111111 !important;
-    border-color: #23343A;
-    color: #F8FAFC;
-}
-body.dark .pipeline-status-select:focus { border-color: #0D8A90; }
-body.dark .pipeline-status-select:hover { border-color: #1FB7B5; }
-body.dark .pipeline-status-select option {
-    background: #111111 !important;
-    color: #F8FAFC;
-}
-
 /* View button */
 .btn-outline-primary {
     display: inline-flex;
@@ -658,11 +627,18 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
                         </td>
                         <td>
                             <div class="pipeline-row-actions">
-                                <select class="pipeline-status-select" onchange="updateApplicationStatus(<?= (int) $app['id'] ?>, this.value)">
-                                    <?php foreach ($statuses as $statusKey => $statusText): ?>
-                                        <option value="<?= esc($statusKey) ?>" <?= $appStatus === $statusKey ? 'selected' : '' ?>><?= esc($statusText) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <?php if ($appStatus === 'ai_interview_completed'): ?>
+                                    <button
+                                        type="button"
+                                        class="btn-outline-primary view-ai-report-btn"
+                                        data-candidate-id="<?= (int) ($app['candidate_id'] ?? 0) ?>"
+                                        data-jobrole="<?= esc($job['title'] ?? '') ?>"
+                                        data-candidate-name="<?= esc($app['candidate_name'] ?? '-') ?>"
+                                        title="Open AI interview report"
+                                    >
+                                        AI Report
+                                    </button>
+                                <?php endif; ?>
                                 <a href="<?= base_url('recruiter/candidate/' . (int) $app['candidate_id'] . '?application_id=' . (int) $app['id'] . '&job_id=' . (int) $job['id']) ?>" class="btn- btn-outline-primary" title="Open profile">View</a>
                             </div>
                         </td>
@@ -672,9 +648,9 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
         </table>
     </div>
 
-    <?php if ($pager->getTotal() > 10): ?>
+    <?php if ($pager->getPageCount() > 1): ?>
         <div class="p-3 bg-white">
-            <?= $pager->links() ?>
+            <?= $pager->links('default', 'portal_full') ?>
         </div>
     <?php endif; ?>
 <?php endif; ?>

@@ -358,9 +358,9 @@ body.dark .m-0.font-weight-bold,body.dark .recruiter-summary-item{
                     </table>
                 </div>
 
-                <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links')): ?>
+                <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links') && $pager->getPageCount() > 1): ?>
                     <div class="mt-3">
-                        <?= $pager->links() ?>
+                        <?= $pager->links('default', 'portal_full') ?>
                     </div>
                 <?php endif; ?>
             </div>

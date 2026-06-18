@@ -478,6 +478,7 @@ body.dark .card .card-body h3.text-warning {
                                         $statusColors = [
                                             'applied' => 'secondary',
                                             'pending' => 'secondary',
+                                            'ai_interview_completed' => 'info',
                                             'shortlisted' => 'primary',
                                             'filtered_out' => 'dark',
                                             'interview_slot_booked' => 'warning',
@@ -485,9 +486,12 @@ body.dark .card .card-body h3.text-warning {
                                             'rejected' => 'danger'
                                         ];
                                         $color = $statusColors[$candidate['status']] ?? 'secondary';
+                                        $statusLabel = ($candidate['status'] ?? '') === 'ai_interview_completed'
+                                            ? 'AI Interview Completed'
+                                            : ucwords(str_replace('_', ' ', $candidate['status']));
                                         ?>
                                         <span class="status-pill">
-                                            <?= ucwords(str_replace('_', ' ', $candidate['status'])) ?>
+                                            <?= esc($statusLabel) ?>
                                         </span>
                                     </td>
                                     <td class="text-center">
@@ -515,7 +519,7 @@ body.dark .card .card-body h3.text-warning {
                                     candidates
                                 </span>
                             </div>
-                            <div><?= $pager->links() ?></div>
+                            <div><?= $pager->links('default', 'portal_full') ?></div>
                         </div>
                     <?php else: ?>
                         <div class="text-center text-muted py-2">
