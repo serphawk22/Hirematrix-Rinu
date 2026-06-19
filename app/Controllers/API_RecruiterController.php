@@ -2772,7 +2772,11 @@ class API_RecruiterController extends ResourceController
 
     public function changePassword()
     {
-        $json = $this->request->getJSON();
+        try {
+            $json = $this->request->getJSON();
+        } catch (\Throwable $e) {
+            $json = null;
+        }
         
         $recruiterId = ($json && isset($json->recruiter_id)) ? $json->recruiter_id : $this->request->getVar('recruiter_id');
         $currentPassword = ($json && isset($json->current_password)) ? $json->current_password : $this->request->getVar('current_password');
@@ -3010,7 +3014,11 @@ class API_RecruiterController extends ResourceController
 
     public function rescheduleInterviewBooking()
     {
-        $json = $this->request->getJSON();
+        try {
+            $json = $this->request->getJSON();
+        } catch (\Throwable $e) {
+            $json = null;
+        }
         $bookingId = ($json && isset($json->interview_id)) ? $json->interview_id : $this->request->getVar('interview_id');
         $recruiterId = ($json && isset($json->recruiter_id)) ? $json->recruiter_id : $this->request->getVar('recruiter_id');
         $newSlotId = ($json && isset($json->slot_id)) ? $json->slot_id : $this->request->getVar('slot_id');
@@ -3102,7 +3110,11 @@ class API_RecruiterController extends ResourceController
 
     public function saveInterviewReview()
     {
-        $json = $this->request->getJSON();
+        try {
+            $json = $this->request->getJSON();
+        } catch (\Throwable $e) {
+            $json = null;
+        }
         $bookingId = ($json && isset($json->booking_id)) ? $json->booking_id : $this->request->getVar('booking_id');
         $recruiterId = ($json && isset($json->recruiter_id)) ? $json->recruiter_id : $this->request->getVar('recruiter_id');
         $attendanceStatus = ($json && isset($json->attendance_status)) ? $json->attendance_status : $this->request->getVar('attendance_status');
