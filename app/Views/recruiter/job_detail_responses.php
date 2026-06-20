@@ -1774,6 +1774,9 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                             <span class="badge badge-primary ml-1"><?= count(array_filter($advancedFilters, function($v) { return $v !== '' && $v !== null; })) ?></span>
                         <?php endif; ?>
                     </button>
+                    <a href="<?= base_url('recruiter/dashboard/export-excel?type=detailed&job_id=' . (int) $job['id']) ?>" class="btn btn-outline-primary">
+                        <i class="fas fa-file-excel"></i> Export Applicants
+                    </a>
                 </div>
 
                 <!-- Advanced Filter Collapsible -->

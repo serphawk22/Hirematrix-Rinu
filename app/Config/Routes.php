@@ -147,8 +147,9 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     
     // Applications by Job (legacy index kept as redirect)
     $routes->get('applications', 'RecruiterApplications::index');
-    $routes->get('applications/job/(:num)', 'RecruiterApplications::viewByJob/$1');
-    $routes->get('jobs/(:num)/applications', 'RecruiterApplications::viewByJob/$1');
+    // Legacy application URLs now resolve to the current job pipeline.
+    $routes->get('applications/job/(:num)', 'JobResponsesController::viewJob/$1');
+    $routes->get('jobs/(:num)/applications', 'JobResponsesController::viewJob/$1');
     $routes->post('jobs/(:num)/applications/bulk', 'RecruiterApplications::bulkAction/$1');
     $routes->post('applications/shortlist/(:num)', 'RecruiterApplications::shortlist/$1');
     $routes->post('applications/reject/(:num)', 'RecruiterApplications::reject/$1');

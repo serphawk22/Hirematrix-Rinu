@@ -686,6 +686,21 @@
 
     <div class="container-fluid recruiter-dashboard-main">
 
+        <div class="page-board-header page-board-header-tight recruiter-page-board-header mb-4">
+            <div class="page-board-copy">
+                <span class="page-board-kicker"><i class="fas fa-chart-line"></i> Hiring analytics</span>
+                <h1 class="page-board-title">Recruitment Overview</h1>
+                <p class="page-board-subtitle">Review applications, job activity, and pipeline performance across your jobs.</p>
+            </div>
+            <?php if (empty($noJobs)): ?>
+                <div class="page-board-actions">
+                    <a href="<?= base_url('recruiter/dashboard/export-excel?type=overview') ?>" class="btn btn-outline-primary">
+                        <i class="fas fa-file-excel"></i> Export Overview Report
+                    </a>
+                </div>
+            <?php endif; ?>
+        </div>
+
         <?php if (!empty($noJobs)): ?>
         <div class="card mb-4 recruiter-dashboard-panel-card" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-body p-4 text-center">

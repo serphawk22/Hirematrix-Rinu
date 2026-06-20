@@ -1510,15 +1510,6 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                 <span class="sb-tooltip">Notifications</span>
             </a> 
 
-            <a href="<?= base_url('recruiter/dashboard/export-excel') ?>"
-               class="hm-sb-item <?= $isActive('recruiter/dashboard/export-excel') ?>">
-                <i class="fas fa-file-excel sb-icon"></i>
-                <span class="sb-label">Export Data</span>
-                <span class="sb-tooltip">Export Data</span>
-            </a>
-
-            
-
         </nav>
 
         <!-- FOOTER: profile submenu + profile card -->

@@ -18995,6 +18995,56 @@ body.candidate-app .local-company-search-grid {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 190px !important;
 }
 
+/* Candidate messages: explicit bubble contrast in both themes. */
+.candidate-messages-jobboard .candidate-message-list {
+    background: var(--candidate-surface, #ffffff);
+}
+
+.candidate-messages-jobboard .candidate-message-bubble {
+    border: 1px solid transparent;
+    color: #1f2937;
+    line-height: 1.5;
+}
+
+.candidate-messages-jobboard .candidate-message-bubble--self {
+    background: var(--candidate-accent-soft, #dbeafe) !important;
+}
+
+.candidate-messages-jobboard .candidate-message-bubble--other {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0;
+}
+
+body.dark.candidate-app .candidate-messages-jobboard .candidate-message-list,
+body.dark.candidate-app .candidate-messages-jobboard .card-body,
+body.dark.candidate-app .candidate-messages-jobboard .card-header,
+body.dark.candidate-app .candidate-messages-jobboard .card-footer {
+    background: #111111 !important;
+    border-color: #272727 !important;
+}
+
+body.dark.candidate-app .candidate-messages-jobboard .candidate-message-bubble {
+    color: #f4f4f5 !important;
+}
+
+body.dark.candidate-app .candidate-messages-jobboard .candidate-message-bubble--self {
+    background: #0d7377 !important;
+    border-color: #168b8f !important;
+}
+
+body.dark.candidate-app .candidate-messages-jobboard .candidate-message-bubble--other {
+    background: #1b1b1b !important;
+    border-color: #303030 !important;
+}
+
+body.dark.candidate-app .candidate-messages-jobboard .candidate-message-meta {
+    color: #a1a1aa !important;
+}
+
+body.dark.candidate-app .candidate-messages-jobboard .candidate-message-bubble--self .candidate-message-meta {
+    color: #ccfbf1 !important;
+}
+
 body.candidate-app .local-company-submit {
     margin-top: 27px !important;
 }

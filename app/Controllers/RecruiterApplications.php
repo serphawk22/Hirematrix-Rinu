@@ -214,12 +214,7 @@ class RecruiterApplications extends BaseController
         usort($applications, fn($a, $b) => strcmp($b['applied_at'], $a['applied_at']));
     }
 
-    return view('recruiter/applications/view_by_job', [
-        'job' => $job,
-        'applications' => $applications,
-        'filters' => $filters,
-        'statusOptions' => $validStatuses,
-    ]);
+    return redirect()->to(base_url('recruiter/jobs/view/' . (int) $jobId));
 }
 
     public function shortlist($applicationId)
