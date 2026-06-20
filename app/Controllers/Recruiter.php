@@ -22,6 +22,24 @@ class Recruiter extends BaseController
         return view('recruiter/post_job');
     }
 
+    public function settings()
+    {
+        $redirect = $this->ensureVerifiedRecruiter();
+        if ($redirect !== null) {
+            return $redirect;
+        }
+
+        $activeTab = (string) ($this->request->getGet('tab') ?? 'account');
+        $allowedTabs = ['account', 'appearance', 'language'];
+        if (!in_array($activeTab, $allowedTabs, true)) {
+            $activeTab = 'account';
+        }
+
+        return view('recruiter/settings', [
+            'activeTab' => $activeTab,
+        ]);
+    }
+
     public function saveJob()
     {
         $redirect = $this->ensureVerifiedRecruiter();
@@ -81,6 +99,11 @@ class Recruiter extends BaseController
 
         if ($questionnaireError !== null) {
             return redirect()->back()->withInput()->with('error', $questionnaireError);
+        }
+
+        if (!JobModel::supportsAiInterviewForCategory($category)) {
+            $aiInterviewPolicy = JobModel::AI_POLICY_OFF;
+            $minAiCutoff = 0;
         }
 
         if ($aiInterviewPolicy !== JobModel::AI_POLICY_OFF) {
@@ -289,7 +312,86 @@ class Recruiter extends BaseController
 
         return null;
     }
+public function getAiReport()
+{
+    try {
+        $data = $this->request->getJSON(true);
 
+        $candidateId = (int)($data['candidate_id'] ?? 0);
+        $jobrole     = trim($data['jobrole'] ?? '');
+
+        if (!$candidateId) {
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON([
+                    'success' => false,
+                    'message' => 'Candidate ID is required.'
+                ]);
+        }
+
+        $db = \Config\Database::connect();
+        $results = [];
+        $violations = [];
+
+        if ($db->tableExists('interview_results')) {
+            $resultsBuilder = $db->table('interview_results')
+                ->select('round_name, score, total_questions, percentage')
+                ->where('candidate_id', $candidateId);
+
+            if ($jobrole !== '' && $db->fieldExists('jobrole', 'interview_results')) {
+                $resultsBuilder->where('jobrole', $jobrole);
+            }
+
+            $resultsQuery = $resultsBuilder
+                ->orderBy('id', 'ASC')
+                ->get();
+
+            if ($resultsQuery !== false) {
+                $results = $resultsQuery->getResultArray();
+            } else {
+                log_message('error', 'AI Report: failed to fetch interview_results for candidate ' . $candidateId);
+            }
+        }
+
+        if ($db->tableExists('violations')) {
+            $violationsBuilder = $db->table('violations')
+                ->select('message, COUNT(*) as total')
+                ->where('candidate_id', $candidateId);
+
+            if ($jobrole !== '' && $db->fieldExists('jobrole', 'violations')) {
+                $violationsBuilder->where('jobrole', $jobrole);
+            }
+
+            $violationsQuery = $violationsBuilder
+                ->groupBy('message')
+                ->orderBy('total', 'DESC')
+                ->get();
+
+            if ($violationsQuery !== false) {
+                $violations = $violationsQuery->getResultArray();
+            } else {
+                log_message('error', 'AI Report: failed to fetch violations for candidate ' . $candidateId);
+            }
+        }
+
+        return $this->response->setJSON([
+            'success'    => true,
+            'results'    => $results,
+            'violations' => $violations
+        ]);
+
+    } catch (\Throwable $e) {
+
+        log_message('error', 'AI Report Error: ' . $e->getMessage());
+
+        return $this->response
+            ->setStatusCode(500)
+            ->setJSON([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+    }
+}
     private function normalizeOption(string $value, array $allowed, string $default): string
     {
         $value = trim($value);

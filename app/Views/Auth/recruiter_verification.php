@@ -49,13 +49,17 @@
             <div class="row justify-content-center">
                 <div class="col-lg-6">
                     <h2 class="mb-4">Recruiter Verification</h2>
-                    <p class="text-muted">Please verify your company email address to activate your recruiter account.</p>
+                    <p class="text-muted">Please verify your company email address and registered phone number to activate your recruiter account.</p>
 
                     <?php if (session()->getFlashdata('success')): ?>
                         <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
                     <?php endif; ?>
                     <?php if (session()->getFlashdata('error')): ?>
                         <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
+                    <?php endif; ?>
+
+                    <?php if (($isEmailVerified ?? false) && ($isPhoneVerified ?? false)): ?>
+                        <div class="alert alert-success">Your recruiter account verification is complete. You can now log in.</div>
                     <?php endif; ?>
 
                     <div class="card mb-3">
@@ -96,11 +100,62 @@
                         </div>
                     </div>
 
-                    <?php if ($isEmailVerified ?? false): ?>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5>Phone Verification</h5>
+                            <div class="form-group">
+                                <label>Registered Phone</label>
+                                <input type="text" class="form-control" value="<?= esc($phone ?? 'Not available') ?>" readonly>
+                            </div>
+
+                            <?php if ($isPhoneVerified ?? false): ?>
+                                <p class="mb-0 text-success">Your phone number has been verified.</p>
+                            <?php elseif ($canVerifyPhone ?? false): ?>
+                                <?php if (!($hasPendingPhoneOtp ?? false)): ?>
+                                    <p class="text-center mt-4">Send an SMS OTP to verify your registered phone number.</p>
+                                    <form method="post" action="<?= base_url('recruiter/send-phone-otp') ?>">
+                                        <?= csrf_field() ?>
+                                        <input type="hidden" name="email" value="<?= esc($email ?? '') ?>">
+                                        <button type="submit" class="btn btn-primary btn-block mb-4">Send SMS OTP</button>
+                                    </form>
+                                <?php else: ?>
+                                <p class="text-center mt-4">Enter the 6-digit SMS OTP sent to your registered phone number.</p>
+
+                                <form method="post" action="<?= base_url('recruiter/verify-phone-otp') ?>" id="phoneOtpForm">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="email" value="<?= esc($email ?? '') ?>">
+                                    <input type="hidden" name="phone_code" id="phone_verification_code">
+
+                                    <div class="otp-container phone-otp-container">
+                                        <input type="tel" class="otp-input phone-otp-input" maxlength="1" pattern="\d*" inputmode="numeric" required>
+                                        <input type="tel" class="otp-input phone-otp-input" maxlength="1" pattern="\d*" inputmode="numeric" required>
+                                        <input type="tel" class="otp-input phone-otp-input" maxlength="1" pattern="\d*" inputmode="numeric" required>
+                                        <input type="tel" class="otp-input phone-otp-input" maxlength="1" pattern="\d*" inputmode="numeric" required>
+                                        <input type="tel" class="otp-input phone-otp-input" maxlength="1" pattern="\d*" inputmode="numeric" required>
+                                        <input type="tel" class="otp-input phone-otp-input" maxlength="1" pattern="\d*" inputmode="numeric" required>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary btn-block mb-4">Verify Phone</button>
+                                </form>
+
+                                <hr>
+                                <form method="post" action="<?= base_url('recruiter/send-phone-otp') ?>">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="email" value="<?= esc($email ?? '') ?>">
+                                    <button type="submit" class="btn btn-link btn-sm p-0">Didn't receive the SMS? Resend OTP</button>
+                                </form>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <p class="mb-0 text-danger">A valid registered phone number is required for SMS verification.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <?php if (($isEmailVerified ?? false) && ($isPhoneVerified ?? false)): ?>
                         <div class="card">
                             <div class="card-body">
                                 <h5>Verification Complete</h5>
-                                <p class="mb-3 text-success">Your company email has been verified. You can now access your dashboard.</p>
+                                <p class="mb-3 text-success">Your company email and phone number have been verified. You can now access your dashboard.</p>
                                 <a href="<?= base_url('login') ?>" class="btn btn-primary">Go to Login</a>
                             </div>
                         </div>
@@ -117,41 +172,47 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const inputs = document.querySelectorAll('.otp-input');
-    const hiddenCode = document.getElementById('verification_code');
+    setupOtpInputs('.otp-input:not(.phone-otp-input)', 'verification_code');
+    setupOtpInputs('.phone-otp-input', 'phone_verification_code');
 
-    if (!inputs.length || !hiddenCode) return;
+    function setupOtpInputs(selector, hiddenInputId) {
+        const inputs = document.querySelectorAll(selector);
+        const hiddenCode = document.getElementById(hiddenInputId);
 
-    inputs.forEach((input, index) => {
-        input.addEventListener('input', (e) => {
-            if (e.inputType === "deleteContentBackward") return;
-            if (input.value && index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
-            updateHiddenCode();
-        });
+        if (!inputs.length || !hiddenCode) return;
 
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace' && !input.value && index > 0) {
-                inputs[index - 1].focus();
-            }
-        });
-
-        input.addEventListener('paste', (e) => {
-            e.preventDefault();
-            const data = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-            data.split('').forEach((char, i) => {
-                if (inputs[i]) inputs[i].value = char;
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.inputType === "deleteContentBackward") return;
+                input.value = input.value.replace(/\D/g, '').slice(0, 1);
+                if (input.value && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+                updateHiddenCode();
             });
-            updateHiddenCode();
-            if (data.length > 0) inputs[Math.min(data.length, inputs.length - 1)].focus();
-        });
-    });
 
-    function updateHiddenCode() {
-        let code = '';
-        inputs.forEach(input => code += input.value);
-        hiddenCode.value = code;
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const data = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+                data.split('').forEach((char, i) => {
+                    if (inputs[i]) inputs[i].value = char;
+                });
+                updateHiddenCode();
+                if (data.length > 0) inputs[Math.min(data.length, inputs.length - 1)].focus();
+            });
+        });
+
+        function updateHiddenCode() {
+            let code = '';
+            inputs.forEach(input => code += input.value);
+            hiddenCode.value = code;
+        }
     }
 });
 </script>

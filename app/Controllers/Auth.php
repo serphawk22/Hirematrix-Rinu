@@ -11,6 +11,11 @@ use App\Models\UserModel;
 
 class Auth extends BaseController
 {
+    private const RECRUITER_PHONE_OTP_SESSION_KEY = 'recruiter_phone_otp';
+    private const RECRUITER_PHONE_OTP_TTL_SECONDS = 600;
+    private const RECRUITER_PHONE_OTP_RESEND_SECONDS = 45;
+    private const RECRUITER_PHONE_OTP_MAX_ATTEMPTS = 5;
+
     /* ================= LOGIN ================= */
 
     public function login()
@@ -901,6 +906,8 @@ class Auth extends BaseController
         $recruiter = $model->find($newRecruiterId);
         $emailError = null;
         $emailSent = $recruiter ? $this->sendRecruiterVerificationEmail($recruiter, $emailError) : false;
+        $smsError = null;
+        $smsSent = $recruiter ? $this->issueRecruiterPhoneOtp($recruiter, $smsError, true) : false;
 
         $redirect = redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)));
         if (!$emailSent) {
@@ -915,6 +922,12 @@ class Auth extends BaseController
             ? 'Consultancy account created. Verify your email; job posting will unlock after admin verification.'
             : 'Account created. Check your inbox to verify your company email.';
 
+        if ($smsSent) {
+            $successMessage .= ' We also sent an SMS OTP to your phone.';
+        } elseif ($smsError !== null) {
+            $successMessage .= ' SMS OTP was not sent: ' . $smsError;
+        }
+
         return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
             ->with('success', $successMessage);
     }
@@ -924,21 +937,28 @@ class Auth extends BaseController
         $email = strtolower(trim((string) ($this->request->getGet('email') ?? old('email') ?? '')));
         $phone = '';
         $isEmailVerified = false;
+        $isPhoneVerified = false;
+        $hasPendingPhoneOtp = false;
 
         if ($email !== '') {
             $model = new UserModel();
             $user = $model->where('email', $email)->where('role', 'recruiter')->first();
             $phone = (string) ($user['phone'] ?? '');
             $isEmailVerified = !empty($user['email_verified_at']);
+            $isPhoneVerified = !empty($user['phone_verified_at']);
+            $pendingOtp = session()->get(self::RECRUITER_PHONE_OTP_SESSION_KEY);
+            $hasPendingPhoneOtp = is_array($pendingOtp)
+                && ($pendingOtp['email'] ?? '') === $email
+                && (int) ($pendingOtp['expires_at'] ?? 0) >= time();
         }
 
         return view('Auth/recruiter_verification', [
             'email' => $email,
             'phone' => $phone,
             'isEmailVerified' => $isEmailVerified,
-            'isPhoneVerified' => true, // Bypass phone UI checks in view
-            'canVerifyPhone' => false,
-            'firebaseConfigured' => false,
+            'isPhoneVerified' => $isPhoneVerified,
+            'canVerifyPhone' => $email !== '' && $phone !== '' && !$isPhoneVerified,
+            'hasPendingPhoneOtp' => $hasPendingPhoneOtp,
         ]);
     }
 
@@ -976,6 +996,90 @@ class Auth extends BaseController
             ->with('success', 'Verification email resent.');
     }
 
+    public function sendRecruiterPhoneOtp()
+    {
+        $email = strtolower(trim((string) $this->request->getPost('email')));
+        $model = new UserModel();
+        $user = $model->where('email', $email)->where('role', 'recruiter')->first();
+
+        if (!$user) {
+            return redirect()->back()->with('error', 'Recruiter account not found.');
+        }
+
+        if (!empty($user['phone_verified_at'])) {
+            return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
+                ->with('success', 'Phone number is already verified.');
+        }
+
+        $error = null;
+        if (!$this->issueRecruiterPhoneOtp($user, $error)) {
+            return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
+                ->with('error', 'SMS OTP could not be sent. ' . ($error ?? 'Please try again in a minute.'));
+        }
+
+        return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
+            ->with('success', 'SMS OTP sent to your registered phone number.');
+    }
+
+    public function submitRecruiterPhoneOtp()
+    {
+        $email = strtolower(trim((string) $this->request->getPost('email')));
+        $code = preg_replace('/\D/', '', (string) $this->request->getPost('phone_code'));
+
+        if ($email === '' || $code === '') {
+            return redirect()->back()->with('error', 'Email and SMS OTP are required.');
+        }
+
+        $model = new UserModel();
+        $user = $model->where('email', $email)->where('role', 'recruiter')->first();
+
+        if (!$user) {
+            return redirect()->back()->with('error', 'Recruiter account not found.');
+        }
+
+        if (!empty($user['phone_verified_at'])) {
+            return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
+                ->with('success', 'Phone number is already verified.');
+        }
+
+        $pending = session()->get(self::RECRUITER_PHONE_OTP_SESSION_KEY);
+        if (!is_array($pending)
+            || ($pending['email'] ?? '') !== $email
+            || ($pending['phone'] ?? '') !== $this->normalizeFast2SmsPhone((string) ($user['phone'] ?? ''))
+        ) {
+            return redirect()->back()->withInput()->with('error', 'SMS OTP expired or missing. Please resend the OTP.');
+        }
+
+        if ((int) ($pending['expires_at'] ?? 0) < time()) {
+            session()->remove(self::RECRUITER_PHONE_OTP_SESSION_KEY);
+            return redirect()->back()->withInput()->with('error', 'SMS OTP expired. Please request a new OTP.');
+        }
+
+        $attempts = (int) ($pending['attempts'] ?? 0) + 1;
+        if ($attempts > self::RECRUITER_PHONE_OTP_MAX_ATTEMPTS) {
+            session()->remove(self::RECRUITER_PHONE_OTP_SESSION_KEY);
+            return redirect()->back()->withInput()->with('error', 'Too many incorrect OTP attempts. Please request a new OTP.');
+        }
+
+        if (!password_verify($code, (string) ($pending['code_hash'] ?? ''))) {
+            $pending['attempts'] = $attempts;
+            session()->set(self::RECRUITER_PHONE_OTP_SESSION_KEY, $pending);
+            return redirect()->back()->withInput()->with('error', 'Invalid SMS OTP.');
+        }
+
+        $model->update((int) $user['id'], [
+            'phone_verified_at' => date('Y-m-d H:i:s'),
+        ]);
+        session()->remove(self::RECRUITER_PHONE_OTP_SESSION_KEY);
+
+        $message = !empty($user['email_verified_at'])
+            ? 'Phone verified successfully. You can now log in.'
+            : 'Phone verified successfully. Please complete email verification.';
+
+        return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
+            ->with('success', $message);
+    }
+
     public function submitRecruiterEmailCode()
     {
         $email = strtolower(trim((string) $this->request->getPost('email')));
@@ -1000,8 +1104,20 @@ class Auth extends BaseController
             'email_verified_at' => date('Y-m-d H:i:s')
         ]);
 
-        return redirect()->to(base_url('login'))
-            ->with('success', 'Email verified successfully. You can now log in.');
+        if (!empty($user['phone_verified_at'])) {
+            return redirect()->to(base_url('login'))
+                ->with('success', 'Email verified successfully. You can now log in.');
+        }
+
+        $updatedUser = $model->find((int) $user['id']) ?? $user;
+        $smsError = null;
+        $smsSent = $this->issueRecruiterPhoneOtp($updatedUser, $smsError, true);
+        $message = $smsSent
+            ? 'Email verified successfully. We sent an SMS OTP to your registered phone number.'
+            : 'Email verified successfully. Please resend the SMS OTP to verify your phone. ' . ($smsError ?? '');
+
+        return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
+            ->with($smsSent ? 'success' : 'error', trim($message));
     }
 
     private function sendRecruiterVerificationEmail(array $user, ?string &$error = null): bool
@@ -1069,6 +1185,101 @@ class Auth extends BaseController
             log_message('error', 'Email send failed for recruiter verification: ' . $e->getMessage());
             return false;
         }
+    }
+
+    private function issueRecruiterPhoneOtp(array $user, ?string &$error = null, bool $allowImmediateResend = false): bool
+    {
+        $email = strtolower(trim((string) ($user['email'] ?? '')));
+        $phone = $this->normalizeFast2SmsPhone((string) ($user['phone'] ?? ''));
+
+        if ($email === '' || $phone === '') {
+            $error = 'Registered phone number must be a valid Indian 10-digit mobile number.';
+            return false;
+        }
+
+        $pending = session()->get(self::RECRUITER_PHONE_OTP_SESSION_KEY);
+        if (!$allowImmediateResend
+            && is_array($pending)
+            && ($pending['email'] ?? '') === $email
+            && (time() - (int) ($pending['sent_at'] ?? 0)) < self::RECRUITER_PHONE_OTP_RESEND_SECONDS
+        ) {
+            $error = 'Please wait before requesting another OTP.';
+            return false;
+        }
+
+        $otp = (string) random_int(100000, 999999);
+        if (!$this->sendFast2SmsOtp($phone, $otp, $error)) {
+            return false;
+        }
+
+        session()->set(self::RECRUITER_PHONE_OTP_SESSION_KEY, [
+            'email' => $email,
+            'phone' => $phone,
+            'code_hash' => password_hash($otp, PASSWORD_DEFAULT),
+            'expires_at' => time() + self::RECRUITER_PHONE_OTP_TTL_SECONDS,
+            'sent_at' => time(),
+            'attempts' => 0,
+        ]);
+
+        return true;
+    }
+
+    private function sendFast2SmsOtp(string $phone, string $otp, ?string &$error = null): bool
+    {
+        $apiKey = trim((string) (env('fast2sms.apiKey') ?: env('FAST2SMS_API_KEY') ?: ''));
+        if ($apiKey === '') {
+            $error = 'Fast2SMS API key is not configured.';
+            return false;
+        }
+
+        $endpoint = trim((string) (env('fast2sms.endpoint') ?: env('FAST2SMS_ENDPOINT') ?: 'https://www.fast2sms.com/dev/bulkV2'));
+
+        try {
+            $http = \Config\Services::curlrequest([
+                'timeout' => 15,
+                'http_errors' => false,
+            ]);
+
+            $response = $http->post($endpoint, [
+                'headers' => [
+                    'authorization' => $apiKey,
+                    'accept' => 'application/json',
+                ],
+                'form_params' => [
+                    'route' => 'otp',
+                    'variables_values' => $otp,
+                    'numbers' => $phone,
+                ],
+            ]);
+
+            $status = (int) $response->getStatusCode();
+            $body = (string) $response->getBody();
+            $data = json_decode($body, true);
+
+            if ($status >= 200 && $status < 300 && (!is_array($data) || ($data['return'] ?? true) !== false)) {
+                return true;
+            }
+
+            $error = is_array($data)
+                ? (string) ($data['message'] ?? $data['error'] ?? 'Fast2SMS rejected the request.')
+                : 'Fast2SMS rejected the request.';
+            log_message('error', 'Fast2SMS OTP failed: HTTP ' . $status . ' ' . $body);
+            return false;
+        } catch (\Throwable $e) {
+            $error = $e->getMessage();
+            log_message('error', 'Fast2SMS OTP exception: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function normalizeFast2SmsPhone(string $phone): string
+    {
+        $digits = preg_replace('/\D/', '', $phone);
+        if (strlen($digits) === 12 && substr($digits, 0, 2) === '91') {
+            $digits = substr($digits, 2);
+        }
+
+        return strlen($digits) === 10 ? $digits : '';
     }
 
     private function sendPasswordResetEmail(array $user, ?string &$error = null): bool
@@ -1164,16 +1375,27 @@ class Auth extends BaseController
 
     private function isRecruiterFullyVerified(array $user): bool
     {
-        return !empty($user['email_verified_at']);
+        return !empty($user['email_verified_at']) && !empty($user['phone_verified_at']);
     }
 
     private function getRecruiterVerificationMessage(array $user): string
     {
         $emailVerified = !empty($user['email_verified_at']);
+        $phoneVerified = !empty($user['phone_verified_at']);
 
-        return $emailVerified
-            ? ''
-            : 'Please verify your company email address before logging in.';
+        if (!$emailVerified && !$phoneVerified) {
+            return 'Please verify your company email address and phone number before logging in.';
+        }
+
+        if (!$emailVerified) {
+            return 'Please verify your company email address before logging in.';
+        }
+
+        if (!$phoneVerified) {
+            return 'Please verify your phone number before logging in.';
+        }
+
+        return '';
     }
 
     private function isFreeEmailDomain(string $domain): bool

@@ -63,7 +63,7 @@ class CandidateDashboardController extends BaseController
             $hasActiveSubscription = !empty($activeSubscription);
 
         // Top suggested jobs for dashboard (best matches only)
-        $topSuggestedJobs = $this->getTopSuggestedJobs($candidateId, 3);
+        $topSuggestedJobs = $this->getTopSuggestedJobs($candidateId, 4);
         $jobSearchStrategy = $this->buildJobSearchStrategyCoach((int) $candidateId, $applications, $topSuggestedJobs);
         $dailyReminder = $this->buildDailyReminder($candidateId, $applications, $topSuggestedJobs);
             $engagementBanners = $this->buildDashboardEngagementBanners($candidateId, $applications, $topSuggestedJobs, (string) ($dailyReminder['key'] ?? ''), $hasActiveSubscription);
@@ -1859,7 +1859,7 @@ class CandidateDashboardController extends BaseController
         }
 
         $viewAll = $this->request->getGet('view_all') === '1';
-        $companiesPerPage = $viewAll ? 500 : 9;
+        $companiesPerPage = $viewAll ? 500 : 16;
         $companies = $companiesBuilder->paginate($companiesPerPage);
 
         // Fetch open job counts for each company

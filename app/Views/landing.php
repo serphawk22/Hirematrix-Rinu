@@ -3,44 +3,34 @@ $platformStats = $platformStats ?? [];
 $featuredJobs = $featuredJobs ?? [];
 
 $jobsPostedCount = (int) ($platformStats['jobs_posted'] ?? count($featuredJobs));
-$candidateCount = (int) ($platformStats['candidates'] ?? 0);
-$interviewCount = (int) ($platformStats['interviews_booked'] ?? 0);
-$recruiterCount = (int) ($platformStats['recruiters'] ?? 0);
+$candidateCount  = (int) ($platformStats['candidates'] ?? 0);
+$interviewCount  = (int) ($platformStats['interviews_booked'] ?? 0);
+$recruiterCount  = (int) ($platformStats['recruiters'] ?? 0);
 
 $jobIconSet = [
     'developer' => 'fas fa-code',
-    'engineer' => 'fas fa-cogs',
-    'designer' => 'fas fa-palette',
-    'manager' => 'fas fa-chart-line',
-    'data' => 'fas fa-database',
+    'engineer'  => 'fas fa-cogs',
+    'designer'  => 'fas fa-palette',
+    'manager'   => 'fas fa-chart-line',
+    'data'      => 'fas fa-database',
     'marketing' => 'fas fa-bullhorn',
-    'product' => 'fas fa-briefcase',
+    'product'   => 'fas fa-briefcase',
 ];
 
 $pickJobIcon = static function (string $title) use ($jobIconSet): string {
     $needle = strtolower($title);
     foreach ($jobIconSet as $key => $icon) {
-        if (str_contains($needle, $key)) {
-            return $icon;
-        }
+        if (str_contains($needle, $key)) return $icon;
     }
-
     return 'fas fa-briefcase';
 };
 
 $formatAge = static function ($value): string {
-    if ($value === null || $value === '') {
-        return 'Recently';
-    }
-
+    if ($value === null || $value === '') return 'Recently';
     $date = strtotime((string) $value);
-    if ($date === false) {
-        return 'Recently';
-    }
-
+    if ($date === false) return 'Recently';
     return date('M d, Y', $date);
 };
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -49,10 +39,8 @@ $formatAge = static function ($value): string {
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>HireMatrix | Home</title>
-    <meta name="description" content="AI Job Portal home page">
     <link rel="icon" type="image/png" href="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>">
-
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/theme-colors.css') ?>">
+    <meta name="description" content="AI Job Portal home page">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/custom-bs.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/jquery.fancybox.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/bootstrap-select.min.css') ?>">
@@ -63,914 +51,1035 @@ $formatAge = static function ($value): string {
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/style.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/hirematrix-style.css?v=' . @filemtime(FCPATH . 'jobboard/css/hirematrix-style.css')) ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.css')) ?>">
-    <style> 
-/* ===============================
-   STATIC STRIPES (NO ANIMATION)
-================================= */
-
-:root {
-    --stripe-bg: repeating-linear-gradient(
-        120deg,
-        rgba(79,70,229,0.04) 0px,
-        rgba(79,70,229,0.04) 2px,
-        transparent 2px,
-        transparent 60px,
-
-        rgba(90,169,255,0.04) 60px,
-        rgba(90,169,255,0.04) 62px,
-        transparent 62px,
-        transparent 120px,
-
-        rgba(255,140,90,0.04) 120px,
-        rgba(255,140,90,0.04) 122px,
-        transparent 122px,
-        transparent 180px
-    );
-}
-
-body {
-    position: relative;
-    overflow-x: hidden;
-
-    background: #fafbff; /* base fallback */
-}
-
-
-/* 🔥 MOVING STRIPES LAYER */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-
-    background: repeating-linear-gradient(
-        120deg,
-        rgba(79,70,229,0.05) 0px,
-        rgba(79,70,229,0.05) 2px,
-        transparent 2px,
-        transparent 60px,
-
-        rgba(90,169,255,0.05) 60px,
-        rgba(90,169,255,0.05) 62px,
-        transparent 62px,
-        transparent 120px,
-
-        rgba(255,140,90,0.05) 120px,
-        rgba(255,140,90,0.05) 122px,
-        transparent 122px,
-        transparent 180px
-    );
-
-    animation: moveStripes 40s linear infinite;
-}
-body {
-    background:
-        repeating-linear-gradient(
-            120deg,
-            rgba(79,70,229,0.025) 0px,
-            rgba(79,70,229,0.025) 1px,
-            transparent 1px,
-            transparent 80px
-        ),
-        linear-gradient(
-            120deg,
-            #fafbff,
-            #f5f7ff,
-            #f8f9fc,
-            #fdf6f2
-        );
-}
-
-/* ===============================
-   ANIMATIONS
-================================= */
-
-@keyframes moveStripes {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-200px); /* slow slide */
-    }
-}
-
-@keyframes bodyGradientMove {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-    .hero { position: relative; padding: 100px 0; overflow: hidden; /* 🔥 stronger animated gradient */ background: linear-gradient( 120deg, #dbe6ff, #eef2ff, #fcefe6, #fbc5afa1, #dbe6ff ); background-size: 300% 300%; animation: gradientMove 6s ease-in-out infinite; } /* 🎯 gradient animation */ @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } } /* =============================== 🔥 BIG FLOATING BLOBS (VISIBLE) ================================= */ .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; filter: blur(60px); /* less blur = stronger */ opacity: 0.7; z-index: 0; } .hero::before { width: 420px; height: 420px; background: #ac75ffac; top: -100px; left: -100px; animation: blobMove1 5s ease-in-out infinite alternate; } .hero::after { width: 420px; height: 420px; background: #6b95ffe5; bottom: -100px; right: -100px; animation: blobMove2 6s ease-in-out infinite alternate; } @keyframes blobMove1 { 0% { transform: translate(0, 0); } 100% { transform: translate(120px, 80px); } } @keyframes blobMove2 { 0% { transform: translate(0, 0); } 100% { transform: translate(-120px, -80px); } } /* =============================== ✨ LIGHT SWEEP (VERY NOTICEABLE) ================================= */ .hero .light-sweep { position: absolute; top: 0; left: -120%; width: 60%; height: 100%; z-index: 1; background: linear-gradient( 120deg, transparent, rgba(255,255,255,0.5), transparent ); transform: skewX(-20deg); animation: sweepMove 4s linear infinite; } @keyframes sweepMove { 0% { left: -120%; } 100% { left: 130%; } }
-/* ===============================
-   STATUS PILL
-================================= */
-
-.status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(79, 70, 229, 0.08);
-    color: rgba(78, 70, 229, 0.82);
-    padding: 6px 14px;
-    border-radius: 50px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 15px;
-
-    backdrop-filter: blur(10px);
-}
-
-
-/* ===============================
-   HERO TEXT
-================================= */
-
-.hero-title {
-    font-size: 48px;
-    font-weight: 800;
-    line-height: 1.2;
-    letter-spacing: -0.5px;
-    margin-bottom: 15px;
-     color: #111827;
-}
-
-.hero-subtitle {
-    font-size: 16px;
-    color: #6b7280;
-    max-width: 600px;
-}
-
-
-/* gradient highlight */
-.gradient-text {
-    background: linear-gradient(90deg, #4f46e5, #9b87f5, #f4a261); 
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-
-/* ===============================
-   SEARCH PANEL
-================================= */
-
-.landing-search-panel {
-    border-radius: 16px;
-    border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.css?v='       . @filemtime(FCPATH . 'jobboard/css/responsive.css')) ?>">
+<style>
+/* ================================================
+   HERO
+================================================ */
+.hero {
+    position: relative; overflow: hidden;
+    min-height: 100vh; display: flex; align-items: center;
+    padding: 100px 24px 72px; text-align: center;
     background: #ffffff;
 }
+#heroCanvas {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+}
+.hero .container { position: relative; z-index: 1; }
 
-.landing-search-panel:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+.hero-h1 {
+    font-size: 56px; font-weight: 600 !important;
+    letter-spacing: -.03em; line-height: 1.1;
+    color: var(--foreground); margin-bottom: 18px;
+    min-height: unset !important;
+}
+.hero-h1 .grad-text {
+    background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-sub {
+    font-size: 20px !important; font-weight: 500;
+    color: var(--muted-foreground); line-height: 1.75;
+    max-width: 520px; margin: 0 auto 32px;
+    min-height: unset !important;
+}
+.tw-cursor {
+    display: inline-block; width: 2.5px; height: .85em;
+    background: var(--primary); border-radius: 1px;
+    margin-left: 2px; vertical-align: middle;
+    animation: blink-cur .9s step-end infinite;
+}
+@keyframes blink-cur { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.hero-search {
+    display: flex; align-items: center;
+    background: #fff; border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 7px 7px 7px 14px;
+    gap: 6px; max-width: 640px; margin: 0 auto 14px;
+    box-shadow: 0 2px 12px rgba(31,183,181,.06);
+    transition: border-color .2s, box-shadow .2s;
+}
+.hero-search:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(31,183,181,.12);
+}
+.search-field {
+    flex: 1; display: flex; align-items: center; gap: 8px;
+    padding: 4px 8px; border-radius: 9px; transition: .18s; min-width: 0;
+}
+.search-field:focus-within { background: var(--muted); }
+.search-field i { color: var(--primary); font-size: 15px; flex-shrink: 0; }
+.search-field input {
+    flex: 1; background: transparent; border: none; outline: none;
+    font-size: 14px; color: var(--foreground); font-family: inherit; min-width: 0;
+}
+.search-field input::placeholder { color: var(--text-light); }
+.search-divider { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
+.search-btn {
+    background: transparent !important; border: 1.5px solid #1FB7B5 !important;
+    color: #1FB7B5 !important; padding: 8px 20px;
+    border-radius: 6px !important; font-size: 14px; font-weight: 600;
+    transition: all 0.2s ease;
+}
+.search-btn:hover { background: #1FB7B5 !important; color: #ffffff !important; transform: translateY(-1px); }
+.hero-hint { font-size: 12.5px; color: var(--text-light); margin-top: 8px; margin-bottom: 0; }
+
+@media (max-width: 768px) { .hero-h1 { font-size: 38px; } .hero { padding: 90px 16px 56px; min-height: 100svh; } }
+@media (max-width: 640px) {
+    .hero-h1 { font-size: 32px; }
+    .hero-search { flex-direction: column; align-items: stretch; padding: 10px; }
+    .search-divider { display: none; }
+    .search-btn { width: 100%; justify-content: center; }
 }
 
-
-/* search inputs */
-.search-input-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #f9fafb;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid transparent;
-    transition: all 0.25s ease;
+/* ================================================
+   WAVE SECTION
+================================================ */
+.wave-section {
+    width: 100vw; margin-left: calc(-50vw + 50%);
+    background: #fff; padding: 20px 0 36px;
+    border-bottom: none !important; overflow: hidden; position: relative;
 }
-
-.search-input-group:hover {
-    border-color: rgba(79,70,229,0.3);
-    background: #fff;
+.wave-section::before, .wave-section::after {
+    content: ''; position: absolute; top: 0; bottom: 0;
+    width: 80px; z-index: 2; pointer-events: none;
 }
+.wave-section::before { left: 0;  background: linear-gradient(to right, #fff, transparent); }
+.wave-section::after  { right: 0; background: linear-gradient(to left,  #fff, transparent); }
+.wave-track-outer { overflow: visible; width: 100%; }
+.wave-track { position: relative; height: 260px; width: 100%; }
 
-.search-input-group input {
-    border: none !important;
-    background: transparent;
-    font-size: 14px;
-}
-
-.search-input-group input:focus {
-    outline: none;
-    box-shadow: none;
-}
-
-
-/* ===============================
-   SEARCH BUTTON
-================================= */
-
-.landing-search-submit {
-    border-radius: 10px;
-    font-weight: 600;
-
-    background: linear-gradient(135deg, #4f46e5, #3b82f6);
-    border: none;
-
-    box-shadow: 0 8px 18px rgba(79,70,229,0.25);
-    transition: all 0.3s ease;
-}
-
-.landing-search-submit:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 12px 28px rgba(79,70,229,0.35);
-}
-
-
-/* ===============================
-   POPULAR TAGS
-================================= */
-
-.btn-group .btn {
-    border-radius: 50px !important;
-    padding: 6px 14px;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.25s ease;
-}
-
-.btn-group .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.1);
-}
-
-
-/* ===============================
-   FOOT NOTE TEXT
-================================= */
-
-.hero p.text-muted {
-    opacity: 0.8;
-}
-
-
-/* ===============================
-   RESPONSIVE
-================================= */
-
-@media (max-width: 768px) {
-    .hero-title {
-        font-size: 32px;
-    }
-
-    .hero {
-        padding: 70px 0;
-    }
-}
-/* ===============================
-   CAREER TRANSITION BACKGROUND
-================================= */
-/* ===============================
-   CAREER TRANSITION (MATCH HERO)
-================================= */
-
-.landing-career-transition {
-    position: relative;
-    padding: 100px 0;
-    overflow: hidden;
-
-    /* 🔥 EXACT HERO GRADIENT */
-    background: linear-gradient(
-        120deg,
-        #dbe6ff,
-        #eef2ff,
-        #fcefe6,
-        #fbc5afa1,
-        #dbe6ff
-    );
-
-    background-size: 300% 300%;
-    animation: gradientMove 6s ease-in-out infinite;
-}
-
-/* SAME gradient animation */
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-
-/* ===============================
-   🔥 HERO STYLE BLOBS (MATCHED)
-================================= */
-
-.landing-career-transition::before,
-.landing-career-transition::after {
-    content: "";
+.cat-bubble {
     position: absolute;
+    display: flex; flex-direction: column; align-items: center;
+    text-decoration: none !important;
+}
+.bubble-circle {
+    width: 130px !important; height: 130px !important;
     border-radius: 50%;
-    filter: blur(60px);
-    opacity: 0.7;
-    z-index: 0;
+    background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%);
+    border: 1.5px solid #D9ECE5;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 6px; font-size: 28px !important; color: #0D8A90;
+    will-change: transform;
+}
+.bubble-label {
+    font-size: 11px; font-weight: 600;
+    color: #0D8A90; white-space: nowrap; line-height: 1;
 }
 
-/* SAME COLORS AS HERO */
-.landing-career-transition::before {
-    width: 420px;
-    height: 420px;
-    background: #ac75ffac;
-    top: -100px;
-    left: -100px;
-    animation: blobMove1 5s ease-in-out infinite alternate;
+@media (max-width: 640px) {
+    .bubble-circle { width: 80px !important; height: 80px !important; font-size: 18px !important; }
+    .bubble-label  { font-size: 10px; }
+    .wave-track    { height: 200px; }
 }
 
-.landing-career-transition::after {
-    width: 420px;
-    height: 420px;
-    background: #81a4fece;
-    bottom: -100px;
-    right: -100px;
-    animation: blobMove2 6s ease-in-out infinite alternate;
+/* ================================================
+   FEATURED JOBS SECTION
+================================================ */
+.featured-jobs-section {
+    padding: 64px 0 72px;
+    background: transparent;
+}
+.featured-jobs-section .section-head-title {
+    font-size: 56px !important; font-weight: 500 !important;
+    color: var(--foreground); margin-bottom: 6px;
+}
+.featured-jobs-section .section-head-sub {
+    font-size: 15px; color: var(--muted-foreground);
+    max-width: 480px; margin: 0 auto 40px;
 }
 
-@keyframes blobMove1 {
-    0% { transform: translate(0, 0); }
-    100% { transform: translate(120px, 80px); }
+/* Individual job card — completely separate */
+.fj-card {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 24px;
+    background: white !important;
+    border: 1px solid #D9ECE5;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(13,138,144,0.04);
+    /* animation start state */
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.55s ease, transform 0.55s ease, box-shadow 0.25s ease;
+}
+.fj-card.fj-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* gentle float once visible */
+.fj-card.fj-float { animation: fjFloat 3.8s ease-in-out infinite; }
+.fj-card.fj-float:nth-child(2) { animation-delay: 0.3s; }
+.fj-card.fj-float:nth-child(3) { animation-delay: 0.6s; }
+.fj-card.fj-float:nth-child(4) { animation-delay: 0.9s; }
+.fj-card.fj-float:nth-child(5) { animation-delay: 1.2s; }
+.fj-card.fj-float:nth-child(6) { animation-delay: 1.5s; }
+
+@keyframes fjFloat {
+    0%,100% { transform: translateY(0px); }
+    50%      { transform: translateY(-6px); }
 }
 
-@keyframes blobMove2 {
-    0% { transform: translate(0, 0); }
-    100% { transform: translate(-120px, -80px); }
+.fj-card:hover {
+    box-shadow: none !important;
+    transform: translateY(-3px) !important;
+    animation-play-state: paused;
 }
 
+.fj-main   { flex: 1; min-width: 0; }
+.fj-top    { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.fj-title  { font-size: 18px !important; font-weight: 500 !important; color: var(--foreground); letter-spacing: -.1px; }
+.fj-company { font-size: 15px !important; color: var(--muted-foreground); font-weight: 500; margin-bottom: 7px; }
+.fj-meta   { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.fj-meta-item { font-size: 13px !important; color: var(--text-light); display: flex; align-items: center; gap: 4px; }
 
-/* ===============================
-   ✨ LIGHT SWEEP (MATCH HERO)
-================================= */
-
-.landing-career-transition .light-sweep {
-    position: absolute;
-    top: 0;
-    left: -120%;
-    width: 60%;
-    height: 100%;
-    z-index: 1;
-
-    background: linear-gradient(
-        120deg,
-        transparent,
-        rgba(255,255,255,0.5),
-        transparent
-    );
-
-    transform: skewX(-20deg);
-    animation: sweepMove 4s linear infinite;
+.fj-tags   { flex-shrink: 0; display: flex; gap: 6px; flex-wrap: wrap; }
+.fj-tag {
+    font-size: 13px !important; font-weight: 500; padding: 4px 9px;
+    border-radius: 6px; background: rgba(31,183,181,.08);
+    color: #0D8A90; border: 1px solid #D9ECE5;
 }
 
-@keyframes sweepMove {
-    0% { left: -120%; }
-    100% { left: 130%; }
+.fj-right  { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; min-width: 120px; }
+.fj-salary { font-size: 14px; font-weight: 700; color: var(--foreground); }
+
+.badge-featured {
+    font-size: 10px; font-weight: 700; padding: 3px 8px;
+    border-radius: 50px; background: rgba(31,183,181,.12);
+    color: #0D8A90; border: 1px solid #D9ECE5; letter-spacing: .03em;
 }
-
-
-/* ===============================
-   GLASS CARD (READABLE)
-================================= */
-
-.landing-career-transition-inner {
-    position: relative;
-    z-index: 2;
-
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(20px);
-
-    border-radius: 20px;
-    padding: 40px;
-
-    border: 1px solid rgba(255,255,255,0.6);
-    box-shadow: 0 15px 50px rgba(0,0,0,0.15);
-}
-
-
-/* ===============================
-   TEXT
-================================= */
-
-.landing-career-transition-kicker {
-    display: inline-block;
-    font-size: 13px;
-    font-weight: 600;
-
-    color: #4f46e5;
-    background: rgba(79,70,229,0.12);
-
-    padding: 6px 12px;
-    border-radius: 20px;
-    margin-bottom: 15px;
-}
-
-.landing-career-transition-title {
-    font-size: 32px;
-    font-weight: 700;
-
-     background: linear-gradient(90deg, #4f46e5, #9b87f5, #f4a261); 
-    background-size: 200% auto;
-
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-
-    animation: textShine 4s linear infinite;
-}
-
-@keyframes textShine {
-    to { background-position: 200% center; }
-}
-
-.landing-career-transition-text {
-    font-size: 15px;
-    color: #374151;
-    opacity: 0.95;
-    max-width: 500px;
-}
-
-
-/* ===============================
-   BUTTON
-================================= */
-
-.landing-career-transition-btn {
-    display: inline-block;
-    margin-top: 20px;
-
-    background: #ffffff;
-    color: #4f46e5;
-    font-weight: 600;
-
-    padding: 10px 18px;
-    border-radius: 10px;
-
-    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-    transition: all 0.3s ease;
-}
-
-.landing-career-transition-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-
-/* ===============================
-   LAYER FIX
-================================= */
-
-.landing-career-transition .container {
-    position: relative;
-    z-index: 2;
-}
-
-
-/* ===============================
-   RESPONSIVE
-================================= */
 
 @media (max-width: 768px) {
-    .landing-career-transition-inner {
-        padding: 25px;
-    }
-
-    .landing-career-transition-title {
-        font-size: 24px;
-    }
+    .fj-card { flex-wrap: wrap; }
+    .fj-right { align-items: flex-start; min-width: unset; width: 100%; flex-direction: row; justify-content: space-between; }
+    .fj-tags  { width: 100%; }
 }
-.job-card {
-    background: linear-gradient(
+
+/* ================================================
+   CAREER TRANSITION
+================================================ */  
+
+.landing-career-transition{
+    position:relative;
+    overflow:hidden;
+
+    padding:50px 0 !important;
+
+    background:
+    radial-gradient(
+        circle at top right,
+        rgba(31,183,181,.12),
+        transparent 35%
+    ),
+    radial-gradient(
+        circle at bottom left,
+        rgba(181,216,78,.10),
+        transparent 35%
+    ),
+    #ffffff;
+}
+
+.career-bg-glow{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+}
+
+.career-content{
+    max-width:1100px;
+    margin:auto;
+    position:relative;
+    z-index:2;
+}
+
+.career-badge{
+    display:inline-flex;
+    align-items:center;
+
+    padding:10px 18px;
+
+    border-radius:999px;
+
+    background:
+    rgba(31,183,181,.08);
+
+    color:#0D8A90;
+
+    font-size:14px;
+    font-weight:700;
+
+    margin-bottom:32px;
+}
+
+.career-title{
+    font-size:clamp(25px,3vw,55px) !important;
+    line-height:0.8 !important;
+
+    font-weight:500 !important;
+
+    letter-spacing:-.06em;
+
+    color:#111827;
+
+    margin-bottom:32px;
+} 
+.career-title span{
+    display:inline !important;
+
+    background:
+    linear-gradient(
         135deg,
-        #ffffff 0%,
-        #f7f9ff 100%
+        #1FB7B5,
+        #53B86C,
+        #B5D84E
     );
 
-    border-radius: 14px;
-    padding: 20px;
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
 
-    border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+.career-description{
+    max-width:760px;
 
-    transition: all 0.3s ease;
+    margin:auto;
+
+    font-size:20px !important;
+
+    line-height:1.9;
+
+    color:#6b7280;
+
+    margin-bottom:50px;
+}
+
+.career-actions{
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    flex-wrap:wrap;
+
+    margin-bottom:40px !important;
 }
  
-.job-card:hover {
-    transform: translateY(-6px);
+@media(max-width:768px){
 
-    background: linear-gradient(
-        135deg,
-        #ffffff 0%,
-        #eef2ff 100%
-    );
-
-    box-shadow: 0 18px 35px rgba(0,0,0,0.10);
-}
-.job-card-title { 
-
-    background: linear-gradient(90deg, #4f46e5, #9b87f5, #f4a261);
-
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.section-title { 
-    background: linear-gradient(90deg, #4f46e5, #9b87f5, #f4a261);
-
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.landing-get-started-title{
-    background: linear-gradient(90deg, #4f46e5, #9b87f5, #f4a261);
-
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-/* ===============================
-   REMOVE SECTION BACKGROUND
-================================= */
-/* ===============================
-   SECTION BACKGROUND (SMOOTH + NO LINE)
-================================= */
-/* ===============================
-   SECTION BACKGROUND (CLEAN + SPACING)
-================================= */
-.landing-get-started {
-    padding: 100px 0 120px;
-
-    background: linear-gradient(
-        120deg,
-        #f8faff,
-        #f4f6ff,
-        #fdf7f3
-    );
-}
-/* ===============================
-   REMOVE GLOW EDGE BLEED
-================================= */
-.landing-get-started::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-
-    background:
-        radial-gradient(circle at 20% 30%, rgba(79,70,229,0.06), transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(255,140,90,0.06), transparent 40%);
-
-    pointer-events: none;
-}
-/* ===============================
-   CONTAINER LAYER FIX
-================================= */
-
-.landing-get-started .container {
-    position: relative;
-    z-index: 2;
-}
-
-
-/* ===============================
-   CARD (REDUCE SHADOW SPILL)
-================================= */
-
-.landing-start-card {
-    position: relative;
-    border-radius: 18px;
-    padding: 30px;
-
-    background: linear-gradient(145deg, #ffffff, #f5f7ff);
-
-    border: none;
-
-    /* 👇 slightly tighter shadow to avoid line */
-    box-shadow: 0 10px 25px rgba(0,0,0,0.07);
-
-    transition: all 0.3s ease;
-}
-
-
-/* ===============================
-   HOVER (CONTROLLED)
-================================= */
-
-.landing-start-card:hover {
-    transform: translateY(-6px);
-
-    /* 👇 controlled shadow (not too deep) */
-    box-shadow: 0 18px 35px rgba(0,0,0,0.10);
-}
-
-
-/* ===============================
-   EXTRA GAP BEFORE FOOTER
-================================= */
-
-footer,
-.site-footer {
-    margin-top: 0 !important;
-    border-top: none !important;
-    box-shadow: none !important;
-}
-
-/* Optional: add breathing space */
-footer {
-    padding-top: 40px;
-}
-
-/* ===============================
-   RESPONSIVE
-================================= */
-
-@media (max-width: 768px) {
-    .landing-get-started-title {
-        font-size: 28px;
+    .landing-career-transition{
+        padding:100px 0;
     }
 
-    .landing-start-card {
-        padding: 20px;
+    .career-title{
+        font-size:52px;
+    }
+
+    .career-description{
+        font-size:17px;
+    }
+
+    .career-stats{
+        gap:40px;
+    }
+
+    .career-stat strong{
+        font-size:38px;
+    }
+}
+/* ================================================
+   GET STARTED
+================================================ */
+.landing-choices{
+    padding:0px 0 !important;
+    overflow:hidden;
+}
+
+.choices-header{
+    text-align:center;
+    margin-bottom:40px !important;
+}
+
+.choices-label{
+    display:inline-block;
+
+    padding:8px 16px;
+
+    border-radius:999px;
+
+    background:rgba(31,183,181,.08);
+
+    color:#0D8A90;
+
+    font-size:12px;
+    font-weight:700;
+
+    letter-spacing:.15em;
+
+    margin-bottom:24px;
+}
+
+.choices-title{
+    font-size:clamp(25px,3vw,55px) !important;
+
+    font-weight:500 !important;
+
+    letter-spacing:-.04em;
+
+    color:#111827;
+
+    margin-bottom:16px;
+}
+
+.choices-subtitle{
+    color:#6b7280;
+    font-size:18px;
+}
+
+.choices-wrap{
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+
+    max-width:1000px;
+    margin:auto;
+}
+
+.choice-card{
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:45px 50px;
+
+    background:#fff;
+
+    border:1px solid #D9ECE5;
+
+    border-radius:28px;
+
+    text-decoration:none;
+
+    color:inherit;
+
+    box-shadow:
+    0 10px 30px rgba(13, 138, 144, 0.01) !important;
+
+    opacity:0;
+    transform:translateY(80px);
+
+    transition:
+    transform 0.25s ease, 
+    opacity .6s ease;
+}
+
+.choice-card.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
+.choice-card.float{
+    animation:choiceFloat 5s ease-in-out infinite;
+}
+
+.choice-card:last-child.float{
+    animation-delay:1s;
+}
+
+.choice-card:hover{
+    transform:translateY(-1px)!important;
+text-decoration:none !important;
+    border-color:#1FB7B5;
+
+    box-shadow:
+   none !important;
+}
+
+.choice-content h3{
+    font-size:26px !important;
+    font-weight:500 !important;
+    margin-bottom:10px !important;
+    color:#111827;
+}
+
+.choice-content p{
+    margin:0;
+    color:#6b7280;
+    font-size:16px;
+}
+ 
+
+@keyframes choiceFloat{
+
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-10px);
     }
 }
 
-/* ===============================
-   MOBILE HEADER VISIBILITY FIX
-================================= */
+@media(max-width:768px){
 
-@media (max-width: 991px) {
-    .site-navbar {
-        padding-top: 12px;
-        padding-bottom: 12px;
-        background: rgba(255, 255, 255, 0.98) !important;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+    .choice-card{
+        padding:32px 28px;
     }
 
-    .landing-header-logo-image {
-        height: 32px;
+    .choice-content h3{
+        font-size:28px;
     }
 
-    .landing-header-logo-text {
-        font-size: 1.35rem;
+    .choice-arrow{
+        font-size:34px;
     }
 
-    .site-menu-toggle {
-        text-decoration: none !important;
-        color: #111827 !important;
-        width: 42px;
-        height: 42px;
-        border-radius: 10px;
-        background: rgba(0, 0, 0, 0.04);
-        transition: background 0.2s ease;
+} 
+@media (prefers-color-scheme: dark) {
+
+    /* ── Base ── */
+    body, html {
+        background: #111111 !important;
     }
 
-    .site-menu-toggle:active {
-        background: rgba(0, 0, 0, 0.1);
+    /* ── Hero ── */
+    .hero {
+        background: #111111 !important;
+    }
+    .hero-h1 {
+        color: #F8FAFC !important;
+    }
+    .hero-sub {
+        color: #94A3B8 !important;
+    }
+    .hero-hint {
+        color: #7A8B96 !important;
+    }
+    .hero-search {
+        background: #111111 !important;
+        border-color: #23343A !important;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+    }
+    .hero-search:focus-within {
+        border-color: #1FB7B5 !important;
+        box-shadow: 0 0 0 3px rgba(31,183,181,.12) !important;
+    }
+    .search-field input {
+        color: #F8FAFC !important;
+    }
+    .search-field input::placeholder {
+        color: #7A8B96 !important;
+    }
+    .search-field:focus-within {
+        background: #1B2A2F !important;
+    }
+    .search-divider {
+        background: #23343A !important;
+    }
+
+    /* ── Wave section ── */
+    .wave-section {
+        background: #111111 !important;
+    }
+    .wave-section::before {
+        background: linear-gradient(to right, #111111, transparent) !important;
+    }
+    .wave-section::after {
+        background: linear-gradient(to left, #111111, transparent) !important;
+    }
+    .bubble-circle {
+        background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
+        border-color: #23343A !important;
+        color: #1FB7B5 !important;
+    }
+    .bubble-label {
+        color: #1FB7B5 !important;
+    }
+
+    /* ── Featured Jobs ── */
+    .featured-jobs-section {
+        background: #111111 !important;
+    }
+    .featured-jobs-section .section-head-title {
+        color: #F8FAFC !important;
+    }
+    .featured-jobs-section .section-head-sub {
+        color: #94A3B8 !important;
+    }
+    .fj-card {
+        background: #111111 !important;
+        border-color: #23343A !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
+    }
+    .fj-card:hover {
+        border-color: #1FB7B5 !important;
+        box-shadow: none !important;
+    }
+    .fj-title {
+        color: #F8FAFC !important;
+    }
+    .fj-company {
+        color: #94A3B8 !important;
+    }
+    .fj-meta-item {
+        color: #7A8B96 !important;
+    }
+    .fj-salary {
+        color: #F8FAFC !important;
+    }
+    .fj-tag {
+        background: rgba(31,183,181,.08) !important;
+        border-color: #23343A !important;
+        color: #1FB7B5 !important;
+    }
+    .badge-featured {
+        background: rgba(31,183,181,.12) !important;
+        border-color: #23343A !important;
+        color: #1FB7B5 !important;
+    }
+
+    /* ── Career Transition ── */
+    .landing-career-transition {
+        background:
+            #111111 !important;
+    }
+    .career-title {
+        color: #F8FAFC !important;
+    }
+    .career-description {
+        color: #94A3B8 !important;
+    }
+    .career-badge {
+        background: rgba(31,183,181,.08) !important;
+        color: #1FB7B5 !important;
+    }
+
+    /* ── Get Started / Choices ── */
+    .landing-choices {
+        background: #111111 !important;
+    }
+    .choices-title {
+        color: #F8FAFC !important;
+    }
+    .choices-subtitle {
+        color: #94A3B8 !important;
+    }
+    .choices-label {
+        background: rgba(31,183,181,.08) !important;
+        color: #1FB7B5 !important;
+    }
+    .choice-card {
+        background: #111111 !important;
+        border-color: #23343A !important;
+        box-shadow: none !important;
+    }
+    .choice-card:hover {
+        border-color: #1FB7B5 !important;
+        box-shadow: none !important;
+    }
+    .choice-content h3 {
+        color: #F8FAFC !important;
+    }
+    .choice-content p {
+        color: #94A3B8 !important;
     }
 }
-        </style>
+
+</style>
 </head>
 <?= view('Layouts/public_header', ['body_class' => 'landing-page']) ?>
 
-    <section class="hero py-5">
-        <div class="light-sweep"></div>
-<div class="glow"></div>
-        <div class="container">
-            <div class="status-pill">
-                <i class="fas fa-arrow-trend-up" style="color: var(--primary);"></i>
-                <?= max(1, $jobsPostedCount) ?>+ Active Jobs Available
-            </div>
-
-            <h1 class="hero-title">
-                Find Your
-                <span class="gradient-text">Dream Job</span>
-                Today
-            </h1>
-
-            <p class="hero-subtitle">
-                Connect with top companies and discover opportunities that match your skills.
-                AI-powered recommendations to fast-track your career.
-            </p>
-
-            <div class="card mb-4 landing-search-panel" style="max-width: 800px;">
-                <div class="card-body p-3 p-md-4">
-                    <form action="<?= base_url('jobs') ?>" method="get" class="landing-search-form">
-                        <div class="row g-3 g-md-2 align-items-stretch">
-                            <div class="col-12 col-md-6 col-lg-5">
-                                <div class="search-input-group">
-                                    <i class="fas fa-search" style="color: var(--muted-foreground);"></i>
-                                    <input type="text" name="search" placeholder="Job title, skills, or company" class="form-control border-0">
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6 col-lg-4">
-                                <div class="search-input-group">
-                                    <i class="fas fa-map-pin" style="color: var(--muted-foreground);"></i>
-                                    <input type="text" name="location" placeholder="City or location" class="form-control border-0">
-                                </div>
-                            </div>
-                            <div class="col-12 col-lg-3 landing-search-submit-col">
-                                <button class="btn btn-primary w-100 landing-search-submit" type="submit">Search Jobs</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="mb-5">
-                <span class="text-muted me-3" style="font-size: 0.875rem; font-weight: 500;">Popular:</span>
-                <div class="btn-group" role="group">
-                    <a class="btn btn-outline-primary btn-sm landing-popular-developer" href="<?= base_url('jobs?search=developer') ?>" style="border-width: 2px;">Developer</a>
-                    <a class="btn btn-sm" href="<?= base_url('jobs?search=designer') ?>" style="background: rgba(255, 123, 42, 0.2); color: var(--secondary); border: none;">Designer</a>
-                    <a class="btn btn-sm" href="<?= base_url('jobs?search=marketing') ?>" style="background: rgba(0, 191, 165, 0.2); color: var(--accent); border: none;">Marketing</a>
-                    <a class="btn btn-sm" href="<?= base_url('jobs?location=remote') ?>" style="background: rgba(59, 130, 246, 0.2); color: var(--primary); border: none;">Remote</a>
-                    <a class="btn btn-sm" href="<?= base_url('jobs?employment_type=full-time') ?>" style="background: rgba(255, 123, 42, 0.2); color: var(--secondary); border: none;">Full-time</a>
-                </div>
-            </div>
-
-            <p class="text-center text-muted" style="font-size: 0.875rem;">
-                Sign in to view complete listings, AI match score, and application status.
-            </p>
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero py-5">
+  <canvas id="heroCanvas"></canvas>
+  <div class="container">
+    <div class="hero-inner">
+      
+      <h1 class="hero-h1" id="heroH1" aria-label="Find Your Dream Job Today"></h1>
+      <p class="hero-sub" id="heroSub" aria-label="Connect with top companies and discover opportunities that match your skills. AI-powered recommendations to fast-track your career."></p>
+      <form action="<?= base_url('jobs') ?>" method="get" class="hero-search">
+        <div class="search-field">
+          <i class="fas fa-search"></i>
+          <input type="text" name="search" placeholder="Job title, skills or company">
         </div>
-    </section>
-
-    <section class="py-5" id="jobs">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
-                <div>
-                    <div class="ai-badge">
-                        <i class="fas fa-sparkles"></i>
-                        Live Open Roles
-                    </div>
-                    <h2 class="section-title">Featured Jobs</h2>
-                    <p class="section-subtitle">Live openings pulled from the database. Sign in to get personalized matching.</p>
-                </div>
-                <a href="<?= base_url('jobs') ?>" class="btn btn-ghost landing-view-all-link">View all jobs <i class="fas fa-arrow-right ms-2"></i></a>
-            </div>
-
-            <div class="landing-featured-jobs-grid mb-4">
-                <?php if (!empty($featuredJobs)): ?>
-                    <?php foreach (array_slice($featuredJobs, 0, 6) as $job): ?>
-                        <?php
-                        $title = (string) ($job['title'] ?? 'Untitled Role');
-                        $company = trim((string) ($job['company'] ?? 'Company'));
-                        $location = trim((string) ($job['location'] ?? 'N/A'));
-                        $postedAt = $formatAge($job['created_at'] ?? $job['posted_at'] ?? null);
-                        $matchScore = (int) round((float) ($job['match_score'] ?? 85));
-                        ?>
-                        <div class="landing-featured-jobs-item">
-                            <div class="job-card">
-                                <div class="job-card-icon"><i class="<?= esc($pickJobIcon($title)) ?>"></i></div>
-                                <h3 class="job-card-title"><?= esc($title) ?></h3>
-                                <p class="job-card-company"><?= esc($company) ?></p>
-                                <div class="job-card-meta">
-                                    <span><i class="fas fa-map-pin"></i> <?= esc($location) ?></span>
-                                    <span><i class="fas fa-clock"></i> <?= esc($postedAt) ?></span>
-                                </div>
-                                <div class="job-card-tags">
-                                    <span class="badge badge-primary">Full-time</span>
-                                    <span class="badge badge-secondary"><?= esc(substr($title, 0, 15) ?: 'Role') ?></span>
-                                </div>
-                                <div class="progress-container">
-                                    <div class="progress-bar-custom" style="width: <?= max(10, min(100, $matchScore)) ?>%;"></div>
-                                    <span class="progress-label"><?= max(10, min(100, $matchScore)) ?>%</span>
-                                </div>
-                                <a href="<?= base_url('login') ?>" class="view-details">View Details &rarr;</a>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="landing-featured-jobs-item">
-                        <div class="job-card">
-                            <div class="job-card-icon"><i class="fas fa-robot"></i></div>
-                            <h3 class="job-card-title">Data Scientist</h3>
-                            <p class="job-card-company">AI Dynamics</p>
-                            <div class="job-card-meta">
-                                <span><i class="fas fa-map-pin"></i> Boston, MA</span>
-                                <span><i class="fas fa-clock"></i> 2 days ago</span>
-                            </div>
-                            <div class="job-card-tags">
-                                <span class="badge badge-primary">Full-time</span>
-                                <span class="badge badge-secondary">Python</span>
-                            </div>
-                            <div class="progress-container">
-                                <div class="progress-bar-custom" style="width: 88%;"></div>
-                                <span class="progress-label">88%</span>
-                            </div>
-                            <a href="<?= base_url('login') ?>" class="view-details">View Details &rarr;</a>
-                        </div>
-                    </div>
-
-                    <div class="landing-featured-jobs-item">
-                        <div class="job-card">
-                            <div class="job-card-icon"><i class="fas fa-pencil-ruler"></i></div>
-                            <h3 class="job-card-title">UI/UX Designer</h3>
-                            <p class="job-card-company">Design Studio Pro</p>
-                            <div class="job-card-meta">
-                                <span><i class="fas fa-map-pin"></i> Los Angeles, CA</span>
-                                <span><i class="fas fa-clock"></i> 4 days ago</span>
-                            </div>
-                            <div class="job-card-tags">
-                                <span class="badge badge-primary">Remote</span>
-                                <span class="badge badge-secondary">Design</span>
-                            </div>
-                            <div class="progress-container">
-                                <div class="progress-bar-custom" style="width: 91%;"></div>
-                                <span class="progress-label">91%</span>
-                            </div>
-                            <a href="<?= base_url('login') ?>" class="view-details">View Details &rarr;</a>
-                        </div>
-                    </div>
-
-                    <div class="landing-featured-jobs-item">
-                        <div class="job-card">
-                            <div class="job-card-icon"><i class="fas fa-code"></i></div>
-                            <h3 class="job-card-title">Backend Engineer</h3>
-                            <p class="job-card-company">Cloud Systems Inc</p>
-                            <div class="job-card-meta">
-                                <span><i class="fas fa-map-pin"></i> Seattle, WA</span>
-                                <span><i class="fas fa-clock"></i> 1 day ago</span>
-                            </div>
-                            <div class="job-card-tags">
-                                <span class="badge badge-primary">Full-time</span>
-                                <span class="badge badge-secondary">Node.js</span>
-                            </div>
-                            <div class="progress-container">
-                                <div class="progress-bar-custom" style="width: 86%;"></div>
-                                <span class="progress-label">86%</span>
-                            </div>
-                            <a href="<?= base_url('login') ?>" class="view-details">View Details &rarr;</a>
-                        </div>
-                    </div>
-                <?php endif; ?>
-            </div>
-
-            <p class="text-center text-muted" style="font-size: 0.875rem;">
-                Sign in to see personalized match scores, saved jobs, and application status.
-            </p>
+        <div class="search-divider"></div>
+        <div class="search-field">
+          <i class="fas fa-map-pin"></i>
+          <input type="text" name="location" placeholder="City or Remote">
         </div>
-    </section>
+        <button type="submit" class="search-btn">Search Jobs</button>
+      </form>
+      <p class="hero-hint">Sign in to view AI match score, complete listings &amp; application status.</p>
+    </div>
+  </div>
+</section>
 
-    <section class="landing-career-transition">
-        <div class="light-sweep"></div>
-        <div class="container">
-            <div class="landing-career-transition-inner">
-                <div class="landing-career-transition-copy">
-                    <div class="landing-career-transition-kicker">
-                        <i class="fas fa-sparkles"></i>
-                        Career Transition AI
-                    </div>
-                    <h2 class="landing-career-transition-title">Career Transition AI</h2>
-                    <p class="landing-career-transition-text">
-                        We analyze your current skill set and generate a focused roadmap for your target role.
-                        Start your career transition journey today!
+<!-- ═══════════════ WAVE BUBBLES ═══════════════ -->
+<section class="wave-section">
+  <div class="wave-track-outer">
+    <div class="wave-track" id="waveTrack"></div>
+  </div>
+</section>
+
+<!-- ═══════════════ FEATURED JOBS ═══════════════ -->
+<section class="featured-jobs-section">
+  <div class="container">
+
+    <div class="text-center mb-5">
+      <h2 class="section-head-title">Featured Jobs</h2>
+      <p class="section-head-sub">Hand-picked opportunities from top companies</p>
+    </div>
+
+    <div class="d-flex flex-column" style="gap: 16px;" id="fjList">
+      <?php foreach (array_slice($featuredJobs, 0, 6) as $i => $job): ?>
+        <?php
+          $title    = (string) ($job['title']    ?? 'Untitled Role');
+          $company  = trim((string) ($job['company']  ?? 'Company'));
+          $location = trim((string) ($job['location'] ?? 'N/A'));
+          $postedAt = $formatAge($job['created_at'] ?? $job['posted_at'] ?? null);
+          $salary   = $job['salary'] ?? '';
+          $tags     = $job['tags']   ?? [];
+          $isFeat   = $job['is_featured'] ?? false;
+        ?>
+        <div class="fj-card" data-index="<?= $i ?>">
+          <div class="fj-main">
+            <div class="fj-top">
+              <span class="fj-title"><?= esc($title) ?></span>
+              <?php if ($isFeat): ?><span class="badge-featured">Featured</span><?php endif; ?>
+            </div>
+            <div class="fj-company"><?= esc($company) ?></div>
+            <div class="fj-meta">
+              <span class="fj-meta-item"><i class="fas fa-map-pin"></i> <?= esc($location) ?></span>
+              <span class="fj-meta-item"><i class="fas fa-briefcase"></i> Full-time</span>
+              <span class="fj-meta-item"><i class="fas fa-clock"></i> <?= esc($postedAt) ?></span>
+            </div>
+          </div>
+          <div class="fj-tags">
+            <?php foreach (array_slice($tags, 0, 3) as $tag): ?>
+              <span class="fj-tag"><?= esc($tag) ?></span>
+            <?php endforeach; ?>
+          </div>
+          <div class="fj-right">
+            <?php if ($salary): ?><span class="fj-salary"><?= esc($salary) ?></span><?php endif; ?>
+            <a href="<?= base_url('login') ?>" class="btn btn-primary">Apply Now</a>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="<?= base_url('jobs') ?>" class="btn btn-outline-primary px-4">View All Jobs</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════ CAREER TRANSITION ═══════════════ -->
+<section class="landing-career-transition">
+
+    <div class="career-bg-glow"></div>
+
+    <div class="container-fluid px-lg-5">
+
+        <div class="career-content text-center">
+ 
+            <h2 class="career-title">
+                Transition Into Your&#160;<span>Dream Career</span>&#160;With AI Guidance
+            </h2>
+
+            <p class="career-description">
+                Discover skill gaps, build personalized learning paths,
+                identify certifications, and generate a complete roadmap
+                to move from your current role into the career you want.
+            </p>
+
+            <div class="career-actions">
+                <a href="<?= base_url('career-transition') ?>"
+                   class="btn btn-outline-primary">
+                    Generate My Roadmap
+                </a>
+
+                <a href="<?= base_url('jobs') ?>"
+                   class="btn btn-outline-primary">
+                    Explore Careers
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ═══════════════ GET STARTED ═══════════════ -->
+<section class="landing-choices" id="get-started">
+
+    <div class="container">
+
+        <div class="choices-header"> 
+            <h2 class="choices-title">
+                Who Are You?
+            </h2>
+
+            <p class="choices-subtitle">
+                Choose how you want to use HireMatrix.
+            </p>
+
+        </div>
+
+        <div class="choices-wrap">
+
+            <a href="<?= base_url('register') ?>"
+               class="choice-card">
+
+                <div class="choice-content">
+
+                    <h3>
+                        I Want To Find A Job
+                    </h3>
+
+                    <p>
+                        AI matching, career roadmaps,
+                        resume analysis and interview preparation.
                     </p>
-                    <a href="<?= base_url('career-transition') ?>" class="btn btn-light landing-career-transition-btn">
-                        Generate Roadmap <i class="fas fa-arrow-right ms-2"></i>
-                    </a>
-                </div> 
-            </div>
-        </div>
-    </section>
 
-    <section class="landing-get-started" id="get-started">
-        <div class="container">
-            <div class="text-center landing-get-started-head">
-                <h2 class="landing-get-started-title">Get Started Today</h2>
-                <p class="landing-get-started-subtitle">
-                    Whether you're looking for your next opportunity or searching for top talent, HireMatrix has you covered.
-                </p>
-            </div>
-
-            <div class="row g-4 justify-content-center landing-get-started-grid">
-                <div class="col-lg-5">
-                    <div class="landing-start-card landing-start-card-candidate h-100">
-                        <div class="landing-start-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3 style="color:#0a80ff">For Job Seekers</h3>
-                        <p>Discover opportunities tailored to your skills and career goals.</p>
-                        <ul class="landing-start-list">
-                            <li><i class="fas fa-check"></i> AI-powered job recommendations</li>
-                            <li><i class="fas fa-check"></i> Skill gap analysis</li>
-                            <li><i class="fas fa-check"></i> Career transition tools</li>
-                        </ul>
-                        <a href="<?= base_url('register') ?>" class="btn btn-primary landing-start-btn">
-                            Create Candidate Account <i class="fas fa-arrow-right ms-2"></i>
-                        </a>
-                    </div>
                 </div>
 
-                <div class="col-lg-5">
-                    <div class="landing-start-card landing-start-card-recruiter h-100">
-                        <div class="landing-start-icon landing-start-icon-recruiter">
-                            <i class="fas fa-briefcase"></i>
-                        </div>
-                        <h3 style="color:#ff8018">For Recruiters</h3>
-                        <p>Find and connect with the best talent for your organization.</p>
-                        <ul class="landing-start-list landing-start-list-recruiter">
-                            <li><i class="fas fa-check"></i> Smart candidate matching</li>
-                            <li><i class="fas fa-check"></i> ATS integration</li>
-                            <li><i class="fas fa-check"></i> Team collaboration tools</li>
-                        </ul>
-                        <a href="<?= base_url('recruiter/register') ?>" class="btn btn-primary landing-start-btn landing-start-btn-recruiter">
-                            Join as Recruiter <i class="fas fa-arrow-right ms-2"></i>
-                        </a>
-                    </div>
+               
+            </a>
+
+            <a href="<?= base_url('recruiter/register') ?>"
+               class="choice-card">
+
+                <div class="choice-content">
+
+                    <h3>
+                        I Want To Hire Talent
+                    </h3>
+
+                    <p>
+                        Candidate sourcing, AI screening
+                        and recruitment automation.
+                    </p>
+
                 </div>
-            </div>
+
+               
+
+            </a>
+
         </div>
-    </section>
+
+    </div>
+<br/><br/>
+</section>
 
 <?= view('Layouts/public_footer') ?>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+
+<!-- Hero canvas particle animation -->
+<script>
+(function () {
+  const canvas = document.getElementById('heroCanvas');
+  const hero   = canvas.parentElement;
+  const ctx    = canvas.getContext('2d');
+  const COLORS = ['#1FB7B5','#53B86C','#B5D84E','#0D8A90'];
+  let pts = [], W, H;
+  function resize() { W = canvas.width = hero.offsetWidth; H = canvas.height = hero.offsetHeight; }
+  function init() {
+    resize();
+    pts = Array.from({length:55}, () => ({
+      x: Math.random()*W, y: Math.random()*H,
+      vx: (Math.random()-.5)*.35, vy: (Math.random()-.5)*.35,
+      r: 2+Math.random()*2, color: COLORS[Math.floor(Math.random()*COLORS.length)]
+    }));
+  }
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p => {
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W) p.vx*=-1;
+      if(p.y<0||p.y>H) p.vy*=-1;
+    });
+    for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++) {
+      const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<90){
+        ctx.beginPath();
+        ctx.strokeStyle=`rgba(31,183,181,${(1-d/90)*.28})`;
+        ctx.lineWidth=1; ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y); ctx.stroke();
+      }
+    }
+    pts.forEach(p => {
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=p.color+'55'; ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*.5,0,Math.PI*2); ctx.fillStyle=p.color+'cc'; ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  init(); draw();
+  window.addEventListener('resize', resize);
+})();
+</script>
+
+<!-- Hero typewriter -->
+<script>
+(function () {
+  var GRAD_START = 'Find Your ', GRAD_WORD = 'Dream Job', FULL_PLAIN = 'Find Your Dream Job Today';
+  var SUB_TEXT = 'Connect with top companies and discover opportunities that match your skills. AI-powered recommendations to fast-track your career.';
+  var h1El = document.getElementById('heroH1'), subEl = document.getElementById('heroSub');
+  var charIdx = 0, subIdx = 0;
+  function buildH1(n) {
+    var plain=FULL_PLAIN.slice(0,n), gs=GRAD_START.length, gw=GRAD_WORD.length, cursor='<span class="tw-cursor"></span>';
+    if(n<=gs) return plain+cursor;
+    if(n<=gs+gw) return GRAD_START+'<span class="grad-text">'+plain.slice(gs)+'</span>'+cursor;
+    return GRAD_START+'<span class="grad-text">'+GRAD_WORD+'</span>'+plain.slice(gs+gw)+(n<FULL_PLAIN.length?cursor:'');
+  }
+  function typeH1() {
+    if(charIdx>FULL_PLAIN.length){h1El.innerHTML=buildH1(FULL_PLAIN.length);setTimeout(typeSub,380);return;}
+    h1El.innerHTML=buildH1(charIdx++); setTimeout(typeH1,52+Math.random()*28);
+  }
+  function typeSub() {
+    if(subIdx>SUB_TEXT.length){subEl.innerHTML=SUB_TEXT;return;}
+    subEl.innerHTML=SUB_TEXT.slice(0,subIdx++)+'<span class="tw-cursor"></span>';
+    setTimeout(typeSub,18+Math.random()*12);
+  }
+  setTimeout(typeH1,300);
+})();
+</script>
+
+<!-- Wave bubble animation -->
+<script>
+(function () {
+  const cats = [
+    {icon:'fa-code',           label:'Developer'},
+    {icon:'fa-bullhorn',       label:'Marketing'},
+    {icon:'fa-home',           label:'Remote'},
+    {icon:'fa-clock',          label:'Full-time'},
+    {icon:'fa-database',       label:'Data & AI'},
+    {icon:'fa-users',          label:'HR'},
+    {icon:'fa-cube',        label:'Design'},
+    {icon:'fa-chart-line',     label:'Finance'},
+    {icon:'fa-handshake',      label:'Sales'},
+    {icon:'fa-heartbeat',      label:'Healthcare'},
+    {icon:'fa-graduation-cap', label:'Education'},
+    {icon:'fa-cogs',           label:'Operations'},
+  ];
+  const track      = document.getElementById('waveTrack');
+  const ITEM_W     = 150;
+  const AMPLITUDE  = 80;
+  const WAVE_SPEED = 0.00022;
+  const SCROLL_SPD = 0.55;
+  const totalW     = cats.length * ITEM_W;
+  const bubbles    = [];
+
+  for (let i = 0; i < cats.length * 3; i++) {
+    const c  = cats[i % cats.length];
+    const el = document.createElement('a');
+    el.href      = '<?= base_url("jobs") ?>';
+    el.className = 'cat-bubble';
+    el.style.cssText = 'position:absolute; pointer-events:none;';
+    el.innerHTML = `<div class="bubble-circle"><i class="fas ${c.icon}"></i><span class="bubble-label">${c.label}</span></div>`;
+    track.appendChild(el);
+    bubbles.push(el);
+  }
+
+  const centerY = 90;
+  let offset = 0, t = 0;
+
+  function animate() {
+    offset += SCROLL_SPD;
+    if (offset >= totalW) offset -= totalW;
+    t += WAVE_SPEED;
+
+    bubbles.forEach((el, i) => {
+      let x = i * ITEM_W - offset;
+      x = ((x % (totalW * 3)) + totalW * 3) % (totalW * 3) - totalW;
+      const phase = (x / (ITEM_W * cats.length)) * Math.PI * 2;
+      const y = centerY + Math.sin(phase - t * Math.PI * 2 * cats.length) * AMPLITUDE;
+      el.style.left      = x + 'px';
+      el.style.top       = y + 'px';
+      el.style.transform = 'translateX(-50%)';
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+</script>
+
+<!-- Featured jobs: unfold one by one then float forever -->
+<script>
+window.addEventListener('load', function () {
+  var cards = document.querySelectorAll('#fjList .fj-card');
+  if (!cards.length) return;
+
+  cards.forEach(function (card) {
+    var i = parseInt(card.getAttribute('data-index'), 10) || 0;
+
+    // Step 1 — reveal (slide up + fade in), staggered
+    setTimeout(function () {
+      card.classList.add('fj-visible');
+
+      // Step 2 — once transition finishes, start the float animation permanently
+      card.addEventListener('transitionend', function onDone(e) {
+        if (e.propertyName !== 'opacity') return;
+        card.removeEventListener('transitionend', onDone);
+        card.classList.add('fj-float');
+      });
+    }, 200 + i * 220);
+  });
+});
+</script>
+<script>
+
+document.addEventListener('DOMContentLoaded',()=>{
+
+    const section=document.querySelector('.landing-choices');
+
+    const cards=document.querySelectorAll('.choice-card');
+
+    const observer=new IntersectionObserver(
+
+        entries=>{
+
+            entries.forEach(entry=>{
+
+                if(entry.isIntersecting){
+
+                    cards.forEach((card,index)=>{
+
+                        setTimeout(()=>{
+
+                            card.classList.add('show');
+
+                            setTimeout(()=>{
+
+                                card.classList.add('float');
+
+                            },500);
+
+                        },index*250);
+
+                    });
+
+                    observer.disconnect();
+
+                }
+
+            });
+
+        },
+
+        {
+            threshold:.25
+        }
+
+    );
+
+    observer.observe(section);
+
+});
+
+</script>
+
 </body>
 </html>

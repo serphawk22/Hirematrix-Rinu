@@ -160,6 +160,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    const leftnavUser     = document.getElementById('candidateLeftnavUser');
+    const leftnavUserBtn  = document.getElementById('candidateLeftnavUserBtn');
+    const leftnavDropdown = document.getElementById('candidateLeftnavUserDropdown');
+    if (leftnavUserBtn && leftnavDropdown) {
+        leftnavUserBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = leftnavDropdown.classList.toggle('is-open');
+            leftnavUserBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+    }
+
     /* -- Global Close on Click Outside -- */
     document.addEventListener('click', (e) => {
         if (languageMenu && languagePanel && !languageMenu.contains(e.target)) {
@@ -172,6 +183,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (avatarMenu && avatarDropdown && !avatarMenu.contains(e.target)) {
             avatarDropdown.classList.remove('is-open');
             if (avatarBtn) avatarBtn.setAttribute('aria-expanded', 'false');
+        }
+        if (leftnavUser && leftnavDropdown && !leftnavUser.contains(e.target)) {
+            leftnavDropdown.classList.remove('is-open');
+            if (leftnavUserBtn) leftnavUserBtn.setAttribute('aria-expanded', 'false');
         }
     });
 });

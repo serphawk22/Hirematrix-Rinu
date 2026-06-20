@@ -2,9 +2,9 @@
 
 <div class="companies-directory-jobboard">
     <div class="container">
-        <div class="page-board-header">
+        <div class="page-board-header page-board-header-tight">
             <div class="page-board-copy">
-                <span class="page-board-kicker"><i class="fas fa-magnifying-glass"></i> AI Discovery</span>
+                <span class="page-board-kicker"><i class="fas fa-search"></i> AI Discovery</span>
                 <h1 class="page-board-title">Company & Job Discovery</h1>
                 <p class="page-board-subtitle">Search for live job listings from top multinational companies or browse our comprehensive company directory</p>
             </div>
@@ -14,7 +14,7 @@
     <section class="site-section pt-0">
         <div class="container">
             <!-- Search Panel -->
-            <div class="companies-filter-card card mb-4">
+            <div class="companies-filter-card card">
                 <div class="card-body">
                     <form id="unifiedDiscoverySearchForm" method="get" action="<?= base_url('candidate/company-job-discovery') ?>">
                         <div class="row align-items-end">
@@ -65,8 +65,8 @@
 
             <!-- Company Directory Section (Paginated) -->
             <?php if (!$shouldAutoTriggerAiSearch): ?>
-                <div id="companyDirectorySection" class="mt-5">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
+                <div id="companyDirectorySection">
+                    <div class="company-discovery-section-head results-bar">
                         <div>
                             <h2 class="section-title mb-1">Registered Companies</h2>
                             <p class="section-subtitle mb-0">Browse companies actively hiring on our platform</p>
@@ -93,6 +93,9 @@
                                 $companySize    = trim((string) ($company['size'] ?? ''));
                                 $companyLogo    = trim((string) ($company['logo'] ?? ''));
                                 $companyWebsite = trim((string) ($company['website'] ?? ''));
+                                $companyFounded = trim((string) ($company['founded_year'] ?? ''));
+                                $openJobsCount  = (int) ($company['open_jobs_count'] ?? 0);
+                                $profileUrl     = (string) ($company['profile_url'] ?? base_url('company/' . (int) $company['id']));
                                 $websiteHost    = $companyWebsite !== '' ? (parse_url($companyWebsite, PHP_URL_HOST) ?: $companyWebsite) : '';
                                 $websiteHost    = preg_replace('/^www\./i', '', (string) $websiteHost) ?? '';
                                 $googleLogoUrl  = $websiteHost !== '' ? 'https://www.google.com/s2/favicons?domain=' . rawurlencode($websiteHost) . '&sz=96' : '';
@@ -101,38 +104,46 @@
                                 $logoErrorJs    = "if(this.dataset.googleLogo&&this.src!==this.dataset.googleLogo){this.src=this.dataset.googleLogo;}else{this.parentNode.innerHTML='" . $fallbackHtml . "';}";
                                 ?>
                                 <article class="job-card company-directory-card" data-company-id="<?= (int) $company['id'] ?>" data-company-name="<?= esc($companyName) ?>">
-                                    <div class="job-card-icon company-directory-logo">
-                                        <?php if ($logoUrl !== ''): ?>
-                                            <img src="<?= esc($logoUrl) ?>"
-                                                 alt="<?= esc($companyName) ?>"
-                                                 data-google-logo="<?= esc($googleLogoUrl) ?>"
-                                                 onerror="<?= esc($logoErrorJs, 'attr') ?>">
-                                        <?php else: ?>
-                                            <span><?= esc($companyInitial) ?></span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <h3 class="job-card-title">
-                                        <a href="<?= base_url('company/' . (int) $company['id']) ?>"><?= esc($companyName) ?></a>
-                                    </h3>
-                                    <?php if (!empty($companyIndustry)): ?>
-                                        <p class="job-card-company"><?= esc($companyIndustry) ?></p>
-                                    <?php endif; ?>
-                                    <div class="job-card-meta company-directory-meta">
-                                        <?php if (!empty($companyHq)): ?>
-                                            <span><i class="fas fa-map-pin"></i> <?= esc($companyHq) ?></span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="job-card-tags company-directory-tags">
-                                        <?php if (!empty($companySize)): ?>
-                                            <span class="badge badge-primary"><?= esc($companySize) ?></span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="company-directory-actions">
-                                        <a href="<?= base_url('jobs?company=' . urlencode($companyName)) ?>"
-                                           class="company-directory-jobs-link">
-                                            <i class="fas fa-briefcase me-1"></i> See live jobs
+                                    <div class="company-directory-card-head">
+                                        <div class="job-card-icon company-directory-logo">
+                                            <?php if ($logoUrl !== ''): ?>
+                                                <img src="<?= esc($logoUrl) ?>"
+                                                     alt="<?= esc($companyName) ?>"
+                                                     data-google-logo="<?= esc($googleLogoUrl) ?>"
+                                                     onerror="<?= esc($logoErrorJs, 'attr') ?>">
+                                            <?php else: ?>
+                                                <span><?= esc($companyInitial) ?></span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="company-directory-title-wrap">
+                                            <h3 class="job-card-title">
+                                                <a href="<?= esc($profileUrl) ?>"><?= esc($companyName) ?></a>
+                                            </h3>
+                                        </div>
+                                        <a href="<?= esc($profileUrl) ?>" class="company-directory-card-arrow" aria-label="View <?= esc($companyName) ?>">
+                                            <i class="fas fa-chevron-right"></i>
                                         </a>
                                     </div>
+
+                                    <?php if ($openJobsCount > 0 || $companyIndustry !== '' || $companyHq !== '' || $companySize !== '' || $companyFounded !== ''): ?>
+                                        <div class="company-directory-meta">
+                                        <?php if ($openJobsCount > 0): ?>
+                                            <span><i class="fas fa-briefcase"></i> <?= esc((string) $openJobsCount) ?> open <?= $openJobsCount === 1 ? 'role' : 'roles' ?></span>
+                                        <?php endif; ?>
+                                        <?php if ($companyIndustry !== ''): ?>
+                                            <span><?= esc($companyIndustry) ?></span>
+                                        <?php endif; ?>
+                                        <?php if ($companyHq !== ''): ?>
+                                            <span><i class="fas fa-map-pin"></i> <?= esc($companyHq) ?></span>
+                                        <?php endif; ?>
+                                        <?php if ($companySize !== ''): ?>
+                                            <span><i class="fas fa-users"></i> <?= esc($companySize) ?></span>
+                                        <?php endif; ?>
+                                        <?php if ($companyFounded !== ''): ?>
+                                            <span><i class="far fa-calendar"></i> Since <?= esc($companyFounded) ?></span>
+                                        <?php endif; ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </article>
                             <?php endforeach; ?>
                         </div>

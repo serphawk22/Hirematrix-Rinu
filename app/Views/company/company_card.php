@@ -6,6 +6,7 @@ $industry = trim((string) ($company['industry'] ?? 'Hiring company'));
 $description = trim((string) ($company['description'] ?? 'Explore this company and review current opportunities.'));
 $openJobs = (int) ($company['open_jobs'] ?? 0);
 $website = trim((string) ($company['website'] ?? ''));
+$jobsUrl = trim((string) ($company['jobs_url'] ?? ''));
 $logo = trim((string) ($company['logo'] ?? ''));
 $initial = strtoupper(substr($name, 0, 1) ?: 'C');
 $logoUrl = $logo !== '' && preg_match('/^https?:\/\//i', $logo) ? $logo : ($logo !== '' ? base_url($logo) : '');
@@ -30,9 +31,14 @@ $logoUrl = $logo !== '' && preg_match('/^https?:\/\//i', $logo) ? $logo : ($logo
         <span class="local-company-pill"><i class="fas fa-briefcase"></i> <?= $openJobs > 0 ? esc((string) $openJobs) . ' open' : 'Verify openings' ?></span>
     </div>
     <p class="local-company-description"><?= esc($description) ?></p>
-    <?php if ($website !== ''): ?>
+    <?php if ($jobsUrl !== '' || $website !== ''): ?>
         <div class="local-company-actions">
-            <a href="<?= esc($website) ?>" target="_blank" rel="noopener" class="local-company-primary"><i class="fas fa-external-link-alt"></i> Website</a>
+            <?php if ($jobsUrl !== ''): ?>
+                <a href="<?= esc($jobsUrl) ?>" class="local-company-primary"><i class="fas fa-briefcase"></i> View Jobs</a>
+            <?php endif; ?>
+            <?php if ($website !== ''): ?>
+                <a href="<?= esc($website) ?>" target="_blank" rel="noopener" class="local-company-secondary"><i class="fas fa-external-link-alt"></i> Website</a>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
 </article>

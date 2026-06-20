@@ -7,7 +7,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 
 $routes->get('/', 'Home::index');
-
+$routes->post('recruiter/get-ai-report', 'Recruiter::getAiReport');
 // Route to serve the standalone portal trailer page
 $routes->get('portal-trailer', function() {
     $path = ROOTPATH . 'standalone/portal-trailer.html';
@@ -28,6 +28,11 @@ $routes->get('/suggest', 'Companies::suggest');
 $routes->get('login', 'Auth::login');
 $routes->post('login', 'Auth::authenticate');
 $routes->get('logout', 'Auth::logout');
+$routes->get('about', 'LegalPages::about');
+$routes->get('contact', 'LegalPages::contact');
+$routes->post('contact', 'LegalPages::submitContact');
+$routes->get('privacy-policy', 'LegalPages::privacyPolicy');
+$routes->get('terms-of-service', 'LegalPages::termsOfService');
 $routes->get('admin/login', 'AdminAnalytics::login');
 $routes->post('admin/login', 'AdminAnalytics::authenticate');
 $routes->get('admin/logout', 'AdminAnalytics::logout', ['filter' => 'admin']);
@@ -80,6 +85,8 @@ $routes->post('recruiter/register', 'Auth::saveAdmin');
 $routes->get('recruiter/verification', 'Auth::recruiterVerification');
 $routes->post('recruiter/verify-email-code', 'Auth::submitRecruiterEmailCode');
 $routes->post('recruiter/resend-verification-email', 'Auth::resendRecruiterVerificationEmail');
+$routes->post('recruiter/send-phone-otp', 'Auth::sendRecruiterPhoneOtp');
+$routes->post('recruiter/verify-phone-otp', 'Auth::submitRecruiterPhoneOtp');
 $routes->get('company/(:num)', 'CompanyProfile::show/$1', ['filter' => 'auth']);
 $routes->post('company/(:num)/review', 'CompanyProfile::submitReview/$1', ['filter' => 'candidate']);
 
@@ -128,6 +135,7 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     
     // Main Dashboard
     $routes->get('dashboard', 'DashboardController::index');
+    $routes->get('settings', 'Recruiter::settings');
     
     // Leaderboard
     $routes->get('dashboard/leaderboard', 'DashboardController::leaderboard');

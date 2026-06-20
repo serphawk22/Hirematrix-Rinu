@@ -7,6 +7,15 @@
     <meta name="csrf-token" content="<?= csrf_hash() ?>">
     <meta name="csrf-name" content="<?= csrf_token() ?>">
     <title><?= esc($title ?? 'Candidate Portal') ?></title>
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('theme') === 'dark') {
+                    document.documentElement.classList.add('hm-dark-preload');
+                }
+            } catch (error) {}
+        })();
+    </script>
     <!-- Inside the <head> tag -->
     <link rel="icon" type="image/png" href="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>">
 
@@ -51,6 +60,21 @@
         <!-- CSS Circle Progress (Required for visual ATS Score) -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/css-percentage-circle/0.0.3/css/circle.min.css">
     <?php endif; ?>
+    <style>
+        html.hm-dark-preload,
+        html.hm-dark-preload body,
+        body.dark.candidate-app {
+            background: #0f0f0f;
+        }
+        html.hm-dark-preload #overlayer,
+        body.dark.candidate-app #overlayer {
+            background: #0f0f0f !important;
+        }
+        html.hm-dark-preload .loader .spinner-border,
+        body.dark.candidate-app .loader .spinner-border {
+            color: #1FB7B5 !important;
+        }
+    </style>
 </head>
 <body id="top" class="hirematrix-app candidate-app">
 
@@ -226,15 +250,6 @@
             </div>
 
             <div class="hm-drawer-body">
-                <div class="hm-drawer-cta-card">
-                    <div class="hm-drawer-cta-kicker">For You</div>
-                    <h3><?= esc($recommendationTitle) ?></h3>
-                    <p><?= esc($recommendationText) ?></p>
-                    <div class="hm-drawer-cta-actions">
-                        <a href="<?= esc($recommendationUrl) ?>" class="hm-drawer-cta-primary"><?= esc($recommendationCta) ?></a>
-                        <a href="<?= esc($profilePromptUrl) ?>" class="hm-drawer-cta-secondary"><?= esc($profilePromptCta) ?></a>
-                    </div>
-                </div>
 
                 <!-- Section: My Activity -->
                 <div class="hm-drawer-section">
@@ -269,10 +284,6 @@
                 <!-- Section: Jobs -->
                 <div class="hm-drawer-section">
                     <div class="hm-drawer-section-title">Jobs</div>
-                    <a href="<?= base_url('jobs') ?>" class="hm-drawer-link">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-search"></i></span>
-                        <span>Browse All Jobs</span>
-                    </a>
                     <a href="<?= base_url('jobs?tab=suggested') ?>" class="hm-drawer-link">
                         <span class="hm-drawer-link-icon"><i class="fas fa-fire"></i></span>
                         <span>Recommended Jobs</span>
@@ -286,11 +297,7 @@
                         <span class="hm-drawer-link-icon"><i class="fas fa-search-plus"></i></span>
                         <span>Company & Job Discovery</span>
                     </a>
-                    <a href="<?= base_url('candidate/job-alerts') ?>" class="hm-drawer-link">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-bell"></i></span>
-                        <span>Job Alerts</span>
-                        <span class="hm-drawer-pill hm-drawer-pill-muted"><?= esc($formatCompactCount($jobAlertsCount)) ?></span>
-                    </a>
+                    
                 </div>
 
                 <!-- Section: Career Tools & Interview Prep -->
@@ -301,7 +308,7 @@
                         <span>Job Search Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="hm-drawer-link <?= $isCareerTransitionActive ? 'is-active' : '' ?>">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-route"></i></span>
+                        <span class="hm-drawer-link-icon"><i class="fas fa-rocket"></i></span>
                         <span>Career Transition AI</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
@@ -311,7 +318,7 @@
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($mentorUrl) ?>" class="hm-drawer-link <?= $isPremiumMentorActive ? 'is-active' : '' ?>">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-robot"></i></span>
+                        <span class="hm-drawer-link-icon"><i class="fas fa-comments"></i></span>
                         <span>AI Career Mentor</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
@@ -362,7 +369,7 @@
                 <img src="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>" alt="HireMatrix">
             </a>
             <div class="cand-leftnav__brand-text">
-                <span class="cand-leftnav__brand-name">HireMatrix</span>
+                <span class="cand-leftnav__brand-name">Hire<span>Matrix</span></span>
                 <span class="cand-leftnav__brand-tag">Candidate Portal</span>
             </div>
         </div>
@@ -449,7 +456,7 @@
                         <span>Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="cand-leftnav__link <?= $isCareerTransitionActive ? 'is-active' : '' ?>" title="Career Transition">
-                        <span class="cand-leftnav__icon"><i class="fas fa-route"></i></span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-rocket"></i></span>
                         <span>Career Transition</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
@@ -459,7 +466,7 @@
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($mentorUrl) ?>" class="cand-leftnav__link <?= $isPremiumMentorActive ? 'is-active' : '' ?>" title="AI Mentor">
-                        <span class="cand-leftnav__icon"><i class="fas fa-robot"></i></span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-comments"></i></span>
                         <span>AI Mentor</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
@@ -471,18 +478,41 @@
         <!-- Bottom: utility actions -->
         <div class="cand-leftnav__bottom">
 
-            <!-- Theme + Language row -->
-            <div class="cand-leftnav__utils">
-                <div class="candidate-language-menu" id="candidateLanguageMenu">
-                    <button type="button" class="candidate-language-btn" id="candidateLanguageBtn" aria-haspopup="true" aria-expanded="false" title="Change language" aria-label="Change language">
-                        <i class="fas fa-globe"></i>
-                        <span>Language</span>
-                    </button>
-                    <div class="candidate-language-panel cand-leftnav__lang-panel" id="candidateLanguagePanel">
-                        <div class="candidate-language-title"><i class="fas fa-language"></i><span>Translate page</span></div>
-                        <?= view('components/google_translate_widget') ?>
+            <div class="cand-leftnav__user" id="candidateLeftnavUser">
+                <div class="cand-leftnav__user-dropdown" id="candidateLeftnavUserDropdown">
+                    <div class="cand-leftnav__dropdown-head">
+                        <span class="cand-leftnav__dropdown-avatar">
+                            <?php if ($candidatePhotoUrl !== ''): ?>
+                                <img src="<?= esc($candidatePhotoUrl) ?>" alt="<?= esc($candidateName) ?>">
+                            <?php else: ?>
+                                <?= esc($candidateInitial) ?>
+                            <?php endif; ?>
+                        </span>
+                        <span class="cand-leftnav__dropdown-user">
+                            <strong><?= esc($candidateName) ?></strong>
+                            <span><?= esc($profileHeadline ?? 'Candidate') ?></span>
+                        </span>
                     </div>
+                    <a href="<?= base_url('candidate/profile') ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
+                    <a href="<?= base_url('candidate/settings') ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
+                    <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
+                    <a href="<?= base_url('payment/history') ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
+                    <a href="<?= base_url('logout') ?>" class="cand-leftnav__logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
                 </div>
+                <button type="button" class="cand-leftnav__user-btn" id="candidateLeftnavUserBtn" aria-haspopup="true" aria-expanded="false">
+                    <span class="cand-leftnav__avatar">
+                        <?php if ($candidatePhotoUrl !== ''): ?>
+                            <img src="<?= esc($candidatePhotoUrl) ?>" alt="<?= esc($candidateName) ?>">
+                        <?php else: ?>
+                            <?= esc($candidateInitial) ?>
+                        <?php endif; ?>
+                    </span>
+                    <span class="cand-leftnav__user-info">
+                        <strong><?= esc($candidateName) ?></strong>
+                        <span>Candidate</span>
+                    </span>
+                    <i class="fas fa-chevron-up cand-leftnav__user-more"></i>
+                </button>
             </div>
 
         </div>
@@ -495,18 +525,18 @@
     <header class="cand-topbar" id="candTopbar">
         <a href="<?= base_url('candidate/dashboard') ?>" class="cand-topbar__logo">
             <img src="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>" alt="HireMatrix" class="candidate-logo-sm">
-            <span>HireMatrix</span>
+            <span class="cand-topbar__brand-name">Hire<span>Matrix</span></span>
         </a>
         <div class="cand-topbar__actions">
             <button type="button" class="mobile-nav-icon" id="mobileSearchToggle" title="Search" aria-label="Search">
                 <span class="icon-search"></span>
             </button>
-            <a href="<?= base_url('notifications') ?>" class="mobile-nav-icon <?= $unreadNotificationCount > 0 ? 'has-unread' : '' ?>" title="Notifications">
+            <!-- <a href="<?= base_url('notifications') ?>" class="mobile-nav-icon <?= $unreadNotificationCount > 0 ? 'has-unread' : '' ?>" title="Notifications">
                 <span class="icon-bell"></span>
                 <?php if ($unreadNotificationCount > 0): ?>
                     <span class="mobile-nav-badge js-notification-badge" data-unread-count="<?= $unreadNotificationCount ?>"><?= $unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount ?></span>
                 <?php endif; ?>
-            </a>
+            </a> -->
             <!-- Avatar dropdown -->
             <div class="cand-topbar__avatar-menu" id="candidateAvatarMenu">
                 <button type="button" class="cand-topbar__avatar-btn" id="candidateAvatarBtn" aria-haspopup="true" aria-expanded="false">
@@ -519,12 +549,24 @@
                     </div>
                 </button>
                 <div class="candidate-avatar-dropdown cand-topbar__user-dropdown" id="candidateAvatarDropdown">
-                    <div class="candidate-avatar-dropdown-header">ACCOUNT</div>
+                    <div class="cand-leftnav__dropdown-head">
+                        <span class="cand-leftnav__dropdown-avatar">
+                            <?php if ($candidatePhotoUrl !== ''): ?>
+                                <img src="<?= esc($candidatePhotoUrl) ?>" alt="<?= esc($candidateName) ?>">
+                            <?php else: ?>
+                                <?= esc($candidateInitial) ?>
+                            <?php endif; ?>
+                        </span>
+                        <span class="cand-leftnav__dropdown-user">
+                            <strong><?= esc($candidateName) ?></strong>
+                            <span><?= esc($profileHeadline ?? 'Candidate') ?></span>
+                        </span>
+                    </div>
                     <a href="<?= base_url('candidate/profile') ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
                     <a href="<?= base_url('candidate/settings') ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
-                    <a href="<?= base_url('premium/plans') ?>"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
+                    <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
                     <a href="<?= base_url('payment/history') ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
-                    <a href="<?= base_url('logout') ?>"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                    <a href="<?= base_url('logout') ?>" class="cand-leftnav__logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
                 </div>
             </div>
             <a href="#" class="mobile-nav-hamburger" id="hmDrawerToggle" aria-label="Menu" aria-expanded="false">
@@ -607,5 +649,6 @@
         </a>
     </nav>
         
+
 
 

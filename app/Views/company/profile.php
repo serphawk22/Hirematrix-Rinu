@@ -71,71 +71,8 @@ $companySocialLinks = array_filter([
 ?>
 
 <div class="company-profile-jobboard">
-    <style>
-        .company-social-card {
-            border: 1px solid #e8edf8;
-            border-radius: 18px;
-            background:
-                radial-gradient(circle at top right, rgba(79, 109, 202, 0.07), transparent 38%),
-                linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.045);
-        }
-        .company-social-card .detail-card-title {
-            margin-bottom: 1rem;
-        }
-        .company-social-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
-        .company-social-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.55rem;
-            padding: 0.7rem 1rem;
-            border-radius: 999px;
-            border: 1px solid #dce5fb;
-            background: #fff;
-            color: #2446c0;
-            font-weight: 600;
-            text-decoration: none;
-            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-            box-shadow: 0 6px 18px rgba(36, 70, 192, 0.06);
-        }
-        .company-social-link i {
-            font-size: 1rem;
-        }
-        .company-social-link:hover {
-            transform: translateY(-1px);
-            border-color: #b8c9f8;
-            box-shadow: 0 10px 24px rgba(36, 70, 192, 0.12);
-            text-decoration: none;
-            color: #1f3ea8;
-        }
-        .company-social-link--linkedin { color: #0a66c2; border-color: rgba(10, 102, 194, 0.18); }
-        .company-social-link--twitter { color: #111827; border-color: rgba(17, 24, 39, 0.12); }
-        .company-social-link--facebook { color: #1877f2; border-color: rgba(24, 119, 242, 0.18); }
-        .company-social-link--instagram { color: #c13584; border-color: rgba(193, 53, 132, 0.18); }
-        .company-social-link--youtube { color: #ff0000; border-color: rgba(255, 0, 0, 0.18); }
-        .company-social-link--linkedin:hover,
-        .company-social-link--twitter:hover,
-        .company-social-link--facebook:hover,
-        .company-social-link--instagram:hover,
-        .company-social-link--youtube:hover {
-            color: inherit;
-        }
-        @media (max-width: 575px) {
-            .company-social-grid {
-                gap: 0.6rem;
-            }
-            .company-social-link {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-    </style>
-    <div class="container">
-        <div class="company-profile-header">
+    <div class="container-fluid company-profile-header-rail">
+        <div class="company-profile-header page-board-header page-board-header-tight">
             <div class="page-board-copy">
                 <span class="page-board-kicker"><i class="fas fa-building"></i> Company profile</span>
                 <h1 class="page-board-title"><?= esc($companyName) ?></h1>
@@ -143,7 +80,7 @@ $companySocialLinks = array_filter([
                     <?= $companyShortDescription !== '' ? esc($companyShortDescription) : 'Explore the company overview, open roles, workplace culture, and reviews before you apply.' ?>
                 </p>
             </div>
-            <div class="company-profile-actions">
+            <div class="company-profile-actions page-board-actions">
                 <?php if (!empty($company['website'])): ?>
                     <a href="<?= esc($company['website']) ?>" target="_blank" rel="noopener" class="btn btn-outline-secondary">
                         <i class="fas fa-globe mr-1"></i> Company Website
@@ -163,8 +100,8 @@ $companySocialLinks = array_filter([
         </div>
     </div>
 
-    <section class="site-section pt-0 content-wrap">
-        <div class="container">
+    <section class="site-section pt-0 content-wrap company-profile-content-canvas">
+        <div class="container-fluid">
             <?php if (session()->getFlashdata('success')): ?>
                 <div class="alert alert-success"><?= esc(session()->getFlashdata('success')) ?></div>
             <?php endif; ?>
@@ -176,7 +113,7 @@ $companySocialLinks = array_filter([
                 <div class="company-profile-main">
                     <div class="detail-card company-overview-card">
                         <div class="detail-card-title">
-                            <span class="detail-card-icon"><i class="fas fa-id-badge"></i></span>
+                            <!-- <span class="detail-card-icon"><i class="fas fa-id-badge"></i></span> -->
                             <span>Company Overview</span>
                         </div>
                         <div class="company-overview-top">
@@ -263,7 +200,7 @@ $companySocialLinks = array_filter([
                     <?php if ($hasBrandingSection): ?>
                         <div class="detail-card">
                             <div class="detail-card-title">
-                                <span class="detail-card-icon"><i class="fas fa-users"></i></span>
+                                <!-- <span class="detail-card-icon"><i class="fas fa-users"></i></span> -->
                                 <span>Life at <?= esc($companyName) ?></span>
                             </div>
                             <p class="job-details-section-text">Explore the team environment, employee perks, and the workplace setup.</p>
@@ -331,7 +268,7 @@ $companySocialLinks = array_filter([
                     <?php if (!empty($openJobs)): ?>
                         <div class="detail-card" id="company-open-jobs">
                             <div class="detail-card-title">
-                                <span class="detail-card-icon"><i class="fas fa-suitcase"></i></span>
+                                <!-- <span class="detail-card-icon"><i class="fas fa-suitcase"></i></span> -->
                                 <span>Open Jobs (<?= (int) $openJobsCount ?>)</span>
                             </div>
                             <div class="company-open-job-list">
@@ -350,7 +287,7 @@ $companySocialLinks = array_filter([
 
                     <div class="detail-card" id="company-reviews">
                         <div class="detail-card-title">
-                            <span class="detail-card-icon"><i class="fas fa-star"></i></span>
+                            <!-- <span class="detail-card-icon"><i class="fas fa-star"></i></span> -->
                             <span>Company Reviews</span>
                         </div>
                         <div class="company-review-summary">
@@ -402,7 +339,7 @@ $companySocialLinks = array_filter([
                 <aside class="company-profile-side">
                     <div class="summary-card company-contact-card">
                         <div class="detail-card-title mb-3">
-                            <span class="detail-card-icon"><i class="fas fa-phone"></i></span>
+                            <!-- <span class="detail-card-icon"><i class="fas fa-phone"></i></span> -->
                             <span>Contact</span>
                         </div>
                         <?php if ((int) ($company['contact_public'] ?? 0) === 1): ?>
@@ -416,7 +353,7 @@ $companySocialLinks = array_filter([
                     <?php if ((string) session()->get('role') === 'candidate'): ?>
                         <div class="summary-card" id="write-review">
                             <div class="detail-card-title mb-3">
-                                <span class="detail-card-icon"><i class="fas fa-comment-dots"></i></span>
+                                <!-- <span class="detail-card-icon"><i class="fas fa-comment-dots"></i></span> -->
                                 <span><?= !empty($currentUserReview) ? 'Update Your Review' : 'Write a Review' ?></span>
                             </div>
                             <p class="text-muted small mb-3">Interview reviews are default. Employee reviews require selected/hired status.</p>

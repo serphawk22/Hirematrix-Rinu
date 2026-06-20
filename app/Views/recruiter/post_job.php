@@ -1,4 +1,125 @@
         <?= view('Layouts/recruiter_header', ['title' => 'Post Job']) ?>
+        <style>
+   
+.recruiter-post-jobboard{
+    background: linear-gradient(
+      135deg,
+      #F4FBFA 0%,
+      #EEF9F2 100%
+    ) !important;
+}
+ .recruiter-form-card,
+.recruiter-form-card.card {
+    border-radius: 20px !important;
+    overflow: hidden;
+}
+body.dark .recruiter-post-jobboard,body.dark .form-contact.contact_form.recruiter-job-form,body.dark .recruiter-form-card{
+    background: #000000 !important;
+}
+    .page-board-title{
+        font-size: 26px !important; 
+    font-weight: 700 !important;
+    color: var(--foreground) !important;
+    margin: 0;
+    }
+    body.dark .page-board-title{
+        font-size: 26px !important;
+    font-weight: 700 !important;
+    color: #FFFFFF !important;
+    margin: 0;
+    }
+
+    .btn-primary,.btn-outline-primary {  
+        background: transparent !important;
+    border: 1.5px solid #1FB7B5 !important;
+    color: #1FB7B5 !important;
+    padding: 8px 20px;
+    border-radius: 6px !important;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-outline-primary:focus, .btn-outline-primary:hover {
+ background:  #1FB7B5 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+
+}
+/* ── Input focus border ── */
+.recruiter-job-form .form-control:focus {
+    border-color: var(--primary-dark, #0D8A90) !important; 
+    outline: none !important;
+}
+
+.recruiter-job-form .form-control {
+    border: 1px solid var(--border, #D9ECE5);
+    border-radius: 6px;
+    transition: border-color .2s, box-shadow .2s;
+    background: #fff;
+    color: var(--foreground, #16212B);
+}
+body.dark .card,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
+ border: 1px solid #23343A !important;
+}
+body.dark .recruiter-job-form .form-control {
+    border: 1px solid #23343A !important;
+    border-radius: 6px;
+    transition: border-color .2s, box-shadow .2s;
+    background: #000000 !important;
+    color: #FFFFFF !important;
+}
+/* ── Labels — match h6 style ── */
+.recruiter-job-form label {
+    font-size: 1rem;        /* same as Bootstrap h6 */
+    font-weight: 500 !important;       /* same as h6 */
+    color: #FFFFFF !important;
+    margin-bottom: 6px;
+    display: block;
+    line-height: 1.5;
+}
+body.dark .recruiter-tip-item{
+     background:#000000 !important;
+    color: #FFFFFF !important;
+     border: 1px solid #23343A !important;
+      font-weight: 400 !important;   
+}
+ .recruiter-tip-item{ 
+      font-weight: 400 !important;   
+}
+body.dark .recruiter-job-form label, body.dark h6 {
+    font-size: 1rem;        /* same as Bootstrap h6 */
+    font-weight: 500 !important;   
+    margin-bottom: 6px;
+    display: block;
+    line-height: 1.5;
+    color:#FFFFFF !important;
+}
+/* ── Kill Bootstrap's orange/default focus first ── */
+/* ── Kill Bootstrap's orange/default focus first ── */
+.recruiter-job-form .form-control:focus,
+.recruiter-job-form select.form-control:focus,
+.recruiter-job-form textarea.form-control:focus {
+    outline: 0 !important;
+    box-shadow: none !important;   /* ← add this */
+    border-color: #0D8A90 !important; 
+}
+/* ── Also reset Bootstrap's base .form-control focus ── */
+.form-control:focus {
+    box-shadow: none !important;   /* ← already there, add !important */
+    border-color: #0D8A90;
+}
+body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
+    border:none !important;
+} 
+/* ── Full-width page ── */
+.container-fluid {
+    max-width: 100% !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+}
+
+</style>
 <?php
 $questionnaireRows = old('questionnaire');
 if (!is_array($questionnaireRows)) {
@@ -22,6 +143,8 @@ $jobCategoryOptions = [
     'Cybersecurity',
 ];
 $selectedCategory = old('category');
+$aiInterviewCategories = ['Software Development', 'Data Science', 'DevOps', 'Quality Assurance', 'UI/UX Design', 'Cybersecurity'];
+$aiInterviewAllowed = in_array(strtolower((string) $selectedCategory), array_map('strtolower', $aiInterviewCategories), true);
 $postedFor = old('posted_for', 'own_company');
 $clientDisclosure = old('client_disclosure', 'visible');
 $payrollType = old('payroll_type', '');
@@ -30,8 +153,7 @@ $payrollType = old('payroll_type', '');
 <div class="recruiter-post-jobboard">
 <div class="container-fluid py-5">
     <div class="page-board-header page-board-header-tight recruiter-page-board-header">
-        <div class="page-board-copy">
-            <span class="page-board-kicker"><i class="fas fa-plus-circle"></i> Recruiter posting</span>
+        <div class="page-board-copy"> 
             <h1 class="page-board-title">Post a Job</h1>
             <p class="page-board-subtitle">Create a clear role listing and control how AI interview screening applies to applicants.</p>
         </div>
@@ -69,7 +191,7 @@ $payrollType = old('payroll_type', '');
                                         <option value="own_company" <?= $postedFor === 'own_company' ? 'selected' : '' ?>>Own company</option>
                                         <option value="client" <?= $postedFor === 'client' ? 'selected' : '' ?>>Client company</option>
                                     </select>
-                                    <small class="text-muted">Consultancies should choose client company when hiring for a client.</small>
+                                    <small>Consultancies should choose client company when hiring for a client.</small>
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -88,7 +210,7 @@ $payrollType = old('payroll_type', '');
                                 <div class="form-group">
                                     <label>Client Company Name</label>
                                     <input class="form-control" name="client_company_name" id="client_company_name" type="text" value="<?= old('client_company_name') ?>" placeholder="Client company name">
-                                    <small class="text-muted">Required when posting for a client.</small>
+                                    <small >Required when posting for a client.</small>
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -98,7 +220,7 @@ $payrollType = old('payroll_type', '');
                                         <option value="visible" <?= $clientDisclosure === 'visible' ? 'selected' : '' ?>>Visible to candidates</option>
                                         <option value="confidential" <?= $clientDisclosure === 'confidential' ? 'selected' : '' ?>>Confidential</option>
                                     </select>
-                                    <small class="text-muted">Candidate fees are never allowed on this portal.</small>
+                                    <small >Candidate fees are never allowed on this portal.</small>
                                 </div>
                             </div>
                             <div class="col-sm-12">
@@ -166,29 +288,34 @@ $payrollType = old('payroll_type', '');
                                 <div class="form-group">
                                     <label>Application Deadline</label>
                                     <input class="form-control" name="application_deadline" id="application_deadline" type="date" value="<?= old('application_deadline') ?>" title="Application Deadline">
-                                    <small class="text-muted">Application deadline (optional)</small>
+                                    <small  >Application deadline (optional)</small>
                                     <small class="text-danger" id="application_deadline-error"></small>
                                 </div>
                             </div>
-                            <?php $selectedPolicy = old('ai_interview_policy', 'REQUIRED_HARD'); ?>
-                            <div class="col-sm-6">
+                            <?php $selectedPolicy = $aiInterviewAllowed ? old('ai_interview_policy', 'REQUIRED_HARD') : 'OFF'; ?>
+                            <div class="col-12" id="aiInterviewUnavailableWrap" <?= $aiInterviewAllowed ? 'style="display: none;"' : '' ?>>
+                                <div class="alert alert-info py-2 mb-3">
+                                    AI interview settings are available only for software and technical jobs.
+                                </div>
+                            </div>
+                            <div class="col-sm-6" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
                                 <div class="form-group">
                                     <label>AI Interview Policy</label>
-                                    <select class="form-control" name="ai_interview_policy" id="ai_interview_policy">
+                                    <select class="form-control" name="ai_interview_policy" id="ai_interview_policy" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>
                                         <option value="REQUIRED_HARD" <?= $selectedPolicy === 'REQUIRED_HARD' ? 'selected' : '' ?>>AI Interview: Mandatory (Strict)</option>
                                         <option value="REQUIRED_SOFT" <?= $selectedPolicy === 'REQUIRED_SOFT' ? 'selected' : '' ?>>AI Interview: Mandatory (Recruiter Can Override)</option>
                                         <option value="OPTIONAL" <?= $selectedPolicy === 'OPTIONAL' ? 'selected' : '' ?>>AI Interview: Optional</option>
                                         <option value="OFF" <?= $selectedPolicy === 'OFF' ? 'selected' : '' ?>>AI Interview: Not Required</option>
                                     </select>
-                                    <small class="text-muted d-block mt-2">
+                                    <small class=" d-block mt-2">
                                         Choose how AI interview affects applications: strict reject, recruiter override, optional, or disabled.
                                     </small>
                                 </div>
                             </div>
-                            <div class="col-sm-6" id="minAiCutoffWrap">
+                            <div class="col-sm-6" id="minAiCutoffWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
                                 <div class="form-group">
                                     <label>Minimum AI Cutoff Score</label>
-                                    <input class="form-control" name="min_ai_cutoff_score" id="min_ai_cutoff_score" type="number" min="0" max="100" value="<?= old('min_ai_cutoff_score') ?>" placeholder="Minimum AI Cutoff Score">
+                                    <input class="form-control" name="min_ai_cutoff_score" id="min_ai_cutoff_score" type="number" min="0" max="100" value="<?= old('min_ai_cutoff_score') ?>" placeholder="Minimum AI Cutoff Score" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>
                                     <small class="text-danger" id="min_ai_cutoff_score-error"></small>
                                 </div>
                             </div>
@@ -211,26 +338,26 @@ $payrollType = old('payroll_type', '');
                                     <div class="d-flex flex-wrap align-items-center justify-content-between mb-2" style="gap: 10px;">
                                         <div>
                                             <label class="mb-0">Application Questionnaire</label>
-                                            <small class="text-muted d-block">Add optional screening prompts. You can use this for a cover letter, notice period, motivation, or any short written response.</small>
+                                            <small class="d-block">Add optional screening prompts. You can use this for a cover letter, notice period, motivation, or any short written response.</small>
                                         </div>
                                         <div class="d-flex flex-wrap" style="gap: 8px;">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" id="addCoverLetterQuestion">
-                                                <i class="fas fa-file-alt mr-1"></i> Add Cover Letter Prompt
+                                            <button type="button" class="btn btn-sm btn-outline-primary" id="addCoverLetterQuestion">
+                                                 Add Cover Letter Prompt
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-primary" id="addQuestionnaireRow">
-                                                <i class="fas fa-plus mr-1"></i> Add Question
+                                               Add Question
                                             </button>
                                         </div>
                                     </div>
                                     <div id="questionnaireBuilder"
                                          data-next-index="<?= count($questionnaireRows) ?>"
                                          data-initial-items="<?= esc(json_encode(array_values($questionnaireRows)), 'attr') ?>"></div>
-                                    <small class="text-muted d-block mt-2">Candidates will answer these questions inside the Apply form.</small>
+                                    <small class="d-block mt-2">Candidates will answer these questions inside the Apply form.</small>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group mt-3">
-                            <button type="submit" class="button button-contactForm boxed-btn">Post Job</button>
+                            <button type="submit" class="btn btn-outline-primary">Post Job</button>
                         </div>
                     </form>
                 </div>
@@ -253,13 +380,62 @@ $payrollType = old('payroll_type', '');
             <div class="card shadow-sm recruiter-form-card">
                 <div class="card-body">
                     <h6 class="mb-3"><i class="fas fa-shield-alt"></i> AI interview policy</h6>
-                    <p class="text-muted mb-0">Strict and soft modes keep screening automated. Optional lets recruiters review more manually. OFF disables AI screening for the role.</p>
+                    <p class="mb-0">Strict and soft modes keep screening automated. Optional lets recruiters review more manually. OFF disables AI screening for the role.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script>
+(function () {
+    const aiInterviewCategories = [
+        'Software Development',
+        'Data Science',
+        'DevOps',
+        'Quality Assurance',
+        'UI/UX Design',
+        'Cybersecurity'
+    ];
+    const categorySelect = document.getElementById('category');
+    const unavailableWrap = document.getElementById('aiInterviewUnavailableWrap');
+    const policyWrap = document.getElementById('aiInterviewPolicyWrap');
+    const policySelect = document.getElementById('ai_interview_policy');
+    const cutoffWrap = document.getElementById('minAiCutoffWrap');
+    const cutoffInput = document.getElementById('min_ai_cutoff_score');
+
+    if (!categorySelect || !policySelect || !cutoffInput) {
+        return;
+    }
+
+    function syncAiInterviewSettings() {
+        const selectedCategory = categorySelect.value.trim().toLowerCase();
+        const allowed = aiInterviewCategories.some(function (category) {
+            return category.toLowerCase() === selectedCategory;
+        });
+
+        if (unavailableWrap) {
+            unavailableWrap.style.display = allowed ? 'none' : '';
+        }
+        if (policyWrap) {
+            policyWrap.style.display = allowed ? '' : 'none';
+        }
+        if (cutoffWrap) {
+            cutoffWrap.style.display = allowed ? '' : 'none';
+        }
+
+        policySelect.disabled = !allowed;
+        cutoffInput.disabled = !allowed;
+
+        if (!allowed) {
+            policySelect.value = 'OFF';
+            cutoffInput.value = '';
+        }
+    }
+
+    categorySelect.addEventListener('change', syncAiInterviewSettings);
+    syncAiInterviewSettings();
+})();
+
 (function () {
     const builder = document.getElementById('questionnaireBuilder');
     const addButton = document.getElementById('addQuestionnaireRow');

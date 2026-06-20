@@ -1,54 +1,66 @@
-               
-<footer class="site-footer">
-    <a href="#top" class="smoothscroll scroll-top">
-        <span class="icon-keyboard_arrow_up"></span>
-    </a>
-    <div class="container">
-        <div class="row mb-4">
-            <div class="col-6 col-md-3 mb-4 mb-md-0">
-                <h3>Recruiter</h3>
-                <ul class="list-unstyled">
-                    <li><a href="<?= base_url('recruiter/dashboard') ?>">Dashboard</a></li>
-                    <li><a href="<?= base_url('recruiter/jobs') ?>">My Jobs</a></li>
-                    <li><a href="<?= base_url('recruiter/post_job') ?>">Post Job</a></li>
-                </ul>
-            </div>
-            <div class="col-6 col-md-3 mb-4 mb-md-0">
-                <h3>Hiring</h3>
-                <ul class="list-unstyled">
-                    <li><a href="<?= base_url('recruiter/jobs') ?>">Applications</a></li>
-                    <li><a href="<?= base_url('recruiter/candidates') ?>">Candidate Database</a></li>
-                    <li><a href="<?= base_url('recruiter/slots') ?>">Interview Slots</a></li>
-                    <li><a href="<?= base_url('recruiter/slots/bookings') ?>">Interview Bookings</a></li>
-                </ul>
-            </div>
-            <div class="col-6 col-md-3 mb-4 mb-md-0">
-                <h3>Analytics</h3>
-                <ul class="list-unstyled">
-                    <li><a href="<?= base_url('recruiter/dashboard/export-excel') ?>">Export Data</a></li>
-                    <li><a href="<?= base_url('feedback') ?>">Feedback</a></li>
-                    <li><a href="<?= base_url('logout') ?>">Logout</a></li>
-                </ul>
-            </div>
-            <div class="col-6 col-md-3 mb-4 mb-md-0">
-                <h3>Tools</h3>
-                <div class="translate-widget-wrap mb-3">
-                    <?= view('components/google_translate_widget') ?>
-                </div>
-            </div>
-        </div>
+</main>
+ 
+<style>
+body.recruiter-jobboard table thead th,
+body.recruiter-jobboard .table thead th,
+body.recruiter-jobboard .recruiter-jobs-table thead th,
+body.recruiter-jobboard .recruiter-candidates-table thead th,
+body.recruiter-jobboard .recruiter-slots-table thead th,
+body.recruiter-jobboard .pipeline-table thead th,
+body.recruiter-jobboard .conversion-table thead th,
+body.recruiter-jobboard .ai-modal #aiReportContent .table thead th {
+    font-family: var(--portal-font-family, "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    letter-spacing: 0.04em !important;
+}
 
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-12">
-                    <p class="copyright">
-                        <small>Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved</small>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
+body.recruiter-jobboard table tbody td,
+body.recruiter-jobboard .table tbody td,
+body.recruiter-jobboard .recruiter-jobs-table tbody td,
+body.recruiter-jobboard .recruiter-candidates-table tbody td,
+body.recruiter-jobboard .recruiter-slots-table tbody td,
+body.recruiter-jobboard .pipeline-table tbody td,
+body.recruiter-jobboard .conversion-table tbody td,
+body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td {
+    font-family: var(--portal-font-family, "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+    font-size: 13.5px !important;
+    line-height: 1.45 !important;
+}
+
+body.recruiter-jobboard table tbody td strong,
+body.recruiter-jobboard table tbody td .font-weight-bold,
+body.recruiter-jobboard .table tbody td strong,
+body.recruiter-jobboard .table tbody td .font-weight-bold,
+body.recruiter-jobboard .recruiter-jobs-table tbody td strong,
+body.recruiter-jobboard .recruiter-candidates-table tbody td strong,
+body.recruiter-jobboard .pipeline-table tbody td strong {
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+    font-weight: 700 !important;
+}
+
+body.recruiter-jobboard table tbody td small,
+body.recruiter-jobboard table tbody td .text-muted,
+body.recruiter-jobboard .table tbody td small,
+body.recruiter-jobboard .table tbody td .text-muted,
+body.recruiter-jobboard .recruiter-jobs-table tbody td small,
+body.recruiter-jobboard .recruiter-jobs-table tbody td .text-muted,
+body.recruiter-jobboard .recruiter-candidates-table tbody td small,
+body.recruiter-jobboard .recruiter-candidates-table tbody td .text-muted,
+body.recruiter-jobboard .recruiter-slots-table tbody td small,
+body.recruiter-jobboard .recruiter-slots-table tbody td .text-muted,
+body.recruiter-jobboard .pipeline-table tbody td small,
+body.recruiter-jobboard .pipeline-table tbody td .text-muted,
+body.recruiter-jobboard .conversion-table tbody td small,
+body.recruiter-jobboard .conversion-table tbody td .text-muted,
+body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td small,
+body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td .text-muted {
+    font-size: 12.5px !important;
+    line-height: 1.4 !important;
+}
+</style>
 
 <!-- SCRIPTS -->
 <script src="<?= base_url('jobboard/js/jquery.min.js') ?>"></script>
@@ -64,13 +76,7 @@
 <script src="<?= base_url('jobboard/js/custom.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/recruiter-pages.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/notification-actions.js?v=' . @filemtime(FCPATH . 'jobboard/js/notification-actions.js')) ?>"></script>
-<?php foreach (($pageScripts ?? []) as $scriptSrc): ?>
-<script src="<?= esc($scriptSrc) ?>"></script>
-<?php endforeach; ?>
 
 </div>
 </body>
 </html>
-
-
-        

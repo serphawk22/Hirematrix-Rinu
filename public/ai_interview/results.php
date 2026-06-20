@@ -147,11 +147,13 @@ $conn->close();
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Results — NexusAI Interview</title>
+<title>Results - HireMatrix AI Interview</title>
+<link rel="icon" type="image/png" href="../jobboard/images/Serp Hwak Logo.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../jobboard/css/fontawesome-all.min.css"/>
 <link rel="stylesheet" href="css/style.css"/>
 </head>
-<body>
+<body class="hirematrix-app candidate-app ai-results-page">
   <?php include 'theme-toggle.php'; ?>
 <canvas id="particleCanvas"></canvas>
 <div id="app" style="position:relative;z-index:1">
@@ -160,7 +162,7 @@ $conn->close();
 
   <!-- Header -->
   <div class="results-header animate-in">
-    <span class="badge badge-success" style="margin-bottom:16px">🎉 Interview Complete</span>
+    <span class="badge badge-success" style="margin-bottom:16px"><i class="fas fa-check-circle" aria-hidden="true"></i> Interview Complete</span>
     <h1>Your Results, <span class="text-gradient"><?= $cand['name'] ?></span></h1>
     <p class="text-muted" style="margin-top:10px"><?= $cand['position'] ?> · <?= ucfirst($cand['experience']) ?> Level</p>
   </div>
@@ -207,14 +209,14 @@ $conn->close();
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
         <?php
         $rounds = [
-            ['Round 1', 'Aptitude', $r1Score, 30, '🧠', '#6366f1'],
-            ['Round 2', 'Technical', $r2Score, 30, '💻', '#8b5cf6'],
+            ['Round 1', 'Aptitude', $r1Score, 30, 'fa-graduation-cap', '#1FB7B5'],
+            ['Round 2', 'Technical', $r2Score, 30, 'fa-laptop', '#1FB7B5'],
         ];
         foreach($rounds as [$rl,$rn,$rs,$rt,$ri,$rc]):
           $rp = round(($rs/$rt)*100);
         ?>
-        <div style="padding:20px;background:rgba(255,255,255,.03);border-radius:12px;border:1px solid rgba(255,255,255,.06);text-align:center">
-          <div style="font-size:2rem;margin-bottom:8px"><?= $ri ?></div>
+        <div class="result-round-card">
+          <div class="result-round-icon"><i class="fas <?= $ri ?>" aria-hidden="true"></i></div>
           <div style="font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.06em"><?= $rl ?> — <?= $rn ?></div>
           <div style="font-size:2.5rem;font-weight:900;color:<?= $rc ?>;margin:8px 0"><?= $rs ?><span style="font-size:1rem;color:var(--t2)"> / <?= $rt ?></span></div>
           <div style="font-size:.85rem;color:var(--t2)"><?= $rp ?>% accuracy</div>
@@ -227,7 +229,7 @@ $conn->close();
     <!-- AI Feedback -->
     <div class="glass-card feedback-card animate-in">
       <div class="feedback-title">
-        <span style="font-size:1.4rem">🤖</span>
+        <i class="fas fa-chart-line" aria-hidden="true"></i>
         AI-Powered Improvement Report
       </div>
       <div class="feedback-text"><?= nl2br(htmlspecialchars($feedbackText)) ?></div>
@@ -236,18 +238,18 @@ $conn->close();
     <?php if (!empty($weakAreas)): ?>
     <!-- Weak Areas Heatmap -->
     <div class="glass-card result-card animate-in">
-      <h3 style="margin-bottom:16px">⚠️ Areas to Improve</h3>
-      <div style="display:flex;flex-direction:column;gap:10px">
+      <h3 style="margin-bottom:16px"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i> Areas to Improve</h3>
+      <div class="weak-area-list">
         <?php foreach($weakAreas as $cat => $p):
           $col = $p < 30 ? '#ef4444' : '#f59e0b';
         ?>
-        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:10px">
-          <span style="font-size:1.2rem">📍</span>
+        <div class="weak-area-row">
+          <span class="weak-area-icon"><i class="fas fa-map-marker-alt" aria-hidden="true"></i></span>
           <div style="flex:1">
             <div style="font-weight:600;font-size:.9rem"><?= htmlspecialchars($cat) ?></div>
             <div style="font-size:.78rem;color:var(--t3)">Only <?= $p ?>% accuracy</div>
           </div>
-          <span style="color:<?= $col ?>;font-weight:700"><?= $p ?>%</span>
+          <span class="weak-area-score"><?= $p ?>%</span>
         </div>
         <?php endforeach; ?>
       </div>
@@ -256,7 +258,7 @@ $conn->close();
 
     <!-- Question Review -->
     <div class="glass-card q-review-card animate-in">
-      <h3 style="margin-bottom:16px">📋 Question Review</h3>
+      <h3 style="margin-bottom:16px"><i class="fas fa-clipboard" aria-hidden="true"></i> Question Review</h3>
       <div class="review-list">
         <?php foreach($allQ as $i => $q):
           $ans     = $allA[$i] ?? null;
@@ -264,7 +266,7 @@ $conn->close();
           $skipped = $ans === null || $ans['answer'] === null;
         ?>
         <div class="review-item">
-          <div class="review-icon"><?= $skipped ? '⏭️' : ($correct ? '✅' : '❌') ?></div>
+          <div class="review-icon"><i class="fas <?= $skipped ? 'fa-step-forward' : ($correct ? 'fa-check' : 'fa-times') ?>" aria-hidden="true"></i></div>
           <div class="review-q">
             <strong>Q<?= $i+1 ?>. <?= htmlspecialchars(substr($q['question']??'',0,100)) ?>…</strong>
             <span style="color:var(--t3);font-size:.78rem;margin-left:8px"><?= $q['category'] ?? '' ?></span>
@@ -280,7 +282,7 @@ $conn->close();
   <div class="results-actions animate-in">
  <?php if($totalScore >= 35) {?>
     <a href="#" onclick="submitCodingRound()" class="btn btn-secondary btn-lg">
-    💻 Coding Round
+    <i class="fas fa-laptop" aria-hidden="true"></i> Coding Round
 </a>
   <form id="codingForm" method="POST" action="start.php" style="display: none;">
     <input type="hidden" name="candidate_name" value="<?= $_SESSION['candidateName']; ?>">
@@ -289,17 +291,16 @@ $conn->close();
     <input type="hidden" name="experience" value="<?= $_SESSION['experience']; ?>">
     <input type="hidden" name="mode" value="coding">
 </form> <?php } else{?>
-<button id="endInterviewBtn" class="btn btn-primary">🔄 End Interview</button><?php }?>
+<button id="endInterviewBtn" class="btn btn-primary"><i class="fas fa-sync-alt" aria-hidden="true"></i> End Interview</button><?php }?>
     <button class="btn btn-secondary btn-lg" id="copyReportLinkBtn">Copy Share Link</button>
     <button class="btn btn-secondary btn-lg" id="downloadHtmlBtn">Download HTML Report</button>
-    <button class="btn btn-secondary btn-lg" onclick="window.print()">🖨️ Print Report</button>
+    <button class="btn btn-secondary btn-lg" onclick="window.print()"><i class="fas fa-print" aria-hidden="true"></i> Print Report</button>
   </div>
 
 </div><!-- /results-wrap -->
 </div><!-- /results-screen -->
 </div>
 
-<script src="js/particles.js"></script>
 <script src="js/theme.js"></script>
 <script>
 // Animated radial score gauge
@@ -314,14 +315,14 @@ $conn->close();
     ctx.clearRect(0,0,200,200);
     // Track
     ctx.beginPath(); ctx.arc(cx,cy,r,-Math.PI*.75,Math.PI*.75);
-    ctx.strokeStyle='rgba(255,255,255,.06)'; ctx.lineWidth=14; ctx.lineCap='round'; ctx.stroke();
+    ctx.strokeStyle=document.body.classList.contains('dark') ? '#26383e' : '#e8eef6'; ctx.lineWidth=14; ctx.lineCap='round'; ctx.stroke();
     // Fill
     const end = -Math.PI*.75 + (Math.PI*1.5)*current;
     ctx.beginPath(); ctx.arc(cx,cy,r,-Math.PI*.75,end);
-    ctx.strokeStyle=color; ctx.lineWidth=14; ctx.lineCap='round'; ctx.stroke();
+    ctx.strokeStyle='#1FB7B5'; ctx.lineWidth=14; ctx.lineCap='round'; ctx.stroke();
     // Glow
     ctx.beginPath(); ctx.arc(cx,cy,r,-Math.PI*.75,end);
-    ctx.strokeStyle=color+'44'; ctx.lineWidth=22; ctx.lineCap='round'; ctx.stroke();
+    ctx.strokeStyle='rgba(31,183,181,.22)'; ctx.lineWidth=22; ctx.lineCap='round'; ctx.stroke();
   }
   function animate(){
     if(current < pct){ current = Math.min(current+0.015, pct); draw(); requestAnimationFrame(animate); }
@@ -361,7 +362,7 @@ window.addEventListener('load', () => {
       const name = <?= json_encode($cand['name'] ?? 'candidate') ?>;
       const safe = String(name).replace(/[^a-z0-9_-]+/gi, '_').slice(0, 40) || 'report';
       const stamp = new Date().toISOString().slice(0, 10);
-      const filename = `nexusai-report-${safe}-${stamp}.html`;
+      const filename = `hirematrix-ai-report-${safe}-${stamp}.html`;
 
       const html = '<!doctype html>\\n' + document.documentElement.outerHTML;
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
@@ -384,6 +385,13 @@ function submitCodingRound() {
 }
 </script>
 <script>
+function appUrl(path) {
+    const marker = '/ai_interview/';
+    const markerIndex = window.location.pathname.indexOf(marker);
+    const appBasePath = markerIndex >= 0 ? window.location.pathname.slice(0, markerIndex) : '';
+    return window.location.origin + appBasePath + '/' + String(path).replace(/^\/+/, '');
+}
+
 document.getElementById("endInterviewBtn").addEventListener("click", async function () {
     const candidate_id = <?= $_SESSION['candidateId']; ?>;
     const job_id = <?= intval($_SESSION['jobid'] ?? 0) ?>;
@@ -404,7 +412,7 @@ document.getElementById("endInterviewBtn").addEventListener("click", async funct
         console.error("Status update failed", e);
     }
 
-    window.location.href = "https://hirematrix.serphawk.in/candidate/applications";
+    window.location.href = appUrl("candidate/applications");
 });
     </script> 
 </body>
