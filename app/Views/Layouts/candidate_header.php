@@ -14,6 +14,11 @@
                     document.documentElement.classList.add('hm-dark-preload');
                 }
             } catch (error) {}
+
+            var touchDevice = navigator.maxTouchPoints > 1 || /Android|iPad|iPhone|iPod|Mobile|Tablet/i.test(navigator.userAgent);
+            if (touchDevice) {
+                document.documentElement.classList.add('candidate-touch-device');
+            }
         })();
     </script>
     <!-- Inside the <head> tag -->

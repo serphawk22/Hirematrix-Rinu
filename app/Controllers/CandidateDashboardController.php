@@ -1199,6 +1199,7 @@ class CandidateDashboardController extends BaseController
         return view('candidate/mock_interview', [
             'application' => $application,
             'mockInterview' => $this->buildDetailedMockInterview($application),
+            'calculatedExperience' => model('UserModel')->calculateExperienceLevel($candidateId),
         ]);
     }
 

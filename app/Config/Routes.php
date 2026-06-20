@@ -24,6 +24,7 @@ $routes->post('feedback/save', 'CandidateFeedbackController::save');
 $routes->get('/localcompany', 'Companies::index');
 $routes->get('/fetch-companies', 'Companies::fetchCompanies');
 $routes->get('/suggest', 'Companies::suggest');
+$routes->get('/resolve-current-location', 'Companies::resolveLocation');
 
 $routes->get('login', 'Auth::login');
 $routes->post('login', 'Auth::authenticate');

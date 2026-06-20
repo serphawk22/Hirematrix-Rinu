@@ -499,12 +499,6 @@ body.dark .recruiter-pipeline-page .pipeline-hiring-chip {
     color: #0D8A90;
     border: 1px solid rgba(31, 183, 181, 0.15) !important;
 }
-body.dark #pipelineBulkAction:focus { border-color: #0D8A90; }
-body.dark #pipelineBulkAction:hover { border-color: #1FB7B5; }
-body.dark #pipelineBulkAction option {
-    background: #000000 !important;
-    color: #FFFFFF !important;
-}
 /* ══════════════════════════════════════════
    STAGE RAIL
 ══════════════════════════════════════════ */
@@ -1759,12 +1753,11 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
 
                 <div class="pipeline-stage-rail">
                     <a class="stage-ajax-link <?= $safeActiveStage === 'all' ? 'active' : '' ?>" href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=all') ?>">
-                        <span class="stage-count"><i class="fas fa-layer-group"></i> <?= $allApplicationsLabel ?></span>
-                        <span class="stage-label">All</span>
+                        <span class="stage-label">All (<?= $allApplicationsLabel ?>)</span>
                     </a>
                     <?php foreach ($statuses as $key => $label): ?>
                         <a class="stage-ajax-link <?= $safeActiveStage === $key ? 'active' : '' ?>" href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=' . $key) ?>">
-                            <span class="stage-label"><?= esc($label) ?></span>
+                            <span class="stage-label"><?= esc($label) ?> (<?= count($applicationsByStatus[$key] ?? []) ?>)</span>
                         </a>
                     <?php endforeach; ?>
                     
@@ -1781,18 +1774,6 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                             <span class="badge badge-primary ml-1"><?= count(array_filter($advancedFilters, function($v) { return $v !== '' && $v !== null; })) ?></span>
                         <?php endif; ?>
                     </button>
-                    <div class="pipeline-bulk-controls">
-                        <select id="pipelineBulkAction" aria-label="Bulk action">
-                            <option value="">Bulk Action</option>
-                            <option value="email">Email Selected</option>
-                            <option value="message">Message Selected</option>
-                            <option value="shortlist">Shortlist Selected</option>
-                            <option value="reject">Reject Selected</option>
-                        </select>
-                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="executeSelectedBulkAction()">
-                             Apply
-                        </button>
-                    </div>
                 </div>
 
                 <!-- Advanced Filter Collapsible -->

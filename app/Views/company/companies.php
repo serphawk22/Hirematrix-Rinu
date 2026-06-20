@@ -4,6 +4,8 @@
 $featuredCompanies = is_array($featuredCompanies ?? null) ? $featuredCompanies : [];
 $popularRoles = is_array($popularRoles ?? null) ? $popularRoles : [];
 $popularCities = is_array($popularCities ?? null) ? $popularCities : [];
+$defaultRole = trim((string) ($defaultRole ?? ''));
+$defaultCity = trim((string) ($defaultCity ?? ''));
 $companyCount = count($featuredCompanies);
 $openJobCount = array_sum(array_map(static fn ($company): int => (int) ($company['open_jobs'] ?? 0), $featuredCompanies));
 ?>
@@ -32,13 +34,17 @@ $openJobCount = array_sum(array_map(static fn ($company): int => (int) ($company
                     <div class="local-company-search-grid">
                         <div class="local-company-field">
                             <label for="role">Role or skill</label>
-                            <input type="text" id="role" placeholder="Frontend Developer, PHP, UI UX" autocomplete="off">
+                            <input type="text" id="role" value="<?= esc($defaultRole) ?>" placeholder="Frontend Developer, PHP, UI UX" autocomplete="off">
                             <div id="roleSuggest" class="local-company-suggestions" hidden></div>
                         </div>
                         <div class="local-company-field">
                             <label for="city">City</label>
-                            <input type="text" id="city" placeholder="Bangalore, Pune, Hyderabad" autocomplete="off">
+                            <input type="text" id="city" value="<?= esc($defaultCity) ?>" placeholder="Bangalore, Pune, Hyderabad" autocomplete="off">
                             <div id="citySuggest" class="local-company-suggestions" hidden></div>
+                            <div class="local-company-location-actions">
+                                <button type="button" id="changeLocationButton" class="local-company-location-link">Change location</button>
+                                <button type="button" id="useCurrentLocationButton" class="local-company-location-link"><i class="fas fa-location-arrow"></i> Use current location</button>
+                            </div>
                         </div>
                         <button type="button" class="local-company-submit" id="companySearchButton">
                             <i class="fas fa-search"></i>
@@ -64,7 +70,7 @@ $openJobCount = array_sum(array_map(static fn ($company): int => (int) ($company
                     <span class="results-count">
                         <i class="fas fa-building"></i>
                         <strong><?= esc((string) $companyCount) ?></strong>
-                        <span id="companyListTitle">Featured Local Companies</span>
+                        <span id="companyListTitle"><?= $defaultCity !== '' ? 'Companies near ' . esc($defaultCity) : 'Featured Local Companies' ?></span>
                     </span>
                     <span class="results-count local-company-open-count">
                         <i class="fas fa-briefcase"></i>
@@ -86,7 +92,8 @@ $openJobCount = array_sum(array_map(static fn ($company): int => (int) ($company
 <script>
 const endpoints = {
     fetchCompanies: "<?= base_url('fetch-companies') ?>",
-    suggest: "<?= base_url('suggest') ?>"
+    suggest: "<?= base_url('suggest') ?>",
+    resolveLocation: "<?= base_url('resolve-current-location') ?>"
 };
 
 const companyList = document.getElementById("companyList");
@@ -95,6 +102,9 @@ const companyListSubtitle = document.getElementById("companyListSubtitle");
 const searchButton = document.getElementById("companySearchButton");
 const roleInput = document.getElementById("role");
 const cityInput = document.getElementById("city");
+const changeLocationButton = document.getElementById("changeLocationButton");
+const useCurrentLocationButton = document.getElementById("useCurrentLocationButton");
+const shouldAutoSearch = <?= json_encode($defaultRole !== '' && $defaultCity !== '') ?>;
 
 function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, function (char) {
@@ -120,15 +130,13 @@ function companyCard(company) {
     const description = company.description || "Explore this company and review current opportunities.";
     const openJobs = Number(company.open_jobs || 0);
     const website = company.website || "";
-    const jobsUrl = company.jobs_url || "";
     const logo = company.logo || "";
     const logoHtml = logo
         ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(name)}" onerror="this.parentElement.textContent='${companyInitial(name)}';">`
         : companyInitial(name);
-    const actionsHtml = (jobsUrl || website)
+    const actionsHtml = website
         ? `<div class="local-company-actions">
-                ${jobsUrl ? `<a href="${escapeHtml(jobsUrl)}" class="local-company-primary"><i class="fas fa-briefcase"></i> View Jobs</a>` : ""}
-                ${website ? `<a href="${escapeHtml(website)}" target="_blank" rel="noopener" class="local-company-secondary"><i class="fas fa-external-link-alt"></i> Website</a>` : ""}
+                <a href="${escapeHtml(website)}" target="_blank" rel="noopener" class="local-company-secondary"><i class="fas fa-external-link-alt"></i> Website</a>
            </div>`
         : "";
 
@@ -197,7 +205,7 @@ function searchCompanies() {
                 return;
             }
 
-            companyListTitle.textContent = `Companies hiring for ${role}`;
+            companyListTitle.textContent = `Companies near ${city}`;
             companyListSubtitle.textContent = `Showing employers connected to ${city}.`;
             companyList.innerHTML = data.map(companyCard).join("");
             companyList.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -276,6 +284,46 @@ document.querySelectorAll(".local-company-chip").forEach(chip => {
 });
 
 searchButton.addEventListener("click", searchCompanies);
+
+changeLocationButton.addEventListener("click", function () {
+    cityInput.value = "";
+    cityInput.focus();
+});
+
+useCurrentLocationButton.addEventListener("click", function () {
+    if (!navigator.geolocation) {
+        alert("Location access is not supported by this browser.");
+        return;
+    }
+
+    const originalLabel = useCurrentLocationButton.innerHTML;
+    useCurrentLocationButton.disabled = true;
+    useCurrentLocationButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detecting...';
+
+    navigator.geolocation.getCurrentPosition(function (position) {
+        const params = new URLSearchParams({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+        });
+        fetch(`${endpoints.resolveLocation}?${params.toString()}`)
+            .then(response => response.json().then(data => ({ ok: response.ok, data })))
+            .then(result => {
+                if (!result.ok || !result.data.city) throw new Error(result.data.error || "City not found");
+                cityInput.value = result.data.city;
+                companyListTitle.textContent = `Companies near ${result.data.city}`;
+                if (roleInput.value.trim()) searchCompanies();
+            })
+            .catch(error => alert(error.message || "Unable to identify your city."))
+            .finally(() => {
+                useCurrentLocationButton.disabled = false;
+                useCurrentLocationButton.innerHTML = originalLabel;
+            });
+    }, function () {
+        useCurrentLocationButton.disabled = false;
+        useCurrentLocationButton.innerHTML = originalLabel;
+        alert("Location permission was not granted. You can enter your city manually.");
+    }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
+});
 [roleInput, cityInput].forEach(input => {
     input.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
@@ -287,6 +335,10 @@ searchButton.addEventListener("click", searchCompanies);
 
 setupSuggest(roleInput, document.getElementById("roleSuggest"), "role");
 setupSuggest(cityInput, document.getElementById("citySuggest"), "city");
+
+if (shouldAutoSearch) {
+    searchCompanies();
+}
 </script>
 
 <?= view('Layouts/candidate_footer') ?>

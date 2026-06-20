@@ -76,6 +76,11 @@ body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td .text-muted {
 <script src="<?= base_url('jobboard/js/custom.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/recruiter-pages.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/notification-actions.js?v=' . @filemtime(FCPATH . 'jobboard/js/notification-actions.js')) ?>"></script>
+<?php foreach ((array) ($pageScripts ?? []) as $pageScript): ?>
+    <?php if (is_string($pageScript) && trim($pageScript) !== ''): ?>
+        <script src="<?= esc($pageScript, 'attr') ?>"></script>
+    <?php endif; ?>
+<?php endforeach; ?>
 
 </div>
 </body>

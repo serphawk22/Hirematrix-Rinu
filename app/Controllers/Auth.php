@@ -1045,7 +1045,7 @@ class Auth extends BaseController
         $pending = session()->get(self::RECRUITER_PHONE_OTP_SESSION_KEY);
         if (!is_array($pending)
             || ($pending['email'] ?? '') !== $email
-            || ($pending['phone'] ?? '') !== $this->normalizeFast2SmsPhone((string) ($user['phone'] ?? ''))
+            || ($pending['phone'] ?? '') !== $this->normalizeTwilioPhone((string) ($user['phone'] ?? ''))
         ) {
             return redirect()->back()->withInput()->with('error', 'SMS OTP expired or missing. Please resend the OTP.');
         }
@@ -1061,10 +1061,11 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('error', 'Too many incorrect OTP attempts. Please request a new OTP.');
         }
 
-        if (!password_verify($code, (string) ($pending['code_hash'] ?? ''))) {
+        $verificationError = null;
+        if (!$this->checkTwilioVerification((string) $pending['phone'], $code, $verificationError)) {
             $pending['attempts'] = $attempts;
             session()->set(self::RECRUITER_PHONE_OTP_SESSION_KEY, $pending);
-            return redirect()->back()->withInput()->with('error', 'Invalid SMS OTP.');
+            return redirect()->back()->withInput()->with('error', $verificationError ?? 'Invalid SMS OTP.');
         }
 
         $model->update((int) $user['id'], [
@@ -1190,10 +1191,10 @@ class Auth extends BaseController
     private function issueRecruiterPhoneOtp(array $user, ?string &$error = null, bool $allowImmediateResend = false): bool
     {
         $email = strtolower(trim((string) ($user['email'] ?? '')));
-        $phone = $this->normalizeFast2SmsPhone((string) ($user['phone'] ?? ''));
+        $phone = $this->normalizeTwilioPhone((string) ($user['phone'] ?? ''));
 
         if ($email === '' || $phone === '') {
-            $error = 'Registered phone number must be a valid Indian 10-digit mobile number.';
+            $error = 'Registered phone number must be a valid mobile number with country code.';
             return false;
         }
 
@@ -1207,15 +1208,13 @@ class Auth extends BaseController
             return false;
         }
 
-        $otp = (string) random_int(100000, 999999);
-        if (!$this->sendFast2SmsOtp($phone, $otp, $error)) {
+        if (!$this->sendTwilioVerification($phone, $error)) {
             return false;
         }
 
         session()->set(self::RECRUITER_PHONE_OTP_SESSION_KEY, [
             'email' => $email,
             'phone' => $phone,
-            'code_hash' => password_hash($otp, PASSWORD_DEFAULT),
             'expires_at' => time() + self::RECRUITER_PHONE_OTP_TTL_SECONDS,
             'sent_at' => time(),
             'attempts' => 0,
@@ -1224,15 +1223,14 @@ class Auth extends BaseController
         return true;
     }
 
-    private function sendFast2SmsOtp(string $phone, string $otp, ?string &$error = null): bool
+    private function sendTwilioVerification(string $phone, ?string &$error = null): bool
     {
-        $apiKey = trim((string) (env('fast2sms.apiKey') ?: env('FAST2SMS_API_KEY') ?: ''));
-        if ($apiKey === '') {
-            $error = 'Fast2SMS API key is not configured.';
+        $credentials = $this->twilioVerifyCredentials($error);
+        if ($credentials === null) {
             return false;
         }
 
-        $endpoint = trim((string) (env('fast2sms.endpoint') ?: env('FAST2SMS_ENDPOINT') ?: 'https://www.fast2sms.com/dev/bulkV2'));
+        $endpoint = 'https://verify.twilio.com/v2/Services/' . rawurlencode($credentials['service_sid']) . '/Verifications';
 
         try {
             $http = \Config\Services::curlrequest([
@@ -1241,14 +1239,11 @@ class Auth extends BaseController
             ]);
 
             $response = $http->post($endpoint, [
-                'headers' => [
-                    'authorization' => $apiKey,
-                    'accept' => 'application/json',
-                ],
+                'auth' => [$credentials['account_sid'], $credentials['auth_token']],
+                'headers' => ['accept' => 'application/json'],
                 'form_params' => [
-                    'route' => 'otp',
-                    'variables_values' => $otp,
-                    'numbers' => $phone,
+                    'To' => $phone,
+                    'Channel' => 'sms',
                 ],
             ]);
 
@@ -1256,30 +1251,88 @@ class Auth extends BaseController
             $body = (string) $response->getBody();
             $data = json_decode($body, true);
 
-            if ($status >= 200 && $status < 300 && (!is_array($data) || ($data['return'] ?? true) !== false)) {
+            if ($status >= 200 && $status < 300 && is_array($data) && ($data['status'] ?? '') === 'pending') {
                 return true;
             }
 
             $error = is_array($data)
-                ? (string) ($data['message'] ?? $data['error'] ?? 'Fast2SMS rejected the request.')
-                : 'Fast2SMS rejected the request.';
-            log_message('error', 'Fast2SMS OTP failed: HTTP ' . $status . ' ' . $body);
+                ? (string) ($data['message'] ?? 'Twilio rejected the verification request.')
+                : 'Twilio rejected the verification request.';
+            log_message('error', 'Twilio Verify send failed: HTTP ' . $status . ' ' . $body);
             return false;
         } catch (\Throwable $e) {
-            $error = $e->getMessage();
-            log_message('error', 'Fast2SMS OTP exception: ' . $e->getMessage());
+            $error = 'Twilio Verify could not be reached.';
+            log_message('error', 'Twilio Verify send exception: ' . $e->getMessage());
             return false;
         }
     }
 
-    private function normalizeFast2SmsPhone(string $phone): string
+    private function checkTwilioVerification(string $phone, string $code, ?string &$error = null): bool
     {
-        $digits = preg_replace('/\D/', '', $phone);
-        if (strlen($digits) === 12 && substr($digits, 0, 2) === '91') {
-            $digits = substr($digits, 2);
+        $credentials = $this->twilioVerifyCredentials($error);
+        if ($credentials === null) {
+            return false;
         }
 
-        return strlen($digits) === 10 ? $digits : '';
+        $endpoint = 'https://verify.twilio.com/v2/Services/' . rawurlencode($credentials['service_sid']) . '/VerificationCheck';
+
+        try {
+            $http = \Config\Services::curlrequest(['timeout' => 15, 'http_errors' => false]);
+            $response = $http->post($endpoint, [
+                'auth' => [$credentials['account_sid'], $credentials['auth_token']],
+                'headers' => ['accept' => 'application/json'],
+                'form_params' => ['To' => $phone, 'Code' => $code],
+            ]);
+            $status = (int) $response->getStatusCode();
+            $body = (string) $response->getBody();
+            $data = json_decode($body, true);
+
+            if ($status >= 200 && $status < 300 && is_array($data)) {
+                if (($data['status'] ?? '') === 'approved' || ($data['valid'] ?? false) === true) {
+                    return true;
+                }
+                $error = 'Invalid SMS OTP.';
+                return false;
+            }
+
+            $error = is_array($data) ? (string) ($data['message'] ?? 'Twilio could not verify the OTP.') : 'Twilio could not verify the OTP.';
+            log_message('error', 'Twilio Verify check failed: HTTP ' . $status . ' ' . $body);
+            return false;
+        } catch (\Throwable $e) {
+            $error = 'Twilio Verify could not be reached.';
+            log_message('error', 'Twilio Verify check exception: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function twilioVerifyCredentials(?string &$error = null): ?array
+    {
+        $accountSid = trim((string) (env('twilio.accountSid') ?: env('TWILIO_ACCOUNT_SID') ?: ''));
+        $authToken = trim((string) (env('twilio.authToken') ?: env('TWILIO_AUTH_TOKEN') ?: ''));
+        $serviceSid = trim((string) (env('twilio.verifyServiceSid') ?: env('TWILIO_VERIFY_SERVICE_SID') ?: ''));
+
+        if ($accountSid === '' || $authToken === '' || $serviceSid === '') {
+            $error = 'Twilio Account SID, Auth Token, and Verify Service SID must be configured.';
+            return null;
+        }
+
+        return ['account_sid' => $accountSid, 'auth_token' => $authToken, 'service_sid' => $serviceSid];
+    }
+
+    private function normalizeTwilioPhone(string $phone): string
+    {
+        $trimmed = trim($phone);
+        $digits = preg_replace('/\D/', '', $trimmed);
+
+        if (strlen($digits) === 10) {
+            return '+91' . $digits;
+        }
+
+        if (strlen($digits) >= 11 && strlen($digits) <= 15) {
+            return '+' . $digits;
+        }
+
+        return '';
     }
 
     private function sendPasswordResetEmail(array $user, ?string &$error = null): bool

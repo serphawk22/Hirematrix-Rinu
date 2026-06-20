@@ -8,6 +8,7 @@ $companyName = trim((string) ($application['company'] ?? ''));
 $prepSource = (string) ($mockInterview['source'] ?? 'fallback');
 $status = (string) ($application['status'] ?? '');
 $aiPolicy = strtoupper((string) ($application['ai_interview_policy'] ?? 'REQUIRED_HARD'));
+$sessionCandidateName = (string) (session()->get('name') ?? session()->get('user_name') ?? '');
 ?>
 
 <div class="mock-interview-jobboard">
@@ -23,9 +24,17 @@ $aiPolicy = strtoupper((string) ($application['ai_interview_policy'] ?? 'REQUIRE
                 <i class="fas fa-arrow-left mr-1"></i> Applications
             </a>
             <?php if ($status === 'applied' && $aiPolicy !== 'OFF'): ?>
-                <a href="<?= base_url('interview/start/' . (int) $application['id']) ?>" class="btn btn-success">
-                    <i class="fas fa-video mr-1"></i> Start AI Interview
-                </a>
+                <form action="<?= base_url('ai_interview/index.php') ?>" method="post" class="candidate-inline-form">
+                    <input type="hidden" name="candidate_id" value="<?= esc((string) ($application['candidate_id'] ?? ''), 'attr') ?>">
+                    <input type="hidden" name="candidate_name" value="<?= esc($sessionCandidateName, 'attr') ?>">
+                    <input type="hidden" name="job_title" value="<?= esc($jobTitle, 'attr') ?>">
+                    <input type="hidden" name="jobid" value="<?= esc((string) ($application['job_id'] ?? ''), 'attr') ?>">
+                    <input type="hidden" name="highlight_skills" value="<?= esc((string) ($application['resume_version_highlight_skills'] ?? ''), 'attr') ?>">
+                    <input type="hidden" name="experience" value="<?= esc((string) ($calculatedExperience['level'] ?? ''), 'attr') ?>">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-video mr-1"></i> Start AI Interview
+                    </button>
+                </form>
             <?php elseif ($status === 'shortlisted'): ?>
                 <a href="<?= base_url('candidate/book-slot/' . (int) $application['id']) ?>" class="btn btn-warning">
                     <i class="fas fa-calendar-plus mr-1"></i> Book Interview Slot
@@ -64,21 +73,6 @@ $aiPolicy = strtoupper((string) ($application['ai_interview_policy'] ?? 'REQUIRE
                     <strong>Interview Flow</strong>
                     <?= $aiPolicy === 'OFF' ? 'Recruiter / HR flow' : 'AI-assisted screening flow' ?>
                 </div>
-            </div>
-
-            <div class="mock-sidebar-actions">
-                <a href="<?= base_url('candidate/applications') ?>" class="btn btn-outline-secondary btn-sm">
-                    <i class="fas fa-arrow-left"></i> Back to Applications
-                </a>
-                <?php if ($status === 'applied' && $aiPolicy !== 'OFF'): ?>
-                    <a href="<?= base_url('interview/start/' . (int) $application['id']) ?>" class="btn btn-success btn-sm">
-                        <i class="fas fa-video"></i> Start AI Interview
-                    </a>
-                <?php elseif ($status === 'shortlisted'): ?>
-                    <a href="<?= base_url('candidate/book-slot/' . (int) $application['id']) ?>" class="btn btn-warning btn-sm">
-                        <i class="fas fa-calendar-plus"></i> Book Interview Slot
-                    </a>
-                <?php endif; ?>
             </div>
         </aside>
 
