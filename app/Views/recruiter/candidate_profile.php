@@ -164,6 +164,7 @@ body.dark div{
         ? (preg_match('/^https?:\/\//i', $introVideoPath) ? $introVideoPath : base_url($introVideoPath))
         : '';
     $messages = $messages ?? [];
+    $emailActivities = $emailActivities ?? [];
     $recruiterNote = $recruiterNote ?? null;
     $interests = $interests ?? [];
     $projects = $projects ?? [];
@@ -347,6 +348,21 @@ body.dark div{
                                         <?= $isRecruiterMsg ? 'You' : esc($candidate['name']) ?> • <?= date('M d, h:i A', strtotime($msg['created_at'])) ?>
                                     </small>
                                     <div><?= nl2br(esc($msg['message'] ?? '')) ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (!empty($emailActivities)): ?>
+                        <div class="candidate-profile-stream mb-3">
+                            <?php foreach (array_slice($emailActivities, 0, 8) as $emailActivity): ?>
+                                <div class="candidate-profile-entry">
+                                    <small class="text-muted d-block mb-1">
+                                        <span class="badge badge-info">Email</span>
+                                        <?= ($emailActivity['direction'] ?? '') === 'outbound' ? 'You sent' : esc($candidate['name']) . ' replied' ?>
+                                        &bull; <?= date('M d, h:i A', strtotime((string) ($emailActivity['occurred_at'] ?? 'now'))) ?>
+                                    </small>
+                                    <?php if (!empty($emailActivity['subject'])): ?><strong class="d-block"><?= esc((string) $emailActivity['subject']) ?></strong><?php endif; ?>
+                                    <div><?= nl2br(esc((string) ($emailActivity['body_text'] ?? ''))) ?></div>
                                 </div>
                             <?php endforeach; ?>
                         </div>

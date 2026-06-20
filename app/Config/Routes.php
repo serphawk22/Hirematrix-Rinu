@@ -137,6 +137,10 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     // Main Dashboard
     $routes->get('dashboard', 'DashboardController::index');
     $routes->get('settings', 'Recruiter::settings');
+    $routes->get('mailbox/connect/(:segment)', 'RecruiterMailbox::connect/$1');
+    $routes->get('mailbox/callback/(:segment)', 'RecruiterMailbox::callback/$1');
+    $routes->post('mailbox/disconnect', 'RecruiterMailbox::disconnect');
+    $routes->post('mailbox/sync', 'RecruiterMailbox::sync');
     
     // Leaderboard
     $routes->get('dashboard/leaderboard', 'DashboardController::leaderboard');

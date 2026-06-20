@@ -316,6 +316,16 @@ class RecruiterCandidates extends BaseController
             (int) $recruiterId,
             $applicationId > 0 ? $applicationId : null
         );
+        $emailActivities = [];
+        if (\Config\Database::connect()->tableExists('recruiter_email_activities')) {
+            $emailBuilder = (new \App\Models\RecruiterEmailActivityModel())
+                ->where('candidate_id', (int) $candidateId)
+                ->where('recruiter_id', (int) $recruiterId);
+            if ($applicationId > 0) {
+                $emailBuilder->where('application_id', $applicationId);
+            }
+            $emailActivities = $emailBuilder->orderBy('occurred_at', 'DESC')->findAll(20);
+        }
         $recruiterNote = (new RecruiterCandidateNoteModel())->getByCandidateAndRecruiter(
             (int) $candidateId,
             (int) $recruiterId
@@ -331,6 +341,7 @@ class RecruiterCandidates extends BaseController
             'github' => $github,
             'projects' => $projects,
             'messages' => $messages,
+            'emailActivities' => $emailActivities,
             'totalExperienceMonths' => $totalExperienceMonths,
             'isFresherCandidate' => (int)($candidate['is_fresher_candidate'] ?? 0) === 1,
             'recruiterNote' => $recruiterNote,
@@ -528,6 +539,22 @@ class RecruiterCandidates extends BaseController
             'message' => $message,
             'created_at' => date('Y-m-d H:i:s'),
         ]);
+
+        if (\Config\Database::connect()->tableExists('recruiter_mailbox_connections')) {
+            $mailbox = (new \App\Models\RecruiterMailboxConnectionModel())
+                ->getConnectedForRecruiter((int) session()->get('user_id'));
+            if ($mailbox && !empty($candidate['email'])) {
+                $job = $jobId > 0 ? (new JobModel())->find($jobId) : null;
+                $subject = $job ? 'Regarding your application for ' . (string) ($job['title'] ?? 'the role') : 'Message from ' . $recruiterName;
+                (new \App\Libraries\RecruiterMailboxService())->sendForRecruiter(
+                    (int) session()->get('user_id'),
+                    (string) $candidate['email'],
+                    $subject,
+                    '<p>' . nl2br(esc($message)) . '</p>',
+                    ['candidate_id' => (int) $candidateId, 'application_id' => $applicationId ?: null, 'job_id' => $jobId ?: null]
+                );
+            }
+        }
 
         $this->notifyCandidateAction(
             (int) $candidateId,

@@ -1,5 +1,5 @@
 <?php
-$allowedTabs = ['account', 'appearance', 'language'];
+$allowedTabs = ['account', 'mailbox', 'appearance', 'language'];
 $activeTab = (string) ($activeTab ?? 'account');
 if (!in_array($activeTab, $allowedTabs, true)) {
     $activeTab = 'account';
@@ -45,6 +45,12 @@ if (!in_array($activeTab, $allowedTabs, true)) {
                             <small>Theme preference</small>
                         </span>
                     </a>
+                    <a href="#mailbox" class="recruiter-settings-nav-link <?= $activeTab === 'mailbox' ? 'is-active' : '' ?>" data-settings-tab="mailbox">
+                        <span>
+                            Email Sync
+                            <small>Company mailbox</small>
+                        </span>
+                    </a>
                     <a href="#language" class="recruiter-settings-nav-link <?= $activeTab === 'language' ? 'is-active' : '' ?>" data-settings-tab="language">
                         <span>
                             Language
@@ -70,6 +76,63 @@ if (!in_array($activeTab, $allowedTabs, true)) {
                             </a>
                         </div>
                     </div>
+                </section>
+
+                <section class="recruiter-settings-panel <?= $activeTab === 'mailbox' ? 'is-active' : '' ?>" data-settings-panel="mailbox">
+                    <div class="recruiter-settings-panel-title">Recruiter Email Synchronization</div>
+                    <div class="recruiter-settings-panel-copy">Connect the same verified company email used by your recruiter account. HireMatrix never stores your mailbox password.</div>
+
+                    <?php if (!empty($mailboxConnection) && ($mailboxConnection['status'] ?? '') === 'connected'): ?>
+                        <div class="recruiter-settings-card">
+                            <div class="recruiter-settings-card-copy">
+                                <h6><i class="fas fa-check-circle text-success"></i> <?= esc(ucfirst((string) $mailboxConnection['provider'])) ?> connected</h6>
+                                <p><?= esc((string) $mailboxConnection['email']) ?></p>
+                                <small class="text-muted">
+                                    Last synchronized: <?= !empty($mailboxConnection['last_synced_at']) ? date('M d, Y h:i A', strtotime($mailboxConnection['last_synced_at'])) : 'Not synchronized yet' ?>
+                                </small>
+                                <?php if (!empty($mailboxConnection['last_error'])): ?>
+                                    <div class="text-danger small mt-2"><?= esc((string) $mailboxConnection['last_error']) ?></div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="recruiter-settings-actions">
+                                <form method="post" action="<?= base_url('recruiter/mailbox/sync') ?>">
+                                    <?= csrf_field() ?>
+                                    <button type="submit" class="btn btn-outline-primary"><i class="fas fa-sync"></i> Sync now</button>
+                                </form>
+                                <form method="post" action="<?= base_url('recruiter/mailbox/disconnect') ?>" onsubmit="return confirm('Disconnect this company mailbox?');">
+                                    <?= csrf_field() ?>
+                                    <button type="submit" class="btn btn-outline-danger"><i class="fas fa-unlink"></i> Disconnect</button>
+                                </form>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div class="recruiter-settings-card">
+                            <div class="recruiter-settings-card-copy">
+                                <h6>Google Workspace</h6>
+                                <p>For company mailboxes hosted by Google, including custom company domains.</p>
+                            </div>
+                            <div class="recruiter-settings-actions">
+                                <?php if (!empty($mailboxProviders['google'])): ?>
+                                    <a href="<?= base_url('recruiter/mailbox/connect/google') ?>" class="btn btn-outline-primary"><i class="fab fa-google"></i> Connect Google</a>
+                                <?php else: ?>
+                                    <span class="badge badge-warning">OAuth configuration required</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="recruiter-settings-card">
+                            <div class="recruiter-settings-card-copy">
+                                <h6>Microsoft 365</h6>
+                                <p>For company mailboxes hosted by Microsoft Outlook or Exchange Online.</p>
+                            </div>
+                            <div class="recruiter-settings-actions">
+                                <?php if (!empty($mailboxProviders['microsoft'])): ?>
+                                    <a href="<?= base_url('recruiter/mailbox/connect/microsoft') ?>" class="btn btn-outline-primary"><i class="fab fa-microsoft"></i> Connect Microsoft</a>
+                                <?php else: ?>
+                                    <span class="badge badge-warning">OAuth configuration required</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </section>
 
                 <section class="recruiter-settings-panel <?= $activeTab === 'appearance' ? 'is-active' : '' ?>" data-settings-panel="appearance">
