@@ -1081,7 +1081,7 @@ section.py-5#jobs {
 .form-select {
   border: 1px solid var(--border);
   border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: -0.25rem 1rem;
 }
 
 .search-input-group {
