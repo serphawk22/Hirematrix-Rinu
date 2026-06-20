@@ -435,7 +435,7 @@ class CandidateDashboardController extends BaseController
                         $task['score'] += 30;
                     }
                     foreach ($activeApplications as $application) {
-                        if (in_array((string) ($application['status'] ?? ''), ['applied', 'shortlisted', 'interview_slot_booked'], true)) {
+                        if (in_array((string) ($application['status'] ?? ''), ['applied', 'ai_interview_completed', 'shortlisted', 'interview_slot_booked'], true)) {
                             $task['score'] += 15;
                             break;
                         }
@@ -1096,6 +1096,9 @@ class CandidateDashboardController extends BaseController
                     ? 'Your application is under recruiter review.'
                     : 'Start your AI interview to move forward.';
 
+            case 'ai_interview_completed':
+                return 'Your AI interview is complete. Recruiter review is now in progress.';
+
             case 'shortlisted':
                 return 'Congratulations! You\'ve been shortlisted. Book your HR interview slot.';
                 
@@ -1196,6 +1199,7 @@ class CandidateDashboardController extends BaseController
         return view('candidate/mock_interview', [
             'application' => $application,
             'mockInterview' => $this->buildDetailedMockInterview($application),
+            'calculatedExperience' => model('UserModel')->calculateExperienceLevel($candidateId),
         ]);
     }
 

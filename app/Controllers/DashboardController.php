@@ -66,7 +66,7 @@ class DashboardController extends BaseController
         $funnel = [
             'total_applications' => $applicationModel->whereIn('job_id', $jobIds)->countAllResults(),
             'ai_interview_started' => 0,
-            'ai_interview_completed' => 0,
+            'ai_interview_completed' => $applicationModel->whereIn('job_id', $jobIds)->where('status', 'ai_interview_completed')->countAllResults(),
             'shortlisted' => $applicationModel->whereIn('job_id', $jobIds)->where('status', 'shortlisted')->countAllResults(),
             'rejected' => $applicationModel->whereIn('job_id', $jobIds)->where('status', 'rejected')->countAllResults(),
             'interview_slot_booked' => $applicationModel->whereIn('job_id', $jobIds)->where('status', 'interview_slot_booked')->countAllResults()
@@ -84,7 +84,7 @@ class DashboardController extends BaseController
             ->countAllResults();
 
         $pendingActions = [
-            'pending_screening' => $applicationModel->where('status', 'pending')
+            'pending_screening' => $applicationModel->whereIn('status', ['pending', 'applied', 'ai_interview_completed'])
                 ->whereIn('job_id', $jobIds ?: [0])
                 ->countAllResults(),
             'hr_interviews_today' => model('InterviewBookingModel')
@@ -379,6 +379,23 @@ class DashboardController extends BaseController
             return redirect()->back()->with('error', 'You have no jobs to export data from.');
         }
 
+        $requestedJobId = (int) ($this->request->getGet('job_id') ?? 0);
+        $requestedJob = null;
+        if ($requestedJobId > 0) {
+            foreach ($recruiterJobs as $recruiterJob) {
+                if ((int) ($recruiterJob['id'] ?? 0) === $requestedJobId) {
+                    $requestedJob = $recruiterJob;
+                    break;
+                }
+            }
+
+            if ($requestedJob === null) {
+                return redirect()->back()->with('error', 'Job not found or you do not have permission to export it.');
+            }
+
+            $jobIds = [$requestedJobId];
+        }
+
 
         // try {
 
@@ -401,7 +418,13 @@ class DashboardController extends BaseController
 
             case 'detailed':
                 $data = $this->getDetailedExportData($jobIds);
-                $filename = 'recruitment_detailed_' . date('Y-m-d');
+                if ($requestedJob !== null) {
+                    $safeJobTitle = preg_replace('/[^a-z0-9]+/i', '_', (string) ($requestedJob['title'] ?? 'job'));
+                    $safeJobTitle = trim((string) $safeJobTitle, '_') ?: 'job_' . $requestedJobId;
+                    $filename = 'job_applicants_' . $safeJobTitle . '_' . date('Y-m-d');
+                } else {
+                    $filename = 'recruitment_detailed_' . date('Y-m-d');
+                }
                 break;
 
             default:
@@ -490,27 +513,22 @@ class DashboardController extends BaseController
 
 
         // Reset and reapply filter for each query
-        $screened = $applicationModel->whereIn('status', ['shortlisted', 'rejected', 'hold']);
+        $screened = $applicationModel->whereIn('status', ['ai_interview_completed', 'shortlisted', 'interview_slot_booked', 'selected', 'hired', 'rejected', 'hold', 'filtered_out']);
         if (!empty($jobIds))
             $screened->whereIn('job_id', $jobIds);
         $screenedCount = $screened->countAllResults();
 
-        $shortlisted = $applicationModel->where('status', 'shortlisted');
+        $shortlisted = $applicationModel->whereIn('status', ['shortlisted', 'interview_slot_booked', 'selected', 'hired']);
         if (!empty($jobIds))
             $shortlisted->whereIn('job_id', $jobIds);
         $shortlistedCount = $shortlisted->countAllResults();
 
-        $hrScheduled = $applicationModel->where('status', 'interview_slot_booked');
+        $hrScheduled = $applicationModel->whereIn('status', ['interview_slot_booked', 'selected', 'hired']);
         if (!empty($jobIds))
             $hrScheduled->whereIn('job_id', $jobIds);
         $hrScheduledCount = $hrScheduled->countAllResults();
 
-        $hrCompleted = $applicationModel->where('status', 'hr_interview_completed');
-        if (!empty($jobIds))
-            $hrCompleted->whereIn('job_id', $jobIds);
-        $hrCompletedCount = $hrCompleted->countAllResults();
-
-        $selected = $applicationModel->where('status', 'selected');
+        $selected = $applicationModel->whereIn('status', ['selected', 'hired']);
         if (!empty($jobIds))
             $selected->whereIn('job_id', $jobIds);
         $selectedCount = $selected->countAllResults();
@@ -527,7 +545,7 @@ class DashboardController extends BaseController
             'application_to_screening' => $safeRate($screenedCount ?? 0, $total),
             'screening_to_shortlist' => $safeRate($shortlistedCount, $screenedCount ?? 0),
             'shortlist_to_hr_interview' => $safeRate($hrScheduledCount, $shortlistedCount),
-            'hr_interview_to_selection' => $safeRate($selectedCount, $hrCompletedCount),
+            'hr_interview_to_selection' => $safeRate($selectedCount, $hrScheduledCount),
             'overall_conversion' => $safeRate($selectedCount, $total) ?? 0.0
         ];
 
@@ -549,6 +567,7 @@ class DashboardController extends BaseController
             SELECT 
                 DATE_FORMAT(applied_at, '%Y-%m') as month,
                 COUNT(*) as total_applications,
+                SUM(CASE WHEN status = 'ai_interview_completed' THEN 1 ELSE 0 END) as ai_interview_completed,
                 SUM(CASE WHEN status = 'shortlisted' THEN 1 ELSE 0 END) as shortlisted,
                 SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected
             FROM applications
@@ -856,6 +875,7 @@ class DashboardController extends BaseController
 
         $stages = [
             'Total Applications',
+            'AI Interview Completed',
             'Shortlisted',
             'Rejected',
             'Interview Slot Booked',
@@ -874,7 +894,7 @@ class DashboardController extends BaseController
 
 
         foreach ($stages as $stage) {
-            $count = $this->getStageCount($stage);
+            $count = $this->getStageCount($stage, $jobIds);
             $percentage = $total > 0 ? round(($count / $total) * 100, 1) : 0;
             $data[] = [$stage, $count, $percentage . '%'];
         }
@@ -1035,13 +1055,13 @@ class DashboardController extends BaseController
         $total = $builder->countAllResults(false);
 
         $activeBuilder = clone $builder;
-        $active = $activeBuilder->where('status', 'applied')->countAllResults();
+        $active = $activeBuilder->whereNotIn('status', ['rejected', 'withdrawn', 'filtered_out', 'hired'])->countAllResults();
 
         $completedBuilder = clone $builder;
-        $completed = $completedBuilder->where('status', 'shortlisted')->countAllResults();
+        $completed = $completedBuilder->whereIn('status', ['ai_interview_completed', 'shortlisted', 'interview_slot_booked', 'selected', 'hired'])->countAllResults();
 
         $selectedBuilder = clone $builder;
-        $selected = $selectedBuilder->where('status', 'shortlisted')->countAllResults();
+        $selected = $selectedBuilder->whereIn('status', ['shortlisted', 'interview_slot_booked', 'selected', 'hired'])->countAllResults();
 
         $rejectedBuilder = clone $builder;
         $rejected = $rejectedBuilder->where('status', 'rejected')->countAllResults();
@@ -1100,11 +1120,11 @@ class DashboardController extends BaseController
         }
 
         $query = "
-            SELECT 
-                jobs.title,
-                COUNT(applications.id) as total_applications,
-                SUM(CASE WHEN applications.status = 'selected' THEN 1 ELSE 0 END) as selected,
-                SUM(CASE WHEN applications.status = 'rejected' THEN 1 ELSE 0 END) as rejected
+              SELECT 
+                  jobs.title,
+                  COUNT(applications.id) as total_applications,
+                SUM(CASE WHEN applications.status IN ('selected', 'hired') THEN 1 ELSE 0 END) as selected,
+                  SUM(CASE WHEN applications.status = 'rejected' THEN 1 ELSE 0 END) as rejected
             FROM jobs
             LEFT JOIN applications ON applications.job_id = jobs.id
             $whereClause
@@ -1134,6 +1154,7 @@ class DashboardController extends BaseController
 
         $statusMap = [
             'Total Applications' => null,
+            'AI Interview Completed' => 'ai_interview_completed',
             'Shortlisted' => 'shortlisted',
             'Rejected' => 'rejected',
             'Interview Slot Booked' => 'interview_slot_booked'

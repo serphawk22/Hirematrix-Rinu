@@ -77,6 +77,7 @@ class RecruiterApplications extends BaseController
     // ✅ Status validation
     $validStatuses = [
         'applied',
+        'ai_interview_completed',
         'pending',
         'filtered_out',
         'shortlisted',
@@ -213,12 +214,7 @@ class RecruiterApplications extends BaseController
         usort($applications, fn($a, $b) => strcmp($b['applied_at'], $a['applied_at']));
     }
 
-    return view('recruiter/applications/view_by_job', [
-        'job' => $job,
-        'applications' => $applications,
-        'filters' => $filters,
-        'statusOptions' => $validStatuses,
-    ]);
+    return redirect()->to(base_url('recruiter/jobs/view/' . (int) $jobId));
 }
 
     public function shortlist($applicationId)
@@ -359,7 +355,7 @@ class RecruiterApplications extends BaseController
             return $this->respondBulkAction(false, 'No selected applications were eligible for this action.', $isAjax, null, 422);
         }
 
-        $statusLabel = ucwords(str_replace('_', ' ', $targetStatus));
+        $statusLabel = $this->formatApplicationStatusLabel($targetStatus);
         $suffix = $skipped > 0 ? " ({$skipped} skipped)" : '';
         return $this->respondBulkAction(true, "Bulk {$statusLabel} applied to {$updated} candidate(s){$suffix}.", $isAjax);
     }
@@ -432,7 +428,7 @@ class RecruiterApplications extends BaseController
             $status
         );
 
-        $statusLabel = ucwords(str_replace('_', ' ', $status));
+        $statusLabel = $this->formatApplicationStatusLabel($status);
         if ($isAjax) {
             return $this->respondApplicationStatus(true, 'Application status updated to ' . $statusLabel, [
                 'application_id' => $applicationId,
@@ -466,6 +462,7 @@ class RecruiterApplications extends BaseController
         $statusColors = [
             'pending' => 'warning',
             'applied' => 'warning',
+            'ai_interview_completed' => 'info',
             'shortlisted' => 'success',
             'hold' => 'secondary',
             'filtered_out' => 'dark',
@@ -477,13 +474,24 @@ class RecruiterApplications extends BaseController
         return $statusColors[$status] ?? 'secondary';
     }
 
+    private function formatApplicationStatusLabel(string $status): string
+    {
+        $labels = [
+            'ai_interview_completed' => 'AI Interview Completed',
+            'interview_slot_booked' => 'Interview Booked',
+            'filtered_out' => 'Filtered Out',
+        ];
+
+        return $labels[$status] ?? ucwords(str_replace('_', ' ', $status));
+    }
+
     private function canTakeManualDecision(string $applicationStatus): bool
     {
         if (in_array($applicationStatus, ['interview_slot_booked', 'selected'], true)) {
             return false;
         }
 
-        return in_array($applicationStatus, ['applied', 'shortlisted', 'rejected', 'pending', 'hold'], true);
+        return in_array($applicationStatus, ['applied', 'ai_interview_completed', 'shortlisted', 'rejected', 'pending', 'hold'], true);
     }
 
     private function notifyApplicationStatusChange(
@@ -492,7 +500,7 @@ class RecruiterApplications extends BaseController
         int $applicationId,
         string $status
     ): void {
-        $label = ucwords(str_replace('_', ' ', $status));
+        $label = $this->formatApplicationStatusLabel($status);
         $type = in_array($status, ['selected', 'hired'], true) ? 'offer_sent' : 'application_status_changed';
         $message = match ($status) {
             'shortlisted' => 'Good news! Your application has been shortlisted.',

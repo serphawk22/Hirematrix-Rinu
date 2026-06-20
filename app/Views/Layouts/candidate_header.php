@@ -14,6 +14,11 @@
                     document.documentElement.classList.add('hm-dark-preload');
                 }
             } catch (error) {}
+
+            var touchDevice = navigator.maxTouchPoints > 1 || /Android|iPad|iPhone|iPod|Mobile|Tablet/i.test(navigator.userAgent);
+            if (touchDevice) {
+                document.documentElement.classList.add('candidate-touch-device');
+            }
         })();
     </script>
     <!-- Inside the <head> tag -->
@@ -456,18 +461,24 @@
                         <span>Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="cand-leftnav__link <?= $isCareerTransitionActive ? 'is-active' : '' ?>" title="Career Transition">
-                        <span class="cand-leftnav__icon"><i class="fas fa-rocket"></i></span>
-                        <span>Career Transition</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-rocket" style="background:var(--gradient-primary);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"></i></span>
+                        <span style="background:var(--gradient-primary);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600 !important;">Career Transition</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($resumeStudioUrl) ?>" class="cand-leftnav__link <?= $isResumeStudioActive ? 'is-active' : '' ?>" title="Resume Studio">
-                        <span class="cand-leftnav__icon"><i class="fas fa-file-alt"></i></span>
-                        <span>Resume Studio</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-file-alt" style="background:var(--gradient-primary);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"></i></span>
+                        <span style="background:var(--gradient-primary);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600 !important;">Resume Studio</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($mentorUrl) ?>" class="cand-leftnav__link <?= $isPremiumMentorActive ? 'is-active' : '' ?>" title="AI Mentor">
-                        <span class="cand-leftnav__icon"><i class="fas fa-comments"></i></span>
-                        <span>AI Mentor</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-comments" style="background:var(--gradient-primary);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"></i></span>
+                        <span style="background:var(--gradient-primary);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600 !important;">AI Mentor</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
                 </div>
@@ -649,6 +660,5 @@
         </a>
     </nav>
         
-
 
 

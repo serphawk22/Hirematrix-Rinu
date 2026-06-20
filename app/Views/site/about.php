@@ -260,12 +260,18 @@
         @media (prefers-color-scheme: dark) {
             :root {
                 color-scheme: dark;
-                --page-bg: #0d1117;
+                --page-bg: #000000 !important;
                 --page-surface: #11161d;
                 --page-border: #23343a;
-                --page-text: #e8eef5;
+                --page-text: #ffffff;
                 --page-muted: #9cb0c2;
                 --page-soft: rgba(31, 183, 181, 0.12);
+            }
+            .hero-card,.story-grid,.story-side,.values-grid,.cta-card,.cta-actions{
+                background:#000000 !important;
+            }
+            .story-copy h2 .section-title,.story-side h2 .section-title{
+                 color: #ffffff !important;
             }
             .hero-card h1,
             .section-title,
@@ -274,7 +280,8 @@
             .page-brand,
             .page-link,
             .cta-btn-secondary {
-                color: #f8fafc;
+                color: #ffffff;
+                
             }
             .story-side {
                 background: #10171e;

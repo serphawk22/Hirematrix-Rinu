@@ -221,7 +221,7 @@ body.dark .card .card-body h3.text-warning {
                   Back to My Jobs
             </a>
             <?php if (!empty($selectedJob['id'])): ?>
-                <a href="<?= base_url('recruiter/jobs/' . $selectedJob['id'] . '/applications') ?>" class="btn btn-outline-primary">
+                <a href="<?= base_url('recruiter/jobs/view/' . $selectedJob['id']) ?>" class="btn btn-outline-primary">
                      Open Candidate List
                 </a>
             <?php endif; ?>

@@ -260,7 +260,7 @@ body.dark .status-pill{
                                     <td><strong><?= esc($job['title']) ?></strong></td>
                                     <td><?= esc($job['location']) ?></td>
                                     <td>
-                                        <a href="<?= base_url('recruiter/jobs/' . $job['id'] . '/applications') ?>">
+                                        <a href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>">
                                             <span class="badge badge-primary"><?= $job['application_count'] ?></span>
                                         </a>
                                     </td>
@@ -291,7 +291,7 @@ body.dark .status-pill{
                                             <a href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>" class="status-pill">
                                                  Edit
                                             </a>
-                                            <a href="<?= base_url('recruiter/jobs/' . $job['id'] . '/applications') ?>" class="status-pill">
+                                            <a href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>" class="status-pill">
                                                View Applications
                                             </a>
                                             <a href="<?= base_url('recruiter/jobs/' . $job['id'] . '/leaderboard') ?>" class="status-pill">

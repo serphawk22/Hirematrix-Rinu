@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="<?= base_url('jobboard/css/owl.carousel.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/animate.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/style.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/recruiter-pages.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/recruiter-pages.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-pages.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/hirematrix-style.css?v=' . @filemtime(FCPATH . 'jobboard/css/hirematrix-style.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.css')) ?>">
@@ -1509,15 +1509,6 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                 <?php endif; ?>
                 <span class="sb-tooltip">Notifications</span>
             </a> 
-
-            <a href="<?= base_url('recruiter/dashboard/export-excel') ?>"
-               class="hm-sb-item <?= $isActive('recruiter/dashboard/export-excel') ?>">
-                <i class="fas fa-file-excel sb-icon"></i>
-                <span class="sb-label">Export Data</span>
-                <span class="sb-tooltip">Export Data</span>
-            </a>
-
-            
 
         </nav>
 

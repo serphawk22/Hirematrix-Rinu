@@ -398,11 +398,11 @@ body {
 }
 
 .recruiter-jobboard .page-board-kicker {
-    color: #ff7b2a;
+    color: var(--hm-primary-dark, #0D8A90);
 }
 
 .recruiter-jobboard .page-board-kicker i {
-    color: #ff7b2a;
+    color: var(--hm-primary-dark, #0D8A90);
 }
 
 .recruiter-jobboard .text-muted {

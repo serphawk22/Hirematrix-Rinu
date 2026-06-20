@@ -3,7 +3,9 @@
 namespace App\Controllers;
 
 use App\Models\CompanyModel;
+use App\Models\CandidateSkillsModel;
 use App\Models\JobModel;
+use App\Models\UserModel;
 use CodeIgniter\Controller;
 
 class Companies extends Controller
@@ -23,11 +25,58 @@ class Companies extends Controller
 
     public function index()
     {
+        $defaults = $this->getCandidateSearchDefaults();
+
         return view('company/companies', [
             'featuredCompanies' => $this->getFeaturedCompanies(),
             'popularRoles'      => $this->getPopularRoles(),
             'popularCities'     => $this->getPopularCities(),
+            'defaultRole'       => $defaults['role'],
+            'defaultCity'       => $defaults['city'],
         ]);
+    }
+
+    public function resolveLocation()
+    {
+        $latitude = filter_var($this->request->getGet('latitude'), FILTER_VALIDATE_FLOAT);
+        $longitude = filter_var($this->request->getGet('longitude'), FILTER_VALIDATE_FLOAT);
+
+        if ($latitude === false || $longitude === false || $latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
+            return $this->response->setStatusCode(422)->setJSON(['error' => 'Invalid coordinates.']);
+        }
+
+        $url = 'https://nominatim.openstreetmap.org/reverse?' . http_build_query([
+            'format' => 'jsonv2',
+            'lat' => $latitude,
+            'lon' => $longitude,
+            'zoom' => 10,
+            'addressdetails' => 1,
+        ]);
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['User-Agent: HireMatrixCandidatePortal/1.0'],
+            CURLOPT_TIMEOUT => 8,
+            CURLOPT_CONNECTTIMEOUT => 4,
+        ]);
+        $body = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if (!is_string($body) || $status >= 400) {
+            return $this->response->setStatusCode(502)->setJSON(['error' => 'Unable to identify your city right now.']);
+        }
+
+        $address = (array) ((json_decode($body, true)['address'] ?? []));
+        foreach (['city', 'town', 'municipality', 'village', 'county', 'state_district', 'state'] as $key) {
+            $city = trim((string) ($address[$key] ?? ''));
+            if ($city !== '') {
+                return $this->response->setJSON(['city' => $city]);
+            }
+        }
+
+        return $this->response->setStatusCode(404)->setJSON(['error' => 'Your city could not be determined.']);
     }
 
     public function fetchCompanies()
@@ -90,6 +139,41 @@ class Companies extends Controller
         }
 
         return $this->fallbackCompanies();
+    }
+
+    private function getCandidateSearchDefaults(): array
+    {
+        $candidateId = (int) (session()->get('user_id') ?? 0);
+        if ($candidateId <= 0 || session()->get('role') !== 'candidate') {
+            return ['role' => '', 'city' => ''];
+        }
+
+        try {
+            $profile = (new UserModel())->findCandidateWithProfile($candidateId) ?? [];
+            $city = $this->firstProfileValue((string) ($profile['preferred_locations'] ?? ''));
+            if ($city === '') {
+                $city = $this->firstProfileValue((string) ($profile['location'] ?? ''));
+            }
+
+            $role = $this->firstProfileValue((string) ($profile['preferred_job_titles'] ?? ''));
+            if ($role === '') {
+                $skills = (new CandidateSkillsModel())
+                    ->where('candidate_id', $candidateId)
+                    ->findAll(1);
+                $role = $this->firstProfileValue((string) ($skills[0]['skill_name'] ?? $profile['key_skills'] ?? ''));
+            }
+
+            return ['role' => $role, 'city' => $city];
+        } catch (\Throwable $e) {
+            log_message('warning', 'Candidate local-company defaults failed: ' . $e->getMessage());
+            return ['role' => '', 'city' => ''];
+        }
+    }
+
+    private function firstProfileValue(string $value): string
+    {
+        $parts = preg_split('/[,|;\n]+/', $value) ?: [];
+        return trim((string) ($parts[0] ?? ''));
     }
 
     private function searchLocalCompanies(string $role, string $city): array

@@ -252,27 +252,6 @@
         });
     };
 
-    window.executeSelectedBulkAction = function () {
-        var $ = window.jQuery;
-        var action = $('#pipelineBulkAction').val();
-        if (!action) {
-            alert('Choose a bulk action first.');
-            return;
-        }
-
-        if (action === 'email') {
-            window.openBulkEmailModal();
-            return;
-        }
-
-        if (action === 'message') {
-            window.openBulkMessageModal();
-            return;
-        }
-
-        window.executeBulkAction(action);
-    };
-
     window.updateApplicationStatus = function (applicationId, newStatus) {
         var $ = window.jQuery;
         var config = getConfig();
