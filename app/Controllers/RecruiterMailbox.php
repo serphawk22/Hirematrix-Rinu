@@ -98,11 +98,97 @@ class RecruiterMailbox extends BaseController
         return redirect()->to(base_url('recruiter/settings?tab=mailbox'))->with('success', 'Company mailbox connected successfully.');
     }
 
+    public function connectCustom()
+    {
+        $recruiterId = (int) session()->get('user_id');
+        $recruiter = model('UserModel')->findRecruiterWithProfile($recruiterId);
+        if (!$recruiter || empty($recruiter['email_verified_at'])) {
+            return redirect()->to(base_url('recruiter/settings?tab=mailbox'))->with('error', 'Verify your company email before connecting a mailbox.');
+        }
+
+        $verifiedEmail = $this->verifiedEmail($recruiter);
+        $username = strtolower(trim((string) $this->request->getPost('mailbox_username')));
+        $password = (string) $this->request->getPost('mailbox_password');
+        $settings = [
+            'imap_host' => strtolower(trim((string) $this->request->getPost('imap_host'))),
+            'imap_port' => (int) $this->request->getPost('imap_port'),
+            'imap_encryption' => strtolower(trim((string) $this->request->getPost('imap_encryption'))),
+            'smtp_host' => strtolower(trim((string) $this->request->getPost('smtp_host'))),
+            'smtp_port' => (int) $this->request->getPost('smtp_port'),
+            'smtp_encryption' => strtolower(trim((string) $this->request->getPost('smtp_encryption'))),
+            'username' => $username,
+            'password' => $password,
+        ];
+
+        if ($username !== $verifiedEmail) {
+            return redirect()->back()->withInput()->with('error', 'The mailbox username must be your verified company email.');
+        }
+        if ($password === '') {
+            return redirect()->back()->withInput()->with('error', 'Mailbox password or app password is required.');
+        }
+        if (!in_array($settings['imap_port'], [143, 993], true) || !in_array($settings['smtp_port'], [465, 587], true)) {
+            return redirect()->back()->withInput()->with('error', 'Use IMAP port 143/993 and SMTP port 465/587.');
+        }
+        if (!in_array($settings['imap_encryption'], ['ssl', 'tls'], true) || !in_array($settings['smtp_encryption'], ['ssl', 'tls'], true)) {
+            return redirect()->back()->withInput()->with('error', 'Encrypted SSL/TLS connections are required.');
+        }
+        foreach ([$settings['imap_host'], $settings['smtp_host']] as $host) {
+            if (!$this->isSafeMailHost($host)) {
+                return redirect()->back()->withInput()->with('error', 'Enter a valid public mail-server hostname.');
+            }
+        }
+
+        try {
+            (new \App\Libraries\CustomMailboxClient())->test($settings);
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()->with('error', 'Mailbox connection failed: ' . $e->getMessage());
+        }
+
+        $service = new RecruiterMailboxService();
+        $model = new RecruiterMailboxConnectionModel();
+        \Config\Database::connect()->table('recruiter_mailbox_connections')
+            ->where('recruiter_id', $recruiterId)
+            ->update(['status' => 'disconnected', 'updated_at' => date('Y-m-d H:i:s')]);
+        $existing = $model->where('recruiter_id', $recruiterId)->where('provider', 'custom')->first();
+        $payload = [
+            'recruiter_id' => $recruiterId,
+            'provider' => 'custom',
+            'email' => $verifiedEmail,
+            'imap_host' => $settings['imap_host'],
+            'imap_port' => $settings['imap_port'],
+            'imap_encryption' => $settings['imap_encryption'],
+            'smtp_host' => $settings['smtp_host'],
+            'smtp_port' => $settings['smtp_port'],
+            'smtp_encryption' => $settings['smtp_encryption'],
+            'mailbox_username' => $username,
+            'mailbox_password' => $service->encryptToken($password),
+            'access_token' => '',
+            'refresh_token' => null,
+            'token_expires_at' => null,
+            'scopes' => 'imap smtp',
+            'status' => 'connected',
+            'last_error' => null,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+        if ($existing) {
+            $model->update((int) $existing['id'], $payload);
+        } else {
+            $payload['created_at'] = date('Y-m-d H:i:s');
+            $model->insert($payload);
+        }
+
+        return redirect()->to(base_url('recruiter/settings?tab=mailbox'))->with('success', 'Company IMAP/SMTP mailbox connected successfully.');
+    }
+
     public function disconnect()
     {
+        $payload = ['status' => 'disconnected', 'access_token' => '', 'refresh_token' => null, 'updated_at' => date('Y-m-d H:i:s')];
+        if (\Config\Database::connect()->fieldExists('mailbox_password', 'recruiter_mailbox_connections')) {
+            $payload['mailbox_password'] = null;
+        }
         \Config\Database::connect()->table('recruiter_mailbox_connections')
             ->where('recruiter_id', (int) session()->get('user_id'))
-            ->update(['status' => 'disconnected', 'access_token' => '', 'refresh_token' => null, 'updated_at' => date('Y-m-d H:i:s')]);
+            ->update($payload);
         return redirect()->to(base_url('recruiter/settings?tab=mailbox'))->with('success', 'Mailbox disconnected.');
     }
 
@@ -121,5 +207,25 @@ class RecruiterMailbox extends BaseController
     private function verifiedEmail(array $recruiter): string
     {
         return strtolower(trim((string) ($recruiter['official_email'] ?? $recruiter['email'] ?? '')));
+    }
+
+    private function isSafeMailHost(string $host): bool
+    {
+        if ($host === '' || $host === 'localhost' || filter_var($host, FILTER_VALIDATE_IP)) {
+            return false;
+        }
+        if (!filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+            return false;
+        }
+        $addresses = gethostbynamel($host) ?: [];
+        if ($addresses === []) {
+            return false;
+        }
+        foreach ($addresses as $address) {
+            if (!filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

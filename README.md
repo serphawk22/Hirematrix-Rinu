@@ -200,6 +200,8 @@ php spark mailboxes:sync
 
 OAuth tokens are encrypted with the configured `encryption.key`. Never remove or rotate that key without reconnecting existing mailboxes.
 
+Private/cPanel-hosted company mailboxes can use **Other Provider (IMAP/SMTP)** in the same settings panel. Enter the secure server names and ports supplied by the mail host (normally IMAP 993 with SSL/TLS and SMTP 465 with SSL/TLS, or SMTP 587 with STARTTLS). The portal tests both logins before saving and encrypts the mailbox credential with `encryption.key`.
+
 ## Testing
 
 Run the PHPUnit suite:

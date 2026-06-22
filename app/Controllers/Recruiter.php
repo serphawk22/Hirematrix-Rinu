@@ -43,6 +43,7 @@ class Recruiter extends BaseController
                 ->first();
         }
         $mailboxConfig = config('RecruiterMailbox');
+        $recruiterAccount = model('UserModel')->findRecruiterWithProfile((int) session()->get('user_id')) ?? [];
 
         return view('recruiter/settings', [
             'activeTab' => $activeTab,
@@ -51,6 +52,7 @@ class Recruiter extends BaseController
                 'google' => !empty($mailboxConfig->google['client_id']) && !empty($mailboxConfig->google['client_secret']),
                 'microsoft' => !empty($mailboxConfig->microsoft['client_id']) && !empty($mailboxConfig->microsoft['client_secret']),
             ],
+            'verifiedRecruiterEmail' => strtolower(trim((string) ($recruiterAccount['official_email'] ?? $recruiterAccount['email'] ?? ''))),
         ]);
     }
 

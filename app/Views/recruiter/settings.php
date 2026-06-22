@@ -4,6 +4,9 @@ $activeTab = (string) ($activeTab ?? 'account');
 if (!in_array($activeTab, $allowedTabs, true)) {
     $activeTab = 'account';
 }
+$verifiedRecruiterEmail = (string) ($verifiedRecruiterEmail ?? '');
+$mailDomain = str_contains($verifiedRecruiterEmail, '@') ? substr(strrchr($verifiedRecruiterEmail, '@'), 1) : '';
+$suggestedMailHost = $mailDomain !== '' ? 'mail.' . $mailDomain : '';
 ?>
 
 <?= view('Layouts/recruiter_header') ?>
@@ -132,6 +135,63 @@ if (!in_array($activeTab, $allowedTabs, true)) {
                                 <?php endif; ?>
                             </div>
                         </div>
+                        <form method="post" action="<?= base_url('recruiter/mailbox/connect-custom') ?>" class="recruiter-settings-card recruiter-mailbox-custom-card">
+                            <?= csrf_field() ?>
+                            <div class="recruiter-settings-card-copy recruiter-mailbox-custom-copy">
+                                <h6>Other Provider (IMAP/SMTP)</h6>
+                                <p>For cPanel, private hosting, Zoho, or another company mail server. Use an app password when your provider supports one.</p>
+                                <div class="row mt-3">
+                                    <div class="form-group col-md-6">
+                                        <label>Verified mailbox</label>
+                                        <input type="email" name="mailbox_username" class="form-control" value="<?= esc(old('mailbox_username', $verifiedRecruiterEmail)) ?>" readonly required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Mailbox password / app password</label>
+                                        <input type="password" name="mailbox_password" class="form-control" autocomplete="new-password" required>
+                                    </div>
+                                    <div class="form-group col-md-5">
+                                        <label>IMAP host</label>
+                                        <input type="text" name="imap_host" class="form-control" value="<?= esc(old('imap_host', $suggestedMailHost)) ?>" placeholder="mail.example.com" required>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>IMAP port</label>
+                                        <select name="imap_port" class="form-control" required>
+                                            <option value="993" <?= old('imap_port', '993') === '993' ? 'selected' : '' ?>>993</option>
+                                            <option value="143" <?= old('imap_port') === '143' ? 'selected' : '' ?>>143</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>IMAP security</label>
+                                        <select name="imap_encryption" class="form-control" required>
+                                            <option value="ssl" <?= old('imap_encryption', 'ssl') === 'ssl' ? 'selected' : '' ?>>SSL/TLS</option>
+                                            <option value="tls" <?= old('imap_encryption') === 'tls' ? 'selected' : '' ?>>STARTTLS</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-5">
+                                        <label>SMTP host</label>
+                                        <input type="text" name="smtp_host" class="form-control" value="<?= esc(old('smtp_host', $suggestedMailHost)) ?>" placeholder="mail.example.com" required>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>SMTP port</label>
+                                        <select name="smtp_port" class="form-control" required>
+                                            <option value="465" <?= old('smtp_port', '465') === '465' ? 'selected' : '' ?>>465</option>
+                                            <option value="587" <?= old('smtp_port') === '587' ? 'selected' : '' ?>>587</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>SMTP security</label>
+                                        <select name="smtp_encryption" class="form-control" required>
+                                            <option value="ssl" <?= old('smtp_encryption', 'ssl') === 'ssl' ? 'selected' : '' ?>>SSL/TLS</option>
+                                            <option value="tls" <?= old('smtp_encryption') === 'tls' ? 'selected' : '' ?>>STARTTLS</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <small class="text-muted">The connection is tested before saving. Credentials are encrypted using the portal encryption key.</small>
+                            </div>
+                            <div class="recruiter-settings-actions recruiter-mailbox-custom-actions">
+                                <button type="submit" class="btn btn-outline-primary"><i class="fas fa-plug"></i> Test and Connect</button>
+                            </div>
+                        </form>
                     <?php endif; ?>
                 </section>
 
@@ -173,6 +233,17 @@ if (!in_array($activeTab, $allowedTabs, true)) {
         </div>
     </div>
 </div>
+
+<style>
+.recruiter-mailbox-custom-card { align-items: flex-end !important; }
+.recruiter-mailbox-custom-copy { flex: 1 1 auto; min-width: 0; }
+.recruiter-mailbox-custom-copy label { display:block; font-size:.78rem; font-weight:700; margin-bottom:.4rem; }
+.recruiter-mailbox-custom-actions { flex:0 0 auto; padding-bottom:1rem; }
+@media (max-width: 991.98px) {
+    .recruiter-mailbox-custom-card { align-items:stretch !important; flex-direction:column; }
+    .recruiter-mailbox-custom-actions { padding-bottom:0; }
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

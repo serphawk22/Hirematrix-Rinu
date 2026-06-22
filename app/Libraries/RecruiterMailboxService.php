@@ -39,15 +39,22 @@ class RecruiterMailboxService
             return false;
         }
 
-        $connection = $this->ensureAccessToken($connection);
-        $token = $this->decryptToken($connection['access_token'] ?? '');
-        if ($token === '') {
-            return false;
-        }
-
         $provider = (string) $connection['provider'];
         $messageId = '';
         $threadId = null;
+        if ($provider === 'custom') {
+            if (!$this->sendCustom($connection, $to, $subject, $html)) {
+                return false;
+            }
+            $messageId = 'smtp-' . bin2hex(random_bytes(12));
+        } else {
+            $connection = $this->ensureAccessToken($connection);
+            $token = $this->decryptToken($connection['access_token'] ?? '');
+            if ($token === '') {
+                return false;
+            }
+        }
+
         if ($provider === 'google') {
             $boundary = 'hm_' . bin2hex(random_bytes(8));
             $raw = "From: " . $connection['email'] . "\r\n"
@@ -81,7 +88,7 @@ class RecruiterMailboxService
                 return false;
             }
             $messageId = 'sent-' . bin2hex(random_bytes(12));
-        } else {
+        } elseif ($provider !== 'custom') {
             return false;
         }
 
@@ -110,9 +117,15 @@ class RecruiterMailboxService
     {
         try {
             $connection = $this->ensureAccessToken($connection);
-            $count = $connection['provider'] === 'google'
-                ? $this->syncGoogle($connection)
-                : $this->syncMicrosoft($connection);
+            if ($connection['provider'] === 'google') {
+                $count = $this->syncGoogle($connection);
+            } elseif ($connection['provider'] === 'microsoft') {
+                $count = $this->syncMicrosoft($connection);
+            } elseif ($connection['provider'] === 'custom') {
+                $count = $this->syncCustom($connection);
+            } else {
+                throw new \RuntimeException('Unsupported mailbox provider.');
+            }
             $this->connections->update((int) $connection['id'], [
                 'last_synced_at' => date('Y-m-d H:i:s'),
                 'last_error' => null,
@@ -127,6 +140,9 @@ class RecruiterMailboxService
 
     public function ensureAccessToken(array $connection): array
     {
+        if (($connection['provider'] ?? '') === 'custom') {
+            return $connection;
+        }
         $expiresAt = strtotime((string) ($connection['token_expires_at'] ?? '')) ?: 0;
         if ($expiresAt > time() + 120) {
             return $connection;
@@ -160,6 +176,85 @@ class RecruiterMailboxService
         }
         $this->connections->update((int) $connection['id'], $update);
         return array_merge($connection, $update);
+    }
+
+    public function customSettings(array $connection): array
+    {
+        return [
+            'imap_host' => (string) ($connection['imap_host'] ?? ''),
+            'imap_port' => (int) ($connection['imap_port'] ?? 993),
+            'imap_encryption' => (string) ($connection['imap_encryption'] ?? 'ssl'),
+            'smtp_host' => (string) ($connection['smtp_host'] ?? ''),
+            'smtp_port' => (int) ($connection['smtp_port'] ?? 465),
+            'smtp_encryption' => (string) ($connection['smtp_encryption'] ?? 'ssl'),
+            'username' => (string) ($connection['mailbox_username'] ?? ''),
+            'password' => $this->decryptToken($connection['mailbox_password'] ?? ''),
+        ];
+    }
+
+    private function sendCustom(array $connection, string $to, string $subject, string $html): bool
+    {
+        try {
+            $settings = $this->customSettings($connection);
+            $mailConfig = new \Config\Email();
+            $mailConfig->protocol = 'smtp';
+            $mailConfig->SMTPHost = $settings['smtp_host'];
+            $mailConfig->SMTPUser = $settings['username'];
+            $mailConfig->SMTPPass = $settings['password'];
+            $mailConfig->SMTPPort = $settings['smtp_port'];
+            $mailConfig->SMTPCrypto = $settings['smtp_encryption'] === 'none' ? '' : $settings['smtp_encryption'];
+            $mailConfig->SMTPTimeout = 15;
+            $mailConfig->mailType = 'html';
+            $mailConfig->charset = 'UTF-8';
+            $mailConfig->newline = "\r\n";
+            $mailConfig->CRLF = "\r\n";
+            $email = \Config\Services::email($mailConfig, false);
+            $email->clear(true);
+            $email->setFrom((string) $connection['email']);
+            $email->setTo($to);
+            $email->setSubject($subject);
+            $email->setMessage($html);
+            if (!$email->send(false)) {
+                $this->recordError($connection, 'Custom SMTP send failed: ' . strip_tags($email->printDebugger(['headers'])));
+                return false;
+            }
+            return true;
+        } catch (\Throwable $e) {
+            $this->recordError($connection, 'Custom SMTP send failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function syncCustom(array $connection): int
+    {
+        $settings = $this->customSettings($connection);
+        $since = strtotime((string) ($connection['last_synced_at'] ?? '')) ?: time() - 604800;
+        $messages = (new CustomMailboxClient())->fetchInbox($settings, $since, 50);
+        $count = 0;
+        foreach ($messages as $message) {
+            $from = (string) ($message['from'] ?? '');
+            $to = (string) ($message['to'] ?? '');
+            $inbound = strcasecmp($from, (string) $connection['email']) !== 0;
+            if (!$inbound) {
+                continue;
+            }
+            $threadId = (string) ($message['thread_id'] ?? '');
+            $context = $this->matchThreadContext((int) $connection['id'], $threadId)
+                ?: $this->matchCandidateContext((int) $connection['recruiter_id'], $from);
+            if (!$context) {
+                continue;
+            }
+            $messageId = (string) ($message['message_id'] ?? '');
+            if ($messageId === '') {
+                $messageId = 'imap-uid-' . (string) ($message['uid'] ?? bin2hex(random_bytes(8)));
+            }
+            $count += $this->storeSynced(
+                $connection, $messageId, $threadId, true, $from, $to,
+                (string) ($message['subject'] ?? ''), (string) ($message['body'] ?? ''),
+                (int) ($message['timestamp'] ?? time()), $context
+            );
+        }
+        return $count;
     }
 
     private function syncGoogle(array $connection): int
