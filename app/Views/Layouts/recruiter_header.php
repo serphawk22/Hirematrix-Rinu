@@ -1155,8 +1155,81 @@
             opacity: 1 !important; max-width: none !important; max-height: none !important;
         }
         .hm-sidebar .hm-sb-section { padding: 12px 16px 4px !important; }
+        .hm-sidebar.sb-collapsed .hm-sb-sub,
+        .hm-sidebar.sb-collapsed .hm-sb-profile-sub { display: block; }
+        .hm-sidebar.sb-collapsed .sb-tooltip,
+        .hm-sidebar.sb-collapsed .hm-sb-profile:hover .sb-tooltip { display: none !important; }
         .hm-main { margin-left: 0 !important; }
         .hm-mobile-toggle { display: flex !important; }
+        .hm-recruiter-mobilebar { display: flex !important; }
+    }
+
+    /* Match candidate pages: narrow mouse-driven windows retain desktop navigation. */
+    @media (min-width: 768px) and (max-width: 1099.98px) and (hover: hover) and (pointer: fine) {
+        html,
+        body.recruiter-jobboard {
+            min-width: 1200px;
+            overflow-x: auto;
+        }
+        .hm-sidebar,
+        .hm-sidebar.sb-collapsed {
+            width: var(--sb-width) !important;
+            transform: translateX(0) !important;
+        }
+        .hm-sidebar.sb-collapsed .hm-sb-brand,
+        .hm-sidebar.sb-collapsed .hm-sb-item .sb-label,
+        .hm-sidebar.sb-collapsed .hm-sb-item .sb-arrow,
+        .hm-sidebar.sb-collapsed .hm-sb-profile-info,
+        .hm-sidebar.sb-collapsed .hm-sb-profile-chevron {
+            opacity: 1 !important;
+            max-width: 160px !important;
+        }
+        .hm-sidebar.sb-collapsed .hm-sb-sub,
+        .hm-sidebar.sb-collapsed .hm-sb-profile-sub { display: block; }
+        .hm-sidebar.sb-collapsed .sb-tooltip { display: none !important; }
+        .hm-main,
+        body.recruiter-jobboard.sb-collapsed-body .hm-main {
+            margin-left: var(--sb-width) !important;
+            max-width: none !important;
+        }
+        .hm-recruiter-mobilebar { display: none !important; }
+        .hm-sb-overlay { display: none !important; }
+    }
+
+    .hm-recruiter-mobilebar { display: none; }
+    .hm-recruiter-mobilebar .hm-mobile-toggle {
+        width: 40px; height: 40px; padding: 0;
+        justify-content: center; border-radius: 9px;
+    }
+    .hm-recruiter-mobilebar .hm-mobile-toggle:hover,
+    .hm-recruiter-mobilebar .hm-mobile-toggle:focus {
+        background: var(--hm-hover-bg);
+        color: var(--hm-primary);
+    }
+    .hm-recruiter-mobilebar .hm-mobile-brand {
+        display: inline-flex; align-items: center; gap: 9px;
+        min-width: 0; color: var(--hm-text); font-weight: 700;
+    }
+    .hm-recruiter-mobilebar .hm-mobile-brand img {
+        width: 30px; height: 30px; object-fit: contain; flex: 0 0 auto;
+    }
+    .hm-recruiter-mobilebar .hm-mobile-brand span {
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .hm-sidebar-mobile-close {
+        display: none; margin-left: auto; width: 36px; height: 36px;
+        align-items: center; justify-content: center; border: 0;
+        border-radius: 9px; background: transparent; color: var(--hm-muted);
+    }
+    @media (max-width: 991px) {
+        .hm-sidebar-mobile-close { display: inline-flex; }
+    }
+    body.dark.recruiter-jobboard .hm-recruiter-mobilebar {
+        background: rgba(0, 0, 0, 0.92);
+        border-bottom-color: #23343A;
+    }
+    body.dark.recruiter-jobboard .hm-recruiter-mobilebar .hm-notif-badge {
+        border-color: #000000;
     }
     /* ═══════════════════════════════════════════
    DARK THEME — SIDEBAR
@@ -1454,6 +1527,9 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
             <span class="hm-sb-brand">
                 Hire<span style="color:var(--hm-secondary);">Matrix</span>
             </span> 
+            <button type="button" class="hm-sidebar-mobile-close" id="hmSidebarClose" aria-label="Close recruiter navigation">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
         </div>
 
         <!-- NAV -->
@@ -1551,6 +1627,25 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     <!-- ═══════════ MAIN ═══════════ -->
     <div class="hm-main" id="hmMain"> 
 
+        <header class="hm-topbar hm-recruiter-mobilebar">
+            <button type="button" class="hm-mobile-toggle" id="hmMobileToggle"
+                    aria-label="Open recruiter navigation" aria-controls="hmSidebar" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="hm-mobile-brand">
+                <img src="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>" alt="">
+                <span>Recruiter Portal</span>
+            </div>
+            <div class="hm-topbar-right">
+                <a href="<?= base_url('notifications') ?>" class="hm-tb-btn" aria-label="Notifications">
+                    <i class="fas fa-bell" aria-hidden="true"></i>
+                    <?php if ($recruiterUnreadNotificationCount > 0): ?>
+                        <span class="hm-notif-badge"><?= $recruiterUnreadNotificationCount > 99 ? '99+' : $recruiterUnreadNotificationCount ?></span>
+                    <?php endif; ?>
+                </a>
+            </div>
+        </header>
+
         <div class="hm-page-content">
         <main>
 
@@ -1561,6 +1656,7 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     var sidebar     = document.getElementById('hmSidebar');
     var toggleArea  = document.getElementById('hmSbToggle');
     var mobileBtn   = document.getElementById('hmMobileToggle');
+    var mobileClose = document.getElementById('hmSidebarClose');
     var overlay     = document.getElementById('hmOverlay');
     var jobsBtn     = document.getElementById('hmJobsBtn');
     var jobsSub     = document.getElementById('hmJobsSub');
@@ -1587,7 +1683,7 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     });
  
     profileCard && profileCard.addEventListener('click', function () {
-        if (sidebar.classList.contains('sb-collapsed')) return;
+        if (sidebar.classList.contains('sb-collapsed') && window.innerWidth > 991) return;
         var open = profileSub.classList.toggle('prof-open');
         profileCard.classList.toggle('prof-open', open);
         profileCard.setAttribute('aria-expanded', open);
@@ -1599,15 +1695,30 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     function openMobile() {
         sidebar.classList.add('sb-mobile-open');
         overlay.classList.add('show');
+        mobileBtn && mobileBtn.setAttribute('aria-expanded', 'true');
         document.body.style.overflow = 'hidden';
     }
     function closeMobile() {
         sidebar.classList.remove('sb-mobile-open');
         overlay.classList.remove('show');
+        mobileBtn && mobileBtn.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
     }
     mobileBtn && mobileBtn.addEventListener('click', openMobile);
+    mobileClose && mobileClose.addEventListener('click', function (event) {
+        event.stopPropagation();
+        closeMobile();
+    });
     overlay.addEventListener('click', closeMobile);
+    sidebar.addEventListener('click', function (event) {
+        if (window.innerWidth <= 991 && event.target.closest('a')) closeMobile();
+    });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && sidebar.classList.contains('sb-mobile-open')) closeMobile();
+    });
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 991) closeMobile();
+    });
  
     jobsBtn && jobsBtn.addEventListener('click', function () {
         var open = jobsSub.classList.toggle('sb-open');

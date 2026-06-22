@@ -3139,3 +3139,340 @@ body.recruiter-jobboard .recruiter-settings-language-widget .goog-te-combo {
     flex-direction: column;
   }
 }
+
+/* ============================================================
+   RECRUITER RESPONSIVE SHELL
+   Mirrors the candidate portal's desktop/tablet/mobile rhythm.
+   ============================================================ */
+body.recruiter-jobboard,
+body.recruiter-jobboard .site-wrap,
+body.recruiter-jobboard .hm-page-content,
+body.recruiter-jobboard .hm-page-content > main {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+body.recruiter-jobboard .hm-main {
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+body.recruiter-jobboard .hm-page-content {
+  overflow-x: clip;
+}
+
+body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"],
+body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+body.recruiter-jobboard .hm-page-content > main > .container,
+body.recruiter-jobboard .hm-page-content > main > .container-fluid,
+body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"] > .container,
+body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"] > .container-fluid,
+body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] > .container,
+body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] > .container-fluid {
+  width: 100%;
+  max-width: none !important;
+  min-width: 0;
+  padding: 26px 28px !important;
+  margin: 0 auto;
+}
+
+body.recruiter-jobboard .page-board-header,
+body.recruiter-jobboard .recruiter-page-board-header {
+  min-width: 0;
+}
+
+body.recruiter-jobboard .page-board-copy {
+  min-width: 0;
+  max-width: 100%;
+}
+
+body.recruiter-jobboard .page-board-title,
+body.recruiter-jobboard .page-board-subtitle,
+body.recruiter-jobboard .card-title,
+body.recruiter-jobboard td,
+body.recruiter-jobboard th {
+  overflow-wrap: anywhere;
+}
+
+body.recruiter-jobboard .table-responsive,
+body.recruiter-jobboard .table-responsive-wrap,
+body.recruiter-jobboard .recruiter-table-card .card-body {
+  max-width: 100%;
+  min-width: 0;
+}
+
+body.recruiter-jobboard .table-responsive,
+body.recruiter-jobboard .table-responsive-wrap {
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.recruiter-jobboard .table-responsive > table,
+body.recruiter-jobboard .table-responsive-wrap > table {
+  margin-bottom: 0;
+}
+
+body.recruiter-jobboard img,
+body.recruiter-jobboard svg,
+body.recruiter-jobboard canvas {
+  max-width: 100%;
+}
+
+body.recruiter-jobboard .modal-dialog {
+  max-width: min(720px, calc(100vw - 32px));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 1199.98px) {
+  body.recruiter-jobboard .hm-page-content > main > .container,
+  body.recruiter-jobboard .hm-page-content > main > .container-fluid,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"] > .container,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"] > .container-fluid,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] > .container,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] > .container-fluid {
+    padding: 22px 24px !important;
+  }
+
+  body.recruiter-jobboard .recruiter-dashboard-hero-grid,
+  body.recruiter-jobboard .recruiter-form-layout,
+  body.recruiter-jobboard .recruiter-edit-layout,
+  body.recruiter-jobboard .candidate-profile-layout,
+  body.recruiter-jobboard .company-edit-layout {
+    gap: 18px !important;
+  }
+}
+
+@media (max-width: 991.98px) {
+  body.recruiter-jobboard .hm-page-content > main > .container,
+  body.recruiter-jobboard .hm-page-content > main > .container-fluid,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"] > .container,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"] > .container-fluid,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] > .container,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] > .container-fluid {
+    padding: 20px !important;
+  }
+
+  body.recruiter-jobboard .recruiter-form-layout,
+  body.recruiter-jobboard .recruiter-edit-layout,
+  body.recruiter-jobboard .recruiter-slot-create-layout,
+  body.recruiter-jobboard .recruiter-slot-edit-layout,
+  body.recruiter-jobboard .recruiter-slot-reschedule-layout,
+  body.recruiter-jobboard .candidate-profile-layout,
+  body.recruiter-jobboard .company-edit-layout,
+  body.recruiter-jobboard .recruiter-dashboard-hero-grid,
+  body.recruiter-jobboard .recruiter-settings-shell {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body.recruiter-jobboard .recruiter-form-side,
+  body.recruiter-jobboard .candidate-profile-side,
+  body.recruiter-jobboard .company-edit-side,
+  body.recruiter-jobboard .recruiter-settings-side {
+    position: static !important;
+    width: 100%;
+  }
+
+  body.recruiter-jobboard .recruiter-page-board-header,
+  body.recruiter-jobboard .page-board-header.page-board-header-tight {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 14px !important;
+  }
+
+  body.recruiter-jobboard .page-board-actions,
+  body.recruiter-jobboard .recruiter-filter-actions,
+  body.recruiter-jobboard .recruiter-form-actions,
+  body.recruiter-jobboard .recruiter-leaderboard-actions,
+  body.recruiter-jobboard .recruiter-applications-actions {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  body.recruiter-jobboard .recruiter-bulk-toolbar,
+  body.recruiter-jobboard .recruiter-section-header,
+  body.recruiter-jobboard .recruiter-notification-head,
+  body.recruiter-jobboard .recruiter-notification-actions {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  body.recruiter-jobboard .recruiter-dashboard-jobboard .row.g-4 > .col-md-3,
+  body.recruiter-jobboard .recruiter-dashboard-jobboard .row > .col-xl-3 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (max-width: 767.98px) {
+  body.recruiter-jobboard .hm-page-content > main > .container,
+  body.recruiter-jobboard .hm-page-content > main > .container-fluid,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"] > .container,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"] > .container-fluid,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] > .container,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] > .container-fluid {
+    padding: 18px !important;
+  }
+
+  body.recruiter-jobboard .page-board-actions > .btn,
+  body.recruiter-jobboard .page-board-actions > a.btn,
+  body.recruiter-jobboard .recruiter-filter-actions > .btn,
+  body.recruiter-jobboard .recruiter-filter-actions > a.btn,
+  body.recruiter-jobboard .recruiter-form-actions > .btn,
+  body.recruiter-jobboard .recruiter-form-actions > a.btn {
+    flex: 1 1 180px;
+    justify-content: center;
+  }
+
+  body.recruiter-jobboard .card-body:not(.p-0),
+  body.recruiter-jobboard .recruiter-form-card,
+  body.recruiter-jobboard .recruiter-info-card,
+  body.recruiter-jobboard .recruiter-help-card,
+  body.recruiter-jobboard .recruiter-review-card,
+  body.recruiter-jobboard .recruiter-settings-content {
+    padding: 18px !important;
+  }
+
+  body.recruiter-jobboard .recruiter-applications-table,
+  body.recruiter-jobboard .recruiter-candidates-table,
+  body.recruiter-jobboard .recruiter-jobs-table,
+  body.recruiter-jobboard .recruiter-slots-table,
+  body.recruiter-jobboard .recruiter-bookings-table,
+  body.recruiter-jobboard .leaderboard-table,
+  body.recruiter-jobboard .recent-applications-table {
+    width: 100%;
+    min-width: 720px !important;
+  }
+
+  body.recruiter-jobboard .recruiter-dashboard-jobboard .row.g-4 > .col-md-3,
+  body.recruiter-jobboard .recruiter-dashboard-jobboard .row > .col-xl-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  body.recruiter-jobboard .recruiter-reminders-grid,
+  body.recruiter-jobboard .recruiter-info-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body.recruiter-jobboard .pagination,
+  body.recruiter-jobboard .portal-pagination,
+  body.recruiter-jobboard .custom-pagination {
+    max-width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 4px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  body.recruiter-jobboard .hm-page-content > main > .container,
+  body.recruiter-jobboard .hm-page-content > main > .container-fluid,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"] > .container,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"] > .container-fluid,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] > .container,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] > .container-fluid {
+    padding: 14px !important;
+  }
+
+  body.recruiter-jobboard .page-board-actions > *,
+  body.recruiter-jobboard .recruiter-filter-actions > *,
+  body.recruiter-jobboard .recruiter-form-actions > * {
+    width: 100%;
+    flex-basis: 100%;
+  }
+
+  body.recruiter-jobboard .form-row > [class*="col-"],
+  body.recruiter-jobboard form .row > [class*="col-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  body.recruiter-jobboard .card-body:not(.p-0),
+  body.recruiter-jobboard .recruiter-form-card,
+  body.recruiter-jobboard .recruiter-info-card,
+  body.recruiter-jobboard .recruiter-help-card,
+  body.recruiter-jobboard .recruiter-review-card,
+  body.recruiter-jobboard .recruiter-settings-content {
+    padding: 14px !important;
+  }
+
+  body.recruiter-jobboard .modal-dialog {
+    max-width: calc(100vw - 20px);
+    margin: 10px auto;
+  }
+
+  body.recruiter-jobboard .modal-header,
+  body.recruiter-jobboard .modal-body,
+  body.recruiter-jobboard .modal-footer {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+}
+
+/* Candidate-style narrow desktop canvas: preserve desktop composition for
+   mouse/trackpad windows; touch tablets continue using responsive stacking. */
+@media (min-width: 768px) and (max-width: 1099.98px) and (hover: hover) and (pointer: fine) {
+  html,
+  body.recruiter-jobboard,
+  body.recruiter-jobboard .site-wrap {
+    min-width: 1200px !important;
+  }
+
+  html,
+  body.recruiter-jobboard {
+    overflow-x: auto !important;
+  }
+
+  body.recruiter-jobboard .hm-page-content {
+    overflow-x: visible;
+  }
+
+  body.recruiter-jobboard .hm-page-content > main > .container,
+  body.recruiter-jobboard .hm-page-content > main > .container-fluid,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"] > .container,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-jobboard"] > .container-fluid,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] > .container,
+  body.recruiter-jobboard .hm-page-content > main > [class*="recruiter-"][class*="-page"] > .container-fluid {
+    padding: 26px 28px !important;
+  }
+
+  body.recruiter-jobboard .recruiter-form-layout,
+  body.recruiter-jobboard .recruiter-edit-layout,
+  body.recruiter-jobboard .recruiter-slot-create-layout,
+  body.recruiter-jobboard .recruiter-slot-edit-layout,
+  body.recruiter-jobboard .recruiter-slot-reschedule-layout,
+  body.recruiter-jobboard .candidate-profile-layout,
+  body.recruiter-jobboard .company-edit-layout {
+    grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.6fr) !important;
+  }
+
+  body.recruiter-jobboard .recruiter-settings-shell {
+    grid-template-columns: 280px minmax(0, 1fr) !important;
+  }
+
+  body.recruiter-jobboard .recruiter-form-side,
+  body.recruiter-jobboard .candidate-profile-side,
+  body.recruiter-jobboard .company-edit-side,
+  body.recruiter-jobboard .recruiter-settings-side {
+    position: sticky !important;
+    top: 18px;
+  }
+
+  body.recruiter-jobboard .recruiter-dashboard-hero-grid {
+    grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.75fr) !important;
+  }
+}

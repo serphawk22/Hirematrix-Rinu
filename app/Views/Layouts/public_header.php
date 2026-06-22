@@ -48,7 +48,8 @@ header.site-navbar.landing-header.site-navbar-target {
     right: 0 !important;
     width: 100% !important;
     z-index: 1050 !important;
-    transition: background-color 0.3s ease !important;
+    isolation: isolate;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 /* ===============================
@@ -172,6 +173,14 @@ header.site-navbar.landing-header .landing-header-logo-text {
         padding: 8px 14px !important;
         line-height: 1.2 !important;
         white-space: nowrap !important;
+    }
+
+    body.landing-page header.site-navbar.landing-header,
+    body.landing-page header.site-navbar.landing-header.navbar-scrolled,
+    body.landing-page header.site-navbar.landing-header.site-navbar-target {
+        background: #ffffff !important;
+        border-bottom: 1px solid #D9ECE5 !important;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06) !important;
     }
 
     .site-wrap > .auth-page-shell,
@@ -349,6 +358,16 @@ header.site-navbar.landing-header .landing-header-logo-text {
         border: none !important;
         border-bottom: none !important;
         box-shadow: none !important;
+    }
+
+    @media (max-width: 767.98px) {
+        body.landing-page header.site-navbar.landing-header,
+        body.landing-page header.site-navbar.landing-header.navbar-scrolled,
+        body.landing-page header.site-navbar.landing-header.site-navbar-target {
+            background: #111111 !important;
+            border-bottom: 1px solid #23343A !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.34) !important;
+        }
     }
 
     /* ── Logo text ── */
