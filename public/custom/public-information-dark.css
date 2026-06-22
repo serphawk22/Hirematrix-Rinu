@@ -1,14 +1,14 @@
-/* Dark visual system for About, Contact, Privacy Policy, and Terms of Service. */
+/* System-aware visual theme for About, Contact, Privacy Policy, and Terms. */
 :root {
-  color-scheme: dark;
-  --info-bg: #111111;
-  --info-surface: #111111;
-  --info-surface-soft: #162327;
-  --info-muted-surface: #1b2a2f;
-  --info-border: #23343a;
-  --info-text: #f8fafc;
-  --info-muted: #94a3b8;
-  --info-subtle: #7a8b96;
+  color-scheme: light;
+  --info-bg: #f8fcfb;
+  --info-surface: #ffffff;
+  --info-surface-soft: #f4fbfa;
+  --info-muted-surface: #eef9f2;
+  --info-border: #d9ece5;
+  --info-text: #16212b;
+  --info-muted: #64748b;
+  --info-subtle: #94a3b8;
   --info-primary: #1fb7b5;
   --info-primary-dark: #0d8a90;
   --info-primary-soft: rgba(31, 183, 181, 0.12);
@@ -410,4 +410,21 @@ body.public-information-page h2.info-section-title {
   .legal-article { padding-top: 4px; padding-bottom: 4px; }
   .legal-bottom { padding: 16px 18px; }
   .form-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --info-bg: #111111;
+    --info-surface: #111111;
+    --info-surface-soft: #162327;
+    --info-muted-surface: #1b2a2f;
+    --info-border: #23343a;
+    --info-text: #f8fafc;
+    --info-muted: #94a3b8;
+    --info-subtle: #7a8b96;
+    --info-primary: #1fb7b5;
+    --info-primary-dark: #0d8a90;
+    --info-primary-soft: rgba(31, 183, 181, 0.12);
+  }
 }
