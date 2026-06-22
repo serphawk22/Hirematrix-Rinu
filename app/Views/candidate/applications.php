@@ -50,6 +50,8 @@ $completedApplications = count(array_filter($applications ?? [], function ($appl
                                 id="applicationsSidebarTotal"><?= $totalApplications ?></span> total, <span
                                 id="applicationsSidebarActive"><?= $activeApplications ?></span> active</p>
                     </div>
+              
+ 
                     <div class="applications-sidebar-list">
                         <?php foreach ($applications as $index => $application): ?>
                             <?php
@@ -217,7 +219,7 @@ $completedApplications = count(array_filter($applications ?? [], function ($appl
                                                                 <input type="hidden" name="jobid"
            value="<?= htmlspecialchars($application['job_id'], ENT_QUOTES, 'UTF-8') ?>">
                                                     
-                                                        <input type="hidden" name="highlight_skills"
+                                                        <input type="input" name="highlight_skills"
                                                                value="<?= htmlspecialchars($application['resume_version_highlight_skills'], ENT_QUOTES, 'UTF-8') ?>">
                                                         <input type="hidden" name="experience"
                                                                value="<?= esc($calculatedExperience['level'] ?? '') ?>">

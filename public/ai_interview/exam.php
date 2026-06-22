@@ -175,6 +175,7 @@ document.addEventListener(
 
 </script>
 <script>
+   
 const CANDIDATE  = <?= json_encode($cand) ?>;
 const R1_QUESTIONS = <?= $r1 ?>;
 const R2_QUESTIONS = <?= $r2 ?>;
