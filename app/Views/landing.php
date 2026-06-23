@@ -35,6 +35,7 @@ $formatAge = static function ($value): string {
 <!doctype html>
 <html lang="en">
 <head>
+    <meta name="google-adsense-account" content="ca-pub-5380525657635231">
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -52,6 +53,8 @@ $formatAge = static function ($value): string {
     <link rel="stylesheet" href="<?= base_url('jobboard/css/style.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/hirematrix-style.css?v=' . @filemtime(FCPATH . 'jobboard/css/hirematrix-style.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.css?v='       . @filemtime(FCPATH . 'jobboard/css/responsive.css')) ?>">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5380525657635231"
+     crossorigin="anonymous"></script>
 <style>
 /* ================================================
    HERO
@@ -539,15 +542,15 @@ text-decoration:none !important;
 
     /* ── Base ── */
     body, html {
-        background: #111111 !important;
+        background: #000000 !important;
     }
 
     /* ── Hero ── */
     .hero {
-        background: #111111 !important;
+        background: #000000 !important;
     }
     .hero-h1 {
-        color: #F8FAFC !important;
+        color: #FFFFFF !important;
     }
     .hero-sub {
         color: #94A3B8 !important;
@@ -556,7 +559,7 @@ text-decoration:none !important;
         color: #7A8B96 !important;
     }
     .hero-search {
-        background: #111111 !important;
+        background: #000000 !important;
         border-color: #23343A !important;
         box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
     }
@@ -579,13 +582,13 @@ text-decoration:none !important;
 
     /* ── Wave section ── */
     .wave-section {
-        background: #111111 !important;
+        background: #000000 !important;
     }
     .wave-section::before {
-        background: linear-gradient(to right, #111111, transparent) !important;
+        background: linear-gradient(to right, #000000, transparent) !important;
     }
     .wave-section::after {
-        background: linear-gradient(to left, #111111, transparent) !important;
+        background: linear-gradient(to left, #000000, transparent) !important;
     }
     .bubble-circle {
         background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
@@ -598,7 +601,7 @@ text-decoration:none !important;
 
     /* ── Featured Jobs ── */
     .featured-jobs-section {
-        background: #111111 !important;
+        background: #000000 !important;
     }
     .featured-jobs-section .section-head-title {
         color: #F8FAFC !important;
@@ -607,7 +610,7 @@ text-decoration:none !important;
         color: #94A3B8 !important;
     }
     .fj-card {
-        background: #111111 !important;
+        background: #000000 !important;
         border-color: #23343A !important;
         box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
     }
@@ -616,7 +619,7 @@ text-decoration:none !important;
         box-shadow: none !important;
     }
     .fj-title {
-        color: #F8FAFC !important;
+        color: #FFFFFF !important;
     }
     .fj-company {
         color: #94A3B8 !important;
@@ -641,10 +644,10 @@ text-decoration:none !important;
     /* ── Career Transition ── */
     .landing-career-transition {
         background:
-            #111111 !important;
+            #000000 !important;
     }
     .career-title {
-        color: #F8FAFC !important;
+        color: #FFFFFF !important;
     }
     .career-description {
         color: #94A3B8 !important;
@@ -656,10 +659,10 @@ text-decoration:none !important;
 
     /* ── Get Started / Choices ── */
     .landing-choices {
-        background: #111111 !important;
+        background: #000000 !important;
     }
     .choices-title {
-        color: #F8FAFC !important;
+        color: #FFFFFF !important;
     }
     .choices-subtitle {
         color: #94A3B8 !important;
@@ -669,7 +672,7 @@ text-decoration:none !important;
         color: #1FB7B5 !important;
     }
     .choice-card {
-        background: #111111 !important;
+        background: #000000 !important;
         border-color: #23343A !important;
         box-shadow: none !important;
     }
@@ -678,7 +681,7 @@ text-decoration:none !important;
         box-shadow: none !important;
     }
     .choice-content h3 {
-        color: #F8FAFC !important;
+        color: #FFFFFF !important;
     }
     .choice-content p {
         color: #94A3B8 !important;
@@ -1081,197 +1084,5 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 </script>
 
-
-<!-- ═══════════════ FEATURE TOUR POPUP ═══════════════ -->
-<style>
-#hm-backdrop{
-  position:fixed;inset:0;z-index:9998;
-  background:rgba(22,33,43,0.55);
-  display:none;align-items:center;justify-content:center;padding:20px;
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-}
-#hm-backdrop.visible{display:flex;animation:hmFadeIn .22s ease;}
-@keyframes hmFadeIn{from{opacity:0}to{opacity:1}}
-#hm-modal{
-  background:var(--card,#fff);border:1px solid var(--border,#D9ECE5);
-  border-radius:10px;width:100%;max-width:440px;overflow:hidden;
-  animation:hmPop .3s cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes hmPop{from{opacity:0;transform:scale(.93) translateY(18px)}to{opacity:1;transform:none}}
-.hm-header{padding:18px 20px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
-.hm-header-left{display:flex;flex-direction:column;gap:4px;}
-.hm-eyebrow{font-size:18px !important;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);}
-.hm-counter{font-size:10px;font-weight:600;color:var(--text-light);letter-spacing:.04em;}
-.hm-close{
-  width:26px;height:26px;border-radius:5px;flex-shrink:0;
-  border:1px solid var(--border);background:transparent;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--text-light);font-size:13px;margin-top:1px;
-  transition:background .15s,color .15s,border-color .15s;
-}
-.hm-close:hover{background:var(--muted);color:var(--foreground);border-color:var(--primary);}
-.hm-progress{padding:14px 20px 0;display:flex;gap:4px;}
-.hm-pip{height:2px;flex:1;border-radius:2px;background:var(--border);transition:background .3s;}
-.hm-pip.active{background:var(--primary);}
-.hm-pip.past{background:var(--secondary);}
-.hm-slides{overflow:hidden;}
-.hm-slide{display:none;animation:hmSlide .2s ease;}
-.hm-slide.active{display:block;}
-@keyframes hmSlide{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
-.hm-body{padding:16px 20px 0;}
-.hm-slide-title{font-size:19px;font-weight:700;color:var(--foreground);line-height:1.3;margin-bottom:8px;}
-.hm-slide-title em{
-  font-style:normal;background:var(--gradient-primary);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.hm-slide-desc{font-size:13px;color:var(--muted-foreground);line-height:1.65;margin-bottom:14px;}
-.hm-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
-.hm-pill{
-  display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;
-  background:var(--muted);border:1px solid var(--border);
-  font-size:12px;font-weight:600;color:var(--primary-dark);white-space:nowrap;
-}
-.hm-pill-dot{width:5px;height:5px;border-radius:50%;background:var(--primary);flex-shrink:0;}
-.hm-divider{height:1px;background:var(--border);}
-.hm-footer{padding:14px 20px;display:flex;align-items:center;gap:8px;}
-.hm-btn-cta{
-  padding:8px 18px;border-radius:6px;background:var(--gradient-primary);
-  color:#fff !important;font-size:13px;font-weight:600;border:none;cursor:pointer;
-  text-decoration:none !important;display:inline-block;white-space:nowrap;
-  transition:opacity .15s,transform .15s;
-}
-.hm-btn-cta:hover{opacity:.88;transform:translateY(-1px);}
-.hm-btn-next{
-  padding:8px 16px;border-radius:6px;background:transparent;
-  border:1px solid var(--border);color:var(--muted-foreground);
-  font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;
-  transition:border-color .15s,color .15s,background .15s;
-}
-.hm-btn-next:hover{border-color:var(--primary);color:var(--primary);background:var(--muted);}
-.hm-btn-skip{
-  margin-left:auto;font-size:12px;color:var(--text-light);
-  background:none;border:none;cursor:pointer;padding:2px;transition:color .15s;
-}
-.hm-btn-skip:hover{color:var(--muted-foreground);}
-
-@media(prefers-color-scheme:dark){
-  #hm-backdrop{background:#000000 !important;}
-  #hm-modal{background:#000000 !important;border-color:#23343A;}
-  .hm-close{border-color:#23343A;color:#7A8B96;}
-  .hm-close:hover{background:#000000;color:#F8FAFC;border-color:#1FB7B5;}
-  .hm-pip{background:#000000;}
-  .hm-pill{background:#000000;border-color:#23343A;color:#1FB7B5;}
-  .hm-divider{background:#000000;}
-  .hm-btn-next{border-color:#23343A;color:#94A3B8;}
-  .hm-btn-next:hover{border-color:#1FB7B5;color:#1FB7B5;background:#000000;}
-  .hm-btn-skip{color:#7A8B96;}
-  .hm-slide-title{color:#F8FAFC;}
-  .hm-slide-desc{color:#94A3B8;}
-}
-</style>
-
-<div id="hm-backdrop" role="dialog" aria-modal="true" aria-label="HireMatrix Feature Tour">
- <div id="hm-modal">
-  <div class="hm-header">
-   <div class="hm-header-left">
-    <span class="hm-eyebrow">HireMatrix AI Features</span>
-    <span class="hm-counter" id="hmCounter"></span>
-   </div>
-   <button class="hm-close" id="hmClose" aria-label="Close">✕</button>
-  </div>
-  <div class="hm-progress" id="hmProgress"></div>
-  <div class="hm-slides">
-
-   <div class="hm-slide active" id="hm-s1">
-    <div class="hm-body">
-     <h3 class="hm-slide-title">Your personalised path to a <em>new career</em></h3>
-     <p class="hm-slide-desc">Not sure how to switch roles? AI maps your current skills against your target role and hands you a complete, step-by-step transition plan.</p>
-     <div class="hm-pills">
-      <span class="hm-pill"><span class="hm-pill-dot"></span>Skill gap analysis</span>
-      <span class="hm-pill"><span class="hm-pill-dot"></span>Learning path</span>
-      <span class="hm-pill"><span class="hm-pill-dot"></span>Certification guide</span>
-      <span class="hm-pill"><span class="hm-pill-dot"></span>Role roadmap</span>
-     </div>
-    </div>
-    <div class="hm-divider"></div>
-    <div class="hm-footer">
-     <a href="<?= base_url('career-transition') ?>" class="btn btn-outline-primary">Generate my roadmap</a>
-     <button class="hm-btn-next" onclick="hmGoTo(2)">Next →</button>
-     <button class="hm-btn-skip" onclick="hmClose()">Skip tour</button>
-    </div>
-   </div>
-
-   <div class="hm-slide" id="hm-s2">
-    <div class="hm-body">
-     <h3 class="hm-slide-title">Walk in prepared, <em>walk out confident</em></h3>
-     <p class="hm-slide-desc">Practice with AI-driven mock interviews tailored to your exact role — real questions, structured answer guidance, and instant post-round feedback.</p>
-     <div class="hm-pills">
-      <span class="hm-pill"><span class="hm-pill-dot"></span>Role-specific questions</span>
-      <span class="hm-pill"><span class="hm-pill-dot"></span>Mock rounds</span>
-      <span class="hm-pill"><span class="hm-pill-dot"></span>Answer frameworks</span>
-      <span class="hm-pill"><span class="hm-pill-dot"></span>Instant feedback</span>
-     </div>
-    </div>
-    <div class="hm-divider"></div>
-    <div class="hm-footer">
-     <a href="<?= base_url('register') ?>" class="btn btn-outline-primary">Start practising</a>
-     <button class="hm-btn-next" onclick="hmGoTo(3)">Next →</button>
-     <button class="hm-btn-skip" onclick="hmClose()">Skip tour</button>
-    </div>
-   </div>
-
-   <div class="hm-slide" id="hm-s3">
-    <div class="hm-body">
-     <h3 class="hm-slide-title">A tailored resume for <em>every application</em></h3>
-     <p class="hm-slide-desc">Stop sending one CV to every job. Resume Studio adapts your resume per role, highlights what recruiters want, and gets you past ATS filters.</p>
-     <div class="hm-pills">
-      <span class="hm-pill"><span class="hm-pill-dot"></span>Role-targeted CVs</span>
-      <span class="hm-pill"><span class="hm-pill-dot"></span>ATS optimisation</span>
-      <span class="hm-pill"><span class="hm-pill-dot"></span>AI improvement tips</span>
-      <span class="hm-pill"><span class="hm-pill-dot"></span>Job fit scoring</span>
-     </div>
-    </div>
-    <div class="hm-divider"></div>
-    <div class="hm-footer">
-     <a href="<?= base_url('register') ?>" class="btn btn-outline-primary">Build my resume</a>
-     <button class="hm-btn-next" onclick="hmClose()">Done ✓</button>
-    </div>
-   </div>
-
-  </div>
- </div>
-</div>
-
-<script>
-(function(){
-  if(sessionStorage.getItem('hm_tour_seen')){document.getElementById('hm-backdrop').remove();return;}
-  var cur=1,tot=3,labels=['Career Transition AI','AI Interview Practice','Resume Studio'];
-  function pips(){
-    var c=document.getElementById('hmProgress');c.innerHTML='';
-    for(var i=1;i<=tot;i++){
-      var p=document.createElement('div');
-      p.className='hm-pip'+(i<cur?' past':i===cur?' active':'');
-      c.appendChild(p);
-    }
-    document.getElementById('hmCounter').textContent=cur+' of '+tot+' — '+labels[cur-1];
-  }
-  window.hmGoTo=function(n){
-    document.getElementById('hm-s'+cur).classList.remove('active');
-    cur=n;document.getElementById('hm-s'+cur).classList.add('active');pips();
-  };
-  window.hmClose=function(){
-    sessionStorage.setItem('hm_tour_seen','1');
-    var b=document.getElementById('hm-backdrop');
-    b.style.transition='opacity .18s';b.style.opacity='0';
-    setTimeout(function(){b.remove();},200);
-  };
-  document.getElementById('hmClose').addEventListener('click',hmClose);
-  document.getElementById('hm-backdrop').addEventListener('click',function(e){if(e.target===this)hmClose();});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')hmClose();});
-  pips();
-  setTimeout(function(){document.getElementById('hm-backdrop').classList.add('visible');},1200);
-})();
-</script>
-<!-- ═══════════════ END FEATURE TOUR POPUP ═══════════════ -->
 </body>
 </html>

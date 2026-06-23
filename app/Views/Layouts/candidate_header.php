@@ -3,10 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="google-adsense-account" content="ca-pub-5380525657635231">
     <meta name="base-url" content="<?= base_url() ?>">
     <meta name="csrf-token" content="<?= csrf_hash() ?>">
     <meta name="csrf-name" content="<?= csrf_token() ?>">
     <title><?= esc($title ?? 'Candidate Portal') ?></title>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5380525657635231"
+     crossorigin="anonymous"></script>
     <script>
         (function () {
             try {
@@ -14,11 +17,6 @@
                     document.documentElement.classList.add('hm-dark-preload');
                 }
             } catch (error) {}
-
-            var touchDevice = navigator.maxTouchPoints > 1 || /Android|iPad|iPhone|iPod|Mobile|Tablet/i.test(navigator.userAgent);
-            if (touchDevice) {
-                document.documentElement.classList.add('candidate-touch-device');
-            }
         })();
     </script>
     <!-- Inside the <head> tag -->
@@ -461,24 +459,18 @@
                         <span>Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="cand-leftnav__link <?= $isCareerTransitionActive ? 'is-active' : '' ?>" title="Career Transition">
-                        <span class="cand-leftnav__icon"><i class="fas fa-rocket" style="background:var(--gradient-primary);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"></i></span>
-                        <span style="background:var(--gradient-primary);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600 !important;">Career Transition</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-rocket"></i></span>
+                        <span>Career Transition</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($resumeStudioUrl) ?>" class="cand-leftnav__link <?= $isResumeStudioActive ? 'is-active' : '' ?>" title="Resume Studio">
-                        <span class="cand-leftnav__icon"><i class="fas fa-file-alt" style="background:var(--gradient-primary);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"></i></span>
-                        <span style="background:var(--gradient-primary);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600 !important;">Resume Studio</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-file-alt"></i></span>
+                        <span>Resume Studio</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($mentorUrl) ?>" class="cand-leftnav__link <?= $isPremiumMentorActive ? 'is-active' : '' ?>" title="AI Mentor">
-                        <span class="cand-leftnav__icon"><i class="fas fa-comments" style="background:var(--gradient-primary);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"></i></span>
-                        <span style="background:var(--gradient-primary);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600 !important;">AI Mentor</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-comments"></i></span>
+                        <span>AI Mentor</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
                 </div>
@@ -660,5 +652,6 @@
         </a>
     </nav>
         
+
 
 
