@@ -86,7 +86,7 @@ $suggestedMailHost = $mailDomain !== '' ? 'mail.' . $mailDomain : '';
                     <div class="recruiter-settings-panel-copy">Connect the same verified company email used by your recruiter account. HireMatrix never stores your mailbox password.</div>
 
                     <?php if (!empty($mailboxConnection) && ($mailboxConnection['status'] ?? '') === 'connected'): ?>
-                        <div class="recruiter-settings-card">
+                        <div class="recruiter-settings-card recruiter-mailbox-connected-card">
                             <div class="recruiter-settings-card-copy">
                                 <h6><i class="fas fa-check-circle text-success"></i> <?= esc(ucfirst((string) $mailboxConnection['provider'])) ?> connected</h6>
                                 <p><?= esc((string) $mailboxConnection['email']) ?></p>
@@ -235,11 +235,36 @@ $suggestedMailHost = $mailDomain !== '' ? 'mail.' . $mailDomain : '';
 </div>
 
 <style>
+.recruiter-mailbox-connected-card {
+    align-items: flex-start !important;
+}
+.recruiter-mailbox-connected-card .recruiter-settings-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 18px;
+}
+.recruiter-mailbox-connected-card .recruiter-settings-actions form {
+    margin: 0;
+}
+.recruiter-mailbox-connected-card .recruiter-settings-actions .btn {
+    min-width: 128px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    white-space: nowrap;
+}
 .recruiter-mailbox-custom-card { align-items: flex-end !important; }
 .recruiter-mailbox-custom-copy { flex: 1 1 auto; min-width: 0; }
 .recruiter-mailbox-custom-copy label { display:block; font-size:.78rem; font-weight:700; margin-bottom:.4rem; }
 .recruiter-mailbox-custom-actions { flex:0 0 auto; padding-bottom:1rem; }
 @media (max-width: 991.98px) {
+    .recruiter-mailbox-connected-card .recruiter-settings-actions { flex-wrap: wrap; }
     .recruiter-mailbox-custom-card { align-items:stretch !important; flex-direction:column; }
     .recruiter-mailbox-custom-actions { padding-bottom:0; }
 }
