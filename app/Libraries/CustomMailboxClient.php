@@ -153,6 +153,30 @@ class CustomMailboxClient
     private function parseMessage(string $raw): array
     {
         [$headerText, $body] = preg_split("/\r?\n\r?\n/", $raw, 2) + ['', ''];
+        $headers = $this->parseHeaders($headerText);
+        $body = $this->decodeMimePart($headers, $body);
+        $subject = $this->decodeHeader((string) ($headers['subject'] ?? ''));
+        return [
+            'message_id' => trim((string) ($headers['message-id'] ?? ''), '<> '),
+            'thread_id' => trim((string) ($headers['in-reply-to'] ?? $headers['references'] ?? ''), '<> '),
+            'from' => $this->extractEmail((string) ($headers['from'] ?? '')),
+            'to' => $this->extractEmail((string) ($headers['to'] ?? '')),
+            'subject' => $subject,
+            'body' => mb_substr($body, 0, 10000),
+            'timestamp' => strtotime((string) ($headers['date'] ?? '')) ?: time(),
+        ];
+    }
+
+    public function cleanStoredBody(string $body): string
+    {
+        if (preg_match('/^--([^\r\n]+)/', ltrim($body), $match)) {
+            return $this->decodeMimePart(['content-type' => 'multipart/mixed; boundary="' . trim($match[1]) . '"'], $body);
+        }
+        return trim($body);
+    }
+
+    private function parseHeaders(string $headerText): array
+    {
         $headerText = preg_replace("/\r?\n[ \t]+/", ' ', $headerText) ?? $headerText;
         $headers = [];
         foreach (preg_split('/\r?\n/', $headerText) ?: [] as $line) {
@@ -161,22 +185,63 @@ class CustomMailboxClient
                 $headers[strtolower(trim($name))] = trim($value);
             }
         }
+        return $headers;
+    }
+
+    private function decodeMimePart(array $headers, string $body): string
+    {
+        $contentType = strtolower((string) ($headers['content-type'] ?? 'text/plain'));
+        if (str_starts_with($contentType, 'multipart/') && preg_match('/boundary\s*=\s*(?:"([^"]+)"|([^;\s]+))/i', $contentType, $boundaryMatch)) {
+            $boundary = (string) ($boundaryMatch[1] ?: $boundaryMatch[2]);
+            $plain = [];
+            $html = [];
+            foreach (preg_split('/--' . preg_quote($boundary, '/') . '(?:--)?\r?\n/', $body) ?: [] as $part) {
+                $part = trim($part);
+                if ($part === '' || $part === '--') {
+                    continue;
+                }
+                [$partHeadersText, $partBody] = preg_split("/\r?\n\r?\n/", $part, 2) + ['', ''];
+                $partHeaders = $this->parseHeaders($partHeadersText);
+                if (stripos((string) ($partHeaders['content-disposition'] ?? ''), 'attachment') !== false) {
+                    continue;
+                }
+                $decoded = $this->decodeMimePart($partHeaders, $partBody);
+                if ($decoded === '') {
+                    continue;
+                }
+                if (str_starts_with(strtolower((string) ($partHeaders['content-type'] ?? '')), 'text/html')) {
+                    $html[] = $decoded;
+                } else {
+                    $plain[] = $decoded;
+                }
+            }
+            return trim((string) ($plain[0] ?? $html[0] ?? ''));
+        }
+
         $encoding = strtolower((string) ($headers['content-transfer-encoding'] ?? ''));
         if ($encoding === 'base64') {
-            $body = base64_decode(preg_replace('/\s+/', '', $body) ?? '', true) ?: $body;
+            $decoded = base64_decode(preg_replace('/\s+/', '', $body) ?? '', true);
+            if ($decoded !== false) {
+                $body = $decoded;
+            }
         } elseif ($encoding === 'quoted-printable') {
             $body = quoted_printable_decode($body);
         }
-        $body = trim(html_entity_decode(strip_tags($body), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
-        return [
-            'message_id' => trim((string) ($headers['message-id'] ?? ''), '<> '),
-            'thread_id' => trim((string) ($headers['in-reply-to'] ?? $headers['references'] ?? ''), '<> '),
-            'from' => $this->extractEmail((string) ($headers['from'] ?? '')),
-            'to' => $this->extractEmail((string) ($headers['to'] ?? '')),
-            'subject' => (string) ($headers['subject'] ?? ''),
-            'body' => mb_substr($body, 0, 10000),
-            'timestamp' => strtotime((string) ($headers['date'] ?? '')) ?: time(),
-        ];
+        if (str_starts_with($contentType, 'text/html')) {
+            $body = preg_replace('/<(br|\/p|\/div)>/i', "\n", $body) ?? $body;
+        }
+        return trim(html_entity_decode(strip_tags($body), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    }
+
+    private function decodeHeader(string $value): string
+    {
+        if (function_exists('iconv_mime_decode')) {
+            $decoded = @iconv_mime_decode($value, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, 'UTF-8');
+            if (is_string($decoded)) {
+                return $decoded;
+            }
+        }
+        return $value;
     }
 
     private function extractEmail(string $value): string

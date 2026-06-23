@@ -33,7 +33,7 @@ class SyncRecruiterMailboxes extends BaseCommand
             }
         }
 
-        CLI::write("Synchronized {$synced} candidate email(s); {$failed} mailbox(es) failed.", $failed ? 'yellow' : 'green');
+        CLI::write("Imported {$synced} new candidate email(s); {$failed} mailbox(es) failed. Previously imported emails remain saved.", $failed ? 'yellow' : 'green');
         return $failed ? 1 : 0;
     }
 }

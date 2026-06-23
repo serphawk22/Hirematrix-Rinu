@@ -8,6 +8,9 @@ use GuzzleHttp\Client;
 
 class RecruiterMailboxService
 {
+    private const DEFAULT_SYNC_LOOKBACK_SECONDS = 604800; // 7 days for first sync.
+    private const RECENT_SYNC_LOOKBACK_SECONDS = 259200; // Re-check 3 days to recover late/missed matches.
+
     private Client $http;
     private RecruiterMailboxConnectionModel $connections;
     private RecruiterEmailActivityModel $activities;
@@ -116,6 +119,7 @@ class RecruiterMailboxService
     public function syncConnection(array $connection): array
     {
         try {
+            $this->reconcileInboundActivities($connection);
             $connection = $this->ensureAccessToken($connection);
             if ($connection['provider'] === 'google') {
                 $count = $this->syncGoogle($connection);
@@ -136,6 +140,21 @@ class RecruiterMailboxService
             $this->recordError($connection, $e->getMessage());
             return ['ok' => false, 'count' => 0, 'error' => $e->getMessage()];
         }
+    }
+
+    public function syncRecruiterIfStale(int $recruiterId, int $minimumAgeSeconds = 300): ?array
+    {
+        $connection = $this->connections->getConnectedForRecruiter($recruiterId);
+        if (!$connection) {
+            return null;
+        }
+
+        $lastSyncedAt = strtotime((string) ($connection['last_synced_at'] ?? '')) ?: 0;
+        if ($lastSyncedAt > 0 && (time() - $lastSyncedAt) < $minimumAgeSeconds) {
+            return ['ok' => true, 'count' => 0, 'skipped' => true];
+        }
+
+        return $this->syncConnection($connection);
     }
 
     public function ensureAccessToken(array $connection): array
@@ -228,7 +247,7 @@ class RecruiterMailboxService
     private function syncCustom(array $connection): int
     {
         $settings = $this->customSettings($connection);
-        $since = strtotime((string) ($connection['last_synced_at'] ?? '')) ?: time() - 604800;
+        $since = $this->syncWindowStart($connection);
         $messages = (new CustomMailboxClient())->fetchInbox($settings, $since, 50);
         $count = 0;
         foreach ($messages as $message) {
@@ -240,7 +259,7 @@ class RecruiterMailboxService
             }
             $threadId = (string) ($message['thread_id'] ?? '');
             $context = $this->matchThreadContext((int) $connection['id'], $threadId)
-                ?: $this->matchCandidateContext((int) $connection['recruiter_id'], $from);
+                ?: $this->matchSubjectContext((int) $connection['id'], $from, (string) ($message['subject'] ?? ''));
             if (!$context) {
                 continue;
             }
@@ -260,7 +279,7 @@ class RecruiterMailboxService
     private function syncGoogle(array $connection): int
     {
         $token = $this->decryptToken($connection['access_token']);
-        $after = strtotime((string) ($connection['last_synced_at'] ?? '')) ?: time() - 604800;
+        $after = $this->syncWindowStart($connection);
         $response = $this->http->get('https://gmail.googleapis.com/gmail/v1/users/me/messages', [
             'headers' => ['Authorization' => 'Bearer ' . $token],
             'query' => ['q' => 'after:' . $after, 'maxResults' => 50],
@@ -283,7 +302,7 @@ class RecruiterMailboxService
             $counterpart = $inbound ? $from : $to;
             $threadId = (string) ($message['threadId'] ?? '');
             $context = $this->matchThreadContext((int) $connection['id'], $threadId)
-                ?: $this->matchCandidateContext((int) $connection['recruiter_id'], $counterpart);
+                ?: $this->matchSubjectContext((int) $connection['id'], $counterpart, (string) ($headers['subject'] ?? ''));
             if (!$context) {
                 continue;
             }
@@ -295,7 +314,7 @@ class RecruiterMailboxService
     private function syncMicrosoft(array $connection): int
     {
         $token = $this->decryptToken($connection['access_token']);
-        $since = strtotime((string) ($connection['last_synced_at'] ?? '')) ?: time() - 604800;
+        $since = $this->syncWindowStart($connection);
         $response = $this->http->get('https://graph.microsoft.com/v1.0/me/messages', [
             'headers' => ['Authorization' => 'Bearer ' . $token],
             'query' => ['$top' => 50, '$select' => 'id,conversationId,from,toRecipients,subject,bodyPreview,receivedDateTime,sentDateTime', '$filter' => 'receivedDateTime ge ' . gmdate('Y-m-d\TH:i:s\Z', $since)],
@@ -308,7 +327,7 @@ class RecruiterMailboxService
             $inbound = strcasecmp($from, (string) $connection['email']) !== 0;
             $threadId = (string) ($row['conversationId'] ?? '');
             $context = $this->matchThreadContext((int) $connection['id'], $threadId)
-                ?: $this->matchCandidateContext((int) $connection['recruiter_id'], $inbound ? $from : $to);
+                ?: $this->matchSubjectContext((int) $connection['id'], $inbound ? $from : $to, (string) ($row['subject'] ?? ''));
             if (!$context) {
                 continue;
             }
@@ -330,6 +349,18 @@ class RecruiterMailboxService
             'subject' => $subject, 'body_text' => $body, 'status' => 'synced',
             'occurred_at' => date('Y-m-d H:i:s', $occurred), 'created_at' => date('Y-m-d H:i:s'),
         ]));
+        $activityId = (int) $this->activities->getInsertID();
+        if ($inbound && $activityId > 0) {
+            $notified = $this->createRecruiterNotification($context, [
+                'id' => $activityId,
+                'subject' => $subject,
+                'body_text' => $body,
+                'occurred_at' => date('Y-m-d H:i:s', $occurred),
+            ], $connection);
+            if ($notified) {
+                $this->activities->update($activityId, ['notified_at' => date('Y-m-d H:i:s')]);
+            }
+        }
         return 1;
     }
 
@@ -361,6 +392,7 @@ class RecruiterMailboxService
         }
         $row = $this->activities->where('connection_id', $connectionId)
             ->where('provider_thread_id', $threadId)
+            ->where('direction', 'outbound')
             ->where('candidate_id IS NOT NULL', null, false)
             ->orderBy('id', 'DESC')
             ->first();
@@ -372,6 +404,177 @@ class RecruiterMailboxService
             'application_id' => !empty($row['application_id']) ? (int) $row['application_id'] : null,
             'job_id' => !empty($row['job_id']) ? (int) $row['job_id'] : null,
         ];
+    }
+
+    private function matchSubjectContext(int $connectionId, string $counterpartEmail, string $subject): ?array
+    {
+        $normalizedSubject = $this->normalizeSubject($subject);
+        if ($normalizedSubject === '' || !filter_var($counterpartEmail, FILTER_VALIDATE_EMAIL)) {
+            return null;
+        }
+        $rows = $this->activities->where('connection_id', $connectionId)
+            ->where('direction', 'outbound')
+            ->where('LOWER(to_email)', strtolower($counterpartEmail))
+            ->where('candidate_id IS NOT NULL', null, false)
+            ->orderBy('occurred_at', 'DESC')
+            ->findAll(100);
+        foreach ($rows as $row) {
+            if ($this->normalizeSubject((string) ($row['subject'] ?? '')) === $normalizedSubject) {
+                return [
+                    'candidate_id' => (int) $row['candidate_id'],
+                    'application_id' => !empty($row['application_id']) ? (int) $row['application_id'] : null,
+                    'job_id' => !empty($row['job_id']) ? (int) $row['job_id'] : null,
+                ];
+            }
+        }
+        return null;
+    }
+
+    private function normalizeSubject(string $subject): string
+    {
+        $decoded = function_exists('iconv_mime_decode')
+            ? @iconv_mime_decode($subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, 'UTF-8')
+            : $subject;
+        $decoded = is_string($decoded) ? $decoded : $subject;
+        do {
+            $before = $decoded;
+            $decoded = preg_replace('/^\s*(re|fw|fwd)\s*:\s*/i', '', $decoded) ?? $decoded;
+        } while ($decoded !== $before);
+        return mb_strtolower(trim(preg_replace('/\s+/', ' ', $decoded) ?? $decoded));
+    }
+
+    private function syncWindowStart(array $connection): int
+    {
+        $lastSyncedAt = strtotime((string) ($connection['last_synced_at'] ?? '')) ?: 0;
+        if ($lastSyncedAt <= 0) {
+            return time() - self::DEFAULT_SYNC_LOOKBACK_SECONDS;
+        }
+
+        return max(0, $lastSyncedAt - self::RECENT_SYNC_LOOKBACK_SECONDS);
+    }
+
+    private function reconcileInboundActivities(array $connection): void
+    {
+        $rows = $this->activities->where('connection_id', (int) $connection['id'])
+            ->where('direction', 'inbound')
+            ->orderBy('occurred_at', 'DESC')
+            ->findAll(200);
+        foreach ($rows as $row) {
+            $context = $this->matchThreadContext((int) $connection['id'], (string) ($row['provider_thread_id'] ?? ''))
+                ?: $this->matchSubjectContext((int) $connection['id'], (string) ($row['from_email'] ?? ''), (string) ($row['subject'] ?? ''));
+            if (!$context) {
+                continue;
+            }
+            $this->activities->update((int) $row['id'], $context);
+            if (empty($row['notified_at']) || !$this->hasExistingReplyNotification($context, $row, $connection)) {
+                if ($this->createRecruiterNotification($context, $row, $connection)) {
+                    $this->activities->update((int) $row['id'], ['notified_at' => date('Y-m-d H:i:s')]);
+                }
+            }
+        }
+    }
+
+    private function createRecruiterNotification(array $context, array $activity, array $connection): bool
+    {
+        $candidateId = (int) ($context['candidate_id'] ?? 0);
+        if ($candidateId <= 0) {
+            return false;
+        }
+        $candidate = model('UserModel')->find($candidateId) ?? [];
+        $candidateName = trim((string) ($candidate['name'] ?? 'Candidate')) ?: 'Candidate';
+        $applicationId = !empty($context['application_id']) ? (int) $context['application_id'] : null;
+        $jobId = !empty($context['job_id']) ? (int) $context['job_id'] : null;
+        $link = base_url('recruiter/candidate/' . $candidateId)
+            . '?application_id=' . (int) ($applicationId ?? 0)
+            . '&job_id=' . (int) ($jobId ?? 0)
+            . (!empty($activity['id']) ? '&email_activity_id=' . (int) $activity['id'] : '');
+        $notificationModel = new \App\Models\NotificationModel();
+        $title = 'Email reply from ' . $candidateName;
+        $message = trim((string) ($activity['subject'] ?? '')) !== '' ? (string) $activity['subject'] : 'A candidate replied to your email.';
+
+        if ($this->hasExistingReplyNotification($context, array_merge($activity, [
+            'title' => $title,
+            'message' => $message,
+            'action_link' => $link,
+        ]), $connection)) {
+            return true;
+        }
+
+        $notificationId = $notificationModel->insert([
+            'user_id' => (int) $connection['recruiter_id'],
+            'application_id' => $applicationId,
+            'type' => 'candidate_email_reply',
+            'title' => $title,
+            'message' => $message,
+            'action_link' => $link,
+            'is_read' => 0,
+            'created_at' => (string) ($activity['occurred_at'] ?? date('Y-m-d H:i:s')),
+        ]);
+        return $notificationId !== false;
+    }
+
+    private function hasExistingReplyNotification(array $context, array $activity, array $connection): bool
+    {
+        $candidateId = (int) ($context['candidate_id'] ?? 0);
+        if ($candidateId <= 0) {
+            return false;
+        }
+
+        $candidate = model('UserModel')->find($candidateId) ?? [];
+        $candidateName = trim((string) ($candidate['name'] ?? 'Candidate')) ?: 'Candidate';
+        $applicationId = !empty($context['application_id']) ? (int) $context['application_id'] : null;
+        $jobId = !empty($context['job_id']) ? (int) $context['job_id'] : null;
+        $link = (string) ($activity['action_link'] ?? (
+            base_url('recruiter/candidate/' . $candidateId)
+            . '?application_id=' . (int) ($applicationId ?? 0)
+            . '&job_id=' . (int) ($jobId ?? 0)
+            . (!empty($activity['id']) ? '&email_activity_id=' . (int) $activity['id'] : '')
+        ));
+        $message = (string) ($activity['message'] ?? (
+            trim((string) ($activity['subject'] ?? '')) !== '' ? (string) $activity['subject'] : 'A candidate replied to your email.'
+        ));
+
+        $title = (string) ($activity['title'] ?? ('Email reply from ' . $candidateName));
+        $notificationModel = new \App\Models\NotificationModel();
+        $builder = $notificationModel
+            ->where('user_id', (int) $connection['recruiter_id'])
+            ->where('type', 'candidate_email_reply')
+            ->where('title', $title)
+            ->where('message', $message)
+            ->where('action_link', $link);
+
+        if ($applicationId !== null) {
+            $builder->where('application_id', $applicationId);
+        } else {
+            $builder->where('application_id IS NULL', null, false);
+        }
+
+        if ($builder->first()) {
+            return true;
+        }
+
+        if (empty($activity['id']) || empty($activity['occurred_at'])) {
+            return false;
+        }
+
+        $legacyLink = base_url('recruiter/candidate/' . $candidateId)
+            . '?application_id=' . (int) ($applicationId ?? 0)
+            . '&job_id=' . (int) ($jobId ?? 0);
+        $legacyBuilder = (new \App\Models\NotificationModel())
+            ->where('user_id', (int) $connection['recruiter_id'])
+            ->where('type', 'candidate_email_reply')
+            ->where('title', $title)
+            ->where('message', $message)
+            ->where('action_link', $legacyLink)
+            ->where('created_at', (string) $activity['occurred_at']);
+
+        if ($applicationId !== null) {
+            $legacyBuilder->where('application_id', $applicationId);
+        } else {
+            $legacyBuilder->where('application_id IS NULL', null, false);
+        }
+
+        return (bool) $legacyBuilder->first();
     }
 
     private function extractEmail(string $value): string

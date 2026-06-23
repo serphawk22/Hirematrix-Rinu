@@ -219,7 +219,7 @@ $completedApplications = count(array_filter($applications ?? [], function ($appl
                                                                 <input type="hidden" name="jobid"
            value="<?= htmlspecialchars($application['job_id'], ENT_QUOTES, 'UTF-8') ?>">
                                                     
-                                                        <input type="input" name="highlight_skills"
+                                                        <input type="hidden" name="highlight_skills"
                                                                value="<?= htmlspecialchars($application['resume_version_highlight_skills'], ENT_QUOTES, 'UTF-8') ?>">
                                                         <input type="hidden" name="experience"
                                                                value="<?= esc($calculatedExperience['level'] ?? '') ?>">

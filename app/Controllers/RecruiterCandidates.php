@@ -316,6 +316,13 @@ class RecruiterCandidates extends BaseController
             (int) $recruiterId,
             $applicationId > 0 ? $applicationId : null
         );
+        if (\Config\Database::connect()->tableExists('recruiter_mailbox_connections')) {
+            try {
+                (new \App\Libraries\RecruiterMailboxService())->syncRecruiterIfStale($recruiterId, 300);
+            } catch (\Throwable $e) {
+                log_message('error', 'Recruiter mailbox auto-sync failed on candidate profile: ' . $e->getMessage());
+            }
+        }
         $emailActivities = [];
         if (\Config\Database::connect()->tableExists('recruiter_email_activities')) {
             $emailBuilder = (new \App\Models\RecruiterEmailActivityModel())

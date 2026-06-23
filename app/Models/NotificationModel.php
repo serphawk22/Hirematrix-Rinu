@@ -78,6 +78,12 @@ class NotificationModel extends Model
             'color' => 'warning',
             'priority' => 6
         ],
+        'candidate_email_reply' => [
+            'title' => 'Candidate Email Reply',
+            'icon' => 'fas fa-envelope-open-text',
+            'color' => 'info',
+            'priority' => 2
+        ],
         'interview_reviewed' => [
             'title' => 'Interview Reviewed',
             'icon' => 'fas fa-clipboard-check',

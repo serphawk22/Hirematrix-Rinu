@@ -142,6 +142,8 @@ header.site-navbar.landing-header .landing-header-logo-text {
         flex: 1 1 auto !important;
         max-width: calc(100% - 104px) !important;
         min-width: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 8px !important;
     }
 
     header.site-navbar.landing-header .landing-header-logo-link,
@@ -162,8 +164,14 @@ header.site-navbar.landing-header .landing-header-logo-text {
     header.site-navbar.landing-header .landing-header-actions {
         flex: 0 0 auto !important;
         margin-left: auto !important;
-        padding-left: 8px !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
         text-align: right !important;
+    }
+
+    header.site-navbar.landing-header .landing-header-actions .site-menu-toggle {
+        display: none !important;
+        margin: 0 !important;
     }
 
     header.site-navbar.landing-header .landing-header-actions .btn,

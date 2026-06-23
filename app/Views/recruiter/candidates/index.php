@@ -412,6 +412,125 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
     padding-left: 34px !important;
     padding-right: 34px !important;
 }
+
+.recruiter-bulk-invite-form {
+    margin-bottom: 18px;
+}
+.recruiter-bulk-invite-bar {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.7fr) minmax(360px, 1.3fr);
+    align-items: center;
+    gap: 18px;
+    padding: 14px 16px;
+    border: 1px solid #D9ECE5;
+    border-radius: 12px;
+    background: #F4FBFA;
+}
+.recruiter-bulk-invite-title {
+    color: #16212B;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+.recruiter-bulk-invite-actions {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+}
+.recruiter-bulk-invite-note {
+    min-height: 44px;
+    height: 44px;
+    resize: none;
+}
+.recruiter-bulk-invite-submit {
+    min-height: 44px;
+    white-space: nowrap;
+}
+.recruiter-bulk-selection-count {
+    color: #0D8A90;
+    font-weight: 700;
+}
+.recruiter-candidate-checkbox {
+    width: 17px;
+    height: 17px;
+    accent-color: #1FB7B5;
+    cursor: pointer;
+}
+.recruiter-match-score {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    width: auto !important;
+    padding: 6px 11px !important;
+    border: 1px solid rgba(31, 183, 181, 0.28) !important;
+    border-radius: 999px !important;
+    background: rgba(31, 183, 181, 0.12) !important;
+    color: #0D8A90 !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+}
+.application-actions-wrap .recruiter-resume-icon-action {
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    flex: 0 0 34px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(31, 183, 181, 0.28) !important;
+    border-radius: 9px !important;
+    background: rgba(31, 183, 181, 0.08) !important;
+    color: #0D8A90 !important;
+    line-height: 1 !important;
+    box-sizing: border-box;
+    text-decoration: none !important;
+}
+.application-actions-wrap .recruiter-resume-icon-action i {
+    display: block;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1;
+}
+.application-actions-wrap .recruiter-resume-icon-action:hover,
+.application-actions-wrap .recruiter-resume-icon-action:focus {
+    background: #1FB7B5 !important;
+    border-color: #1FB7B5 !important;
+    color: #ffffff !important;
+}
+body.dark .application-actions-wrap .recruiter-resume-icon-action {
+    background: rgba(31, 183, 181, 0.12) !important;
+    border-color: #23343A !important;
+    color: #5EEAD4 !important;
+}
+body.dark .recruiter-match-score {
+    border-color: rgba(31, 183, 181, 0.38) !important;
+    background: rgba(31, 183, 181, 0.14) !important;
+    color: #5EEAD4 !important;
+}
+body.dark .recruiter-bulk-invite-bar {
+    background: #111111;
+    border-color: #23343A;
+}
+body.dark .recruiter-bulk-invite-title {
+    color: #F8FAFC;
+}
+@media (max-width: 991.98px) {
+    .recruiter-bulk-invite-bar,
+    .recruiter-bulk-invite-actions {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 575.98px) {
+    .recruiter-bulk-invite-submit {
+        width: 100%;
+    }
+}
 </style>
 <div class="recruiter-candidates-jobboard">
 <div class="container-fluid py-5">
@@ -440,7 +559,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
             <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
                 <div>
                     <h6 class="mb-3">Search Filters</h6>
-                    <p class="text-muted mb-0">Narrow down the candidate database by skill, experience, job fit, and resume availability.</p>
+                    <p class="text-muted mb-0">Narrow down the candidate database by skill, experience, location, and job fit.</p>
                 </div>
             </div>
 
@@ -477,15 +596,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <label class="small text-muted mb-1">Resume</label>
-                        <select name="resume" class="form-control">
-                            <option value="" <?= ($filters['resume'] ?? '') === '' ? 'selected' : '' ?>>All</option>
-                            <option value="yes" <?= ($filters['resume'] ?? '') === 'yes' ? 'selected' : '' ?>>With Resume</option>
-                            <option value="no" <?= ($filters['resume'] ?? '') === 'no' ? 'selected' : '' ?>>Without Resume</option>
-                        </select>
-                    </div>
-                    <div class="col-md-1 d-flex align-items-end">
+                    <div class="col-md-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-outline-primary">
                             <i class="fas fa-search"></i>
                         </button>&#160;&#160;
@@ -505,10 +616,35 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
                 <?php if (empty($aiSuggestions)): ?>
                     <p class="text-muted mb-0">No suitable candidates found for this role.</p>
                 <?php else: ?>
+                    <form method="post" action="<?= base_url('recruiter/candidates/invite-job/bulk') ?>"
+                          class="recruiter-bulk-invite-form" id="recruiterBulkInviteForm">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="job_id" value="<?= (int) ($selectedJob['id'] ?? 0) ?>">
+                        <input type="hidden" name="return_to" value="<?= esc(current_url() . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '')) ?>">
+                        <div class="recruiter-bulk-invite-bar">
+                            <div>
+                                <div class="recruiter-bulk-invite-title">Invite multiple candidates</div>
+                                <div class="small text-muted">
+                                    Select candidates below. <span class="recruiter-bulk-selection-count" id="bulkCandidateCount">0 selected</span>
+                                </div>
+                            </div>
+                            <div class="recruiter-bulk-invite-actions">
+                                <textarea name="message" class="form-control recruiter-bulk-invite-note" rows="1" maxlength="500"
+                                          placeholder="Optional shared note for selected candidates"></textarea>
+                                <button type="submit" class="btn btn-primary recruiter-bulk-invite-submit" id="bulkInviteSubmit" disabled>
+                                    <i class="fas fa-paper-plane mr-1"></i> Invite Selected
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                     <div class="table-responsive">
                         <table class="table table-sm table-hover recruiter-candidates-table">
                             <thead class="thead-light">
                                 <tr>
+                                    <th style="width: 44px;">
+                                        <input type="checkbox" class="recruiter-candidate-checkbox js-select-all-candidates"
+                                               aria-label="Select all suggested candidates">
+                                    </th>
                                     <th>Candidate</th>
                                     <th>Score</th>
                                     <th>Experience</th>
@@ -521,19 +657,33 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
                                 <?php foreach ($aiSuggestions as $candidate): ?>
                                     <tr>
                                         <td>
+                                            <input type="checkbox" name="candidate_ids[]" value="<?= (int) $candidate['id'] ?>"
+                                                   class="recruiter-candidate-checkbox js-candidate-checkbox"
+                                                   aria-label="Select <?= esc($candidate['name'] ?? 'candidate') ?>"
+                                                   form="recruiterBulkInviteForm">
+                                        </td>
+                                        <td>
                                             <strong><?= esc($candidate['name'] ?? '-') ?></strong><br>
                                             <small class="text-muted"><?= esc($candidate['email'] ?? '-') ?></small>
                                         </td>
                                         <td>
-                                            <span class="badge badge-success"><?= esc((string) ($candidate['match_score'] ?? 0)) ?>%</span>
+                                            <span class="recruiter-match-score"><?= esc((string) ($candidate['match_score'] ?? 0)) ?>%</span>
                                         </td>
                                         <td><?= esc($candidate['experience_display'] ?? '-') ?></td>
                                         <td><small><?= esc($candidate['skill_name'] ?? '-') ?></small></td>
                                         <td><small><?= esc($candidate['match_reason'] ?? '-') ?></small></td>
                                         <td>
-                                            <a href="<?= base_url('recruiter/candidate/' . $candidate['id']) ?>" class="status-pill">
+                                            <a href="<?= base_url('recruiter/candidate/' . $candidate['id'] . '?job_id=' . (int) ($selectedJob['id'] ?? 0)) ?>" class="status-pill">
                                                 View
                                             </a>
+                                            <form method="post" action="<?= base_url('recruiter/candidate/' . $candidate['id'] . '/invite-job') ?>" class="d-inline-block">
+                                                <?= csrf_field() ?>
+                                                <input type="hidden" name="job_id" value="<?= (int) ($selectedJob['id'] ?? 0) ?>">
+                                                <input type="hidden" name="return_to" value="<?= esc(current_url() . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '')) ?>">
+                                                <button type="submit" class="status-pill">
+                                                    <i class="fas fa-paper-plane"></i> Invite
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -567,7 +717,6 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
                                     <th>Location</th>
                                     <th>Experience</th>
                                     <th>Skills</th>
-                                    <th>Resume</th>
                                     <th>Joined</th>
                                     <th>Actions</th>
                                 </tr>
@@ -588,23 +737,18 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
                                                 <span class="text-muted">-</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td>
-                                            <!-- Resume badge — replace both badge spans -->
-<?php if (!empty($candidate['resume_path'])): ?>
-    <span class="status-pill">Available</span>
-<?php else: ?>
-    <span class="status-pill">Not Uploaded</span>
-<?php endif; ?>
-                                        </td>
                                         <td><?= !empty($candidate['created_at']) ? date('M d, Y', strtotime($candidate['created_at'])) : '-' ?></td>
                                         <td>
-                                          <div class="application-actions-wrap">
+                                          <div class="application-actions-wrap" onclick="event.stopPropagation();">
     <a href="<?= base_url('recruiter/candidate/' . $candidate['id']) ?>" class="status-pill">
         View Profile
     </a>
     <?php if (!empty($candidate['resume_path'])): ?>
-        <a href="<?= base_url('recruiter/candidate/' . $candidate['id'] . '/download-resume') ?>" class="status-pill">
-            Resume
+        <a href="<?= base_url('recruiter/candidate/' . $candidate['id'] . '/download-resume') ?>"
+           class="recruiter-resume-icon-action"
+           title="Download <?= esc($candidate['name'] ?? 'candidate') ?>'s resume"
+           aria-label="Download <?= esc($candidate['name'] ?? 'candidate') ?>'s resume">
+            <i class="fas fa-download" aria-hidden="true"></i>
         </a>
     <?php endif; ?>
 </div>
@@ -626,5 +770,42 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
     <?php endif; ?>
 </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const selectAll = document.querySelector('.js-select-all-candidates');
+    const checkboxes = Array.from(document.querySelectorAll('.js-candidate-checkbox'));
+    const submitButton = document.getElementById('bulkInviteSubmit');
+    const countLabel = document.getElementById('bulkCandidateCount');
+    const bulkForm = document.getElementById('recruiterBulkInviteForm');
+
+    if (!selectAll || !checkboxes.length || !submitButton || !countLabel || !bulkForm) return;
+
+    function syncSelection() {
+        const selectedCount = checkboxes.filter(function (checkbox) { return checkbox.checked; }).length;
+        selectAll.checked = selectedCount === checkboxes.length;
+        selectAll.indeterminate = selectedCount > 0 && selectedCount < checkboxes.length;
+        submitButton.disabled = selectedCount === 0;
+        countLabel.textContent = selectedCount + (selectedCount === 1 ? ' selected' : ' selected');
+    }
+
+    selectAll.addEventListener('change', function () {
+        checkboxes.forEach(function (checkbox) { checkbox.checked = selectAll.checked; });
+        syncSelection();
+    });
+
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', syncSelection);
+    });
+
+    bulkForm.addEventListener('submit', function (event) {
+        if (!checkboxes.some(function (checkbox) { return checkbox.checked; })) {
+            event.preventDefault();
+        }
+    });
+
+    syncSelection();
+});
+</script>
 
 <?= view('Layouts/recruiter_footer') ?>
