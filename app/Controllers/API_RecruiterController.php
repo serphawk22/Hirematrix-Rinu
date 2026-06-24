@@ -2923,4 +2923,491 @@ class API_RecruiterController extends ResourceController
             'message' => 'Password changed successfully'
         ]);
     }
+
+    // ── Interview Slots ──────────────────────────────────────────────────────
+
+    /**
+     * GET api/mobile/interview_slots
+     * Returns all interview slots for the recruiter with metrics and optional filters.
+     * Query params: recruiter_id, job_id (optional), status (optional), date (optional)
+     */
+    public function getInterviewSlots()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) {
+            return $this->fail('Recruiter ID required');
+        }
+
+        $jobIdFilter  = $this->request->getVar('job_id');
+        $statusFilter = $this->request->getVar('status');
+        $dateFilter   = $this->request->getVar('date');
+
+        $db        = \Config\Database::connect();
+        $slotModel = new \App\Models\InterviewSlotModel();
+        $jobModel  = new \App\Models\JobModel();
+
+        // Get all job IDs that belong to this recruiter
+        $recruiterJobs = $jobModel
+            ->select('id')
+            ->where('recruiter_id', $recruiterId)
+            ->findAll();
+        $jobIds = array_column($recruiterJobs, 'id');
+
+        if (empty($jobIds)) {
+            return $this->respond([
+                'success' => true,
+                'slots'   => [],
+                'metrics' => [
+                    'total'          => '0',
+                    'available'      => '0',
+                    'booked'         => '0',
+                    'total_bookings' => '0',
+                ],
+            ]);
+        }
+
+        // Build query
+        $builder = $slotModel
+            ->select('interview_slots.*, jobs.title as job_title, users.name as created_by_name')
+            ->join('jobs', 'jobs.id = interview_slots.job_id', 'left')
+            ->join('users', 'users.id = interview_slots.created_by', 'left')
+            ->whereIn('interview_slots.job_id', $jobIds)
+            ->orderBy('interview_slots.slot_datetime', 'ASC');
+
+        // Job filter
+        if (!empty($jobIdFilter)) {
+            $builder->where('interview_slots.job_id', (int)$jobIdFilter);
+        }
+
+        // Date filter
+        if (!empty($dateFilter)) {
+            $builder->where('interview_slots.slot_date', $dateFilter);
+        }
+
+        // Status filter — match web's SlotManagementController exactly
+        $now = date('Y-m-d H:i:s');
+        if ($statusFilter === 'available') {
+            $builder->where('interview_slots.is_available', 1)
+                    ->where('interview_slots.slot_datetime >=', $now)
+                    ->where('interview_slots.booked_count < interview_slots.capacity');
+        } elseif ($statusFilter === 'full') {
+            // Web uses is_available=0, same here
+            $builder->where('interview_slots.is_available', 0);
+        } elseif ($statusFilter === 'past') {
+            $builder->where('interview_slots.slot_datetime <', $now);
+        }
+
+        $slots = $builder->findAll();
+
+        // Compute per-slot status — mirroring web's PHP logic exactly:
+        // Past:      slot_datetime < now
+        // Full:      is_available = 0 (regardless of capacity — admin may mark unavailable)
+        // Available: is_available = 1 AND not past AND booked_count < capacity
+        // Unavailable: is_available = 0 (same as full in web logic)
+        $formattedSlots = [];
+        foreach ($slots as $s) {
+            $isPast      = strtotime($s['slot_datetime']) < time();
+            $isAvailFlag = (int)$s['is_available'] === 1;
+            $isFull      = !$isAvailFlag; // web: fully_booked = is_available=0
+
+            if ($isPast) {
+                $slotStatus = 'past';
+            } elseif ($isFull) {
+                $slotStatus = 'full';
+            } elseif ($isAvailFlag) {
+                $slotStatus = 'available';
+            } else {
+                $slotStatus = 'unavailable';
+            }
+
+            $formattedSlots[] = [
+                'slot_id'         => (string)$s['id'],
+                'id'              => (string)$s['id'],
+                'job_id'          => (string)$s['job_id'],
+                'job_title'       => $s['job_title'] ?? '',
+                'slot_date'       => $s['slot_date'],
+                'slot_time'       => $s['slot_time'],
+                'slot_datetime'   => $s['slot_datetime'],
+                'capacity'        => (string)$s['capacity'],
+                'booked_count'    => (string)$s['booked_count'],
+                'is_available'    => (int)$s['is_available'],
+                'status'          => $slotStatus,
+                'created_by_name' => $s['created_by_name'] ?? 'System',
+            ];
+        }
+
+        // Compute aggregate metrics — match web's SlotManagementController exactly:
+        // total_slots    = COUNT(*)
+        // available_slots= is_available=1 AND slot_datetime > now
+        // fully_booked   = is_available=0
+        // total_bookings = COUNT(interview_bookings)
+        $slotModel2 = new \App\Models\InterviewSlotModel();
+
+        $totalSlots = $slotModel2->whereIn('job_id', $jobIds)->countAllResults();
+
+        $availableSlots = $slotModel2
+            ->whereIn('job_id', $jobIds)
+            ->where('is_available', 1)
+            ->where('slot_datetime >', date('Y-m-d H:i:s'))
+            ->countAllResults();
+
+        $fullyBooked = $slotModel2
+            ->whereIn('job_id', $jobIds)
+            ->where('is_available', 0)
+            ->countAllResults();
+
+        $totalBookings = (int)$db->table('interview_bookings')
+            ->whereIn('job_id', $jobIds)
+            ->countAllResults();
+
+        return $this->respond([
+            'success' => true,
+            'slots'   => $formattedSlots,
+            'metrics' => [
+                'total'          => (string)$totalSlots,
+                'available'      => (string)$availableSlots,
+                'booked'         => (string)$fullyBooked,
+                'total_bookings' => (string)$totalBookings,
+            ],
+        ]);
+    }
+
+    // ── Interview Bookings ───────────────────────────────────────────────────
+
+    /**
+     * GET api/mobile/interview_bookings
+     * Returns all candidate bookings for the recruiter's jobs with candidate + review info.
+     * Query params: recruiter_id, job_id (optional), status (optional)
+     */
+    public function getInterviewBookings()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) {
+            return $this->fail('Recruiter ID required');
+        }
+
+        $jobIdFilter  = $this->request->getVar('job_id');
+        $statusFilter = $this->request->getVar('status');
+
+        $jobModel = new \App\Models\JobModel();
+
+        // Get all job IDs for this recruiter
+        $recruiterJobs = $jobModel
+            ->select('id')
+            ->where('recruiter_id', $recruiterId)
+            ->findAll();
+        $jobIds = array_column($recruiterJobs, 'id');
+
+        if (empty($jobIds)) {
+            return $this->respond([
+                'success'  => true,
+                'bookings' => [],
+            ]);
+        }
+
+        $bookingModel = new \App\Models\InterviewBookingModel();
+
+        $builder = $bookingModel
+            ->select('
+                interview_bookings.*,
+                users.name as candidate_name,
+                users.email,
+                jobs.title as job_title,
+                interview_slots.slot_date,
+                interview_slots.slot_time,
+                interview_booking_reviews.id as review_id,
+                interview_booking_reviews.decision as review_decision,
+                interview_booking_reviews.notes as review_notes,
+                interview_booking_reviews.attendance_status as review_attendance_status,
+                interview_booking_reviews.reviewed_at as review_reviewed_at
+            ')
+            ->join('users', 'users.id = interview_bookings.user_id', 'left')
+            ->join('jobs', 'jobs.id = interview_bookings.job_id', 'left')
+            ->join('interview_slots', 'interview_slots.id = interview_bookings.slot_id', 'left')
+            ->join('interview_booking_reviews', 'interview_booking_reviews.booking_id = interview_bookings.id', 'left')
+            ->whereIn('interview_bookings.job_id', $jobIds)
+            ->orderBy('interview_bookings.slot_datetime', 'DESC');
+
+        if (!empty($jobIdFilter)) {
+            $builder->where('interview_bookings.job_id', (int)$jobIdFilter);
+        }
+
+        if (!empty($statusFilter)) {
+            $builder->where('interview_bookings.booking_status', $statusFilter);
+        }
+
+        $bookings = $builder->findAll();
+
+        $formattedBookings = [];
+        foreach ($bookings as $b) {
+            $rescheduleCount = 0;
+            if (!empty($b['reschedule_history'])) {
+                $history = json_decode($b['reschedule_history'], true);
+                $rescheduleCount = is_array($history) ? count($history) : 0;
+            }
+
+            $formattedBookings[] = [
+                'id'                     => (string)$b['id'],
+                'candidate_id'           => (string)$b['user_id'],
+                'candidate_name'         => $b['candidate_name'] ?? 'Unknown',
+                'email'                  => $b['email'] ?? '',
+                'job_id'                 => (string)$b['job_id'],
+                'job_title'              => $b['job_title'] ?? '',
+                'slot_id'                => (string)$b['slot_id'],
+                'slot_date'              => $b['slot_date'] ?? '',
+                'slot_time'              => $b['slot_time'] ?? '',
+                'slot_datetime'          => $b['slot_datetime'] ?? '',
+                'booking_status'         => $b['booking_status'] ?? 'booked',
+                'booked_at'              => $b['booked_at'] ?? $b['created_at'] ?? '',
+                'application_id'         => (string)($b['application_id'] ?? ''),
+                'reschedule_count'       => (string)$rescheduleCount,
+                // Review data
+                'review_id'              => $b['review_id'] ?? null,
+                'review_decision'        => $b['review_decision'] ?? null,
+                'review_notes'           => $b['review_notes'] ?? null,
+                'review_attendance_status' => $b['review_attendance_status'] ?? null,
+                'review_reviewed_at'     => $b['review_reviewed_at'] ?? null,
+            ];
+        }
+
+        // Calculate Metrics
+        $now = date('Y-m-d H:i:s');
+        $metrics = ['total' => 0, 'upcoming' => 0, 'completed' => 0, 'rescheduled' => 0];
+        
+        $metricsBuilder = $bookingModel->select('booking_status, slot_datetime')
+            ->whereIn('job_id', $jobIds);
+            
+        $allBookingsForMetrics = $metricsBuilder->findAll();
+        foreach ($allBookingsForMetrics as $b) {
+            $status = strtolower($b['booking_status'] ?? 'booked');
+            $metrics['total']++;
+            
+            if ($status === 'completed') {
+                $metrics['completed']++;
+            } elseif ($status === 'rescheduled') {
+                $metrics['rescheduled']++;
+                if (!empty($b['slot_datetime']) && $b['slot_datetime'] >= $now) {
+                    $metrics['upcoming']++;
+                }
+            } elseif ($status === 'booked' || $status === 'confirmed') {
+                if (!empty($b['slot_datetime']) && $b['slot_datetime'] >= $now) {
+                    $metrics['upcoming']++;
+                }
+            }
+        }
+
+        return $this->respond([
+            'success'  => true,
+            'bookings' => $formattedBookings,
+            'metrics'  => $metrics,
+        ]);
+    }
+
+    // ── Reschedule Interview Booking ─────────────────────────────────────────
+
+    /**
+     * POST api/mobile/interviews/reschedule
+     * Reschedules an interview booking to a new date/time (creates or uses a slot).
+     * Body params: interview_id, recruiter_id, interview_date (Y-m-d H:i:s)
+     */
+    public function rescheduleInterviewBooking()
+    {
+        $recruiterId    = $this->request->getVar('recruiter_id');
+        $bookingId      = $this->request->getVar('interview_id');
+        $newDatetime    = $this->request->getVar('interview_date');
+
+        if (!$recruiterId || !$bookingId || !$newDatetime) {
+            return $this->fail('Missing required fields: recruiter_id, interview_id, interview_date');
+        }
+
+        $bookingModel = new \App\Models\InterviewBookingModel();
+        $slotModel    = new \App\Models\InterviewSlotModel();
+
+        $booking = $bookingModel->find($bookingId);
+        if (!$booking) {
+            return $this->failNotFound('Booking not found');
+        }
+
+        // Verify the recruiter owns this job
+        $db = \Config\Database::connect();
+        $job = $db->table('jobs')
+            ->where('id', $booking['job_id'])
+            ->where('recruiter_id', $recruiterId)
+            ->get()->getRowArray();
+
+        if (!$job) {
+            return $this->fail('Unauthorized: booking does not belong to your jobs');
+        }
+
+        // Parse the new date/time
+        $newDt   = strtotime($newDatetime);
+        $newDate = date('Y-m-d', $newDt);
+        $newTime = date('H:i:s', $newDt);
+
+        // Decrement the old slot's booked count
+        if (!empty($booking['slot_id'])) {
+            $slotModel->decrementBookedCount((int)$booking['slot_id']);
+        }
+
+        // Create a new slot for the rescheduled time or find an existing one
+        $existingSlot = $slotModel
+            ->where('job_id', $booking['job_id'])
+            ->where('slot_date', $newDate)
+            ->where("TIME(slot_time) = TIME('" . $newTime . "')")
+            ->first();
+
+        if ($existingSlot) {
+            $newSlotId = $existingSlot['id'];
+            $slotModel->incrementBookedCount($newSlotId);
+        } else {
+            // Create a one-off slot for this reschedule
+            $newSlotId = $slotModel->insert([
+                'job_id'        => $booking['job_id'],
+                'slot_date'     => $newDate,
+                'slot_time'     => $newTime,
+                'slot_datetime' => $newDatetime,
+                'capacity'      => 1,
+                'booked_count'  => 1,
+                'is_available'  => 0,
+                'created_by'    => $recruiterId,
+                'created_at'    => date('Y-m-d H:i:s'),
+            ]);
+        }
+
+        // Update the booking record
+        $bookingModel->update($bookingId, [
+            'slot_id'        => $newSlotId,
+            'slot_datetime'  => $newDatetime,
+            'booking_status' => 'rescheduled',
+        ]);
+
+        return $this->respond([
+            'success' => true,
+            'message' => 'Interview rescheduled successfully',
+        ]);
+    }
+
+    // ── Submit Interview Review ──────────────────────────────────────────────
+
+    /**
+     * POST api/mobile/interviews/review
+     * Submits a review for an interview booking.
+     * Body params: booking_id, recruiter_id, attendance_status, decision, notes, strengths, concerns
+     */
+    public function submitInterviewReview()
+    {
+        $recruiterId      = $this->request->getVar('recruiter_id');
+        $bookingId        = $this->request->getVar('booking_id');
+        
+        if (!$recruiterId || !$bookingId) {
+            return $this->fail('Missing required fields: recruiter_id, booking_id');
+        }
+
+        $bookingModel = new \App\Models\InterviewBookingModel();
+        $bookingReviewModel = new \App\Models\InterviewBookingReviewModel();
+        $applicationModel = new \App\Models\ApplicationModel();
+        $stageModel = new \App\Models\StageHistoryModel();
+
+        $booking = $bookingModel
+            ->select('interview_bookings.*, jobs.recruiter_id, jobs.title as job_title, users.name as candidate_name, users.email')
+            ->join('jobs', 'jobs.id = interview_bookings.job_id', 'left')
+            ->join('users', 'users.id = interview_bookings.user_id', 'left')
+            ->where('interview_bookings.id', (int) $bookingId)
+            ->first();
+
+        if (!$booking) {
+            return $this->failNotFound('Booking not found.');
+        }
+
+        if ((int) ($booking['recruiter_id'] ?? 0) !== (int) $recruiterId) {
+            return $this->fail('Unauthorized access.', 403);
+        }
+
+        $attendanceStatus = (string) $this->request->getVar('attendance_status');
+        $decision = trim((string) $this->request->getVar('decision'));
+        $notes = trim((string) $this->request->getVar('notes'));
+        $strengths = trim((string) $this->request->getVar('strengths'));
+        $concerns = trim((string) $this->request->getVar('concerns'));
+
+        $allowedAttendance = ['attended', 'late', 'no_show'];
+        $allowedDecision = ['shortlisted', 'hold', 'selected', 'rejected'];
+
+        if (!in_array($attendanceStatus, $allowedAttendance, true)) {
+            return $this->fail('Please choose a valid attendance status.', 400);
+        }
+
+        if ($attendanceStatus !== 'no_show' && !in_array($decision, $allowedDecision, true)) {
+            return $this->fail('Please choose a valid recruiter decision.', 400);
+        }
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        $reviewData = [
+            'booking_id' => (int) $bookingId,
+            'application_id' => (int) ($booking['application_id'] ?? 0),
+            'candidate_id' => (int) ($booking['user_id'] ?? 0),
+            'job_id' => (int) ($booking['job_id'] ?? 0),
+            'recruiter_id' => (int) $recruiterId,
+            'attendance_status' => $attendanceStatus,
+            'decision' => $attendanceStatus === 'no_show' ? 'rejected' : $decision,
+            'strengths' => $strengths !== '' ? $strengths : null,
+            'concerns' => $concerns !== '' ? $concerns : null,
+            'notes' => $notes !== '' ? $notes : null,
+            'reviewed_at' => date('Y-m-d H:i:s'),
+        ];
+
+        $existingReview = $bookingReviewModel->getByBookingId((int) $bookingId);
+        if ($existingReview) {
+            $bookingReviewModel->update((int) $existingReview['id'], $reviewData);
+        } else {
+            $bookingReviewModel->insert($reviewData);
+        }
+
+        $bookingStatus = $attendanceStatus === 'no_show' ? 'no_show' : 'completed';
+        $bookingModel->update((int) $bookingId, [
+            'booking_status' => $bookingStatus,
+        ]);
+
+        if (!empty($booking['application_id'])) {
+            $applicationStatus = $attendanceStatus === 'no_show'
+                ? 'rejected'
+                : $decision;
+
+            $applicationModel->update((int) $booking['application_id'], [
+                'status' => $applicationStatus,
+            ]);
+
+            $stageLabel = $attendanceStatus === 'no_show'
+                ? 'HR Interview No Show'
+                : ('HR Interview Reviewed - ' . ucwords(str_replace('_', ' ', $decision)));
+            $stageModel->moveToStage((int) $booking['application_id'], $stageLabel);
+
+            $notificationModel = new \App\Models\NotificationModel();
+            $candidateId = (int) ($booking['user_id'] ?? 0);
+            $applicationId = (int) $booking['application_id'];
+
+            $notificationModel->createNotification(
+                $candidateId,
+                $applicationId,
+                'interview_reviewed',
+                $attendanceStatus === 'no_show'
+                    ? 'Your interview was marked as no show by the recruiter.'
+                    : 'Your interview review is complete. Final status: ' . ucwords(str_replace('_', ' ', $applicationStatus)) . '.',
+                base_url('candidate/applications'),
+                true
+            );
+        }
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return $this->fail('Failed to submit review.');
+        }
+
+        return $this->respond([
+            'success' => true,
+            'message' => 'Review submitted successfully',
+        ]);
+    }
 }
