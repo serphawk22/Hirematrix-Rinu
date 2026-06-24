@@ -176,6 +176,7 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         $routes->post('change-password', 'ApiAuthController::changePassword');
         $routes->post('recruiter/change-password', 'API_RecruiterController::changePassword');
         $routes->get('dashboard', 'API_RecruiterController::getDashboard');
+        $routes->get('export/excel', 'API_RecruiterController::exportExcel');
         $routes->get('dashboard/leaderboard', 'API_RecruiterController::getLeaderboard');
         $routes->get('jobs', 'API_RecruiterController::getJobs');
         $routes->post('jobs/add', 'API_RecruiterController::addJob');

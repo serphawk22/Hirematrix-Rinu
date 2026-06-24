@@ -15,6 +15,39 @@ class API_RecruiterController extends ResourceController
 {
     protected $format = 'json';
 
+    public function exportExcel()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) {
+            return $this->fail('Recruiter ID required');
+        }
+
+        // Get job IDs for recruiter filtering
+        $jobIds = [];
+        $jobModel = model('JobModel');
+        $recruiterJobs = $jobModel->where('recruiter_id', $recruiterId)->findAll();
+        $jobIds = array_column($recruiterJobs, 'id');
+
+        // If no jobs, return error
+        if (empty($jobIds)) {
+            return $this->fail('You have no jobs to export data from.');
+        }
+
+        $dashboardController = new \App\Controllers\DashboardController();
+        $dashboardController->initController($this->request, $this->response, \Config\Services::logger());
+
+        $data = $dashboardController->getOverviewExportData($jobIds);
+        $filename = 'recruitment_overview_' . date('Y-m-d');
+
+        try {
+            $excelPath = $dashboardController->generateExcelReport($data, $filename);
+            return $this->response->download($excelPath, null)->setFileName($filename . '.xlsx');
+        } catch (\Exception $e) {
+            log_message('error', 'Mobile Export failed: ' . $e->getMessage());
+            return $this->fail('Export failed: ' . $e->getMessage());
+        }
+    }
+
     public function getDashboard()
     {
         $recruiterId = $this->request->getVar('recruiter_id');

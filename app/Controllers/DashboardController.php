@@ -775,7 +775,7 @@ class DashboardController extends BaseController
     /**
      * Get Overview Export Data
      */
-    private function getOverviewExportData($jobIds = [])
+    public function getOverviewExportData($jobIds = [])
     {
 
         return [
@@ -945,7 +945,7 @@ class DashboardController extends BaseController
     /**
      * Generate Excel Report
      */
-    private function generateExcelReport($data, $filename)
+    public function generateExcelReport($data, $filename)
     {
         require_once ROOTPATH . 'vendor/autoload.php';
 
@@ -1020,7 +1020,7 @@ class DashboardController extends BaseController
     /**
      * Helper Methods
      */
-    private function getSummarySheet($jobIds = [])
+    public function getSummarySheet($jobIds = [])
     {
         $applicationModel = model('ApplicationModel');
 
@@ -1055,7 +1055,7 @@ class DashboardController extends BaseController
 
     }
 
-    private function getApplicationsSheet($jobIds = [])
+    public function getApplicationsSheet($jobIds = [])
     {
         $applicationModel = model('ApplicationModel');
 
@@ -1087,7 +1087,7 @@ class DashboardController extends BaseController
         return $data;
     }
 
-    private function getJobStatsSheet($jobIds = [])
+    public function getJobStatsSheet($jobIds = [])
     {
         $db = \Config\Database::connect();
         $whereClause = '';
