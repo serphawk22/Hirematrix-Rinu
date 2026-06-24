@@ -820,6 +820,72 @@ body.dark .recruiter-pipeline-page .rank-number       { color: #94A3B8; }
   background: rgba(31, 183, 181, 0.04) !important;
 }
 
+.recruiter-pipeline-page .recruiter-leaderboard-card .table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.recruiter-pipeline-page .leaderboard-table {
+  min-width: 1240px;
+}
+
+.recruiter-pipeline-page .leaderboard-table th,
+.recruiter-pipeline-page .leaderboard-table td {
+  vertical-align: middle;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.recruiter-pipeline-page .leaderboard-table th {
+  white-space: nowrap;
+}
+
+.recruiter-pipeline-page .leaderboard-table th:nth-child(1),
+.recruiter-pipeline-page .leaderboard-table td:nth-child(1) {
+  min-width: 64px;
+}
+
+.recruiter-pipeline-page .leaderboard-table th:nth-child(2),
+.recruiter-pipeline-page .leaderboard-table td:nth-child(2) {
+  min-width: 150px;
+}
+
+.recruiter-pipeline-page .leaderboard-table th:nth-child(3),
+.recruiter-pipeline-page .leaderboard-table td:nth-child(3) {
+  min-width: 140px;
+}
+
+.recruiter-pipeline-page .leaderboard-table th:nth-child(4),
+.recruiter-pipeline-page .leaderboard-table td:nth-child(4) {
+  min-width: 230px;
+}
+
+.recruiter-pipeline-page .leaderboard-table th:nth-child(5),
+.recruiter-pipeline-page .leaderboard-table td:nth-child(5) {
+  min-width: 180px;
+}
+
+.recruiter-pipeline-page .leaderboard-table th:nth-child(6),
+.recruiter-pipeline-page .leaderboard-table td:nth-child(6),
+.recruiter-pipeline-page .leaderboard-table th:nth-child(7),
+.recruiter-pipeline-page .leaderboard-table td:nth-child(7),
+.recruiter-pipeline-page .leaderboard-table th:nth-child(8),
+.recruiter-pipeline-page .leaderboard-table td:nth-child(8) {
+  min-width: 120px;
+}
+
+.recruiter-pipeline-page .candidate-info strong,
+.recruiter-pipeline-page .leaderboard-table td:nth-child(3) {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.recruiter-pipeline-page .candidate-info small {
+  display: block;
+  max-width: 150px;
+  overflow-wrap: anywhere;
+}
+
 /* Score display */
 .recruiter-pipeline-page .score-display {
   display: flex;

@@ -72,6 +72,7 @@ body.dark .pipeline-empty strong { color: #F8FAFC; }
 .pipeline-table-wrap {
     width: 100%;
     overflow-x: auto;
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     border-radius: 12px;
     border: 1px solid #D9ECE5;
@@ -87,6 +88,7 @@ body.dark .pipeline-table-wrap {
 ══════════════════════════════════════════ */
 .pipeline-table {
     width: 100%;
+    min-width: 1320px;
     border-collapse: collapse;
     font-size: 0.875rem;
     /* Force every column to its minimum natural width so rows stay single-line */
@@ -537,7 +539,7 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
         <strong>No candidates found in this stage.</strong>
     </div>
 <?php else: ?>
-    <div class="pipeline-table-wrap" style="border-radius: 20px !important;overflow: hidden;">
+    <div class="pipeline-table-wrap" style="border-radius: 20px !important;">
         <table class="pipeline-table" id="candidatePipelineTable">
             <thead>
                 <tr>
