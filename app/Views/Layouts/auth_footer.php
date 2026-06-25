@@ -1,4 +1,7 @@
-<?= view('Layouts/legal_footer_links', ['footer_variant' => 'compact']) ?>
+<?php $showLegalFooter = $show_legal_footer ?? true; ?>
+<?php if ($showLegalFooter): ?>
+    <?= view('Layouts/legal_footer_links', ['footer_variant' => 'landing']) ?>
+<?php endif; ?>
 <script src="<?= base_url('jobboard/js/jquery.min.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/bootstrap.bundle.min.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/isotope.pkgd.min.js') ?>"></script>

@@ -48,7 +48,8 @@ header.site-navbar.landing-header.site-navbar-target {
     right: 0 !important;
     width: 100% !important;
     z-index: 1050 !important;
-    transition: background-color 0.3s ease !important;
+    isolation: isolate;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 /* ===============================
@@ -141,6 +142,8 @@ header.site-navbar.landing-header .landing-header-logo-text {
         flex: 1 1 auto !important;
         max-width: calc(100% - 104px) !important;
         min-width: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 8px !important;
     }
 
     header.site-navbar.landing-header .landing-header-logo-link,
@@ -161,8 +164,14 @@ header.site-navbar.landing-header .landing-header-logo-text {
     header.site-navbar.landing-header .landing-header-actions {
         flex: 0 0 auto !important;
         margin-left: auto !important;
-        padding-left: 8px !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
         text-align: right !important;
+    }
+
+    header.site-navbar.landing-header .landing-header-actions .site-menu-toggle {
+        display: none !important;
+        margin: 0 !important;
     }
 
     header.site-navbar.landing-header .landing-header-actions .btn,
@@ -172,6 +181,14 @@ header.site-navbar.landing-header .landing-header-logo-text {
         padding: 8px 14px !important;
         line-height: 1.2 !important;
         white-space: nowrap !important;
+    }
+
+    body.landing-page header.site-navbar.landing-header,
+    body.landing-page header.site-navbar.landing-header.navbar-scrolled,
+    body.landing-page header.site-navbar.landing-header.site-navbar-target {
+        background: #ffffff !important;
+        border-bottom: 1px solid #D9ECE5 !important;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06) !important;
     }
 
     .site-wrap > .auth-page-shell,
@@ -349,6 +366,16 @@ header.site-navbar.landing-header .landing-header-logo-text {
         border: none !important;
         border-bottom: none !important;
         box-shadow: none !important;
+    }
+
+    @media (max-width: 767.98px) {
+        body.landing-page header.site-navbar.landing-header,
+        body.landing-page header.site-navbar.landing-header.navbar-scrolled,
+        body.landing-page header.site-navbar.landing-header.site-navbar-target {
+            background: #111111 !important;
+            border-bottom: 1px solid #23343A !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.34) !important;
+        }
     }
 
     /* ── Logo text ── */

@@ -183,6 +183,25 @@ Call the endpoint from a scheduler:
 
 This sends 24-hour and 1-hour interview reminders.
 
+## Recruiter Mailbox Synchronization
+
+Recruiters can connect the same verified company address through Google Workspace or Microsoft 365 from **Recruiter Settings → Email Sync**. Configure the OAuth clients in `.env` using the `mailbox.google.*` and `mailbox.microsoft.*` keys documented in `.env.example`, and register these callbacks:
+
+```text
+{{base_url}}/recruiter/mailbox/callback/google
+{{base_url}}/recruiter/mailbox/callback/microsoft
+```
+
+Run mailbox synchronization manually or schedule it every 5–10 minutes:
+
+```bash
+php spark mailboxes:sync
+```
+
+OAuth tokens are encrypted with the configured `encryption.key`. Never remove or rotate that key without reconnecting existing mailboxes.
+
+Private/cPanel-hosted company mailboxes can use **Other Provider (IMAP/SMTP)** in the same settings panel. Enter the secure server names and ports supplied by the mail host (normally IMAP 993 with SSL/TLS and SMTP 465 with SSL/TLS, or SMTP 587 with STARTTLS). The portal tests both logins before saving and encrypts the mailbox credential with `encryption.key`.
+
 ## Testing
 
 Run the PHPUnit suite:

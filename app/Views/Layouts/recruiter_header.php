@@ -4,7 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="base-url" content="<?= base_url() ?>">
+    <meta name="google-adsense-account" content="ca-pub-5380525657635231">
     <title><?= esc($title ?? 'Recruiter Portal') ?></title>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5380525657635231"
+     crossorigin="anonymous"></script>
     <script>
         (function () {
             try {

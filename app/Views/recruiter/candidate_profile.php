@@ -164,6 +164,44 @@ body.dark div{
         ? (preg_match('/^https?:\/\//i', $introVideoPath) ? $introVideoPath : base_url($introVideoPath))
         : '';
     $messages = $messages ?? [];
+    $emailActivities = $emailActivities ?? [];
+    $trimQuotedEmail = static function (string $body): string {
+        $body = trim($body);
+        $patterns = [
+            '/\n\s*On\s.+?wrote:\s*/is',
+            '/\n\s*From:\s.+/is',
+            '/\n\s*-{2,}\s*Original Message\s*-{2,}.*/is',
+        ];
+        foreach ($patterns as $pattern) {
+            $body = preg_replace($pattern, '', $body) ?? $body;
+        }
+        return trim($body);
+    };
+    $communicationItems = [];
+    foreach (array_slice($messages, -8) as $msg) {
+        $isRecruiterMsg = ($msg['sender_role'] ?? '') === 'recruiter';
+        $communicationItems[] = [
+            'source' => 'Portal',
+            'direction' => $isRecruiterMsg ? 'outbound' : 'inbound',
+            'sender' => $isRecruiterMsg ? 'You' : (string) ($candidate['name'] ?? 'Candidate'),
+            'subject' => '',
+            'body' => (string) ($msg['message'] ?? ''),
+            'time' => (string) ($msg['created_at'] ?? date('Y-m-d H:i:s')),
+        ];
+    }
+    foreach (array_slice($emailActivities, 0, 8) as $emailActivity) {
+        $isOutboundEmail = ($emailActivity['direction'] ?? '') === 'outbound';
+        $communicationItems[] = [
+            'source' => 'Email',
+            'direction' => $isOutboundEmail ? 'outbound' : 'inbound',
+            'sender' => $isOutboundEmail ? 'You' : (string) ($candidate['name'] ?? 'Candidate'),
+            'subject' => (string) ($emailActivity['subject'] ?? ''),
+            'body' => $trimQuotedEmail((string) ($emailActivity['body_text'] ?? '')),
+            'time' => (string) ($emailActivity['occurred_at'] ?? date('Y-m-d H:i:s')),
+        ];
+    }
+    usort($communicationItems, static fn (array $a, array $b): int => strtotime($a['time']) <=> strtotime($b['time']));
+    $communicationItems = array_slice($communicationItems, -12);
     $recruiterNote = $recruiterNote ?? null;
     $interests = $interests ?? [];
     $projects = $projects ?? [];
@@ -337,7 +375,46 @@ body.dark div{
 
             <div class="card shadow-sm mt-3 candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
                 <div class="card-body">
-                    <h6>  Message Candidate</h6>
+                    <div class="candidate-communication-head">
+                        <div>
+                            <h6 class="mb-1">Communication</h6>
+                            <p class="mb-0">Portal messages and synced mailbox replies in one place.</p>
+                        </div>
+                        <span class="candidate-communication-count"><?= count($communicationItems) ?></span>
+                    </div>
+
+                    <?php if (!empty($communicationItems)): ?>
+                        <div class="candidate-communication-stream mb-3">
+                            <?php foreach ($communicationItems as $item): ?>
+                                <?php
+                                    $isOutboundItem = ($item['direction'] ?? '') === 'outbound';
+                                    $source = (string) ($item['source'] ?? 'Portal');
+                                ?>
+                                <article class="candidate-communication-item <?= $isOutboundItem ? 'is-outbound' : 'is-inbound' ?>">
+                                    <div class="candidate-communication-meta">
+                                        <span class="candidate-communication-chip <?= strtolower($source) === 'email' ? 'is-email' : 'is-portal' ?>">
+                                            <?= esc($source) ?>
+                                        </span>
+                                        <span><?= esc((string) ($item['sender'] ?? 'Candidate')) ?></span>
+                                        <span class="candidate-communication-dot">&bull;</span>
+                                        <time><?= date('M d, h:i A', strtotime((string) ($item['time'] ?? 'now'))) ?></time>
+                                    </div>
+                                    <div class="candidate-communication-bubble">
+                                        <?php if (trim((string) ($item['subject'] ?? '')) !== ''): ?>
+                                            <strong class="candidate-communication-subject"><?= esc((string) $item['subject']) ?></strong>
+                                        <?php endif; ?>
+                                        <div class="candidate-communication-body">
+                                            <?= nl2br(esc((string) ($item['body'] ?? ''))) ?>
+                                        </div>
+                                    </div>
+                                </article>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="candidate-communication-empty mb-3">
+                            No communication yet. Send the first message to start the thread.
+                        </div>
+                    <?php endif; ?>
                     <?php if (!empty($messages)): ?>
                         <div class="candidate-profile-stream mb-2">
                             <?php foreach (array_slice($messages, -8) as $msg): ?>
@@ -347,6 +424,21 @@ body.dark div{
                                         <?= $isRecruiterMsg ? 'You' : esc($candidate['name']) ?> • <?= date('M d, h:i A', strtotime($msg['created_at'])) ?>
                                     </small>
                                     <div><?= nl2br(esc($msg['message'] ?? '')) ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (!empty($emailActivities)): ?>
+                        <div class="candidate-profile-stream mb-3">
+                            <?php foreach (array_slice($emailActivities, 0, 8) as $emailActivity): ?>
+                                <div class="candidate-profile-entry">
+                                    <small class="text-muted d-block mb-1">
+                                        <span class="badge badge-info">Email</span>
+                                        <?= ($emailActivity['direction'] ?? '') === 'outbound' ? 'You sent' : esc($candidate['name']) . ' replied' ?>
+                                        &bull; <?= date('M d, h:i A', strtotime((string) ($emailActivity['occurred_at'] ?? 'now'))) ?>
+                                    </small>
+                                    <?php if (!empty($emailActivity['subject'])): ?><strong class="d-block"><?= esc((string) $emailActivity['subject']) ?></strong><?php endif; ?>
+                                    <div><?= nl2br(esc((string) ($emailActivity['body_text'] ?? ''))) ?></div>
                                 </div>
                             <?php endforeach; ?>
                         </div>

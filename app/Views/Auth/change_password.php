@@ -285,7 +285,7 @@ $backLabel = $isRecruiter ? 'Back to Dashboard' : 'Back to Profile';
     </div>
 </section>
 
-<?= view('Layouts/auth_footer') ?>
+<?= view('Layouts/auth_footer', ['show_legal_footer' => false]) ?>
 </body>
 </html>
     

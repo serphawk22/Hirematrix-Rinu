@@ -1,9 +1,12 @@
 <?php
-$allowedTabs = ['account', 'appearance', 'language'];
+$allowedTabs = ['account', 'mailbox', 'appearance', 'language'];
 $activeTab = (string) ($activeTab ?? 'account');
 if (!in_array($activeTab, $allowedTabs, true)) {
     $activeTab = 'account';
 }
+$verifiedRecruiterEmail = (string) ($verifiedRecruiterEmail ?? '');
+$mailDomain = str_contains($verifiedRecruiterEmail, '@') ? substr(strrchr($verifiedRecruiterEmail, '@'), 1) : '';
+$suggestedMailHost = $mailDomain !== '' ? 'mail.' . $mailDomain : '';
 ?>
 
 <?= view('Layouts/recruiter_header') ?>
@@ -45,6 +48,12 @@ if (!in_array($activeTab, $allowedTabs, true)) {
                             <small>Theme preference</small>
                         </span>
                     </a>
+                    <a href="#mailbox" class="recruiter-settings-nav-link <?= $activeTab === 'mailbox' ? 'is-active' : '' ?>" data-settings-tab="mailbox">
+                        <span>
+                            Email Sync
+                            <small>Company mailbox</small>
+                        </span>
+                    </a>
                     <a href="#language" class="recruiter-settings-nav-link <?= $activeTab === 'language' ? 'is-active' : '' ?>" data-settings-tab="language">
                         <span>
                             Language
@@ -70,6 +79,120 @@ if (!in_array($activeTab, $allowedTabs, true)) {
                             </a>
                         </div>
                     </div>
+                </section>
+
+                <section class="recruiter-settings-panel <?= $activeTab === 'mailbox' ? 'is-active' : '' ?>" data-settings-panel="mailbox">
+                    <div class="recruiter-settings-panel-title">Recruiter Email Synchronization</div>
+                    <div class="recruiter-settings-panel-copy">Connect the same verified company email used by your recruiter account. HireMatrix never stores your mailbox password.</div>
+
+                    <?php if (!empty($mailboxConnection) && ($mailboxConnection['status'] ?? '') === 'connected'): ?>
+                        <div class="recruiter-settings-card">
+                            <div class="recruiter-settings-card-copy">
+                                <h6><i class="fas fa-check-circle text-success"></i> <?= esc(ucfirst((string) $mailboxConnection['provider'])) ?> connected</h6>
+                                <p><?= esc((string) $mailboxConnection['email']) ?></p>
+                                <small class="text-muted">
+                                    Last synchronized: <?= !empty($mailboxConnection['last_synced_at']) ? date('M d, Y h:i A', strtotime($mailboxConnection['last_synced_at'])) : 'Not synchronized yet' ?>
+                                </small>
+                                <?php if (!empty($mailboxConnection['last_error'])): ?>
+                                    <div class="text-danger small mt-2"><?= esc((string) $mailboxConnection['last_error']) ?></div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="recruiter-settings-actions">
+                                <form method="post" action="<?= base_url('recruiter/mailbox/sync') ?>">
+                                    <?= csrf_field() ?>
+                                    <button type="submit" class="btn btn-outline-primary"><i class="fas fa-sync"></i> Sync now</button>
+                                </form>
+                                <form method="post" action="<?= base_url('recruiter/mailbox/disconnect') ?>" onsubmit="return confirm('Disconnect this company mailbox?');">
+                                    <?= csrf_field() ?>
+                                    <button type="submit" class="btn btn-outline-danger"><i class="fas fa-unlink"></i> Disconnect</button>
+                                </form>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div class="recruiter-settings-card">
+                            <div class="recruiter-settings-card-copy">
+                                <h6>Google Workspace</h6>
+                                <p>For company mailboxes hosted by Google, including custom company domains.</p>
+                            </div>
+                            <div class="recruiter-settings-actions">
+                                <?php if (!empty($mailboxProviders['google'])): ?>
+                                    <a href="<?= base_url('recruiter/mailbox/connect/google') ?>" class="btn btn-outline-primary"><i class="fab fa-google"></i> Connect Google</a>
+                                <?php else: ?>
+                                    <span class="badge badge-warning">OAuth configuration required</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="recruiter-settings-card">
+                            <div class="recruiter-settings-card-copy">
+                                <h6>Microsoft 365</h6>
+                                <p>For company mailboxes hosted by Microsoft Outlook or Exchange Online.</p>
+                            </div>
+                            <div class="recruiter-settings-actions">
+                                <?php if (!empty($mailboxProviders['microsoft'])): ?>
+                                    <a href="<?= base_url('recruiter/mailbox/connect/microsoft') ?>" class="btn btn-outline-primary"><i class="fab fa-microsoft"></i> Connect Microsoft</a>
+                                <?php else: ?>
+                                    <span class="badge badge-warning">OAuth configuration required</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <form method="post" action="<?= base_url('recruiter/mailbox/connect-custom') ?>" class="recruiter-settings-card recruiter-mailbox-custom-card">
+                            <?= csrf_field() ?>
+                            <div class="recruiter-settings-card-copy recruiter-mailbox-custom-copy">
+                                <h6>Other Provider (IMAP/SMTP)</h6>
+                                <p>For cPanel, private hosting, Zoho, or another company mail server. Use an app password when your provider supports one.</p>
+                                <div class="row mt-3">
+                                    <div class="form-group col-md-6">
+                                        <label>Verified mailbox</label>
+                                        <input type="email" name="mailbox_username" class="form-control" value="<?= esc(old('mailbox_username', $verifiedRecruiterEmail)) ?>" readonly required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Mailbox password / app password</label>
+                                        <input type="password" name="mailbox_password" class="form-control" autocomplete="new-password" required>
+                                    </div>
+                                    <div class="form-group col-md-5">
+                                        <label>IMAP host</label>
+                                        <input type="text" name="imap_host" class="form-control" value="<?= esc(old('imap_host', $suggestedMailHost)) ?>" placeholder="mail.example.com" required>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>IMAP port</label>
+                                        <select name="imap_port" class="form-control" required>
+                                            <option value="993" <?= old('imap_port', '993') === '993' ? 'selected' : '' ?>>993</option>
+                                            <option value="143" <?= old('imap_port') === '143' ? 'selected' : '' ?>>143</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>IMAP security</label>
+                                        <select name="imap_encryption" class="form-control" required>
+                                            <option value="ssl" <?= old('imap_encryption', 'ssl') === 'ssl' ? 'selected' : '' ?>>SSL/TLS</option>
+                                            <option value="tls" <?= old('imap_encryption') === 'tls' ? 'selected' : '' ?>>STARTTLS</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-5">
+                                        <label>SMTP host</label>
+                                        <input type="text" name="smtp_host" class="form-control" value="<?= esc(old('smtp_host', $suggestedMailHost)) ?>" placeholder="mail.example.com" required>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>SMTP port</label>
+                                        <select name="smtp_port" class="form-control" required>
+                                            <option value="465" <?= old('smtp_port', '465') === '465' ? 'selected' : '' ?>>465</option>
+                                            <option value="587" <?= old('smtp_port') === '587' ? 'selected' : '' ?>>587</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>SMTP security</label>
+                                        <select name="smtp_encryption" class="form-control" required>
+                                            <option value="ssl" <?= old('smtp_encryption', 'ssl') === 'ssl' ? 'selected' : '' ?>>SSL/TLS</option>
+                                            <option value="tls" <?= old('smtp_encryption') === 'tls' ? 'selected' : '' ?>>STARTTLS</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <small class="text-muted">The connection is tested before saving. Credentials are encrypted using the portal encryption key.</small>
+                            </div>
+                            <div class="recruiter-settings-actions recruiter-mailbox-custom-actions">
+                                <button type="submit" class="btn btn-outline-primary"><i class="fas fa-plug"></i> Test and Connect</button>
+                            </div>
+                        </form>
+                    <?php endif; ?>
                 </section>
 
                 <section class="recruiter-settings-panel <?= $activeTab === 'appearance' ? 'is-active' : '' ?>" data-settings-panel="appearance">
@@ -110,6 +233,17 @@ if (!in_array($activeTab, $allowedTabs, true)) {
         </div>
     </div>
 </div>
+
+<style>
+.recruiter-mailbox-custom-card { align-items: flex-end !important; }
+.recruiter-mailbox-custom-copy { flex: 1 1 auto; min-width: 0; }
+.recruiter-mailbox-custom-copy label { display:block; font-size:.78rem; font-weight:700; margin-bottom:.4rem; }
+.recruiter-mailbox-custom-actions { flex:0 0 auto; padding-bottom:1rem; }
+@media (max-width: 991.98px) {
+    .recruiter-mailbox-custom-card { align-items:stretch !important; flex-direction:column; }
+    .recruiter-mailbox-custom-actions { padding-bottom:0; }
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

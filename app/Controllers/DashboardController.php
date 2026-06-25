@@ -379,6 +379,23 @@ class DashboardController extends BaseController
             return redirect()->back()->with('error', 'You have no jobs to export data from.');
         }
 
+        $requestedJobId = (int) ($this->request->getGet('job_id') ?? 0);
+        $requestedJob = null;
+        if ($requestedJobId > 0) {
+            foreach ($recruiterJobs as $recruiterJob) {
+                if ((int) ($recruiterJob['id'] ?? 0) === $requestedJobId) {
+                    $requestedJob = $recruiterJob;
+                    break;
+                }
+            }
+
+            if ($requestedJob === null) {
+                return redirect()->back()->with('error', 'Job not found or you do not have permission to export it.');
+            }
+
+            $jobIds = [$requestedJobId];
+        }
+
 
         // try {
 
@@ -401,7 +418,13 @@ class DashboardController extends BaseController
 
             case 'detailed':
                 $data = $this->getDetailedExportData($jobIds);
-                $filename = 'recruitment_detailed_' . date('Y-m-d');
+                if ($requestedJob !== null) {
+                    $safeJobTitle = preg_replace('/[^a-z0-9]+/i', '_', (string) ($requestedJob['title'] ?? 'job'));
+                    $safeJobTitle = trim((string) $safeJobTitle, '_') ?: 'job_' . $requestedJobId;
+                    $filename = 'job_applicants_' . $safeJobTitle . '_' . date('Y-m-d');
+                } else {
+                    $filename = 'recruitment_detailed_' . date('Y-m-d');
+                }
                 break;
 
             default:

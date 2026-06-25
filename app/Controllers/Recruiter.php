@@ -30,13 +30,29 @@ class Recruiter extends BaseController
         }
 
         $activeTab = (string) ($this->request->getGet('tab') ?? 'account');
-        $allowedTabs = ['account', 'appearance', 'language'];
+        $allowedTabs = ['account', 'mailbox', 'appearance', 'language'];
         if (!in_array($activeTab, $allowedTabs, true)) {
             $activeTab = 'account';
         }
 
+        $mailboxConnection = null;
+        if (\Config\Database::connect()->tableExists('recruiter_mailbox_connections')) {
+            $mailboxConnection = (new \App\Models\RecruiterMailboxConnectionModel())
+                ->where('recruiter_id', (int) session()->get('user_id'))
+                ->orderBy('updated_at', 'DESC')
+                ->first();
+        }
+        $mailboxConfig = config('RecruiterMailbox');
+        $recruiterAccount = model('UserModel')->findRecruiterWithProfile((int) session()->get('user_id')) ?? [];
+
         return view('recruiter/settings', [
             'activeTab' => $activeTab,
+            'mailboxConnection' => $mailboxConnection,
+            'mailboxProviders' => [
+                'google' => !empty($mailboxConfig->google['client_id']) && !empty($mailboxConfig->google['client_secret']),
+                'microsoft' => !empty($mailboxConfig->microsoft['client_id']) && !empty($mailboxConfig->microsoft['client_secret']),
+            ],
+            'verifiedRecruiterEmail' => strtolower(trim((string) ($recruiterAccount['official_email'] ?? $recruiterAccount['email'] ?? ''))),
         ]);
     }
 

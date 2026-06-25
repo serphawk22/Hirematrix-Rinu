@@ -6,7 +6,7 @@ $recruiterId = (int) ($recruiterId ?? 0);
 $applicationId = (int) ($applicationId ?? 0);
 ?>
 
-<div class="applications-jobboard">
+<div class="applications-jobboard candidate-messages-jobboard">
     <div class="container">
         <div class="page-board-header page-board-header-tight">
             <div class="page-board-copy">

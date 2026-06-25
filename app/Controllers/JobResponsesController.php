@@ -740,6 +740,14 @@ class JobResponsesController extends BaseController
         $sentCount = 0;
         $failedCount = 0;
         $recruiterName = session()->get('name') ?? 'Recruiter';
+        $mailboxConnection = null;
+        $mailboxService = null;
+        if (\Config\Database::connect()->tableExists('recruiter_mailbox_connections')) {
+            $mailboxConnection = (new \App\Models\RecruiterMailboxConnectionModel())->getConnectedForRecruiter($recruiterId);
+            if ($mailboxConnection) {
+                $mailboxService = new \App\Libraries\RecruiterMailboxService();
+            }
+        }
 
         try {
             $emailConfig = config('Email');
@@ -777,6 +785,21 @@ class JobResponsesController extends BaseController
             foreach ($validEmails as $recipient) {
                 $recipient = trim((string) $recipient);
                 if (filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+                    if ($mailboxService !== null) {
+                        $candidateContext = \Config\Database::connect()->table('applications')
+                            ->select('applications.id application_id, applications.candidate_id')
+                            ->join('users', 'users.id = applications.candidate_id')
+                            ->where('applications.job_id', $jobId)
+                            ->where('LOWER(users.email)', strtolower($recipient))
+                            ->get()->getRowArray() ?? [];
+                        $sent = $mailboxService->sendForRecruiter($recruiterId, $recipient, $subject, $htmlBody, [
+                            'candidate_id' => $candidateContext['candidate_id'] ?? null,
+                            'application_id' => $candidateContext['application_id'] ?? null,
+                            'job_id' => $jobId,
+                        ]);
+                        $sent ? $sentCount++ : $failedCount++;
+                        continue;
+                    }
                     $email->setTo($recipient);
                     if ($email->send(false)) {
                         $sentCount++;

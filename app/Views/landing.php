@@ -35,6 +35,7 @@ $formatAge = static function ($value): string {
 <!doctype html>
 <html lang="en">
 <head>
+    <meta name="google-adsense-account" content="ca-pub-5380525657635231">
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -52,6 +53,8 @@ $formatAge = static function ($value): string {
     <link rel="stylesheet" href="<?= base_url('jobboard/css/style.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/hirematrix-style.css?v=' . @filemtime(FCPATH . 'jobboard/css/hirematrix-style.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.css?v='       . @filemtime(FCPATH . 'jobboard/css/responsive.css')) ?>">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5380525657635231"
+     crossorigin="anonymous"></script>
 <style>
 /* ================================================
    HERO
@@ -539,15 +542,15 @@ text-decoration:none !important;
 
     /* ── Base ── */
     body, html {
-        background: #111111 !important;
+        background: #000000 !important;
     }
 
     /* ── Hero ── */
     .hero {
-        background: #111111 !important;
+        background: #000000 !important;
     }
     .hero-h1 {
-        color: #F8FAFC !important;
+        color: #FFFFFF !important;
     }
     .hero-sub {
         color: #94A3B8 !important;
@@ -556,7 +559,7 @@ text-decoration:none !important;
         color: #7A8B96 !important;
     }
     .hero-search {
-        background: #111111 !important;
+        background: #000000 !important;
         border-color: #23343A !important;
         box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
     }
@@ -579,13 +582,13 @@ text-decoration:none !important;
 
     /* ── Wave section ── */
     .wave-section {
-        background: #111111 !important;
+        background: #000000 !important;
     }
     .wave-section::before {
-        background: linear-gradient(to right, #111111, transparent) !important;
+        background: linear-gradient(to right, #000000, transparent) !important;
     }
     .wave-section::after {
-        background: linear-gradient(to left, #111111, transparent) !important;
+        background: linear-gradient(to left, #000000, transparent) !important;
     }
     .bubble-circle {
         background: linear-gradient(135deg, #162327 0%, #1B2A2F 100%) !important;
@@ -598,7 +601,7 @@ text-decoration:none !important;
 
     /* ── Featured Jobs ── */
     .featured-jobs-section {
-        background: #111111 !important;
+        background: #000000 !important;
     }
     .featured-jobs-section .section-head-title {
         color: #F8FAFC !important;
@@ -607,7 +610,7 @@ text-decoration:none !important;
         color: #94A3B8 !important;
     }
     .fj-card {
-        background: #111111 !important;
+        background: #000000 !important;
         border-color: #23343A !important;
         box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
     }
@@ -616,7 +619,7 @@ text-decoration:none !important;
         box-shadow: none !important;
     }
     .fj-title {
-        color: #F8FAFC !important;
+        color: #FFFFFF !important;
     }
     .fj-company {
         color: #94A3B8 !important;
@@ -641,10 +644,10 @@ text-decoration:none !important;
     /* ── Career Transition ── */
     .landing-career-transition {
         background:
-            #111111 !important;
+            #000000 !important;
     }
     .career-title {
-        color: #F8FAFC !important;
+        color: #FFFFFF !important;
     }
     .career-description {
         color: #94A3B8 !important;
@@ -656,10 +659,10 @@ text-decoration:none !important;
 
     /* ── Get Started / Choices ── */
     .landing-choices {
-        background: #111111 !important;
+        background: #000000 !important;
     }
     .choices-title {
-        color: #F8FAFC !important;
+        color: #FFFFFF !important;
     }
     .choices-subtitle {
         color: #94A3B8 !important;
@@ -669,7 +672,7 @@ text-decoration:none !important;
         color: #1FB7B5 !important;
     }
     .choice-card {
-        background: #111111 !important;
+        background: #000000 !important;
         border-color: #23343A !important;
         box-shadow: none !important;
     }
@@ -678,7 +681,7 @@ text-decoration:none !important;
         box-shadow: none !important;
     }
     .choice-content h3 {
-        color: #F8FAFC !important;
+        color: #FFFFFF !important;
     }
     .choice-content p {
         color: #94A3B8 !important;

@@ -78,69 +78,6 @@ body.dark .site-navbar .site-navigation .site-menu .has-children .dropdown a:hov
     color: #1FB7B5 !important;
 }
 
-/* =====================================================
-   HEADER SEARCH PANEL
-===================================================== */
-
-body.dark .header-job-search-panel {
-    background: #161b22 !important;
-    border: 1px solid #30363d !important;
-    border-radius: 12px !important;
-    padding: 10px !important;
-    box-shadow: none !important;
-}
-
-body.dark .header-job-search-panel .hjs-row {
-    display: flex;
-    align-items: center;
-    background: #0d1117 !important;
-    border-radius: 8px !important;
-    border: 1px solid #30363d;
-}
-
-body.dark .header-job-search-panel .hjs-field {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    min-height: 46px;
-    padding: 0 16px;
-    background: transparent !important;
-    border: none !important;
-}
-
-body.dark .header-job-search-panel input,
-body.dark .header-job-search-panel select {
-    background: transparent !important;
-    border: none !important;
-    color: #e6edf3 !important;
-    outline: none !important;
-}
-
-body.dark .header-job-search-panel input::placeholder { color: #6e7681 !important; }
-body.dark .header-job-search-panel .hjs-icon { color: #1FB7B5 !important; }
-
-body.dark .header-job-search-panel .hjs-divider {
-    width: 1px;
-    height: 28px;
-    background: #30363d !important;
-    flex: none;
-}
-
-body.dark .header-job-search-panel .hjs-submit {
-    height: 46px;
-    padding: 0 22px;
-    margin: 6px;
-    border: none !important;
-    border-radius: 8px !important;
-    background: #1FB7B5 !important;
-    color: #fff !important;
-    font-weight: 700;
-}
-
-body.dark .header-job-search-panel .hjs-submit:hover {
-    background: #0D8A90 !important;
-}
-
 body.dark select, body.dark select option {
     background: #161b22 !important;
     color: #e6edf3 !important;
@@ -174,9 +111,7 @@ body.dark .header-notification-link {
 
 body.dark .header-notification-link:hover { background: #30363d !important; }
 
-body.dark .header-notification-badge,
 body.dark .mobile-nav-badge,
-body.dark .mobile-nav-dot,
 body.dark .hm-drawer-badge {
     background: #ff3b30 !important;
     color: #fff !important;
@@ -299,31 +234,24 @@ body.dark .candidate-avatar-dropdown a:hover {
    FOOTER
 ===================================================== */
 
-body.dark footer,
-body.dark .site-footer,
-body.dark .footer-area {
+body.dark footer {
     background: #161b22 !important;
     border-top: 1px solid #30363d;
 }
 
-body.dark .site-footer::before, body.dark .site-footer::after,
-body.dark .footer-area::before, body.dark .footer-area::after {
-    display: none !important;
-}
+body.dark footer h1,
+body.dark footer h2,
+body.dark footer h3,
+body.dark footer h4,
+body.dark footer h5,
+body.dark footer h6 { color: #e6edf3 !important; }
 
-body.dark footer h1, body.dark footer h2, body.dark footer h3,
-body.dark footer h4, body.dark footer h5, body.dark footer h6,
-body.dark .site-footer h1, body.dark .site-footer h2,
-body.dark .site-footer h3, body.dark .site-footer h4,
-body.dark .site-footer h5, body.dark .site-footer h6 { color: #e6edf3 !important; }
+body.dark footer p,
+body.dark footer li,
+body.dark footer span,
+body.dark footer a { color: #8b949e !important; }
 
-body.dark footer p, body.dark footer li,
-body.dark footer span, body.dark footer a,
-body.dark .site-footer p, body.dark .site-footer li,
-body.dark .site-footer span, body.dark .site-footer a { color: #8b949e !important; }
-
-body.dark footer a:hover,
-body.dark .site-footer a:hover { color: #1FB7B5 !important; }
+body.dark footer a:hover { color: #1FB7B5 !important; }
 
 /* =====================================================
    GLOBAL FORCE OVERRIDE
@@ -333,26 +261,33 @@ body.dark,
 body.dark * { color: #e6edf3 !important; }
 
 body.dark,
-body.dark div, body.dark section, body.dark aside,
-body.dark main, body.dark header, body.dark footer,
-body.dark .container, body.dark .container-fluid,
-body.dark .row, body.dark .col,
-body.dark .card, body.dark .panel,
-body.dark .dashboard-panel, body.dark .job-card,
-body.dark .top-company-card, body.dark .dashboard-metric-card,
-body.dark .dashboard-summary-hero, body.dark .dashboard-sidebar,
-body.dark .dashboard-cta-banner, body.dark .dashboard-strategy-banner {
+body.dark div,
+body.dark section,
+body.dark aside,
+body.dark main,
+body.dark header,
+body.dark footer,
+body.dark .container,
+body.dark .container-fluid,
+body.dark .row,
+body.dark .col,
+body.dark .card,
+body.dark .panel,
+body.dark .dashboard-panel,
+body.dark .job-card,
+body.dark .top-company-card,
+body.dark .dashboard-cta-banner {
     background-color: transparent !important;
 }
 
 body.dark { background: #0d1117 !important; }
 
-body.dark .card, body.dark .panel,
-body.dark .dashboard-panel, body.dark .job-card,
-body.dark .top-company-card, body.dark .dashboard-metric-card,
-body.dark .dashboard-summary-hero, body.dark .dashboard-sidebar,
-body.dark .dashboard-cta-banner, body.dark .dashboard-strategy-banner,
-body.dark .naukri-banner-item {
+body.dark .card,
+body.dark .panel,
+body.dark .dashboard-panel,
+body.dark .job-card,
+body.dark .top-company-card,
+body.dark .dashboard-cta-banner {
     background: #161b22 !important;
     border: 1px solid #30363d !important;
 }
@@ -430,8 +365,7 @@ body.dark *::after { border-color: #30363d !important; }
 ===================================================== */
 
 body.dark .bg-white,
-body.dark .bg-light,
-body.dark .bg-body   { background: transparent !important; }
+body.dark .bg-light   { background: transparent !important; }
 body.dark .text-dark { color: #e6edf3 !important; }
 
 body.dark [style*="background: white"],
@@ -450,110 +384,8 @@ body.dark .dashboard-section {
     color: #e6edf3 !important;
 }
 
-/* SIDEBAR */
-body.dark .dashboard-sidebar,
-body.dark aside.dashboard-sidebar,
-body.dark .dashboard-layout .dashboard-sidebar {
-    background: #161b22 !important;
-    border: 1px solid #30363d !important;
-    box-shadow: none !important;
-}
-
-body.dark .dashboard-sidebar * { background-color: transparent; }
-body.dark .dashboard-sidebar-head { background: transparent !important; border-bottom: none !important; }
-
-body.dark .dashboard-sidebar-profile strong,
-body.dark .dashboard-sidebar-profile-meta strong { color: #e6edf3 !important; }
-
-body.dark .dashboard-sidebar-role,
-body.dark .dashboard-sidebar-location { color: #8b949e !important; }
-
-body.dark .dashboard-sidebar-profile-pic {
-    background: #21262d !important;
-    border: 2px solid #30363d !important;
-}
-
-body.dark .dashboard-sidebar-view-profile,
-body.dark .dashboard-sidebar .btn-outline-primary {
-    background: transparent !important;
-    color: #1FB7B5 !important;
-    border: 1px solid #1FB7B5 !important;
-}
-
-body.dark .dashboard-sidebar-view-profile:hover {
-    background: #1FB7B5 !important;
-    color: #fff !important;
-}
-
-body.dark .dashboard-sidebar-progress-bar { background: #21262d !important; }
-body.dark .dashboard-sidebar-progress-bar div {
-    background: linear-gradient(90deg, #1FB7B5, #53B86C) !important;
-}
-
-body.dark .dashboard-sidebar-stat {
-    background: #21262d !important;
-    border: 1px solid #30363d !important;
-    color: #e6edf3 !important;
-}
-
-body.dark .dashboard-sidebar-stat strong { color: #e6edf3 !important; }
-body.dark .dashboard-sidebar-stat span   { color: #8b949e !important; }
-
-body.dark .dashboard-sidebar-link         { color: #e6edf3 !important; background: transparent !important; }
-body.dark .dashboard-sidebar-link:hover   { background: #21262d !important; color: #1FB7B5 !important; }
-body.dark .dashboard-sidebar-link.active  { background: #1FB7B5 !important; color: #fff !important; }
-
-body.dark .dashboard-sidebar-pill { background: #21262d !important; color: #e6edf3 !important; }
-
-body.dark .dashboard-sidebar-cta {
-    background: #21262d !important;
-    border: 1px solid #30363d !important;
-}
-
-body.dark .dashboard-sidebar-cta h3 { color: #e6edf3 !important; }
-body.dark .dashboard-sidebar-cta p  { color: #8b949e !important; }
-
-body.dark .dashboard-sidebar-cta-primary {
-    background: #1FB7B5 !important;
-    color: #fff !important;
-}
-
-body.dark .dashboard-sidebar-cta-secondary {
-    background: #21262d !important;
-    border: 1px solid #30363d !important;
-    color: #e6edf3 !important;
-}
-
-/* BANNER */
-body.dark .naukri-banner-item {
-    background: #161b22 !important;
-    border: 1px solid #30363d;
-    color: #e6edf3;
-}
-
-body.dark .naukri-banner-label { color: #1FB7B5; }
-body.dark .naukri-banner-title { color: #e6edf3; }
-body.dark .naukri-banner-cta   { color: #1FB7B5 !important; }
-body.dark .naukri-banner-dot   { background: #30363d; }
-body.dark .naukri-banner-dot.is-active { background: #1FB7B5; }
-
-/* HERO SUMMARY */
-body.dark .dashboard-summary-shell,
-body.dark .dashboard-summary-hero {
-    background: #161b22 !important;
-    border: 1px solid #30363d;
-    color: #e6edf3 !important;
-}
-
-body.dark .dashboard-summary-kicker { color: #1FB7B5; }
-body.dark .dashboard-summary-title  { color: #e6edf3 !important; }
-body.dark .dashboard-summary-text,
-body.dark .dashboard-summary-inline-stats span { color: #8b949e !important; }
-body.dark .dashboard-summary-inline-stats strong { color: #e6edf3 !important; }
-
 /* PRIMARY BUTTONS */
 body.dark .btn-primary,
-body.dark .dashboard-summary-primary,
 body.dark .dashboard-strategy-btn,
 body.dark .dashboard-cta-btn {
     background: #1FB7B5 !important;
@@ -561,11 +393,9 @@ body.dark .dashboard-cta-btn {
     color: #fff !important;
 }
 
-body.dark .btn-primary:hover,
-body.dark .dashboard-summary-primary:hover { background: #0D8A90 !important; }
+body.dark .btn-primary:hover { background: #0D8A90 !important; }
 
-body.dark .btn-light,
-body.dark .dashboard-summary-secondary {
+body.dark .btn-light {
     background: #21262d !important;
     border: 1px solid #30363d !important;
     color: #e6edf3 !important;
@@ -580,17 +410,6 @@ body.dark .ai-badge {
     border: 1px solid rgba(31,183,181,0.2);
     color: #1FB7B5;
 }
-
-/* METRIC CARDS */
-body.dark .dashboard-metric-card {
-    background: #161b22 !important;
-    border: 1px solid #30363d;
-}
-
-body.dark .dashboard-metric-card:hover { border-color: #1FB7B5; }
-body.dark .dashboard-metric-label      { color: #8b949e; }
-body.dark .dashboard-metric-value      { color: #e6edf3; }
-body.dark .dashboard-metric-note       { color: #8b949e; }
 
 /* JOB CARDS */
 body.dark .job-card,
@@ -628,32 +447,15 @@ body.dark .dashboard-blog-card .job-card-title { color: #e6edf3 !important; }
 body.dark .dashboard-blog-date,
 body.dark .dashboard-blog-author        { color: #8b949e !important; }
 body.dark .dashboard-blog-excerpt       { color: #8b949e !important; }
-
-/* STRATEGY BANNER */
-body.dark .dashboard-strategy-banner {
-    background: #161b22 !important;
-    border: 1px solid #30363d;
-}
-
-body.dark .dashboard-strategy-kicker,
-body.dark .dashboard-strategy-badge     { color: #1FB7B5; }
 body.dark .dashboard-strategy-title     { color: #e6edf3; }
 body.dark .dashboard-strategy-text,
-body.dark .dashboard-strategy-list li,
-body.dark .dashboard-strategy-panel-label { color: #8b949e; }
-body.dark .dashboard-strategy-role-pill {
-    background: #21262d;
-    border: 1px solid #30363d;
-    color: #e6edf3;
-}
+body.dark .dashboard-strategy-list li { color: #8b949e; }
 
 /* CTA BANNER */
 body.dark .dashboard-cta-banner {
     background: #161b22 !important;
     border: 1px solid #30363d;
 }
-
-body.dark .dashboard-cta-kicker { color: #1FB7B5; }
 body.dark .dashboard-cta-title  { color: #e6edf3; }
 
 body.dark .pro-ad-service {
@@ -703,18 +505,6 @@ body.dark .cand-leftnav {
 }
 
 body.dark .cand-leftnav__brand-name { color: #e6edf3; }
-
-body.dark .cand-leftnav__search-inner {
-    background: #21262d;
-    border-color: #30363d;
-}
-
-body.dark .cand-leftnav__search-inner:focus-within {
-    border-color: #1FB7B5;
-    background: #0d1117;
-}
-
-body.dark .cand-leftnav__search-inner input { color: #e6edf3; }
 body.dark .cand-leftnav__link               { color: #e6edf3; }
 
 body.dark .cand-leftnav__link:hover {
@@ -740,25 +530,6 @@ body.dark .cand-leftnav__link.is-active .cand-leftnav__icon {
 body.dark .cand-leftnav__pill { background: #21262d; color: #8b949e; }
 
 body.dark .cand-leftnav__bottom { border-top-color: #30363d; }
-
-body.dark .cand-leftnav__utils .theme-toggle-btn,
-body.dark .cand-leftnav__utils .candidate-language-btn {
-    background: #21262d;
-    border-color: #30363d;
-    color: #8b949e;
-}
-
-body.dark .cand-leftnav__utils .candidate-language-btn.is-active {
-    background: rgba(31,183,181,0.1);
-    color: #1FB7B5;
-    border-color: #1FB7B5;
-}
-
-body.dark .cand-leftnav__lang-panel {
-    background: #161b22 !important;
-    border-color: #30363d !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
-}
 
 body.dark .cand-leftnav__user-btn {
     background: #21262d;
@@ -1150,7 +921,6 @@ body.dark .onboarding-header h2 { color: #e6edf3; }
 body.dark .onboarding-header p  { color: #8b949e; }
 
 body.dark .form-control,
-body.dark .form-control-file,
 body.dark select,
 body.dark textarea {
     background: #0d1117 !important;
@@ -1209,9 +979,6 @@ body.dark .resume-coach-card {
 
 body.dark .detail-card-title { color: #e6edf3; }
 body.dark .detail-card-icon  { color: #1FB7B5; }
-
-body.dark .job-details-skill-list li { color: #8b949e; }
-body.dark .job-details-skill-list i  { color: #22c55e; }
 
 body.dark .summary-chip {
     background: rgba(31,183,181,0.1);
@@ -1332,11 +1099,6 @@ body.dark .recommended-job-card {
 
 body.dark .recommended-job-card:hover { border-color: #1FB7B5 !important; }
 
-body.dark .job-card-match-badge {
-    background: rgba(31,183,181,0.1) !important;
-    color: #1FB7B5 !important;
-}
-
 body.dark .job-card-save {
     background: #21262d !important;
     border: 1px solid #30363d !important;
@@ -1448,19 +1210,11 @@ body.dark .modal-header .close,
 body.dark .modal-header .btn-close { color: #e6edf3 !important; opacity: 0.8; }
 body.dark #coverLetterTextArea { background-color: #0d1117 !important; color: #e6edf3 !important; border: 1px solid #30363d !important; }
 
-/* =====================================================
-   LOCAL COMPANY
-===================================================== */
-
-body.dark .local-company-intro,
-body.dark .local-company-stat,
 body.dark .local-company-card {
     background: #161b22;
     border: 1px solid #30363d;
     color: #e6edf3;
 }
-
-body.dark .local-company-kicker { color: #1FB7B5; }
 
 body.dark .local-company-field input {
     background: #0d1117;
@@ -1529,13 +1283,6 @@ body.dark .job-card-tools-item {
 
 body.dark .job-card-tools-item:hover { background: #21262d; color: #1FB7B5; }
 body.dark .job-card-tools-item + .job-card-tools-item { border-top: 1px solid #30363d; }
-
-/* =====================================================
-   BLOG
-===================================================== */
-
-body.dark .blog-article-hero { background: #0d1117; }
-body.dark .blog-article-hero h1 { color: #e6edf3; }
 body.dark .blog-article-body   { color: #8b949e !important; }
 body.dark .blog-article-body h2,
 body.dark .blog-article-body h3 { color: #e6edf3 !important; }
@@ -1552,42 +1299,12 @@ body.dark .blog-sidebar-card {
     border-color: #30363d !important;
 }
 
-body.dark .blog-back-link,
-body.dark .blog-kicker { color: #1FB7B5 !important; }
-
-body.dark .blog-primary-action {
-    background: #1FB7B5 !important;
-    color: #fff !important;
-}
+body.dark .blog-back-link { color: #1FB7B5 !important; }
 
 body.dark .blog-secondary-action {
     background: #21262d !important;
     color: #e6edf3 !important;
     border: 1px solid #30363d !important;
-}
-
-/* =====================================================
-   FLOATING MENTOR LAUNCHER
-===================================================== */
-
-body.dark .floating-mentor-launcher__label {
-    background: #161b22;
-    color: #e6edf3;
-    border: 1px solid #30363d;
-}
-
-body.dark .floating-mentor-launcher__title    { color: #e6edf3; }
-body.dark .floating-mentor-launcher__subtitle { color: #8b949e; }
-
-body.dark .floating-mentor-launcher__button {
-    background: #1FB7B5;
-    color: #fff;
-}
-
-body.dark .floating-mentor-launcher__badge {
-    background: #21262d;
-    color: #e6edf3;
-    border: 1px solid #30363d;
 }
 
 /* =====================================================
@@ -1613,24 +1330,6 @@ body.dark .pill-count {
     padding: 0 8px;
     font-size: 12px;
     font-weight: 600;
-}
-
-body.dark .naukri-banner-strip--inline {
-    background: #161b22 !important;
-    border: 1px solid #30363d !important;
-    border-radius: 10px !important;
-}
-
-body.dark .naukri-banner-label {
-    background: rgba(31,183,181,0.1) !important;
-    color: #1FB7B5 !important;
-    border: 1px solid rgba(31,183,181,0.2) !important;
-}
-
-body.dark .naukri-banner-cta {
-    background: #1FB7B5 !important;
-    color: #fff !important;
-    border: none !important;
 }
 
 body.dark .generation-mode-card,
@@ -1674,10 +1373,6 @@ body.dark ::-webkit-scrollbar-thumb:hover { background: #1FB7B5; }
 /* =====================================================
    RESPONSIVE
 ===================================================== */
-
-@media (max-width: 992px) {
-    body.dark .dashboard-sidebar { margin-bottom: 24px; }
-}
 
 /* =====================================================
    COMPANY PROFILE PAGE

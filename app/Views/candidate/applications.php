@@ -50,6 +50,8 @@ $completedApplications = count(array_filter($applications ?? [], function ($appl
                                 id="applicationsSidebarTotal"><?= $totalApplications ?></span> total, <span
                                 id="applicationsSidebarActive"><?= $activeApplications ?></span> active</p>
                     </div>
+              
+ 
                     <div class="applications-sidebar-list">
                         <?php foreach ($applications as $index => $application): ?>
                             <?php
