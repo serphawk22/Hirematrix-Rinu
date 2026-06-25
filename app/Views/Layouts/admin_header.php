@@ -22,6 +22,51 @@
         font-weight: 700 !important;
         border-bottom: 2px solid #2446c0;
     }
+
+    .admin-portal .admin-table-scroll {
+        overflow-x: auto;
+        overflow-y: auto;
+    }
+
+    .admin-portal .admin-table {
+        border-collapse: collapse;
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    .admin-portal .admin-table th,
+    .admin-portal .admin-table td {
+        display: table-cell;
+        padding: 14px 16px;
+        vertical-align: middle;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-portal .admin-table thead {
+        display: table-header-group;
+    }
+
+    .admin-portal .admin-table tbody {
+        display: table-row-group;
+    }
+
+    .admin-portal .admin-table tr {
+        display: table-row;
+    }
+
+    .admin-portal .admin-table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        background: #f8fafc;
+        color: #111827;
+        font-weight: 700;
+    }
+
+    .admin-portal .admin-jobs-table {
+        min-width: 980px;
+    }
 </style>
 <body class="bg-light hirematrix-app admin-portal d-flex flex-column min-vh-100">
 

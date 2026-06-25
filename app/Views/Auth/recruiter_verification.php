@@ -112,14 +112,14 @@
                                 <p class="mb-0 text-success">Your phone number has been verified.</p>
                             <?php elseif ($canVerifyPhone ?? false): ?>
                                 <?php if (!($hasPendingPhoneOtp ?? false)): ?>
-                                    <p class="text-center mt-4">Send an SMS OTP to verify your registered phone number.</p>
+                                    <p class="text-center mt-4">Send a WhatsApp OTP to verify your registered phone number.</p>
                                     <form method="post" action="<?= base_url('recruiter/send-phone-otp') ?>">
                                         <?= csrf_field() ?>
                                         <input type="hidden" name="email" value="<?= esc($email ?? '') ?>">
-                                        <button type="submit" class="btn btn-primary btn-block mb-4">Send SMS OTP</button>
+                                        <button type="submit" class="btn btn-primary btn-block mb-4">Send WhatsApp OTP</button>
                                     </form>
                                 <?php else: ?>
-                                <p class="text-center mt-4">Enter the 6-digit SMS OTP sent to your registered phone number.</p>
+                                <p class="text-center mt-4">Enter the 6-digit WhatsApp OTP sent to your registered phone number.</p>
 
                                 <form method="post" action="<?= base_url('recruiter/verify-phone-otp') ?>" id="phoneOtpForm">
                                     <?= csrf_field() ?>
@@ -142,11 +142,11 @@
                                 <form method="post" action="<?= base_url('recruiter/send-phone-otp') ?>">
                                     <?= csrf_field() ?>
                                     <input type="hidden" name="email" value="<?= esc($email ?? '') ?>">
-                                    <button type="submit" class="btn btn-link btn-sm p-0">Didn't receive the SMS? Resend OTP</button>
+                                    <button type="submit" class="btn btn-link btn-sm p-0">Didn't receive the WhatsApp message? Resend OTP</button>
                                 </form>
                                 <?php endif; ?>
                             <?php else: ?>
-                                <p class="mb-0 text-danger">A valid registered phone number is required for SMS verification.</p>
+                                <p class="mb-0 text-danger">A valid registered WhatsApp phone number is required for phone verification.</p>
                             <?php endif; ?>
                         </div>
                     </div>

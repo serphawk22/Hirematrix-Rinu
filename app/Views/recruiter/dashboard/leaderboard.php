@@ -191,6 +191,71 @@ body.dark .card .card-body h3.text-info {
 body.dark .card .card-body h3.text-warning {
     color: #FBBF24 !important;
 }
+.recruiter-leaderboard-jobboard .recruiter-leaderboard-card .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.recruiter-leaderboard-jobboard .leaderboard-table {
+    min-width: 1240px;
+}
+
+.recruiter-leaderboard-jobboard .leaderboard-table th,
+.recruiter-leaderboard-jobboard .leaderboard-table td {
+    vertical-align: middle;
+    word-break: normal;
+    overflow-wrap: normal;
+}
+
+.recruiter-leaderboard-jobboard .leaderboard-table th {
+    white-space: nowrap;
+}
+
+.recruiter-leaderboard-jobboard .leaderboard-table th:nth-child(1),
+.recruiter-leaderboard-jobboard .leaderboard-table td:nth-child(1) {
+    min-width: 64px;
+}
+
+.recruiter-leaderboard-jobboard .leaderboard-table th:nth-child(2),
+.recruiter-leaderboard-jobboard .leaderboard-table td:nth-child(2) {
+    min-width: 150px;
+}
+
+.recruiter-leaderboard-jobboard .leaderboard-table th:nth-child(3),
+.recruiter-leaderboard-jobboard .leaderboard-table td:nth-child(3) {
+    min-width: 140px;
+}
+
+.recruiter-leaderboard-jobboard .leaderboard-table th:nth-child(4),
+.recruiter-leaderboard-jobboard .leaderboard-table td:nth-child(4) {
+    min-width: 230px;
+}
+
+.recruiter-leaderboard-jobboard .leaderboard-table th:nth-child(5),
+.recruiter-leaderboard-jobboard .leaderboard-table td:nth-child(5) {
+    min-width: 180px;
+}
+
+.recruiter-leaderboard-jobboard .leaderboard-table th:nth-child(6),
+.recruiter-leaderboard-jobboard .leaderboard-table td:nth-child(6),
+.recruiter-leaderboard-jobboard .leaderboard-table th:nth-child(7),
+.recruiter-leaderboard-jobboard .leaderboard-table td:nth-child(7),
+.recruiter-leaderboard-jobboard .leaderboard-table th:nth-child(8),
+.recruiter-leaderboard-jobboard .leaderboard-table td:nth-child(8) {
+    min-width: 120px;
+}
+
+.recruiter-leaderboard-jobboard .candidate-info strong,
+.recruiter-leaderboard-jobboard .leaderboard-table td:nth-child(3) {
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
+.recruiter-leaderboard-jobboard .candidate-info small {
+    display: block;
+    max-width: 150px;
+    overflow-wrap: anywhere;
+}
  .container-fluid {
     max-width: 100% !important;
     padding-left: 34px !important;

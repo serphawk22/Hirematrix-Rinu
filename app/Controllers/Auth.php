@@ -906,8 +906,8 @@ class Auth extends BaseController
         $recruiter = $model->find($newRecruiterId);
         $emailError = null;
         $emailSent = $recruiter ? $this->sendRecruiterVerificationEmail($recruiter, $emailError) : false;
-        $smsError = null;
-        $smsSent = $recruiter ? $this->issueRecruiterPhoneOtp($recruiter, $smsError, true) : false;
+        $whatsAppError = null;
+        $whatsAppSent = $recruiter ? $this->issueRecruiterPhoneOtp($recruiter, $whatsAppError, true) : false;
 
         $redirect = redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)));
         if (!$emailSent) {
@@ -922,10 +922,10 @@ class Auth extends BaseController
             ? 'Consultancy account created. Verify your email; job posting will unlock after admin verification.'
             : 'Account created. Check your inbox to verify your company email.';
 
-        if ($smsSent) {
-            $successMessage .= ' We also sent an SMS OTP to your phone.';
-        } elseif ($smsError !== null) {
-            $successMessage .= ' SMS OTP was not sent: ' . $smsError;
+        if ($whatsAppSent) {
+            $successMessage .= ' We also sent a WhatsApp OTP to your phone.';
+        } elseif ($whatsAppError !== null) {
+            $successMessage .= ' WhatsApp OTP was not sent: ' . $whatsAppError;
         }
 
         return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
@@ -1014,11 +1014,11 @@ class Auth extends BaseController
         $error = null;
         if (!$this->issueRecruiterPhoneOtp($user, $error)) {
             return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
-                ->with('error', 'SMS OTP could not be sent. ' . ($error ?? 'Please try again in a minute.'));
+                ->with('error', 'WhatsApp OTP could not be sent. ' . ($error ?? 'Please try again in a minute.'));
         }
 
         return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
-            ->with('success', 'SMS OTP sent to your registered phone number.');
+            ->with('success', 'WhatsApp OTP sent to your registered phone number.');
     }
 
     public function submitRecruiterPhoneOtp()
@@ -1027,7 +1027,7 @@ class Auth extends BaseController
         $code = preg_replace('/\D/', '', (string) $this->request->getPost('phone_code'));
 
         if ($email === '' || $code === '') {
-            return redirect()->back()->with('error', 'Email and SMS OTP are required.');
+            return redirect()->back()->with('error', 'Email and WhatsApp OTP are required.');
         }
 
         $model = new UserModel();
@@ -1045,14 +1045,14 @@ class Auth extends BaseController
         $pending = session()->get(self::RECRUITER_PHONE_OTP_SESSION_KEY);
         if (!is_array($pending)
             || ($pending['email'] ?? '') !== $email
-            || ($pending['phone'] ?? '') !== $this->normalizeTwilioPhone((string) ($user['phone'] ?? ''))
+            || ($pending['phone'] ?? '') !== $this->normalizeWhatsAppPhone((string) ($user['phone'] ?? ''))
         ) {
-            return redirect()->back()->withInput()->with('error', 'SMS OTP expired or missing. Please resend the OTP.');
+            return redirect()->back()->withInput()->with('error', 'WhatsApp OTP expired or missing. Please resend the OTP.');
         }
 
         if ((int) ($pending['expires_at'] ?? 0) < time()) {
             session()->remove(self::RECRUITER_PHONE_OTP_SESSION_KEY);
-            return redirect()->back()->withInput()->with('error', 'SMS OTP expired. Please request a new OTP.');
+            return redirect()->back()->withInput()->with('error', 'WhatsApp OTP expired. Please request a new OTP.');
         }
 
         $attempts = (int) ($pending['attempts'] ?? 0) + 1;
@@ -1061,11 +1061,10 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('error', 'Too many incorrect OTP attempts. Please request a new OTP.');
         }
 
-        $verificationError = null;
-        if (!$this->checkTwilioVerification((string) $pending['phone'], $code, $verificationError)) {
+        if (!hash_equals((string) ($pending['code_hash'] ?? ''), hash('sha256', $code))) {
             $pending['attempts'] = $attempts;
             session()->set(self::RECRUITER_PHONE_OTP_SESSION_KEY, $pending);
-            return redirect()->back()->withInput()->with('error', $verificationError ?? 'Invalid SMS OTP.');
+            return redirect()->back()->withInput()->with('error', 'Invalid WhatsApp OTP.');
         }
 
         $model->update((int) $user['id'], [
@@ -1111,14 +1110,14 @@ class Auth extends BaseController
         }
 
         $updatedUser = $model->find((int) $user['id']) ?? $user;
-        $smsError = null;
-        $smsSent = $this->issueRecruiterPhoneOtp($updatedUser, $smsError, true);
-        $message = $smsSent
-            ? 'Email verified successfully. We sent an SMS OTP to your registered phone number.'
-            : 'Email verified successfully. Please resend the SMS OTP to verify your phone. ' . ($smsError ?? '');
+        $whatsAppError = null;
+        $whatsAppSent = $this->issueRecruiterPhoneOtp($updatedUser, $whatsAppError, true);
+        $message = $whatsAppSent
+            ? 'Email verified successfully. We sent a WhatsApp OTP to your registered phone number.'
+            : 'Email verified successfully. Please resend the WhatsApp OTP to verify your phone. ' . ($whatsAppError ?? '');
 
         return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
-            ->with($smsSent ? 'success' : 'error', trim($message));
+            ->with($whatsAppSent ? 'success' : 'error', trim($message));
     }
 
     private function sendRecruiterVerificationEmail(array $user, ?string &$error = null): bool
@@ -1191,7 +1190,7 @@ class Auth extends BaseController
     private function issueRecruiterPhoneOtp(array $user, ?string &$error = null, bool $allowImmediateResend = false): bool
     {
         $email = strtolower(trim((string) ($user['email'] ?? '')));
-        $phone = $this->normalizeTwilioPhone((string) ($user['phone'] ?? ''));
+        $phone = $this->normalizeWhatsAppPhone((string) ($user['phone'] ?? ''));
 
         if ($email === '' || $phone === '') {
             $error = 'Registered phone number must be a valid mobile number with country code.';
@@ -1208,13 +1207,16 @@ class Auth extends BaseController
             return false;
         }
 
-        if (!$this->sendTwilioVerification($phone, $error)) {
+        $code = (string) random_int(100000, 999999);
+
+        if (!$this->sendWhatsAppOtp($phone, $code, $error)) {
             return false;
         }
 
         session()->set(self::RECRUITER_PHONE_OTP_SESSION_KEY, [
             'email' => $email,
             'phone' => $phone,
+            'code_hash' => hash('sha256', $code),
             'expires_at' => time() + self::RECRUITER_PHONE_OTP_TTL_SECONDS,
             'sent_at' => time(),
             'attempts' => 0,
@@ -1223,14 +1225,16 @@ class Auth extends BaseController
         return true;
     }
 
-    private function sendTwilioVerification(string $phone, ?string &$error = null): bool
+    private function sendWhatsAppOtp(string $phone, string $code, ?string &$error = null): bool
     {
-        $credentials = $this->twilioVerifyCredentials($error);
+        $credentials = $this->whatsAppCloudCredentials($error);
         if ($credentials === null) {
             return false;
         }
 
-        $endpoint = 'https://verify.twilio.com/v2/Services/' . rawurlencode($credentials['service_sid']) . '/Verifications';
+        $endpoint = 'https://graph.facebook.com/' . rawurlencode($credentials['api_version']) . '/'
+            . rawurlencode($credentials['phone_number_id']) . '/messages';
+        $to = ltrim($phone, '+');
 
         try {
             $http = \Config\Services::curlrequest([
@@ -1238,88 +1242,82 @@ class Auth extends BaseController
                 'http_errors' => false,
             ]);
 
-            $response = $http->post($endpoint, [
-                'auth' => [$credentials['account_sid'], $credentials['auth_token']],
-                'headers' => ['accept' => 'application/json'],
-                'form_params' => [
-                    'To' => $phone,
-                    'Channel' => 'sms',
+            $payload = [
+                'messaging_product' => 'whatsapp',
+                'recipient_type' => 'individual',
+                'to' => $to,
+                'type' => 'template',
+                'template' => [
+                    'name' => $credentials['template_name'],
+                    'language' => [
+                        'code' => $credentials['template_language'],
+                    ],
+                    'components' => [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                [
+                                    'type' => 'text',
+                                    'text' => $code,
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
+            ];
+
+            $response = $http->post($endpoint, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $credentials['access_token'],
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ],
+                'body' => json_encode($payload),
             ]);
 
             $status = (int) $response->getStatusCode();
             $body = (string) $response->getBody();
             $data = json_decode($body, true);
 
-            if ($status >= 200 && $status < 300 && is_array($data) && ($data['status'] ?? '') === 'pending') {
+            if ($status >= 200 && $status < 300 && is_array($data) && !empty($data['messages'][0]['id'])) {
                 return true;
             }
 
             $error = is_array($data)
-                ? (string) ($data['message'] ?? 'Twilio rejected the verification request.')
-                : 'Twilio rejected the verification request.';
-            log_message('error', 'Twilio Verify send failed: HTTP ' . $status . ' ' . $body);
+                ? (string) ($data['error']['message'] ?? 'WhatsApp rejected the OTP request.')
+                : 'WhatsApp rejected the OTP request.';
+            log_message('error', 'WhatsApp OTP send failed: HTTP ' . $status . ' ' . $body);
             return false;
         } catch (\Throwable $e) {
-            $error = 'Twilio Verify could not be reached.';
-            log_message('error', 'Twilio Verify send exception: ' . $e->getMessage());
+            $error = 'WhatsApp Cloud API could not be reached.';
+            log_message('error', 'WhatsApp OTP send exception: ' . $e->getMessage());
             return false;
         }
     }
 
-    private function checkTwilioVerification(string $phone, string $code, ?string &$error = null): bool
+    private function whatsAppCloudCredentials(?string &$error = null): ?array
     {
-        $credentials = $this->twilioVerifyCredentials($error);
-        if ($credentials === null) {
-            return false;
-        }
+        $accessToken = trim((string) (env('whatsapp.cloudAccessToken') ?: env('WHATSAPP_CLOUD_ACCESS_TOKEN') ?: ''));
+        $phoneNumberId = trim((string) (env('whatsapp.phoneNumberId') ?: env('WHATSAPP_PHONE_NUMBER_ID') ?: ''));
+        $templateName = trim((string) (env('whatsapp.otpTemplateName') ?: env('WHATSAPP_OTP_TEMPLATE_NAME') ?: 'recruiter_phone_otp'));
+        $templateLanguage = trim((string) (env('whatsapp.templateLanguage') ?: env('WHATSAPP_TEMPLATE_LANGUAGE') ?: 'en_US'));
+        $apiVersion = trim((string) (env('whatsapp.apiVersion') ?: env('WHATSAPP_API_VERSION') ?: 'v20.0'));
 
-        $endpoint = 'https://verify.twilio.com/v2/Services/' . rawurlencode($credentials['service_sid']) . '/VerificationCheck';
-
-        try {
-            $http = \Config\Services::curlrequest(['timeout' => 15, 'http_errors' => false]);
-            $response = $http->post($endpoint, [
-                'auth' => [$credentials['account_sid'], $credentials['auth_token']],
-                'headers' => ['accept' => 'application/json'],
-                'form_params' => ['To' => $phone, 'Code' => $code],
-            ]);
-            $status = (int) $response->getStatusCode();
-            $body = (string) $response->getBody();
-            $data = json_decode($body, true);
-
-            if ($status >= 200 && $status < 300 && is_array($data)) {
-                if (($data['status'] ?? '') === 'approved' || ($data['valid'] ?? false) === true) {
-                    return true;
-                }
-                $error = 'Invalid SMS OTP.';
-                return false;
-            }
-
-            $error = is_array($data) ? (string) ($data['message'] ?? 'Twilio could not verify the OTP.') : 'Twilio could not verify the OTP.';
-            log_message('error', 'Twilio Verify check failed: HTTP ' . $status . ' ' . $body);
-            return false;
-        } catch (\Throwable $e) {
-            $error = 'Twilio Verify could not be reached.';
-            log_message('error', 'Twilio Verify check exception: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    private function twilioVerifyCredentials(?string &$error = null): ?array
-    {
-        $accountSid = trim((string) (env('twilio.accountSid') ?: env('TWILIO_ACCOUNT_SID') ?: ''));
-        $authToken = trim((string) (env('twilio.authToken') ?: env('TWILIO_AUTH_TOKEN') ?: ''));
-        $serviceSid = trim((string) (env('twilio.verifyServiceSid') ?: env('TWILIO_VERIFY_SERVICE_SID') ?: ''));
-
-        if ($accountSid === '' || $authToken === '' || $serviceSid === '') {
-            $error = 'Twilio Account SID, Auth Token, and Verify Service SID must be configured.';
+        if ($accessToken === '' || $phoneNumberId === '' || $templateName === '') {
+            $error = 'WhatsApp Cloud API access token, phone number ID, and OTP template name must be configured.';
             return null;
         }
 
-        return ['account_sid' => $accountSid, 'auth_token' => $authToken, 'service_sid' => $serviceSid];
+        return [
+            'access_token' => $accessToken,
+            'phone_number_id' => $phoneNumberId,
+            'template_name' => $templateName,
+            'template_language' => $templateLanguage,
+            'api_version' => $apiVersion,
+        ];
     }
 
-    private function normalizeTwilioPhone(string $phone): string
+    private function normalizeWhatsAppPhone(string $phone): string
     {
         $trimmed = trim($phone);
         $digits = preg_replace('/\D/', '', $trimmed);

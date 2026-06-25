@@ -101,8 +101,16 @@
 </form>
 
 <div class="card shadow-sm">
-<div class="table-responsive" style="max-height:450px; overflow-y:auto;">
-<table class="table mb-0">
+<div class="table-responsive admin-table-scroll" style="max-height:450px;">
+<table class="table mb-0 admin-table admin-jobs-table">
+<colgroup>
+    <col style="width: 8%;">
+    <col style="width: 26%;">
+    <col style="width: 18%;">
+    <col style="width: 24%;">
+    <col style="width: 12%;">
+    <col style="width: 12%;">
+</colgroup>
 <thead class="table-light sticky-header">
 <tr>
     <th>ID</th>
