@@ -18,6 +18,9 @@ class API_RecruiterController extends ResourceController
     public function exportExcel()
     {
         $recruiterId = $this->request->getVar('recruiter_id');
+        $type = $this->request->getVar('type') ?? 'overview';
+        $requestedJobId = (int) ($this->request->getVar('job_id') ?? 0);
+
         if (!$recruiterId) {
             return $this->fail('Recruiter ID required');
         }
@@ -33,11 +36,36 @@ class API_RecruiterController extends ResourceController
             return $this->fail('You have no jobs to export data from.');
         }
 
+        $requestedJob = null;
+        if ($requestedJobId > 0) {
+            foreach ($recruiterJobs as $recruiterJob) {
+                if ((int) ($recruiterJob['id'] ?? 0) === $requestedJobId) {
+                    $requestedJob = $recruiterJob;
+                    break;
+                }
+            }
+            if ($requestedJob === null) {
+                return $this->fail('Job not found or you do not have permission to export it.');
+            }
+            $jobIds = [$requestedJobId];
+        }
+
         $dashboardController = new \App\Controllers\DashboardController();
         $dashboardController->initController($this->request, $this->response, \Config\Services::logger());
 
-        $data = $dashboardController->getOverviewExportData($jobIds);
-        $filename = 'recruitment_overview_' . date('Y-m-d');
+        if ($type === 'detailed') {
+            $data = $dashboardController->getDetailedExportData($jobIds);
+            if ($requestedJob !== null) {
+                $safeJobTitle = preg_replace('/[^a-z0-9]+/i', '_', (string) ($requestedJob['title'] ?? 'job'));
+                $safeJobTitle = trim((string) $safeJobTitle, '_') ?: 'job_' . $requestedJobId;
+                $filename = 'job_applicants_' . $safeJobTitle . '_' . date('Y-m-d');
+            } else {
+                $filename = 'recruitment_detailed_' . date('Y-m-d');
+            }
+        } else {
+            $data = $dashboardController->getOverviewExportData($jobIds);
+            $filename = 'recruitment_overview_' . date('Y-m-d');
+        }
 
         try {
             $excelPath = $dashboardController->generateExcelReport($data, $filename);
@@ -3318,6 +3346,111 @@ class API_RecruiterController extends ResourceController
             'success' => true,
             'message' => 'Interview rescheduled successfully',
         ]);
+    }
+
+    public function getRescheduleData()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        $bookingId   = $this->request->getVar('booking_id');
+
+        if (!$recruiterId || !$bookingId) {
+            return $this->fail('Missing recruiter_id or booking_id');
+        }
+
+        $bookingModel = model('InterviewBookingModel');
+        $slotModel = model('InterviewSlotModel');
+
+        $booking = $bookingModel->select('interview_bookings.*, users.name as candidate_name, users.email, jobs.title as job_title')
+            ->join('users', 'users.id = interview_bookings.user_id', 'left')
+            ->join('jobs', 'jobs.id = interview_bookings.job_id', 'left')
+            ->find($bookingId);
+
+        if (!$booking) {
+            return $this->fail('Booking not found');
+        }
+
+        $availableSlots = $slotModel->getAvailableSlotsGrouped($booking['job_id']);
+
+        return $this->respond([
+            'success' => true,
+            'booking' => $booking,
+            'available_slots' => $availableSlots
+        ]);
+    }
+
+    public function processRescheduleData()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        $bookingId   = $this->request->getVar('booking_id');
+        $newSlotId   = $this->request->getVar('slot_id');
+        $reason      = $this->request->getVar('reason');
+
+        if (!$recruiterId || !$bookingId || !$newSlotId) {
+            return $this->fail('Missing required fields');
+        }
+
+        $bookingModel = model('InterviewBookingModel');
+        $slotModel = model('InterviewSlotModel');
+        $rescheduleHistoryModel = model('RescheduleHistoryModel');
+        $notificationModel = model('NotificationModel');
+
+        $booking = $bookingModel->find($bookingId);
+
+        if (!$booking) {
+            return $this->fail('Booking not found');
+        }
+
+        if (!$slotModel->isSlotAvailable($newSlotId)) {
+            return $this->fail('Selected slot is not available');
+        }
+
+        $newSlot = $slotModel->find($newSlotId);
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        $slotModel->decrementBookedCount($booking['slot_id']);
+        $slotModel->incrementBookedCount($newSlotId);
+
+        $bookingModel->update($bookingId, [
+            'slot_id' => $newSlotId,
+            'slot_datetime' => $newSlot['slot_datetime'],
+            'booking_status' => 'rescheduled',
+            'last_rescheduled_at' => date('Y-m-d H:i:s')
+        ]);
+
+        $rescheduleHistoryModel->insert([
+            'booking_id' => $bookingId,
+            'old_slot_id' => $booking['slot_id'],
+            'new_slot_id' => $newSlotId,
+            'old_slot_datetime' => $booking['slot_datetime'],
+            'new_slot_datetime' => $newSlot['slot_datetime'],
+            'reason' => $reason,
+            'rescheduled_by' => 'admin',
+            'rescheduled_at' => date('Y-m-d H:i:s')
+        ]);
+
+        model('ApplicationModel')->update($booking['application_id'], [
+            'interview_slot' => $newSlot['slot_datetime'],
+            'status' => 'reschedule_required'
+        ]);
+
+        $notificationModel->createNotification(
+            $booking['user_id'],
+            $booking['application_id'],
+            'interview_rescheduled',
+            'Your interview has been rescheduled by the admin.',
+            base_url('candidate/my-bookings'),
+            true
+        );
+
+        $db->transComplete();
+
+        if ($db->transStatus()) {
+            return $this->respond(['success' => true, 'message' => 'Booking rescheduled successfully']);
+        } else {
+            return $this->fail('Failed to reschedule booking');
+        }
     }
 
     // ── Submit Interview Review ──────────────────────────────────────────────

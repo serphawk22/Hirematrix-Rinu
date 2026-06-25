@@ -219,6 +219,8 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         $routes->post('interview_slots/delete', 'API_RecruiterController::deleteInterviewSlot');
         $routes->get('interview_bookings', 'API_RecruiterController::getInterviewBookings');
         $routes->post('interviews/reschedule', 'API_RecruiterController::rescheduleInterviewBooking');
+        $routes->get('interviews/reschedule/data', 'API_RecruiterController::getRescheduleData');
+        $routes->post('interviews/reschedule/process', 'API_RecruiterController::processRescheduleData');
         $routes->post('interviews/review', 'API_RecruiterController::submitInterviewReview');
     });
     // Career Transition AI API Routes

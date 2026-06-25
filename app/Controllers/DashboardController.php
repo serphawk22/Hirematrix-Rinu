@@ -905,7 +905,7 @@ class DashboardController extends BaseController
     /**
      * Get Detailed Export Data
      */
-    private function getDetailedExportData($jobIds = [])
+    public function getDetailedExportData($jobIds = [])
     {
         $applicationModel = model('ApplicationModel');
         $db = \Config\Database::connect();
