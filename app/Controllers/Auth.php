@@ -906,8 +906,6 @@ class Auth extends BaseController
         $recruiter = $model->find($newRecruiterId);
         $emailError = null;
         $emailSent = $recruiter ? $this->sendRecruiterVerificationEmail($recruiter, $emailError) : false;
-        $whatsAppError = null;
-        $whatsAppSent = $recruiter ? $this->issueRecruiterPhoneOtp($recruiter, $whatsAppError, true) : false;
 
         $redirect = redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)));
         if (!$emailSent) {
@@ -921,12 +919,6 @@ class Auth extends BaseController
         $successMessage = $recruiterType === 'consultancy'
             ? 'Consultancy account created. Verify your email; job posting will unlock after admin verification.'
             : 'Account created. Check your inbox to verify your company email.';
-
-        if ($whatsAppSent) {
-            $successMessage .= ' We also sent a WhatsApp OTP to your phone.';
-        } elseif ($whatsAppError !== null) {
-            $successMessage .= ' WhatsApp OTP was not sent: ' . $whatsAppError;
-        }
 
         return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
             ->with('success', $successMessage);
@@ -950,6 +942,11 @@ class Auth extends BaseController
             $hasPendingPhoneOtp = is_array($pendingOtp)
                 && ($pendingOtp['email'] ?? '') === $email
                 && (int) ($pendingOtp['expires_at'] ?? 0) >= time();
+
+            if ($isEmailVerified) {
+                return redirect()->to(base_url('login'))
+                    ->with('success', 'Email verified successfully. You can now log in.');
+            }
         }
 
         return view('Auth/recruiter_verification', [
@@ -973,7 +970,7 @@ class Auth extends BaseController
         }
 
         if (!empty($user['email_verified_at'])) {
-            return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
+            return redirect()->to(base_url('login'))
                 ->with('success', 'Email is already verified. You can now log in.');
         }
 
@@ -1104,20 +1101,8 @@ class Auth extends BaseController
             'email_verified_at' => date('Y-m-d H:i:s')
         ]);
 
-        if (!empty($user['phone_verified_at'])) {
-            return redirect()->to(base_url('login'))
-                ->with('success', 'Email verified successfully. You can now log in.');
-        }
-
-        $updatedUser = $model->find((int) $user['id']) ?? $user;
-        $whatsAppError = null;
-        $whatsAppSent = $this->issueRecruiterPhoneOtp($updatedUser, $whatsAppError, true);
-        $message = $whatsAppSent
-            ? 'Email verified successfully. We sent a WhatsApp OTP to your registered phone number.'
-            : 'Email verified successfully. Please resend the WhatsApp OTP to verify your phone. ' . ($whatsAppError ?? '');
-
-        return redirect()->to(base_url('recruiter/verification?email=' . urlencode($email)))
-            ->with($whatsAppSent ? 'success' : 'error', trim($message));
+        return redirect()->to(base_url('login'))
+            ->with('success', 'Email verified successfully. You can now log in.');
     }
 
     private function sendRecruiterVerificationEmail(array $user, ?string &$error = null): bool
@@ -1426,27 +1411,14 @@ class Auth extends BaseController
 
     private function isRecruiterFullyVerified(array $user): bool
     {
-        return !empty($user['email_verified_at']) && !empty($user['phone_verified_at']);
+        return !empty($user['email_verified_at']);
     }
 
     private function getRecruiterVerificationMessage(array $user): string
     {
         $emailVerified = !empty($user['email_verified_at']);
-        $phoneVerified = !empty($user['phone_verified_at']);
 
-        if (!$emailVerified && !$phoneVerified) {
-            return 'Please verify your company email address and phone number before logging in.';
-        }
-
-        if (!$emailVerified) {
-            return 'Please verify your company email address before logging in.';
-        }
-
-        if (!$phoneVerified) {
-            return 'Please verify your phone number before logging in.';
-        }
-
-        return '';
+        return $emailVerified ? '' : 'Please verify your company email address before logging in.';
     }
 
     private function isFreeEmailDomain(string $domain): bool

@@ -1506,7 +1506,7 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                 <i class="fas fa-bell sb-icon"></i>
                 <span class="sb-label">Notifications</span>
                 <?php if ($recruiterUnreadNotificationCount > 0): ?>
-                    <span class="sb-badge">
+                    <span class="sb-badge js-recruiter-notification-badge">
                         <?= $recruiterUnreadNotificationCount > 99 ? '99+' : $recruiterUnreadNotificationCount ?>
                     </span>
                 <?php endif; ?>

@@ -24,6 +24,342 @@
         return div.innerHTML;
     }
 
+    function showRecruiterAlert(message, icon, title) {
+        if (window.HMAlert && typeof window.HMAlert.fire === 'function') {
+            return window.HMAlert.fire({
+                icon: icon || undefined,
+                title: title || undefined,
+                text: message || ''
+            });
+        }
+        alert(message || '');
+        return Promise.resolve({ isConfirmed: true });
+    }
+
+    function refreshApplicationsAjax() {
+        var $ = window.jQuery;
+        var ajaxTarget = $('#applications-ajax-container');
+        if (!$ || !ajaxTarget.length) {
+            return Promise.resolve(false);
+        }
+
+        ajaxTarget.css('opacity', '0.5');
+        return $.ajax({
+            url: window.location.href,
+            method: 'GET',
+            dataType: 'json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(function (response) {
+            if (response && response.success) {
+                ajaxTarget.html(response.html || '').css('opacity', '1');
+                $('#candidatePipelineSearch').val('');
+                if (typeof window.updateBulkBar === 'function') {
+                    window.updateBulkBar();
+                }
+                return true;
+            }
+            ajaxTarget.css('opacity', '1');
+            return false;
+        }, function () {
+            ajaxTarget.css('opacity', '1');
+            return false;
+        });
+    }
+
+    function formatCommunicationDate(value) {
+        if (!value) {
+            return '';
+        }
+        var date = new Date(String(value).replace(' ', 'T'));
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+        return date.toLocaleString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit'
+        });
+    }
+
+    function communicationLabel(item) {
+        var actor = (item.direction === 'incoming' || item.direction === 'inbound')
+            ? 'Candidate'
+            : ((item.direction === 'outgoing' || item.direction === 'outbound') ? 'Recruiter' : 'Latest');
+        var type = item.type ? item.type.charAt(0).toUpperCase() + item.type.slice(1) : 'Message';
+        return actor + ' ' + type;
+    }
+
+    function renderChipList(items, emptyText, extraClass) {
+        if (!Array.isArray(items) || !items.length) {
+            return '<span class="communication-chip is-muted">' + escapeHtml(emptyText || 'None') + '</span>';
+        }
+        return items.map(function (item) {
+            return '<span class="review-chip ' + (extraClass || '') + '">' + escapeHtml(item) + '</span>';
+        }).join('');
+    }
+
+    function renderKeyValue(label, value) {
+        return '<div class="review-key-value"><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(value || '-') + '</strong></div>';
+    }
+
+    function normalizeStageKey(status) {
+        var key = String(status || '').toLowerCase();
+        var aliases = {
+            hold: 'on_hold',
+            interview_slot_booked: 'interview_scheduled'
+        };
+        return aliases[key] || key;
+    }
+
+    function renderDecisionActions(payload) {
+        var applicationId = escapeHtml(payload.applicationId || '');
+        var currentStatus = normalizeStageKey(payload.stageKey || payload.status || payload.stage);
+        var actionSets = {
+            rejected: [
+                { status: 'applied', label: 'Reopen', icon: 'fa-undo' },
+                { status: 'shortlisted', label: 'Shortlist', icon: 'fa-check-circle' },
+                { schedule: true, label: 'Schedule Interview', icon: 'fa-calendar-plus' },
+                { status: 'on_hold', label: 'Hold', icon: 'fa-pause-circle' }
+            ],
+            shortlisted: [
+                { schedule: true, label: 'Schedule Interview', icon: 'fa-calendar-plus' },
+                { status: 'on_hold', label: 'Hold', icon: 'fa-pause-circle' },
+                { status: 'rejected', label: 'Reject', icon: 'fa-times-circle', danger: true }
+            ],
+            interview_scheduled: [
+                { status: 'shortlisted', label: 'Back to Shortlist', icon: 'fa-arrow-left' },
+                { status: 'on_hold', label: 'Hold', icon: 'fa-pause-circle' },
+                { status: 'rejected', label: 'Reject', icon: 'fa-times-circle', danger: true }
+            ],
+            on_hold: [
+                { status: 'shortlisted', label: 'Shortlist', icon: 'fa-check-circle' },
+                { schedule: true, label: 'Schedule Interview', icon: 'fa-calendar-plus' },
+                { status: 'rejected', label: 'Reject', icon: 'fa-times-circle', danger: true }
+            ]
+        };
+        var actions = actionSets[currentStatus] || [
+            { status: 'shortlisted', label: 'Shortlist', icon: 'fa-check-circle' },
+            { schedule: true, label: 'Schedule Interview', icon: 'fa-calendar-plus' },
+            { status: 'on_hold', label: 'Hold', icon: 'fa-pause-circle' },
+            { status: 'rejected', label: 'Reject', icon: 'fa-times-circle', danger: true }
+        ];
+
+        return actions.map(function (action) {
+            if (action.schedule) {
+                return '<button type="button" class="review-action-btn js-open-schedule-interview" data-application-id="' + applicationId + '" data-candidate-name="' + escapeHtml(payload.candidateName || 'Candidate') + '" data-candidate-email="' + escapeHtml(payload.candidateEmail || '') + '"><i class="fas ' + escapeHtml(action.icon) + '"></i> ' + escapeHtml(action.label) + '</button>';
+            }
+            return '<button type="button" class="review-action-btn ' + (action.danger ? 'is-danger ' : '') + 'js-review-stage-action" data-application-id="' + applicationId + '" data-status="' + escapeHtml(action.status) + '"><i class="fas ' + escapeHtml(action.icon) + '"></i> ' + escapeHtml(action.label) + '</button>';
+        }).join('');
+    }
+
+    function openScheduleInterviewModal(button) {
+        var modal = document.getElementById('scheduleInterviewModal');
+        var form = document.getElementById('scheduleInterviewForm');
+        if (!modal || !form) {
+            return;
+        }
+
+        form.reset();
+        form.querySelector('[name="application_id"]').value = button.getAttribute('data-application-id') || '';
+        var candidate = button.getAttribute('data-candidate-name') || 'Candidate';
+        var email = button.getAttribute('data-candidate-email') || '';
+        var subtitle = document.getElementById('scheduleInterviewSubtitle');
+        if (subtitle) {
+            subtitle.textContent = candidate + (email ? ' - ' + email : '');
+        }
+        var dateInput = form.querySelector('[name="interview_date"]');
+        if (dateInput) {
+            dateInput.min = new Date().toISOString().slice(0, 10);
+        }
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeScheduleInterviewModal() {
+        var modal = document.getElementById('scheduleInterviewModal');
+        if (!modal) {
+            return;
+        }
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    function submitScheduleInterview(form) {
+        var $ = window.jQuery;
+        var config = getConfig();
+        var applicationId = form.querySelector('[name="application_id"]').value;
+        var submit = form.querySelector('[type="submit"]');
+        var originalText = submit ? submit.innerHTML : '';
+        var payload = Object.assign({
+            interview_date: form.querySelector('[name="interview_date"]').value,
+            interview_time: form.querySelector('[name="interview_time"]').value,
+            duration_minutes: form.querySelector('[name="duration_minutes"]').value,
+            interview_mode: form.querySelector('[name="interview_mode"]').value,
+            interview_location: form.querySelector('[name="interview_location"]').value,
+            message: form.querySelector('[name="message"]').value,
+            send_email: form.querySelector('[name="send_email"]').checked ? '1' : '0'
+        }, csrfData(config));
+
+        if (!applicationId || !payload.interview_date || !payload.interview_time) {
+            alert('Please choose interview date and time.');
+            return;
+        }
+
+        if (submit) {
+            submit.disabled = true;
+            submit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scheduling';
+        }
+
+        $.ajax({
+            url: config.scheduleUrlBase + applicationId,
+            type: 'POST',
+            dataType: 'json',
+            data: payload
+        }).done(function (response) {
+            updateCsrf(config, response);
+            if (response && response.status === 'success') {
+                closeScheduleInterviewModal();
+                alert(response.message || 'Interview scheduled.');
+                location.reload();
+                return;
+            }
+            alert((response && response.message) || 'Could not schedule interview.');
+        }).fail(function (xhr) {
+            var messageText = 'Could not schedule interview. Please try again.';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                messageText = xhr.responseJSON.message;
+            }
+            alert(messageText);
+        }).always(function () {
+            if (submit) {
+                submit.disabled = false;
+                submit.innerHTML = originalText;
+            }
+        });
+    }
+
+    function openCommunicationDrawer(payload) {
+        var drawer = document.getElementById('communicationDrawer');
+        var backdrop = document.getElementById('communicationDrawerBackdrop');
+        if (!drawer || !backdrop) {
+            return;
+        }
+
+        var title = document.getElementById('communicationDrawerTitle');
+        var subtitle = document.getElementById('communicationDrawerSubtitle');
+        var overview = document.getElementById('communicationDrawerOverview');
+        var skills = document.getElementById('communicationDrawerSkills');
+        var notes = document.getElementById('communicationDrawerNotes');
+        var stats = document.getElementById('communicationDrawerStats');
+        var timeline = document.getElementById('communicationDrawerTimeline');
+        var actions = document.getElementById('communicationDrawerActions');
+        var items = Array.isArray(payload.items) ? payload.items : [];
+
+        title.textContent = payload.candidateName || 'Candidate review';
+        subtitle.textContent = (payload.candidateEmail || '') + (payload.stage ? ' - ' + payload.stage : '');
+        overview.innerHTML =
+            '<section class="review-section">' +
+                '<h4 class="review-section-title">Evaluation</h4>' +
+                '<div class="review-metrics">' +
+                    '<div class="review-metric"><strong>' + escapeHtml(payload.atsScore || 0) + '%</strong><span>ATS match</span></div>' +
+                    '<div class="review-metric"><strong>' + escapeHtml(payload.skillMatch || 0) + '%</strong><span>Skills match</span></div>' +
+                    '<div class="review-metric"><strong>' + escapeHtml(payload.experience || '-') + '</strong><span>Experience</span></div>' +
+                '</div>' +
+                '<div class="review-key-values">' +
+                    renderKeyValue('Location', payload.location) +
+                    renderKeyValue('Applied', payload.appliedAt) +
+                    renderKeyValue('Last active', payload.lastActive) +
+                    renderKeyValue('Phone', payload.phone || 'Not shared') +
+                '</div>' +
+                '<div class="review-note-box">' + escapeHtml(payload.atsReason || 'Score is based on job requirements, candidate skills, experience and profile completeness.') + '</div>' +
+            '</section>';
+
+        skills.innerHTML =
+            '<section class="review-section">' +
+                '<h4 class="review-section-title">Job Fit</h4>' +
+                '<div><strong class="communication-latest">Matched requirements</strong><div class="review-chip-list">' +
+                    renderChipList(payload.matchedSkills, 'No required skills matched') +
+                '</div></div>' +
+                '<div><strong class="communication-latest">Missing requirements</strong><div class="review-chip-list">' +
+                    renderChipList(payload.missingSkills, 'No obvious gaps', 'is-missing') +
+                '</div></div>' +
+                '<div><strong class="communication-latest">Candidate skills</strong><div class="review-chip-list">' +
+                    renderChipList(payload.candidateSkills, 'No skills listed') +
+                '</div></div>' +
+            '</section>';
+
+        notes.innerHTML =
+            '<section class="review-section">' +
+                '<h4 class="review-section-title">Recruiter Context</h4>' +
+                '<div class="review-chip-list">' + renderChipList(payload.tags, 'No tags') + '</div>' +
+                '<div class="review-note-box">' + escapeHtml(payload.notes || 'No recruiter notes yet.') + '</div>' +
+            '</section>';
+
+        stats.innerHTML =
+            '<section class="review-section">' +
+                '<h4 class="review-section-title">Communication</h4>' +
+                '<div class="communication-drawer-stats">' +
+                    '<span class="communication-chip"><i class="fas fa-at"></i>' + escapeHtml(payload.emailCount || 0) + ' emails</span>' +
+                    '<span class="communication-chip"><i class="fas fa-comments"></i>' + escapeHtml(payload.messageCount || 0) + ' messages</span>' +
+                '</div>' +
+            '</section>';
+
+        if (!items.length) {
+            timeline.innerHTML = '<div class="communication-empty-state">No emails or messages have been recorded for this applicant yet.</div>';
+        } else {
+            timeline.innerHTML = items.map(function (item) {
+                var subject = item.subject || communicationLabel(item);
+                var preview = item.preview || '';
+                var itemTypeClass = item.type === 'email' ? 'fa-at' : 'fa-comments';
+                return '<article class="communication-timeline-item">' +
+                    '<div class="communication-timeline-meta">' +
+                        '<span class="communication-chip"><i class="fas ' + itemTypeClass + '"></i>' + escapeHtml(communicationLabel(item)) + '</span>' +
+                        '<span>' + escapeHtml(formatCommunicationDate(item.at)) + '</span>' +
+                    '</div>' +
+                    '<div class="communication-timeline-subject">' + escapeHtml(subject) + '</div>' +
+                    (preview ? '<div class="communication-timeline-preview">' + escapeHtml(preview) + '</div>' : '') +
+                '</article>';
+            }).join('');
+        }
+        timeline.innerHTML = '<section class="review-section"><h4 class="review-section-title">Recent Timeline</h4>' + timeline.innerHTML + '</section>';
+
+        actions.innerHTML =
+            '<section class="review-section">' +
+                '<h4 class="review-section-title">Decision Actions</h4>' +
+                '<div class="review-actions">' +
+                    renderDecisionActions(payload) +
+                    (payload.resumePreviewUrl ? '<a class="review-action-link" href="' + escapeHtml(payload.resumePreviewUrl) + '" target="_blank" rel="noopener"><i class="fas fa-eye"></i> Preview Resume</a>' : '') +
+                    (payload.resumeUrl ? '<a class="review-action-link" href="' + escapeHtml(payload.resumeUrl) + '"><i class="fas fa-download"></i> Resume</a>' : '') +
+                    '<a class="review-action-link" href="' + escapeHtml(payload.profileUrl || '#') + '"><i class="fas fa-user"></i> Full Profile</a>' +
+                '</div>' +
+            '</section>';
+
+        drawer.classList.add('is-open');
+        backdrop.classList.add('is-open');
+        drawer.setAttribute('aria-hidden', 'false');
+        document.documentElement.style.overflowX = 'hidden';
+        document.body.style.overflowX = 'hidden';
+        if (window.pageXOffset > 0) {
+            window.scrollTo(0, window.pageYOffset);
+        }
+    }
+
+    function closeCommunicationDrawer() {
+        var drawer = document.getElementById('communicationDrawer');
+        var backdrop = document.getElementById('communicationDrawerBackdrop');
+        if (!drawer || !backdrop) {
+            return;
+        }
+        drawer.classList.remove('is-open');
+        backdrop.classList.remove('is-open');
+        drawer.setAttribute('aria-hidden', 'true');
+        document.documentElement.style.overflowX = '';
+        document.body.style.overflowX = '';
+    }
+
     window.togglePipelineCandidates = function (source) {
         var table = source.closest('table') || document.getElementById('candidatePipelineTable');
         var checkboxes = table
@@ -167,9 +503,14 @@
             return;
         }
 
-        var btn = $('#bulkEmailModal .btn-primary');
+        var btn = $('#pipelineBulkEmailSendButton');
+        if (!btn.length) {
+            btn = $('#bulkEmailModal button[onclick="sendBulkEmail()"]');
+        }
         var originalText = btn.html();
-        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Sending...');
+        btn.prop('disabled', true)
+            .attr('aria-busy', 'true')
+            .html('<i class="fas fa-spinner fa-spin mr-1"></i> Sending...');
 
         var payload = Object.assign({
             emails: emails,
@@ -194,7 +535,9 @@
                 alert('Failed to send email. Please try again.');
             }
         }).always(function () {
-            btn.prop('disabled', false).html(originalText);
+            btn.prop('disabled', false)
+                .removeAttr('aria-busy')
+                .html(originalText);
         });
     };
 
@@ -255,7 +598,13 @@
     window.updateApplicationStatus = function (applicationId, newStatus) {
         var $ = window.jQuery;
         var config = getConfig();
-        if (!confirm('Move candidate to ' + newStatus + '?')) {
+        var statusLabels = {
+            applied: 'Reopened',
+            shortlisted: 'Shortlisted',
+            on_hold: 'On Hold',
+            rejected: 'Rejected'
+        };
+        if (!confirm('Move candidate to ' + (statusLabels[newStatus] || newStatus) + '?')) {
             return;
         }
 
@@ -402,6 +751,60 @@
                 var rowText = $(this).text().toLowerCase();
                 $(this).toggle(rowText.indexOf(needle) !== -1);
             });
+        });
+
+        $(document).on('click', '.js-open-communication-drawer', function (event) {
+            event.stopPropagation();
+            var raw = this.getAttribute('data-communication') || '{}';
+            var payload = {};
+            try {
+                payload = JSON.parse(raw);
+            } catch (error) {
+                payload = {};
+            }
+            openCommunicationDrawer(payload);
+        });
+
+        $(document).on('click', '.js-open-candidate-review', function (event) {
+            if (event.target.closest('a, button, input, select, textarea, label')) {
+                return;
+            }
+            var raw = this.getAttribute('data-review') || '{}';
+            var payload = {};
+            try {
+                payload = JSON.parse(raw);
+            } catch (error) {
+                payload = {};
+            }
+            openCommunicationDrawer(payload);
+        });
+
+        $(document).on('click', '.js-review-stage-action', function () {
+            var applicationId = this.getAttribute('data-application-id');
+            var status = this.getAttribute('data-status');
+            if (applicationId && status && typeof window.updateApplicationStatus === 'function') {
+                window.updateApplicationStatus(applicationId, status);
+            }
+        });
+
+        $(document).on('click', '.js-open-schedule-interview', function () {
+            openScheduleInterviewModal(this);
+        });
+
+        $(document).on('click', '.js-schedule-interview-close', closeScheduleInterviewModal);
+
+        $(document).on('submit', '#scheduleInterviewForm', function (event) {
+            event.preventDefault();
+            submitScheduleInterview(this);
+        });
+
+        $(document).on('click', '.js-communication-drawer-close', closeCommunicationDrawer);
+
+        $(document).on('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeScheduleInterviewModal();
+                closeCommunicationDrawer();
+            }
         });
 
         $(document).on('click', '.stage-ajax-link, #applications-ajax-container .pagination a', function (event) {

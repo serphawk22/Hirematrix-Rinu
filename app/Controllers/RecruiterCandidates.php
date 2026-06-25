@@ -505,6 +505,56 @@ class RecruiterCandidates extends BaseController
         return $this->response->download($filePath, null);
     }
 
+    public function previewResume($candidateId)
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return redirect()->to(base_url('login'))->with('error', 'Unauthorized');
+        }
+
+        $userModel = new UserModel();
+        $candidate = $userModel->findCandidateWithProfile((int) $candidateId) ?? $userModel->find($candidateId);
+        if (!$candidate || ($candidate['role'] ?? '') !== 'candidate') {
+            return $this->response->setStatusCode(404)->setBody('Resume not found.');
+        }
+
+        $recruiterId = (int) session()->get('user_id');
+        if (!$this->canRecruiterAccessCandidate((int) $candidateId, $recruiterId)) {
+            return $this->response->setStatusCode(403)->setBody('This candidate profile is private unless they apply to your jobs.');
+        }
+
+        $applicationId = (int) ($this->request->getGet('application_id') ?? 0);
+        $jobId = (int) ($this->request->getGet('job_id') ?? 0);
+        $applicationId = $this->resolveApplicationIdForCandidateJob((int) $candidateId, $recruiterId, $applicationId, $jobId);
+        $submittedResumeVersion = $this->getSubmittedResumeVersion((int) $candidateId, $applicationId);
+
+        if ($submittedResumeVersion) {
+            $renderer = new ResumeTemplateRenderer();
+            return $renderer->renderDocument((string) ($submittedResumeVersion['content'] ?? ''), [
+                'name' => (string) ($candidate['name'] ?? 'Candidate'),
+                'target_role' => (string) ($submittedResumeVersion['target_role'] ?? ''),
+                'summary' => (string) ($submittedResumeVersion['summary'] ?? ''),
+                'highlight_skills' => array_values(array_filter(array_map('trim', explode(',', (string) ($submittedResumeVersion['highlight_skills'] ?? ''))))),
+            ]);
+        }
+
+        if (empty($candidate['resume_path'])) {
+            return $this->response->setStatusCode(404)->setBody('Resume file not found.');
+        }
+
+        $filePath = WRITEPATH . $candidate['resume_path'];
+        if (!is_file($filePath)) {
+            return $this->response->setStatusCode(404)->setBody('Resume file not found.');
+        }
+
+        $mime = mime_content_type($filePath) ?: 'application/octet-stream';
+        $disposition = strpos(strtolower((string) $mime), 'pdf') !== false ? 'inline' : 'attachment';
+
+        return $this->response
+            ->setHeader('Content-Type', $mime)
+            ->setHeader('Content-Disposition', $disposition . '; filename="' . basename($filePath) . '"')
+            ->setBody(file_get_contents($filePath));
+    }
+
     public function sendMessage($candidateId)
     {
         if (session()->get('role') !== 'recruiter') {
@@ -710,6 +760,122 @@ class RecruiterCandidates extends BaseController
         }
 
         return redirect()->to($redirectTarget)->with('error', $firstError !== '' ? $firstError : 'No invitations were sent.');
+    }
+
+    public function sendBulkEmail()
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Unauthorized'])->setStatusCode(403);
+        }
+
+        $candidateIds = $this->request->getPost('candidate_ids');
+        $candidateIds = is_array($candidateIds) ? array_values(array_unique(array_map('intval', $candidateIds))) : [];
+        $subject = trim((string) $this->request->getPost('subject'));
+        $body = trim((string) $this->request->getPost('body'));
+
+        if (empty($candidateIds)) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Select at least one candidate.', 'csrf_hash' => csrf_hash()])->setStatusCode(400);
+        }
+
+        if ($subject === '') {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Email subject is required.', 'csrf_hash' => csrf_hash()])->setStatusCode(400);
+        }
+
+        if ($body === '') {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Email body is required.', 'csrf_hash' => csrf_hash()])->setStatusCode(400);
+        }
+
+        $recruiterId = (int) session()->get('user_id');
+        $userModel = new UserModel();
+        $candidates = [];
+
+        foreach ($candidateIds as $candidateId) {
+            if ($candidateId <= 0 || !$this->canRecruiterAccessCandidate($candidateId, $recruiterId)) {
+                continue;
+            }
+
+            $candidate = $userModel->findCandidateWithProfile($candidateId) ?? $userModel->find($candidateId);
+            if (!$candidate || ($candidate['role'] ?? '') !== 'candidate' || empty($candidate['email'])) {
+                continue;
+            }
+
+            $candidates[$candidateId] = $candidate;
+        }
+
+        if (empty($candidates)) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'No valid candidate recipients found.', 'csrf_hash' => csrf_hash()])->setStatusCode(400);
+        }
+
+        $sentCount = 0;
+        $failedCount = 0;
+        $recruiterName = (string) (session()->get('user_name') ?? session()->get('name') ?? 'Recruiter');
+        $companyName = (string) (session()->get('company_name') ?? 'Recruiting Team');
+        $htmlBody = '
+            <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;padding:20px;color:#0f172a;">
+                <div style="background:#1FB7B5;color:#ffffff;padding:20px;border-radius:10px 10px 0 0;">
+                    <h2 style="margin:0;font-size:22px;">Message from HireMatrix</h2>
+                </div>
+                <div style="padding:28px;background:#ffffff;border:1px solid #d9ece5;border-top:none;">
+                    <p style="margin:0;color:#334155;line-height:1.8;">' . nl2br(esc($body)) . '</p>
+                    <hr style="border:none;border-top:1px solid #e2e8f0;margin:28px 0;">
+                    <p style="margin:0;color:#64748b;font-size:14px;line-height:1.7;">
+                        <strong>Best regards,</strong><br>
+                        ' . esc($recruiterName) . '<br>
+                        ' . esc($companyName) . '
+                    </p>
+                </div>
+                <div style="padding:14px;background:#f8fafc;text-align:center;color:#94a3b8;font-size:12px;border:1px solid #d9ece5;border-top:none;border-radius:0 0 10px 10px;">
+                    This email was sent via HireMatrix Recruitment Portal.
+                </div>
+            </div>';
+
+        try {
+            $mailboxService = null;
+            if (\Config\Database::connect()->tableExists('recruiter_mailbox_connections')) {
+                $mailboxConnection = (new \App\Models\RecruiterMailboxConnectionModel())->getConnectedForRecruiter($recruiterId);
+                if ($mailboxConnection) {
+                    $mailboxService = new \App\Libraries\RecruiterMailboxService();
+                }
+            }
+
+            if ($mailboxService !== null) {
+                foreach ($candidates as $candidateId => $candidate) {
+                    $sent = $mailboxService->sendForRecruiter($recruiterId, (string) $candidate['email'], $subject, $htmlBody, [
+                        'candidate_id' => (int) $candidateId,
+                        'application_id' => null,
+                        'job_id' => null,
+                    ]);
+                    $sent ? $sentCount++ : $failedCount++;
+                }
+            } else {
+                $emailConfig = config('Email');
+                $email = \Config\Services::email(null, false);
+                foreach ($candidates as $candidate) {
+                    $email->clear(true);
+                    $email->setMailType('html');
+                    if ($emailConfig->fromEmail !== '') {
+                        $email->setFrom($emailConfig->fromEmail, $emailConfig->fromName ?: 'HireMatrix');
+                    }
+                    $email->setTo((string) $candidate['email']);
+                    $email->setSubject($subject);
+                    $email->setMessage($htmlBody);
+                    $email->send(false) ? $sentCount++ : $failedCount++;
+                }
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'Candidate pool bulk email failed: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Failed to send email. Please try again.',
+                'csrf_hash' => csrf_hash(),
+            ])->setStatusCode(500);
+        }
+
+        return $this->response->setJSON([
+            'status' => 'success',
+            'message' => "Email sent to {$sentCount} candidate(s)." . ($failedCount > 0 ? " {$failedCount} failed." : ''),
+            'csrf_hash' => csrf_hash(),
+        ]);
     }
 
     private function notifyCandidateAction(
