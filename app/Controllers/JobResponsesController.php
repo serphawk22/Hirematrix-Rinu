@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\ApplicationModel;
 use App\Models\JobModel;
+use App\Models\NotificationModel;
 use App\Models\RecruiterCandidateActionModel;
 use App\Models\UserModel;
 
@@ -255,7 +256,7 @@ class JobResponsesController extends BaseController
         $applicationModel->groupBy('applications.id');
 
         if ($stage !== 'all') {
-            $applicationModel->where('applications.status', $stage);
+            $applicationModel->whereIn('applications.status', $this->getRawStatusesForStage($stage));
         }
 
         // Apply Advanced Filters
@@ -296,6 +297,7 @@ class JobResponsesController extends BaseController
         $applicationIds = array_column($applications, 'id');
         // Ensure we don't call the model if application IDs are empty
         $recruiterActions = !empty($applicationIds) ? $actionModel->getSummaryByApplicationIds(null, $applicationIds, $recruiterId) : [];
+        $communicationSummaries = $this->getCommunicationSummaries($applications, $recruiterId, $recruiterJobIds);
 
         // Status mapping to normalize database values for the recruiter UI
         $statusMap = [
@@ -312,6 +314,16 @@ class JobResponsesController extends BaseController
                 'contact_viewed_count' => 0,
                 'resume_downloaded_count' => 0,
                 'last_recruiter_activity_at' => null,
+            ];
+            $app['communication_summary'] = $communicationSummaries[(int) $app['id']] ?? [
+                'email_count' => 0,
+                'message_count' => 0,
+                'latest_type' => '',
+                'latest_direction' => '',
+                'latest_at' => null,
+                'latest_subject' => '',
+                'latest_preview' => '',
+                'items' => [],
             ];
             $app['candidate_skills'] = $this->getCandidateSkills((int) ($app['candidate_id'] ?? 0));
             $app['required_skills'] = $this->parseRequiredSkills($app['required_skills'] ?? '');
@@ -351,6 +363,203 @@ class JobResponsesController extends BaseController
         }
 
         return $applications;
+    }
+
+    private function getRawStatusesForStage(string $stage): array
+    {
+        $aliases = [
+            'applied' => ['applied', 'pending'],
+            'ai_interview_completed' => ['ai_interview_completed', 'ai_evaluated'],
+            'interview_scheduled' => ['interview_scheduled', 'interview_slot_booked'],
+            'offered' => ['offered', 'selected'],
+            'on_hold' => ['on_hold', 'hold'],
+        ];
+
+        return $aliases[$stage] ?? [$stage];
+    }
+
+    private function getCommunicationSummaries(array $applications, int $recruiterId, array $jobIds): array
+    {
+        $db = \Config\Database::connect();
+        $applicationIds = array_values(array_filter(array_map('intval', array_column($applications, 'id'))));
+        $candidateToApplication = [];
+        $summaries = [];
+
+        foreach ($applications as $app) {
+            $applicationId = (int) ($app['id'] ?? 0);
+            $candidateId = (int) ($app['candidate_id'] ?? 0);
+            if ($applicationId <= 0) {
+                continue;
+            }
+
+            if ($candidateId > 0) {
+                $candidateToApplication[$candidateId] = $applicationId;
+            }
+
+            $summaries[$applicationId] = [
+                'email_count' => 0,
+                'message_count' => 0,
+                'latest_type' => '',
+                'latest_direction' => '',
+                'latest_at' => null,
+                'latest_subject' => '',
+                'latest_preview' => '',
+                'items' => [],
+            ];
+        }
+
+        if (empty($summaries)) {
+            return [];
+        }
+
+        if ($db->tableExists('recruiter_candidate_messages') && !empty($applicationIds)) {
+            $messageRows = $db->table('recruiter_candidate_messages')
+                ->select('application_id, sender_role, message, created_at')
+                ->where('recruiter_id', $recruiterId)
+                ->whereIn('application_id', $applicationIds)
+                ->orderBy('created_at', 'DESC')
+                ->get()
+                ->getResultArray();
+
+            foreach ($messageRows as $row) {
+                $applicationId = (int) ($row['application_id'] ?? 0);
+                if (!isset($summaries[$applicationId])) {
+                    continue;
+                }
+
+                $summaries[$applicationId]['message_count']++;
+                $entry = [
+                    'type' => 'message',
+                    'direction' => (string) ($row['sender_role'] ?? '') === 'candidate' ? 'incoming' : 'outgoing',
+                    'at' => $row['created_at'] ?? null,
+                    'subject' => '',
+                    'preview' => (string) ($row['message'] ?? ''),
+                ];
+                $this->maybeSetLatestCommunication($summaries[$applicationId], $entry);
+                $this->appendCommunicationItem($summaries[$applicationId], $entry);
+            }
+        }
+
+        if ($db->tableExists('recruiter_email_activities')) {
+            $emailBuilder = $db->table('recruiter_email_activities')
+                ->select('application_id, candidate_id, direction, subject, body_text, occurred_at, created_at')
+                ->where('recruiter_id', $recruiterId);
+
+            if (!empty($jobIds)) {
+                $emailBuilder->whereIn('job_id', array_values(array_filter(array_map('intval', $jobIds))));
+            }
+
+            $emailBuilder->groupStart();
+            if (!empty($applicationIds)) {
+                $emailBuilder->whereIn('application_id', $applicationIds);
+            }
+            if (!empty($candidateToApplication)) {
+                $emailBuilder->orWhereIn('candidate_id', array_keys($candidateToApplication));
+            }
+            $emailBuilder->groupEnd();
+
+            $emailRows = $emailBuilder
+                ->orderBy('COALESCE(occurred_at, created_at)', 'DESC', false)
+                ->get()
+                ->getResultArray();
+
+            foreach ($emailRows as $row) {
+                $applicationId = (int) ($row['application_id'] ?? 0);
+                if ($applicationId <= 0) {
+                    $applicationId = $candidateToApplication[(int) ($row['candidate_id'] ?? 0)] ?? 0;
+                }
+                if (!isset($summaries[$applicationId])) {
+                    continue;
+                }
+
+                $summaries[$applicationId]['email_count']++;
+                $entry = [
+                    'type' => 'email',
+                    'direction' => (string) ($row['direction'] ?? ''),
+                    'at' => $row['occurred_at'] ?? $row['created_at'] ?? null,
+                    'subject' => (string) ($row['subject'] ?? ''),
+                    'preview' => $this->cleanEmailPreview((string) ($row['body_text'] ?? '')),
+                ];
+                $this->maybeSetLatestCommunication($summaries[$applicationId], $entry);
+                $this->appendCommunicationItem($summaries[$applicationId], $entry);
+            }
+        }
+
+        foreach ($summaries as &$summary) {
+            usort($summary['items'], static function (array $a, array $b): int {
+                return strtotime((string) ($b['at'] ?? '')) <=> strtotime((string) ($a['at'] ?? ''));
+            });
+            $summary['items'] = array_slice($summary['items'], 0, 8);
+        }
+        unset($summary);
+
+        return $summaries;
+    }
+
+    private function maybeSetLatestCommunication(array &$summary, array $entry): void
+    {
+        $entryAt = !empty($entry['at']) ? strtotime((string) $entry['at']) : 0;
+        $currentAt = !empty($summary['latest_at']) ? strtotime((string) $summary['latest_at']) : 0;
+        if ($entryAt < $currentAt) {
+            return;
+        }
+
+        $summary['latest_type'] = (string) ($entry['type'] ?? '');
+        $summary['latest_direction'] = (string) ($entry['direction'] ?? '');
+        $summary['latest_at'] = $entry['at'] ?? null;
+        $summary['latest_subject'] = $this->compactCommunicationText((string) ($entry['subject'] ?? ''), 70);
+        $summary['latest_preview'] = $this->compactCommunicationText((string) ($entry['preview'] ?? ''), 95);
+    }
+
+    private function appendCommunicationItem(array &$summary, array $entry): void
+    {
+        $summary['items'][] = [
+            'type' => (string) ($entry['type'] ?? ''),
+            'direction' => (string) ($entry['direction'] ?? ''),
+            'at' => (string) ($entry['at'] ?? ''),
+            'subject' => $this->compactCommunicationText((string) ($entry['subject'] ?? ''), 120),
+            'preview' => $this->compactCommunicationText((string) ($entry['preview'] ?? ''), 260),
+        ];
+    }
+
+    private function cleanEmailPreview(string $value): string
+    {
+        $value = html_entity_decode(strip_tags($value), ENT_QUOTES, 'UTF-8');
+        $value = str_replace(["\r\n", "\r"], "\n", $value);
+        $value = preg_replace('/^[ \t]*>[ \t]?/m', '', $value) ?? $value;
+
+        $cutPatterns = [
+            '/\n\s*On\s+.+?\bwrote:\s*.*$/is',
+            '/\n\s*From:\s*.+$/is',
+            '/\n\s*-{2,}\s*Original Message\s*-{2,}.*$/is',
+            '/\n\s*This email was sent via HireMatrix.+$/is',
+        ];
+        foreach ($cutPatterns as $pattern) {
+            $value = preg_replace($pattern, '', $value) ?? $value;
+        }
+
+        $value = preg_replace('/^\s*Message from\s+.+?(?=(Dear|Hi|Hello|Thank|We)\b)/is', '', $value) ?? $value;
+        $value = preg_replace('/\s+/', ' ', $value) ?? $value;
+
+        return trim($value);
+    }
+
+    private function compactCommunicationText(string $value, int $limit): string
+    {
+        $value = trim(preg_replace('/\s+/', ' ', strip_tags($value)) ?? '');
+        if ($value === '') {
+            return '';
+        }
+
+        if (function_exists('mb_strlen') && mb_strlen($value) > $limit) {
+            return mb_substr($value, 0, max(0, $limit - 3)) . '...';
+        }
+
+        if (!function_exists('mb_strlen') && strlen($value) > $limit) {
+            return substr($value, 0, max(0, $limit - 3)) . '...';
+        }
+
+        return $value;
     }
 
     /**
@@ -676,6 +885,14 @@ class JobResponsesController extends BaseController
             return $this->response->setJSON(['status' => 'error', 'message' => 'New status is required.'])->setStatusCode(400);
         }
 
+        $allowedStatuses = ['applied', 'shortlisted', 'on_hold', 'rejected'];
+        if (!in_array($newStatus, $allowedStatuses, true)) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Use interview slots to schedule an interview with date and time.'
+            ])->setStatusCode(422);
+        }
+
         $applicationModel = model(ApplicationModel::class);
         $application = $applicationModel->find($applicationId);
 
@@ -691,8 +908,197 @@ class JobResponsesController extends BaseController
         }
 
         $applicationModel->update($applicationId, ['status' => $newStatus]);
+        $this->notifyCandidateForPipelineStatus((array) $application, $newStatus);
+        if ($newStatus === 'rejected') {
+            (new \App\Libraries\ApplicationRejectionMailer())->sendIfEnabled((int) $applicationId, $recruiterId);
+        }
 
         return $this->response->setJSON(['status' => 'success', 'message' => 'Application status updated.']);
+    }
+
+    public function scheduleInterview(int $applicationId)
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Unauthorized'])->setStatusCode(403);
+        }
+
+        $recruiterId = (int) session()->get('user_id');
+        $date = trim((string) $this->request->getPost('interview_date'));
+        $time = trim((string) $this->request->getPost('interview_time'));
+        $duration = (int) $this->request->getPost('duration_minutes');
+        $mode = trim((string) $this->request->getPost('interview_mode'));
+        $location = trim((string) $this->request->getPost('interview_location'));
+        $message = trim((string) $this->request->getPost('message'));
+        $sendEmail = (string) $this->request->getPost('send_email') === '1';
+
+        if ($date === '' || $time === '') {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Interview date and time are required.'
+            ])->setStatusCode(400);
+        }
+
+        $duration = in_array($duration, [30, 45, 60, 90], true) ? $duration : 60;
+        $modeLabels = [
+            'online' => 'Online',
+            'phone' => 'Phone',
+            'in_person' => 'In person',
+        ];
+        if (!isset($modeLabels[$mode])) {
+            $mode = 'online';
+        }
+
+        $interviewAt = \DateTime::createFromFormat('Y-m-d H:i', $date . ' ' . $time);
+        if (!$interviewAt || $interviewAt <= new \DateTime()) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Choose a future interview date and time.'
+            ])->setStatusCode(422);
+        }
+        $interviewDateTime = $interviewAt->format('Y-m-d H:i:s');
+
+        $applicationModel = model(ApplicationModel::class);
+        $application = $applicationModel
+            ->select('applications.*, jobs.recruiter_id, jobs.title as job_title')
+            ->join('jobs', 'jobs.id = applications.job_id')
+            ->where('applications.id', $applicationId)
+            ->first();
+
+        if (!$application) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Application not found.'])->setStatusCode(404);
+        }
+
+        if ((int) $application['recruiter_id'] !== $recruiterId) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'You do not have permission to schedule this interview.'])->setStatusCode(403);
+        }
+
+        if (!empty($application['booking_id']) || (string) ($application['status'] ?? '') === 'interview_slot_booked') {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'This candidate already has an interview booking.'
+            ])->setStatusCode(422);
+        }
+
+        $bookingModel = model('InterviewBookingModel');
+        if ($bookingModel->getByApplicationId($applicationId)) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'This candidate already has an interview booking.'
+            ])->setStatusCode(422);
+        }
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        $slotModel = model('InterviewSlotModel');
+        $slotId = $slotModel->insert([
+            'job_id' => (int) $application['job_id'],
+            'slot_date' => $interviewAt->format('Y-m-d'),
+            'slot_time' => $interviewAt->format('H:i:s'),
+            'slot_datetime' => $interviewDateTime,
+            'capacity' => 1,
+            'booked_count' => 1,
+            'is_available' => 0,
+            'created_by' => $recruiterId,
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $bookingId = $bookingModel->insert([
+            'application_id' => $applicationId,
+            'user_id' => (int) $application['candidate_id'],
+            'job_id' => (int) $application['job_id'],
+            'slot_id' => $slotId,
+            'slot_datetime' => $interviewDateTime,
+            'booking_status' => 'booked',
+            'reschedule_count' => 0,
+            'max_reschedules' => 2,
+            'can_reschedule' => 1,
+            'booked_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $applicationModel->update($applicationId, [
+            'status' => 'interview_slot_booked',
+            'interview_slot' => $interviewDateTime,
+            'booking_id' => $bookingId,
+        ]);
+
+        model('StageHistoryModel')->moveToStage($applicationId, 'Interview Scheduled');
+
+        $slotLabel = $interviewAt->format('M d, Y h:i A');
+        $details = [
+            'Your interview for ' . (string) ($application['job_title'] ?? 'this role') . ' is scheduled for ' . $slotLabel . '.',
+            'Mode: ' . $modeLabels[$mode],
+            'Duration: ' . $duration . ' minutes',
+        ];
+        if ($location !== '') {
+            $details[] = 'Meeting details: ' . $location;
+        }
+        if ($message !== '') {
+            $details[] = 'Recruiter note: ' . $message;
+        }
+
+        model(NotificationModel::class)->createNotification(
+            (int) $application['candidate_id'],
+            $applicationId,
+            'interview_booked',
+            implode("\n", $details),
+            base_url('candidate/my-bookings'),
+            $sendEmail
+        );
+
+        $db->transComplete();
+
+        if (!$db->transStatus()) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Could not schedule interview. Please try again.'
+            ])->setStatusCode(500);
+        }
+
+        if ($bookingId) {
+            $bookingModel->syncToCalendar((int) $bookingId);
+        }
+
+        return $this->response->setJSON([
+            'status' => 'success',
+            'message' => 'Interview invitation sent for ' . $slotLabel . '.',
+            'csrf_hash' => csrf_hash(),
+        ]);
+    }
+
+    private function notifyCandidateForPipelineStatus(array $application, string $status): void
+    {
+        $candidateId = (int) ($application['candidate_id'] ?? 0);
+        $applicationId = (int) ($application['id'] ?? 0);
+        if ($candidateId <= 0 || $applicationId <= 0) {
+            return;
+        }
+
+        $notificationModel = model(NotificationModel::class);
+        $link = base_url('candidate/applications');
+        $type = 'application_status_changed';
+        $message = match ($status) {
+            'applied' => 'Your application has been reopened and is back under recruiter review.',
+            'shortlisted' => 'Congratulations! You are shortlisted. Please book your interview slot.',
+            'on_hold' => 'Your application has been placed on hold for future review.',
+            'rejected' => 'Your application has been updated to Rejected.',
+            default => 'Your application status has been updated.',
+        };
+        $sendEmail = $status !== 'rejected';
+
+        if ($status === 'shortlisted') {
+            $type = 'slot_not_booked';
+            $link = base_url('candidate/book-slot/' . $applicationId);
+        }
+
+        $notificationModel->createNotification(
+            $candidateId,
+            $applicationId,
+            $type,
+            $message,
+            $link,
+            $sendEmail
+        );
     }
 
     /**

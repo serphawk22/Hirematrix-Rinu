@@ -133,8 +133,9 @@ class RecruiterMailbox extends BaseController
             return redirect()->back()->withInput()->with('error', 'Encrypted SSL/TLS connections are required.');
         }
         foreach ([$settings['imap_host'], $settings['smtp_host']] as $host) {
-            if (!$this->isSafeMailHost($host)) {
-                return redirect()->back()->withInput()->with('error', 'Enter a valid public mail-server hostname.');
+            $hostError = $this->validateMailHost($host);
+            if ($hostError !== null) {
+                return redirect()->back()->withInput()->with('error', $hostError);
             }
         }
 
@@ -204,28 +205,72 @@ class RecruiterMailbox extends BaseController
         return redirect()->to(base_url('recruiter/settings?tab=mailbox'))->with($type, $message);
     }
 
+    public function poll()
+    {
+        $recruiterId = (int) session()->get('user_id');
+        if ($recruiterId <= 0 || session()->get('role') !== 'recruiter') {
+            return $this->response->setStatusCode(401)->setJSON([
+                'success' => false,
+                'error' => 'Unauthorized',
+            ]);
+        }
+
+        try {
+            $result = (new RecruiterMailboxService())->syncRecruiterIfStale($recruiterId, 60);
+            $unreadCount = (int) model('NotificationModel')->getUnreadCount($recruiterId);
+
+            return $this->response->setJSON([
+                'success' => $result === null || !empty($result['ok']),
+                'connected' => $result !== null,
+                'skipped' => !empty($result['skipped']),
+                'imported' => (int) ($result['count'] ?? 0),
+                'unread_count' => $unreadCount,
+                'error' => !empty($result['ok']) || $result === null ? null : (string) ($result['error'] ?? 'Sync failed'),
+            ]);
+        } catch (\Throwable $e) {
+            log_message('error', 'Recruiter mailbox browser poll failed: ' . $e->getMessage());
+            return $this->response->setStatusCode(500)->setJSON([
+                'success' => false,
+                'error' => 'Mailbox poll failed',
+            ]);
+        }
+    }
+
     private function verifiedEmail(array $recruiter): string
     {
         return strtolower(trim((string) ($recruiter['official_email'] ?? $recruiter['email'] ?? '')));
     }
 
-    private function isSafeMailHost(string $host): bool
+    private function validateMailHost(string $host): ?string
     {
         if ($host === '' || $host === 'localhost' || filter_var($host, FILTER_VALIDATE_IP)) {
-            return false;
+            return 'Enter a mail-server hostname, not localhost or a raw IP address.';
         }
         if (!filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
-            return false;
+            return 'Enter a valid mail-server hostname, for example mail.example.com.';
         }
+
         $addresses = gethostbynamel($host) ?: [];
+        if (function_exists('dns_get_record')) {
+            $records = @dns_get_record($host, DNS_A + DNS_AAAA) ?: [];
+            foreach ($records as $record) {
+                if (!empty($record['ip'])) {
+                    $addresses[] = (string) $record['ip'];
+                }
+                if (!empty($record['ipv6'])) {
+                    $addresses[] = (string) $record['ipv6'];
+                }
+            }
+        }
+        $addresses = array_values(array_unique(array_filter($addresses)));
         if ($addresses === []) {
-            return false;
+            return 'The deployed server cannot resolve ' . $host . '. Please fix DNS for this hostname or ask hosting support to enable DNS resolution.';
         }
         foreach ($addresses as $address) {
             if (!filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                return false;
+                return 'The hostname ' . $host . ' resolves to a private/reserved IP address. Use a public mail-server hostname.';
             }
         }
-        return true;
+        return null;
     }
 }

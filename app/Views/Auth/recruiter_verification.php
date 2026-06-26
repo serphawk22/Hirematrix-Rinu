@@ -49,17 +49,13 @@
             <div class="row justify-content-center">
                 <div class="col-lg-6">
                     <h2 class="mb-4">Recruiter Verification</h2>
-                    <p class="text-muted">Please verify your company email address and registered phone number to activate your recruiter account.</p>
+                    <p class="text-muted">Please verify your company email address to activate your recruiter account.</p>
 
                     <?php if (session()->getFlashdata('success')): ?>
                         <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
                     <?php endif; ?>
                     <?php if (session()->getFlashdata('error')): ?>
                         <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
-                    <?php endif; ?>
-
-                    <?php if (($isEmailVerified ?? false) && ($isPhoneVerified ?? false)): ?>
-                        <div class="alert alert-success">Your recruiter account verification is complete. You can now log in.</div>
                     <?php endif; ?>
 
                     <div class="card mb-3">
@@ -100,67 +96,6 @@
                         </div>
                     </div>
 
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5>Phone Verification</h5>
-                            <div class="form-group">
-                                <label>Registered Phone</label>
-                                <input type="text" class="form-control" value="<?= esc($phone ?? 'Not available') ?>" readonly>
-                            </div>
-
-                            <?php if ($isPhoneVerified ?? false): ?>
-                                <p class="mb-0 text-success">Your phone number has been verified.</p>
-                            <?php elseif ($canVerifyPhone ?? false): ?>
-                                <?php if (!($hasPendingPhoneOtp ?? false)): ?>
-                                    <p class="text-center mt-4">Send a WhatsApp OTP to verify your registered phone number.</p>
-                                    <form method="post" action="<?= base_url('recruiter/send-phone-otp') ?>">
-                                        <?= csrf_field() ?>
-                                        <input type="hidden" name="email" value="<?= esc($email ?? '') ?>">
-                                        <button type="submit" class="btn btn-primary btn-block mb-4">Send WhatsApp OTP</button>
-                                    </form>
-                                <?php else: ?>
-                                <p class="text-center mt-4">Enter the 6-digit WhatsApp OTP sent to your registered phone number.</p>
-
-                                <form method="post" action="<?= base_url('recruiter/verify-phone-otp') ?>" id="phoneOtpForm">
-                                    <?= csrf_field() ?>
-                                    <input type="hidden" name="email" value="<?= esc($email ?? '') ?>">
-                                    <input type="hidden" name="phone_code" id="phone_verification_code">
-
-                                    <div class="otp-container phone-otp-container">
-                                        <input type="tel" class="otp-input phone-otp-input" maxlength="1" pattern="\d*" inputmode="numeric" required>
-                                        <input type="tel" class="otp-input phone-otp-input" maxlength="1" pattern="\d*" inputmode="numeric" required>
-                                        <input type="tel" class="otp-input phone-otp-input" maxlength="1" pattern="\d*" inputmode="numeric" required>
-                                        <input type="tel" class="otp-input phone-otp-input" maxlength="1" pattern="\d*" inputmode="numeric" required>
-                                        <input type="tel" class="otp-input phone-otp-input" maxlength="1" pattern="\d*" inputmode="numeric" required>
-                                        <input type="tel" class="otp-input phone-otp-input" maxlength="1" pattern="\d*" inputmode="numeric" required>
-                                    </div>
-
-                                    <button type="submit" class="btn btn-primary btn-block mb-4">Verify Phone</button>
-                                </form>
-
-                                <hr>
-                                <form method="post" action="<?= base_url('recruiter/send-phone-otp') ?>">
-                                    <?= csrf_field() ?>
-                                    <input type="hidden" name="email" value="<?= esc($email ?? '') ?>">
-                                    <button type="submit" class="btn btn-link btn-sm p-0">Didn't receive the WhatsApp message? Resend OTP</button>
-                                </form>
-                                <?php endif; ?>
-                            <?php else: ?>
-                                <p class="mb-0 text-danger">A valid registered WhatsApp phone number is required for phone verification.</p>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
-                    <?php if (($isEmailVerified ?? false) && ($isPhoneVerified ?? false)): ?>
-                        <div class="card">
-                            <div class="card-body">
-                                <h5>Verification Complete</h5>
-                                <p class="mb-3 text-success">Your company email and phone number have been verified. You can now access your dashboard.</p>
-                                <a href="<?= base_url('login') ?>" class="btn btn-primary">Go to Login</a>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
                     <p class="mt-3"><a href="<?= base_url('login') ?>">Back to login</a></p>
                 </div>
             </div>
@@ -172,8 +107,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    setupOtpInputs('.otp-input:not(.phone-otp-input)', 'verification_code');
-    setupOtpInputs('.phone-otp-input', 'phone_verification_code');
+    setupOtpInputs('.otp-input', 'verification_code');
 
     function setupOtpInputs(selector, hiddenInputId) {
         const inputs = document.querySelectorAll(selector);

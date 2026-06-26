@@ -433,7 +433,7 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
 }
 .recruiter-bulk-invite-actions {
     display: grid;
-    grid-template-columns: minmax(220px, 1fr) auto;
+    grid-template-columns: minmax(200px, 0.9fr) minmax(220px, 1fr) auto;
     align-items: center;
     gap: 12px;
 }
@@ -532,14 +532,20 @@ body.dark .recruiter-bulk-invite-title {
     }
 }
 </style>
-<div class="recruiter-candidates-jobboard">
+<?php
+$selectedJobTitle = (string) ($selectedJob['title'] ?? '');
+$candidateCount = count($candidates ?? []);
+$aiSuggestionCount = count($aiSuggestions ?? []);
+$returnTo = current_url() . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
+$hasSelectableCandidates = $candidateCount > 0 || $aiSuggestionCount > 0;
+?>
+<div class="recruiter-candidates-jobboard"
+     id="recruiterCandidatePoolPage"
+     data-email-url="<?= base_url('recruiter/candidates/send-bulk-email') ?>"
+     data-csrf-name="<?= csrf_token() ?>"
+     data-csrf-hash="<?= csrf_hash() ?>"
+     data-job-title="<?= esc($selectedJobTitle !== '' ? $selectedJobTitle : 'this opportunity') ?>">
 <div class="container-fluid py-5">
-    <?php
-    $selectedJobTitle = (string) ($selectedJob['title'] ?? '');
-    $candidateCount = count($candidates ?? []);
-    $aiSuggestionCount = count($aiSuggestions ?? []);
-    ?>
-
     <div class="page-board-header page-board-header-tight recruiter-page-board-header">
         <div class="page-board-copy"> 
             <h1 class="page-board-title">Candidate Database</h1>
@@ -607,6 +613,42 @@ body.dark .recruiter-bulk-invite-title {
         </div>
     </div>
 
+    <?php if ($hasSelectableCandidates): ?>
+        <form method="post" action="<?= base_url('recruiter/candidates/invite-job/bulk') ?>"
+              class="recruiter-bulk-invite-form mb-4" id="recruiterBulkInviteForm">
+            <?= csrf_field() ?>
+            <input type="hidden" name="return_to" value="<?= esc($returnTo) ?>">
+            <div class="recruiter-bulk-invite-bar">
+                <div>
+                    <div class="recruiter-bulk-invite-title">Bulk candidate actions</div>
+                    <div class="small text-muted">
+                        Select candidates from the table. <span class="recruiter-bulk-selection-count" id="bulkCandidateCount">0 selected</span>
+                    </div>
+                </div>
+                <div class="recruiter-bulk-invite-actions">
+                    <select name="job_id" class="form-control" id="bulkInviteJobSelect" aria-label="Select job for invitations">
+                        <option value="">Select Job to Invite</option>
+                        <?php foreach (($recruiterJobs ?? []) as $job): ?>
+                            <option value="<?= (int) $job['id'] ?>" <?= (int) ($filters['job_id'] ?? 0) === (int) $job['id'] ? 'selected' : '' ?>>
+                                <?= esc($job['title']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <textarea name="message" class="form-control recruiter-bulk-invite-note" rows="1" maxlength="500"
+                              placeholder="Optional invite note"></textarea>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary recruiter-bulk-invite-submit" id="bulkInviteSubmit" disabled>
+                            <i class="fas fa-paper-plane mr-1"></i> Invite
+                        </button>
+                        <button type="button" class="btn btn-outline-primary recruiter-bulk-invite-submit" id="bulkEmailButton" disabled>
+                            <i class="fas fa-at mr-1"></i> Email
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    <?php endif; ?>
+
     <?php if (!empty($selectedJob)): ?>
         <div class="card shadow-sm recruiter-ai-suggestions-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-header py-3 bg-gradient-primary text-white">
@@ -616,27 +658,6 @@ body.dark .recruiter-bulk-invite-title {
                 <?php if (empty($aiSuggestions)): ?>
                     <p class="text-muted mb-0">No suitable candidates found for this role.</p>
                 <?php else: ?>
-                    <form method="post" action="<?= base_url('recruiter/candidates/invite-job/bulk') ?>"
-                          class="recruiter-bulk-invite-form" id="recruiterBulkInviteForm">
-                        <?= csrf_field() ?>
-                        <input type="hidden" name="job_id" value="<?= (int) ($selectedJob['id'] ?? 0) ?>">
-                        <input type="hidden" name="return_to" value="<?= esc(current_url() . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '')) ?>">
-                        <div class="recruiter-bulk-invite-bar">
-                            <div>
-                                <div class="recruiter-bulk-invite-title">Invite multiple candidates</div>
-                                <div class="small text-muted">
-                                    Select candidates below. <span class="recruiter-bulk-selection-count" id="bulkCandidateCount">0 selected</span>
-                                </div>
-                            </div>
-                            <div class="recruiter-bulk-invite-actions">
-                                <textarea name="message" class="form-control recruiter-bulk-invite-note" rows="1" maxlength="500"
-                                          placeholder="Optional shared note for selected candidates"></textarea>
-                                <button type="submit" class="btn btn-primary recruiter-bulk-invite-submit" id="bulkInviteSubmit" disabled>
-                                    <i class="fas fa-paper-plane mr-1"></i> Invite Selected
-                                </button>
-                            </div>
-                        </div>
-                    </form>
                     <div class="table-responsive">
                         <table class="table table-sm table-hover recruiter-candidates-table">
                             <thead class="thead-light">
@@ -659,6 +680,8 @@ body.dark .recruiter-bulk-invite-title {
                                         <td>
                                             <input type="checkbox" name="candidate_ids[]" value="<?= (int) $candidate['id'] ?>"
                                                    class="recruiter-candidate-checkbox js-candidate-checkbox"
+                                                   data-email="<?= esc($candidate['email'] ?? '') ?>"
+                                                   data-name="<?= esc($candidate['name'] ?? '') ?>"
                                                    aria-label="Select <?= esc($candidate['name'] ?? 'candidate') ?>"
                                                    form="recruiterBulkInviteForm">
                                         </td>
@@ -713,6 +736,10 @@ body.dark .recruiter-bulk-invite-title {
                         <table class="table table-hover recruiter-candidates-table">
                             <thead class="thead-light">
                                 <tr>
+                                    <th style="width: 44px;">
+                                        <input type="checkbox" class="recruiter-candidate-checkbox js-select-all-candidates"
+                                               aria-label="Select all candidates">
+                                    </th>
                                     <th>Candidate</th>
                                     <th>Location</th>
                                     <th>Experience</th>
@@ -724,6 +751,14 @@ body.dark .recruiter-bulk-invite-title {
                             <tbody>
                                 <?php foreach ($candidates as $candidate): ?>
                                     <tr onclick="window.location='<?= base_url('recruiter/candidate/' . $candidate['id'] . '/view-contact') ?>'" style="cursor:pointer;">
+                                        <td onclick="event.stopPropagation();">
+                                            <input type="checkbox" name="candidate_ids[]" value="<?= (int) $candidate['id'] ?>"
+                                                   class="recruiter-candidate-checkbox js-candidate-checkbox"
+                                                   data-email="<?= esc($candidate['email'] ?? '') ?>"
+                                                   data-name="<?= esc($candidate['name'] ?? '') ?>"
+                                                   aria-label="Select <?= esc($candidate['name'] ?? 'candidate') ?>"
+                                                   form="recruiterBulkInviteForm">
+                                        </td>
                                         <td>
                                             <strong><?= esc($candidate['name'] ?? '-') ?></strong><br>
                                             <small class="text-muted"><?= esc($candidate['email'] ?? '-') ?></small>
@@ -769,29 +804,93 @@ body.dark .recruiter-bulk-invite-title {
         </div>
     <?php endif; ?>
 </div>
+
+<div class="modal fade" id="candidatePoolEmailModal" tabindex="-1" role="dialog" aria-labelledby="candidatePoolEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="candidatePoolEmailModalLabel"><i class="fas fa-at mr-2"></i>Send Email to Selected Candidates</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="font-weight-bold">To:</label>
+                    <div id="candidatePoolEmailRecipients" class="p-2 border rounded bg-light" style="max-height: 120px; overflow-y: auto;">
+                        <span class="text-muted">No recipients selected</span>
+                    </div>
+                    <small class="text-muted"><span id="candidatePoolEmailRecipientCount">0</span> recipients</small>
+                </div>
+                <div class="form-group">
+                    <label for="candidatePoolEmailSubject" class="font-weight-bold">Subject:</label>
+                    <input type="text" class="form-control" id="candidatePoolEmailSubject" placeholder="Enter email subject..." required>
+                </div>
+                <div class="form-group">
+                    <label for="candidatePoolEmailBody" class="font-weight-bold">Message:</label>
+                    <textarea class="form-control" id="candidatePoolEmailBody" rows="10" placeholder="Write your email message here..."></textarea>
+                </div>
+                <div class="form-group mb-0">
+                    <label class="font-weight-bold">Quick Templates:</label>
+                    <div class="btn-group btn-group-sm flex-wrap">
+                        <button type="button" class="btn btn-outline-primary" data-template="invite">Invite Intro</button>
+                        <button type="button" class="btn btn-outline-primary" data-template="followup">Follow-up</button>
+                        <button type="button" class="btn btn-outline-primary" data-template="availability">Availability</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-outline-primary" id="candidatePoolSendEmailButton">
+                    <i class="fas fa-paper-plane mr-1"></i> Send Email
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const selectAll = document.querySelector('.js-select-all-candidates');
+    const root = document.getElementById('recruiterCandidatePoolPage');
+    const selectAllBoxes = Array.from(document.querySelectorAll('.js-select-all-candidates'));
     const checkboxes = Array.from(document.querySelectorAll('.js-candidate-checkbox'));
     const submitButton = document.getElementById('bulkInviteSubmit');
+    const emailButton = document.getElementById('bulkEmailButton');
     const countLabel = document.getElementById('bulkCandidateCount');
     const bulkForm = document.getElementById('recruiterBulkInviteForm');
+    const sendEmailButton = document.getElementById('candidatePoolSendEmailButton');
 
-    if (!selectAll || !checkboxes.length || !submitButton || !countLabel || !bulkForm) return;
+    if (!checkboxes.length || !submitButton || !countLabel || !bulkForm || !root) return;
+
+    function escapeHtml(value) {
+        const div = document.createElement('div');
+        div.textContent = value == null ? '' : String(value);
+        return div.innerHTML;
+    }
+
+    function selectedCheckboxes() {
+        return checkboxes.filter(function (checkbox) { return checkbox.checked; });
+    }
 
     function syncSelection() {
-        const selectedCount = checkboxes.filter(function (checkbox) { return checkbox.checked; }).length;
-        selectAll.checked = selectedCount === checkboxes.length;
-        selectAll.indeterminate = selectedCount > 0 && selectedCount < checkboxes.length;
+        const selectedCount = selectedCheckboxes().length;
+        selectAllBoxes.forEach(function (selectAll) {
+            selectAll.checked = selectedCount === checkboxes.length;
+            selectAll.indeterminate = selectedCount > 0 && selectedCount < checkboxes.length;
+        });
         submitButton.disabled = selectedCount === 0;
+        if (emailButton) {
+            emailButton.disabled = selectedCount === 0;
+        }
         countLabel.textContent = selectedCount + (selectedCount === 1 ? ' selected' : ' selected');
     }
 
-    selectAll.addEventListener('change', function () {
-        checkboxes.forEach(function (checkbox) { checkbox.checked = selectAll.checked; });
-        syncSelection();
+    selectAllBoxes.forEach(function (selectAll) {
+        selectAll.addEventListener('change', function () {
+            checkboxes.forEach(function (checkbox) { checkbox.checked = selectAll.checked; });
+            syncSelection();
+        });
     });
 
     checkboxes.forEach(function (checkbox) {
@@ -799,10 +898,137 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     bulkForm.addEventListener('submit', function (event) {
-        if (!checkboxes.some(function (checkbox) { return checkbox.checked; })) {
+        if (!selectedCheckboxes().length) {
             event.preventDefault();
+            return;
+        }
+
+        const jobSelect = document.getElementById('bulkInviteJobSelect');
+        if (!jobSelect || !jobSelect.value) {
+            event.preventDefault();
+            alert('Please select a job before sending invitations.');
         }
     });
+
+    if (emailButton) {
+        emailButton.addEventListener('click', function () {
+            const selected = selectedCheckboxes().filter(function (checkbox) {
+                return checkbox.dataset.email;
+            });
+
+            if (!selected.length) {
+                alert('Please select at least one candidate with an email address.');
+                return;
+            }
+
+            const recipientHtml = selected.map(function (checkbox) {
+                const name = checkbox.dataset.name || checkbox.dataset.email;
+                return '<div class="mb-1"><i class="fas fa-user text-primary mr-1"></i>' +
+                    escapeHtml(name) + ' <small class="text-muted">&lt;' + escapeHtml(checkbox.dataset.email) + '&gt;</small></div>';
+            }).join('');
+
+            document.getElementById('candidatePoolEmailRecipients').innerHTML = recipientHtml;
+            document.getElementById('candidatePoolEmailRecipientCount').textContent = selected.length;
+            document.getElementById('candidatePoolEmailSubject').value = '';
+            document.getElementById('candidatePoolEmailBody').value = '';
+            if (window.jQuery) {
+                window.jQuery('#candidatePoolEmailModal').modal('show');
+            }
+        });
+    }
+
+    document.querySelectorAll('#candidatePoolEmailModal [data-template]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const jobTitle = root.dataset.jobTitle || 'this opportunity';
+            const templates = {
+                invite: {
+                    subject: 'Invitation to connect about ' + jobTitle,
+                    body: 'Dear Candidate,\n\nYour profile looks relevant for ' + jobTitle + '. We would like to connect and share more details about the opportunity.\n\nBest regards,\nRecruiting Team'
+                },
+                followup: {
+                    subject: 'Following up from HireMatrix',
+                    body: 'Dear Candidate,\n\nWe wanted to follow up after reviewing your profile. Please let us know if you are open to discussing relevant opportunities.\n\nBest regards,\nRecruiting Team'
+                },
+                availability: {
+                    subject: 'Availability for a quick discussion',
+                    body: 'Dear Candidate,\n\nWe would like to schedule a quick discussion about your experience and current job preferences. Please share a few suitable time slots.\n\nBest regards,\nRecruiting Team'
+                }
+            };
+            const template = templates[button.dataset.template];
+            if (!template) return;
+            document.getElementById('candidatePoolEmailSubject').value = template.subject;
+            document.getElementById('candidatePoolEmailBody').value = template.body;
+        });
+    });
+
+    if (sendEmailButton) {
+        sendEmailButton.addEventListener('click', function () {
+            const subject = document.getElementById('candidatePoolEmailSubject').value.trim();
+            const body = document.getElementById('candidatePoolEmailBody').value.trim();
+            const selectedIds = selectedCheckboxes()
+                .filter(function (checkbox) { return checkbox.dataset.email; })
+                .map(function (checkbox) { return checkbox.value; });
+
+            if (!subject) {
+                alert('Please enter an email subject.');
+                return;
+            }
+
+            if (!body) {
+                alert('Please enter an email message.');
+                return;
+            }
+
+            if (!selectedIds.length) {
+                alert('No valid recipients found.');
+                return;
+            }
+
+            const formData = new FormData();
+            selectedIds.forEach(function (id) {
+                formData.append('candidate_ids[]', id);
+            });
+            formData.append('subject', subject);
+            formData.append('body', body);
+            formData.append(root.dataset.csrfName, root.dataset.csrfHash);
+
+            const originalText = sendEmailButton.innerHTML;
+            sendEmailButton.disabled = true;
+            sendEmailButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Sending...';
+
+            fetch(root.dataset.emailUrl, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(function (response) {
+                    return response.json().then(function (payload) {
+                        if (!response.ok) throw payload;
+                        return payload;
+                    });
+                })
+                .then(function (payload) {
+                    if (payload.csrf_hash) {
+                        root.dataset.csrfHash = payload.csrf_hash;
+                    }
+                    if (window.jQuery) {
+                        window.jQuery('#candidatePoolEmailModal').modal('hide');
+                    }
+                    alert(payload.message || 'Email sent successfully.');
+                    window.location.reload();
+                })
+                .catch(function (error) {
+                    if (error.csrf_hash) {
+                        root.dataset.csrfHash = error.csrf_hash;
+                    }
+                    alert(error.message || 'Failed to send email. Please try again.');
+                })
+                .finally(function () {
+                    sendEmailButton.disabled = false;
+                    sendEmailButton.innerHTML = originalText;
+                });
+        });
+    }
 
     syncSelection();
 });

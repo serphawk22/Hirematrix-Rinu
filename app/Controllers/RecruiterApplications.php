@@ -348,6 +348,9 @@ class RecruiterApplications extends BaseController
                 (int) $application['id'],
                 $targetStatus
             );
+            if ($targetStatus === 'rejected') {
+                (new \App\Libraries\ApplicationRejectionMailer())->sendIfEnabled((int) $application['id'], $currentUserId);
+            }
             $updated++;
         }
 
@@ -427,6 +430,9 @@ class RecruiterApplications extends BaseController
             $applicationId,
             $status
         );
+        if ($status === 'rejected') {
+            (new \App\Libraries\ApplicationRejectionMailer())->sendIfEnabled($applicationId, (int) $currentUserId);
+        }
 
         $statusLabel = $this->formatApplicationStatusLabel($status);
         if ($isAjax) {

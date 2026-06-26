@@ -311,6 +311,7 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     $routes->post('mailbox/connect-custom', 'RecruiterMailbox::connectCustom');
     $routes->post('mailbox/disconnect', 'RecruiterMailbox::disconnect');
     $routes->post('mailbox/sync', 'RecruiterMailbox::sync');
+    $routes->get('mailbox/poll', 'RecruiterMailbox::poll');
     
     // Leaderboard
     $routes->get('dashboard/leaderboard', 'DashboardController::leaderboard');
@@ -318,6 +319,7 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     
     // Excel Exports
     $routes->get('dashboard/export-excel', 'DashboardController::exportExcel');
+    $routes->post('settings/workflow', 'Recruiter::updateWorkflowSettings');
     
     // Applications by Job (legacy index kept as redirect)
     $routes->get('applications', 'RecruiterApplications::index');
@@ -333,9 +335,11 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     $routes->get('jobs/view/(:num)', 'JobResponsesController::viewJob/$1');
     $routes->get('jobs/preview/(:num)', 'JobResponsesController::previewJob/$1');
     $routes->post('applications/update-status/(:num)', 'JobResponsesController::updateApplicationStatus/$1');
+    $routes->post('applications/schedule-interview/(:num)', 'JobResponsesController::scheduleInterview/$1');
     $routes->post('jobs/(:num)/send-bulk-email', 'JobResponsesController::sendBulkEmail/$1');
     
     $routes->get('candidates', 'RecruiterCandidates::index');
+    $routes->post('candidates/send-bulk-email', 'RecruiterCandidates::sendBulkEmail');
     $routes->get('jobs/edit/(:num)', 'RecruiterJobs::edit/$1');
     $routes->post('jobs/update/(:num)', 'RecruiterJobs::update/$1');
     $routes->get('jobs/close/(:num)', 'RecruiterJobs::close/$1');
@@ -394,6 +398,7 @@ $routes->get('candidate/delete-interest/(:any)', 'Candidate::deleteInterest/$1',
 $routes->get('recruiter/candidate/(:num)', 'RecruiterCandidates::viewProfile/$1', ['filter' => 'recruiter']);
 $routes->get('recruiter/candidate/(:num)/view-contact', 'RecruiterCandidates::viewContact/$1', ['filter' => 'recruiter']);
 $routes->get('recruiter/candidate/(:num)/download-resume', 'RecruiterCandidates::downloadResume/$1', ['filter' => 'recruiter']);
+$routes->get('recruiter/candidate/(:num)/preview-resume', 'RecruiterCandidates::previewResume/$1', ['filter' => 'recruiter']);
 $routes->post('recruiter/candidate/(:num)/send-message', 'RecruiterCandidates::sendMessage/$1', ['filter' => 'recruiter']);
 $routes->post('recruiter/candidate/(:num)/save-notes', 'RecruiterCandidates::saveNotes/$1', ['filter' => 'recruiter']);
 $routes->post('recruiter/candidate/(:num)/invite-job', 'RecruiterCandidates::inviteToJob/$1', ['filter' => 'recruiter']);
@@ -488,6 +493,7 @@ $routes->group('auth', ['filter' => 'auth'], function($routes) {
 
 // Cron/Background job routes (no auth, but secret protected)
 $routes->get('cron/reminders', 'CalendarSyncController::runReminders');
+$routes->get('cron/mailboxes', 'MailboxCronController::sync');
  
                                 
     

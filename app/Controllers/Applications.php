@@ -136,7 +136,7 @@ class Applications extends BaseController
         $mismatch = !empty($jobTitle) && !empty($allCandidateSkills) && 
                     (!$hasJobTitleSkill && !$hasRequiredSkills);
         $aiPolicy = JobModel::normalizeAiPolicy($job['ai_interview_policy'] ?? JobModel::AI_POLICY_REQUIRED_HARD);
-        $initialStatus = $aiPolicy === JobModel::AI_POLICY_OFF ? 'shortlisted' : 'applied';
+        $initialStatus = 'applied';
         $db = \Config\Database::connect();
         $resumeVersion = null;
         if ($db->tableExists('candidate_resume_versions') && $db->fieldExists('resume_version_id', 'applications')) {
@@ -192,10 +192,6 @@ class Applications extends BaseController
         if ($initialStatus === 'filtered_out') {
             $stageModel->moveToStage($applicationId, 'Filtered Out (Knock-out Question)');
         }
-        if ($initialStatus === 'shortlisted') {
-            $stageModel->moveToStage($applicationId, 'Shortlisted (AI Policy OFF)');
-        }
-
         // Mask status for candidate UI response to ensure 'filtered_out' remains hidden
         $displayStatus = ($initialStatus === 'filtered_out') ? 'applied' : $initialStatus;
 
@@ -510,7 +506,7 @@ class Applications extends BaseController
 
     {
         if ($aiPolicy === JobModel::AI_POLICY_OFF) {
-            return 'Job applied successfully. This job skips AI interview and moved to shortlist stage.';
+            return 'Job applied successfully. This job does not require an AI interview.';
         }
 
         if ($aiPolicy === JobModel::AI_POLICY_OPTIONAL) {

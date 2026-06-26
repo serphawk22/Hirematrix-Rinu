@@ -30,7 +30,7 @@ class Recruiter extends BaseController
         }
 
         $activeTab = (string) ($this->request->getGet('tab') ?? 'account');
-        $allowedTabs = ['account', 'mailbox', 'appearance', 'language'];
+        $allowedTabs = ['account', 'workflow', 'mailbox', 'appearance', 'language'];
         if (!in_array($activeTab, $allowedTabs, true)) {
             $activeTab = 'account';
         }
@@ -44,16 +44,58 @@ class Recruiter extends BaseController
         }
         $mailboxConfig = config('RecruiterMailbox');
         $recruiterAccount = model('UserModel')->findRecruiterWithProfile((int) session()->get('user_id')) ?? [];
+        $workflowSettings = [];
+        if (\Config\Database::connect()->tableExists('recruiter_workflow_settings')) {
+            $workflowSettings = (new \App\Models\RecruiterWorkflowSettingModel())->getForRecruiter((int) session()->get('user_id'));
+        } else {
+            $workflowSettings = (new \App\Models\RecruiterWorkflowSettingModel())->defaults();
+        }
 
         return view('recruiter/settings', [
             'activeTab' => $activeTab,
             'mailboxConnection' => $mailboxConnection,
+            'workflowSettings' => $workflowSettings,
             'mailboxProviders' => [
                 'google' => !empty($mailboxConfig->google['client_id']) && !empty($mailboxConfig->google['client_secret']),
                 'microsoft' => !empty($mailboxConfig->microsoft['client_id']) && !empty($mailboxConfig->microsoft['client_secret']),
             ],
             'verifiedRecruiterEmail' => strtolower(trim((string) ($recruiterAccount['official_email'] ?? $recruiterAccount['email'] ?? ''))),
         ]);
+    }
+
+    public function updateWorkflowSettings()
+    {
+        $redirect = $this->ensureVerifiedRecruiter();
+        if ($redirect !== null) {
+            return $redirect;
+        }
+
+        $db = \Config\Database::connect();
+        if (!$db->tableExists('recruiter_workflow_settings')) {
+            return redirect()->to(base_url('recruiter/settings?tab=workflow'))->with('error', 'Workflow settings are not ready yet. Run the latest migrations first.');
+        }
+
+        $subject = trim((string) $this->request->getPost('rejection_email_subject'));
+        $body = trim((string) $this->request->getPost('rejection_email_body'));
+
+        if ($subject === '' || mb_strlen($subject) > 255) {
+            return redirect()->back()->withInput()->with('error', 'Rejection email subject is required and must be under 255 characters.');
+        }
+
+        if ($body === '' || mb_strlen($body) > 4000) {
+            return redirect()->back()->withInput()->with('error', 'Rejection email body is required and must be under 4000 characters.');
+        }
+
+        (new \App\Models\RecruiterWorkflowSettingModel())->saveForRecruiter((int) session()->get('user_id'), [
+            'send_rejection_email' => $this->request->getPost('send_rejection_email') === '1' ? 1 : 0,
+            'rejection_email_subject' => $subject,
+            'rejection_email_body' => $body,
+            'rejection_email_use_mailbox' => $this->request->getPost('rejection_email_use_mailbox') === '1' ? 1 : 0,
+            'rejection_email_allow_system_fallback' => $this->request->getPost('rejection_email_allow_system_fallback') === '1' ? 1 : 0,
+            'rejection_email_cc_self' => $this->request->getPost('rejection_email_cc_self') === '1' ? 1 : 0,
+        ]);
+
+        return redirect()->to(base_url('recruiter/settings?tab=workflow'))->with('success', 'Hiring workflow settings saved.');
     }
 
     public function saveJob()

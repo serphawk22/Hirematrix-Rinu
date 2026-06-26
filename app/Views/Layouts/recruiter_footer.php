@@ -75,7 +75,74 @@ body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td .text-muted {
 <script src="<?= base_url('jobboard/js/bootstrap-select.min.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/custom.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/recruiter-pages.js') ?>"></script>
+<script src="<?= base_url('jobboard/js/recruiter-alerts.js?v=' . @filemtime(FCPATH . 'jobboard/js/recruiter-alerts.js')) ?>"></script>
 <script src="<?= base_url('jobboard/js/notification-actions.js?v=' . @filemtime(FCPATH . 'jobboard/js/notification-actions.js')) ?>"></script>
+<script>
+(function () {
+    'use strict';
+
+    var pollUrl = '<?= base_url('recruiter/mailbox/poll') ?>';
+    var intervalMs = 60000;
+    var firstDelayMs = 10000;
+    var running = false;
+
+    function setNotificationBadge(count) {
+        var notificationLink = document.querySelector('.hm-sb-item[href="<?= base_url('notifications') ?>"]');
+        if (!notificationLink) {
+            return;
+        }
+        var badge = notificationLink.querySelector('.js-recruiter-notification-badge');
+        if (count > 0) {
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'sb-badge js-recruiter-notification-badge';
+                var tooltip = notificationLink.querySelector('.sb-tooltip');
+                notificationLink.insertBefore(badge, tooltip || null);
+            }
+            badge.textContent = count > 99 ? '99+' : String(count);
+        } else if (badge) {
+            badge.remove();
+        }
+    }
+
+    function pollMailbox() {
+        if (running || document.hidden) {
+            return;
+        }
+        running = true;
+        fetch(pollUrl, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin',
+            cache: 'no-store'
+        })
+            .then(function (response) { return response.ok ? response.json() : null; })
+            .then(function (data) {
+                if (!data || !data.success) {
+                    return;
+                }
+                if (typeof data.unread_count !== 'undefined') {
+                    setNotificationBadge(parseInt(data.unread_count, 10) || 0);
+                }
+                if ((parseInt(data.imported, 10) || 0) > 0 && window.location.pathname.indexOf('/notifications') !== -1) {
+                    window.location.reload();
+                }
+            })
+            .catch(function () {})
+            .finally(function () {
+                running = false;
+            });
+    }
+
+    window.setTimeout(pollMailbox, firstDelayMs);
+    window.setInterval(pollMailbox, intervalMs);
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+            pollMailbox();
+        }
+    });
+})();
+</script>
 <?php foreach ((array) ($pageScripts ?? []) as $pageScript): ?>
     <?php if (is_string($pageScript) && trim($pageScript) !== ''): ?>
         <script src="<?= esc($pageScript, 'attr') ?>"></script>

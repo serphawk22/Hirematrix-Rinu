@@ -1681,6 +1681,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
     data-bulk-url="<?= base_url('recruiter/jobs/' . $job['id'] . '/applications/bulk') ?>"
     data-email-url="<?= base_url('recruiter/jobs/' . $job['id'] . '/send-bulk-email') ?>"
     data-status-url-base="<?= base_url('recruiter/applications/update-status/') ?>"
+    data-schedule-url-base="<?= base_url('recruiter/applications/schedule-interview/') ?>"
     data-csrf-name="<?= csrf_token() ?>"
     data-csrf-hash="<?= csrf_hash() ?>"
 >
@@ -1789,7 +1790,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-outline-primary" onclick="sendBulkEmail()">
+                    <button type="button" class="btn btn-outline-primary" id="pipelineBulkEmailSendButton" onclick="sendBulkEmail()">
                         <i class="fas fa-paper-plane mr-1"></i> Send Email
                     </button>
                 </div>

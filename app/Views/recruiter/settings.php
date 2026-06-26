@@ -1,5 +1,5 @@
 <?php
-$allowedTabs = ['account', 'mailbox', 'appearance', 'language'];
+$allowedTabs = ['account', 'workflow', 'mailbox', 'appearance', 'language'];
 $activeTab = (string) ($activeTab ?? 'account');
 if (!in_array($activeTab, $allowedTabs, true)) {
     $activeTab = 'account';
@@ -7,6 +7,7 @@ if (!in_array($activeTab, $allowedTabs, true)) {
 $verifiedRecruiterEmail = (string) ($verifiedRecruiterEmail ?? '');
 $mailDomain = str_contains($verifiedRecruiterEmail, '@') ? substr(strrchr($verifiedRecruiterEmail, '@'), 1) : '';
 $suggestedMailHost = $mailDomain !== '' ? 'mail.' . $mailDomain : '';
+$workflowSettings = (array) ($workflowSettings ?? []);
 ?>
 
 <?= view('Layouts/recruiter_header') ?>
@@ -48,6 +49,12 @@ $suggestedMailHost = $mailDomain !== '' ? 'mail.' . $mailDomain : '';
                             <small>Theme preference</small>
                         </span>
                     </a>
+                    <a href="#workflow" class="recruiter-settings-nav-link <?= $activeTab === 'workflow' ? 'is-active' : '' ?>" data-settings-tab="workflow">
+                        <span>
+                            Hiring Workflow
+                            <small>Decisions and emails</small>
+                        </span>
+                    </a>
                     <a href="#mailbox" class="recruiter-settings-nav-link <?= $activeTab === 'mailbox' ? 'is-active' : '' ?>" data-settings-tab="mailbox">
                         <span>
                             Email Sync
@@ -79,6 +86,51 @@ $suggestedMailHost = $mailDomain !== '' ? 'mail.' . $mailDomain : '';
                             </a>
                         </div>
                     </div>
+                </section>
+
+                <section class="recruiter-settings-panel <?= $activeTab === 'workflow' ? 'is-active' : '' ?>" data-settings-panel="workflow">
+                    <div class="recruiter-settings-panel-title">Hiring Workflow</div>
+                    <div class="recruiter-settings-panel-copy">Control candidate decision communication. Rejection emails are optional and disabled until you turn them on.</div>
+
+                    <form method="post" action="<?= base_url('recruiter/settings/workflow') ?>" class="recruiter-settings-card recruiter-workflow-card">
+                        <?= csrf_field() ?>
+                        <div class="recruiter-settings-card-copy recruiter-workflow-copy">
+                            <h6>Rejection Email</h6>
+                            <p>When enabled, candidates rejected from the pipeline receive a polite email using the template below.</p>
+
+                            <div class="recruiter-workflow-options">
+                                <label class="recruiter-workflow-toggle">
+                                    <input type="checkbox" name="send_rejection_email" value="1" <?= (int) ($workflowSettings['send_rejection_email'] ?? 0) === 1 ? 'checked' : '' ?>>
+                                    <span>Send rejection email when moving an applicant to Rejected</span>
+                                </label>
+                                <label class="recruiter-workflow-toggle">
+                                    <input type="checkbox" name="rejection_email_use_mailbox" value="1" <?= (int) ($workflowSettings['rejection_email_use_mailbox'] ?? 1) === 1 ? 'checked' : '' ?>>
+                                    <span>Use connected company mailbox when available</span>
+                                </label>
+                                <label class="recruiter-workflow-toggle">
+                                    <input type="checkbox" name="rejection_email_allow_system_fallback" value="1" <?= (int) ($workflowSettings['rejection_email_allow_system_fallback'] ?? 1) === 1 ? 'checked' : '' ?>>
+                                    <span>Allow system email fallback if mailbox delivery is unavailable</span>
+                                </label>
+                                <label class="recruiter-workflow-toggle">
+                                    <input type="checkbox" name="rejection_email_cc_self" value="1" <?= (int) ($workflowSettings['rejection_email_cc_self'] ?? 0) === 1 ? 'checked' : '' ?>>
+                                    <span>CC my recruiter login email on fallback emails</span>
+                                </label>
+                            </div>
+
+                            <div class="form-group mt-3">
+                                <label>Subject</label>
+                                <input type="text" name="rejection_email_subject" class="form-control" maxlength="255" value="<?= esc(old('rejection_email_subject', $workflowSettings['rejection_email_subject'] ?? '')) ?>" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Body</label>
+                                <textarea name="rejection_email_body" class="form-control" rows="9" maxlength="4000" required><?= esc(old('rejection_email_body', $workflowSettings['rejection_email_body'] ?? '')) ?></textarea>
+                                <small class="text-muted">Available tokens: {candidate_name}, {job_title}, {company_name}, {recruiter_name}</small>
+                            </div>
+                        </div>
+                        <div class="recruiter-settings-actions recruiter-workflow-actions">
+                            <button type="submit" class="btn btn-outline-primary"><i class="fas fa-save"></i> Save Workflow</button>
+                        </div>
+                    </form>
                 </section>
 
                 <section class="recruiter-settings-panel <?= $activeTab === 'mailbox' ? 'is-active' : '' ?>" data-settings-panel="mailbox">
@@ -263,10 +315,46 @@ $suggestedMailHost = $mailDomain !== '' ? 'mail.' . $mailDomain : '';
 .recruiter-mailbox-custom-copy { flex: 1 1 auto; min-width: 0; }
 .recruiter-mailbox-custom-copy label { display:block; font-size:.78rem; font-weight:700; margin-bottom:.4rem; }
 .recruiter-mailbox-custom-actions { flex:0 0 auto; padding-bottom:1rem; }
+.recruiter-workflow-card { align-items: flex-end !important; }
+.recruiter-workflow-copy { flex: 1 1 auto; min-width: 0; }
+.recruiter-workflow-copy label { display:block; font-size:.78rem; font-weight:700; margin-bottom:.4rem; }
+.recruiter-workflow-options {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+.recruiter-workflow-toggle {
+    align-items: flex-start;
+    background: rgba(31, 183, 181, 0.06);
+    border: 1px solid rgba(31, 183, 181, 0.18);
+    border-radius: 10px;
+    display: flex !important;
+    gap: 10px;
+    margin: 0 !important;
+    padding: 11px 12px;
+}
+.recruiter-workflow-toggle input {
+    margin-top: 3px;
+    accent-color: #1FB7B5;
+}
+.recruiter-workflow-toggle span {
+    color: #16212B;
+    font-size: .86rem;
+    font-weight: 650;
+    line-height: 1.45;
+}
+.recruiter-workflow-actions { flex: 0 0 auto; padding-bottom: 1rem; }
+body.dark .recruiter-workflow-toggle {
+    background: rgba(31, 183, 181, 0.10);
+    border-color: #23343A;
+}
+body.dark .recruiter-workflow-toggle span { color: #F8FAFC; }
 @media (max-width: 991.98px) {
     .recruiter-mailbox-connected-card .recruiter-settings-actions { flex-wrap: wrap; }
     .recruiter-mailbox-custom-card { align-items:stretch !important; flex-direction:column; }
     .recruiter-mailbox-custom-actions { padding-bottom:0; }
+    .recruiter-workflow-card { align-items: stretch !important; flex-direction: column; }
+    .recruiter-workflow-actions { padding-bottom: 0; }
 }
 </style>
 

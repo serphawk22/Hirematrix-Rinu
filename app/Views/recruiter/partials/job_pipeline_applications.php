@@ -88,7 +88,7 @@ body.dark .pipeline-table-wrap {
 ══════════════════════════════════════════ */
 .pipeline-table {
     width: 100%;
-    min-width: 1320px;
+    min-width: 1500px;
     border-collapse: collapse;
     font-size: 0.875rem;
     /* Force every column to its minimum natural width so rows stay single-line */
@@ -382,6 +382,472 @@ body.dark .ats-score-bar { background: #23343A; }
 body.dark .activity-stack span   { color: #94A3B8; }
 body.dark .activity-stack span i { color: #4A5C63; }
 
+.communication-stack {
+    background: transparent;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 240px;
+    min-width: 180px;
+    padding: 0;
+    text-align: left;
+    white-space: normal;
+}
+.communication-stack:hover .communication-preview,
+.communication-stack:focus .communication-preview {
+    color: #0D8A90;
+    text-decoration: underline;
+}
+.communication-counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.communication-chip {
+    align-items: center;
+    background: rgba(31, 183, 181, 0.10);
+    border: 1px solid rgba(31, 183, 181, 0.22);
+    border-radius: 999px;
+    color: #0D8A90;
+    display: inline-flex;
+    font-size: 0.72rem;
+    font-weight: 700;
+    gap: 5px;
+    line-height: 1.2;
+    padding: 3px 8px;
+    white-space: nowrap;
+}
+.communication-chip.is-muted {
+    background: #F1F5F9;
+    border-color: #E2E8F0;
+    color: #64748B;
+}
+.communication-latest {
+    color: #64748B;
+    display: grid;
+    gap: 2px;
+    font-size: 0.74rem;
+    line-height: 1.35;
+    min-width: 0;
+}
+.communication-latest strong {
+    color: #16212B;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.communication-preview {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+body.dark .communication-chip {
+    background: rgba(31, 183, 181, 0.14);
+    border-color: rgba(31, 183, 181, 0.28);
+    color: #5EEAD4;
+}
+body.dark .communication-chip.is-muted {
+    background: #1E293B;
+    border-color: #23343A;
+    color: #94A3B8;
+}
+
+.communication-drawer-backdrop {
+    background: transparent;
+    bottom: 0;
+    display: none;
+    left: 0;
+    pointer-events: none;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 1039;
+}
+.communication-drawer-backdrop.is-open {
+    display: none;
+}
+.communication-drawer {
+    background: #FFFFFF;
+    border-left: 1px solid #D9ECE5;
+    bottom: 0;
+    box-shadow: -12px 0 30px rgba(15, 23, 42, 0.12);
+    display: flex;
+    flex-direction: column;
+    max-width: min(560px, 100vw);
+    position: fixed;
+    right: 0;
+    top: 0;
+    transform: translateX(104%);
+    transition: transform 180ms ease;
+    width: 560px;
+    z-index: 1040;
+}
+.communication-drawer.is-open {
+    transform: translateX(0);
+}
+.communication-drawer-head {
+    border-bottom: 1px solid #D9ECE5;
+    display: grid;
+    gap: 4px;
+    padding: 20px 22px;
+}
+.communication-drawer-title {
+    color: #16212B;
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0;
+}
+.communication-drawer-subtitle {
+    color: #64748B;
+    font-size: 0.82rem;
+}
+.communication-drawer-close {
+    align-items: center;
+    background: transparent;
+    border: 1px solid #D9ECE5;
+    border-radius: 8px;
+    color: #64748B;
+    display: inline-flex;
+    height: 34px;
+    justify-content: center;
+    position: absolute;
+    right: 18px;
+    top: 18px;
+    width: 34px;
+}
+.communication-drawer-body {
+    display: grid;
+    gap: 16px;
+    overflow-y: auto;
+    padding: 18px 22px 26px;
+}
+.review-section {
+    border: 1px solid #D9ECE5;
+    border-radius: 12px;
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+}
+.review-section-title {
+    color: #16212B;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    margin: 0;
+    text-transform: uppercase;
+}
+.review-metrics {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.review-metric {
+    background: #F4FBFA;
+    border: 1px solid #D9ECE5;
+    border-radius: 10px;
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+    padding: 10px;
+}
+.review-metric strong {
+    color: #16212B;
+    font-size: 1rem;
+    font-weight: 850;
+}
+.review-metric span {
+    color: #64748B;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.review-key-values {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.review-key-value {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+.review-key-value span {
+    color: #64748B;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+.review-key-value strong {
+    color: #16212B;
+    font-size: 0.84rem;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+.review-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.review-chip {
+    background: rgba(31, 183, 181, 0.10);
+    border: 1px solid rgba(31, 183, 181, 0.22);
+    border-radius: 999px;
+    color: #0D8A90;
+    font-size: 0.74rem;
+    font-weight: 750;
+    line-height: 1.25;
+    padding: 4px 9px;
+}
+.review-chip.is-missing {
+    background: #FEF2F2;
+    border-color: #FECACA;
+    color: #991B1B;
+}
+.review-note-box {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    color: #475569;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    padding: 11px;
+    white-space: pre-wrap;
+}
+.review-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.review-action-btn,
+.review-action-link {
+    align-items: center;
+    background: transparent;
+    border: 1.5px solid #1FB7B5;
+    border-radius: 8px;
+    color: #0D8A90;
+    display: inline-flex;
+    font-size: 0.78rem;
+    font-weight: 800;
+    gap: 6px;
+    justify-content: center;
+    min-height: 34px;
+    padding: 7px 11px;
+    text-decoration: none !important;
+}
+.review-action-btn:hover,
+.review-action-link:hover {
+    background: #1FB7B5;
+    color: #FFFFFF;
+}
+.review-action-btn.is-danger {
+    border-color: #FCA5A5;
+    color: #B91C1C;
+}
+.review-action-btn.is-danger:hover {
+    background: #B91C1C;
+    border-color: #B91C1C;
+    color: #FFFFFF;
+}
+.schedule-interview-modal {
+    align-items: center;
+    background: rgba(15, 23, 42, 0.55);
+    display: none;
+    inset: 0;
+    justify-content: center;
+    padding: 20px;
+    position: fixed;
+    z-index: 1060;
+}
+.schedule-interview-modal.is-open {
+    display: flex;
+}
+.schedule-interview-dialog {
+    background: #FFFFFF;
+    border: 1px solid #D9ECE5;
+    border-radius: 12px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
+    max-width: 620px;
+    overflow: hidden;
+    width: min(620px, 100%);
+}
+.schedule-interview-head,
+.schedule-interview-foot {
+    align-items: center;
+    border-bottom: 1px solid #D9ECE5;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    padding: 16px 18px;
+}
+.schedule-interview-foot {
+    border-bottom: 0;
+    border-top: 1px solid #D9ECE5;
+    justify-content: flex-end;
+}
+.schedule-interview-title {
+    color: #16212B;
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0;
+}
+.schedule-interview-subtitle {
+    color: #64748B;
+    font-size: 0.82rem;
+    margin-top: 2px;
+}
+.schedule-interview-close {
+    align-items: center;
+    background: transparent;
+    border: 1px solid #D9ECE5;
+    border-radius: 8px;
+    color: #64748B;
+    display: inline-flex;
+    height: 36px;
+    justify-content: center;
+    width: 36px;
+}
+.schedule-interview-body {
+    display: grid;
+    gap: 14px;
+    padding: 18px;
+}
+.schedule-interview-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.schedule-field {
+    display: grid;
+    gap: 6px;
+}
+.schedule-field label {
+    color: #334155;
+    font-size: 0.78rem;
+    font-weight: 800;
+    margin: 0;
+}
+.schedule-field input,
+.schedule-field select,
+.schedule-field textarea {
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    color: #16212B;
+    font-size: 0.9rem;
+    min-height: 40px;
+    padding: 9px 10px;
+    width: 100%;
+}
+.schedule-field textarea {
+    min-height: 92px;
+    resize: vertical;
+}
+.schedule-check {
+    align-items: center;
+    color: #334155;
+    display: flex;
+    font-size: 0.86rem;
+    gap: 8px;
+}
+@media (max-width: 576px) {
+    .schedule-interview-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.pipeline-table tbody tr.is-reviewable {
+    cursor: pointer;
+}
+body.dark .review-section,
+body.dark .review-metric {
+    border-color: #23343A;
+}
+body.dark .review-section-title,
+body.dark .review-metric strong,
+body.dark .review-key-value strong {
+    color: #F8FAFC;
+}
+body.dark .review-metric,
+body.dark .review-note-box {
+    background: #1B2A2F;
+}
+body.dark .review-metric span,
+body.dark .review-key-value span,
+body.dark .review-note-box {
+    color: #94A3B8;
+}
+.communication-drawer-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.communication-timeline {
+    display: grid;
+    gap: 10px;
+}
+.communication-timeline-item {
+    border: 1px solid #D9ECE5;
+    border-radius: 10px;
+    display: grid;
+    gap: 7px;
+    padding: 12px;
+}
+.communication-timeline-meta {
+    align-items: center;
+    color: #64748B;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 0.76rem;
+    font-weight: 700;
+    gap: 7px;
+}
+.communication-timeline-subject {
+    color: #16212B;
+    font-size: 0.86rem;
+    font-weight: 800;
+    line-height: 1.35;
+}
+.communication-timeline-preview {
+    color: #64748B;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    white-space: normal;
+}
+.communication-empty-state {
+    border: 1px dashed #D9ECE5;
+    border-radius: 10px;
+    color: #64748B;
+    font-size: 0.86rem;
+    padding: 18px;
+    text-align: center;
+}
+body.dark .communication-drawer {
+    background: #162327;
+    border-left-color: #23343A;
+}
+body.dark .communication-drawer-head,
+body.dark .communication-timeline-item {
+    border-color: #23343A;
+}
+body.dark .communication-drawer-title,
+body.dark .communication-timeline-subject {
+    color: #F8FAFC;
+}
+body.dark .communication-drawer-subtitle,
+body.dark .communication-timeline-meta,
+body.dark .communication-timeline-preview,
+body.dark .communication-empty-state {
+    color: #94A3B8;
+}
+body.dark .communication-drawer-close {
+    border-color: #23343A;
+    color: #94A3B8;
+}
+body.dark .communication-latest,
+body.dark .communication-latest strong {
+    color: #94A3B8;
+}
+
 /* ══════════════════════════════════════════
    ROW ACTIONS
 ══════════════════════════════════════════ */
@@ -525,7 +991,9 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
     .pipeline-table thead th:nth-child(8),
     .pipeline-table td:nth-child(8),
     .pipeline-table thead th:nth-child(10),
-    .pipeline-table td:nth-child(10) {
+    .pipeline-table td:nth-child(10),
+    .pipeline-table thead th:nth-child(11),
+    .pipeline-table td:nth-child(11) {
         display: none;
     }
     .pipeline-status-select  { max-width: 100px; font-size: 0.72rem; }
@@ -551,6 +1019,7 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
                     <th>Skills</th>
                     <th>Tags</th>
                     <th>Notes</th>
+                    <th>Communication</th>
                     <th>Applied</th>
                     <th>Last Active</th>
                     <th>ATS Match</th>
@@ -567,12 +1036,78 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
                         $lastActive = !empty($app['last_login']) ? date('M d, Y', strtotime($app['last_login'])) : 'Never';
                         $activity = $app['recruiter_activity'] ?? [];
                         $atsScore = (int) ($app['ats_score'] ?? 0);
-                        $candidateSkills = array_slice((array) ($app['candidate_skills'] ?? []), 0, 4);
+                        $allCandidateSkills = array_values((array) ($app['candidate_skills'] ?? []));
+                        $allRequiredSkills = array_values((array) ($app['required_skills'] ?? []));
+                        $candidateSkills = array_slice($allCandidateSkills, 0, 4);
+                        $candidateSkillMap = array_flip(array_map(static fn ($skill): string => strtolower(trim((string) $skill)), $allCandidateSkills));
+                        $matchedSkills = [];
+                        $missingSkills = [];
+                        foreach ($allRequiredSkills as $requiredSkill) {
+                            $skillKey = strtolower(trim((string) $requiredSkill));
+                            if ($skillKey === '') {
+                                continue;
+                            }
+                            if (isset($candidateSkillMap[$skillKey])) {
+                                $matchedSkills[] = (string) $requiredSkill;
+                            } else {
+                                $missingSkills[] = (string) $requiredSkill;
+                            }
+                        }
                         $tags = array_values(array_filter(array_map('trim', explode(',', (string) ($app['recruiter_tags'] ?? '')))));
                         $note = trim((string) ($app['recruiter_notes'] ?? ''));
                         $notePreview = strlen($note) > 90 ? substr($note, 0, 90) . '...' : $note;
+                        $communication = $app['communication_summary'] ?? [];
+                        $emailCount = (int) ($communication['email_count'] ?? 0);
+                        $messageCount = (int) ($communication['message_count'] ?? 0);
+                        $latestAt = !empty($communication['latest_at']) ? date('M d', strtotime((string) $communication['latest_at'])) : '';
+                        $latestType = (string) ($communication['latest_type'] ?? '');
+                        $latestDirection = (string) ($communication['latest_direction'] ?? '');
+                        $latestActor = in_array($latestDirection, ['incoming', 'inbound'], true) ? 'Candidate' : (in_array($latestDirection, ['outgoing', 'outbound'], true) ? 'Recruiter' : 'Latest');
+                        $latestLabel = trim($latestActor . ' ' . $latestType);
+                        $latestPreview = trim((string) ($communication['latest_subject'] ?? ''));
+                        if ($latestPreview === '') {
+                            $latestPreview = trim((string) ($communication['latest_preview'] ?? ''));
+                        }
+                        $communicationPayload = [
+                            'candidateName' => (string) ($app['candidate_name'] ?? '-'),
+                            'candidateEmail' => (string) ($app['candidate_email'] ?? ''),
+                            'emailCount' => $emailCount,
+                            'messageCount' => $messageCount,
+                            'latestPreview' => $latestPreview,
+                            'items' => array_values((array) ($communication['items'] ?? [])),
+                        ];
+                        $reviewPayload = $communicationPayload + [
+                            'applicationId' => (int) ($app['id'] ?? 0),
+                            'candidateId' => (int) ($app['candidate_id'] ?? 0),
+                            'stage' => (string) ($statuses[$appStatus] ?? ucfirst(str_replace('_', ' ', $appStatus))),
+                            'stageKey' => (string) $appStatus,
+                            'atsScore' => $atsScore,
+                            'skillMatch' => (int) ($app['skill_match'] ?? 0),
+                            'experience' => (string) ($app['experience_display'] ?? '-'),
+                            'location' => (string) ($app['candidate_location'] ?? '-'),
+                            'phone' => (string) ($app['candidate_phone'] ?? ''),
+                            'appliedAt' => $appliedAt,
+                            'lastActive' => $lastActive,
+                            'matchedSkills' => array_values($matchedSkills),
+                            'missingSkills' => array_values($missingSkills),
+                            'candidateSkills' => array_values($allCandidateSkills),
+                            'requiredSkills' => array_values($allRequiredSkills),
+                            'atsReason' => count($matchedSkills) . ' of ' . count($allRequiredSkills) . ' required skills matched, with experience and profile completeness included in the score.',
+                            'tags' => array_values($tags),
+                            'notes' => $note,
+                            'resumeUrl' => !empty($app['resume_path']) ? base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '/download-resume?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0)) : '',
+                            'resumePreviewUrl' => !empty($app['resume_path']) ? base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '/preview-resume?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0)) : '',
+                            'profileUrl' => base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0)),
+                        ];
+                        $communicationJson = htmlspecialchars(
+                            json_encode($reviewPayload, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES) ?: '{}',
+                            ENT_QUOTES,
+                            'UTF-8'
+                        );
                     ?>
-                    <tr data-application-row="<?= (int) $app['id'] ?>">
+                    <tr data-application-row="<?= (int) $app['id'] ?>"
+                        class="is-reviewable js-open-candidate-review"
+                        data-review="<?= $communicationJson ?>">
                         <td><input type="checkbox" class="pipeline-check" name="candidate_ids[]" value="<?= (int) $app['id'] ?>" data-email="<?= esc($app['candidate_email'] ?? '') ?>"></td>
                         <td>#<?= (int) $app['id'] ?></td>
                         <td class="candidate-name-cell">
@@ -611,6 +1146,30 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
                                 <small class="pipeline-note-preview" title="<?= esc($note) ?>"><?= esc($notePreview) ?></small>
                             <?php else: ?>
                                 <span class="text-muted">-</span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php if ($emailCount > 0 || $messageCount > 0): ?>
+                                <button type="button" class="communication-stack js-open-communication-drawer"
+                                        data-communication="<?= $communicationJson ?>"
+                                        aria-label="Open communication history for <?= esc($app['candidate_name'] ?? 'candidate') ?>">
+                                    <div class="communication-counts">
+                                        <span class="communication-chip"><i class="fas fa-at"></i><?= $emailCount ?> email<?= $emailCount === 1 ? '' : 's' ?></span>
+                                        <span class="communication-chip"><i class="fas fa-comments"></i><?= $messageCount ?> msg<?= $messageCount === 1 ? '' : 's' ?></span>
+                                    </div>
+                                    <?php if ($latestPreview !== ''): ?>
+                                        <div class="communication-latest" title="<?= esc($latestPreview) ?>">
+                                            <strong><?= esc($latestLabel ?: 'Latest') ?><?= $latestAt !== '' ? ' - ' . esc($latestAt) : '' ?></strong>
+                                            <span class="communication-preview"><?= esc($latestPreview) ?></span>
+                                        </div>
+                                    <?php endif; ?>
+                                </button>
+                            <?php else: ?>
+                                <button type="button" class="communication-stack js-open-communication-drawer"
+                                        data-communication="<?= $communicationJson ?>"
+                                        aria-label="Open communication history for <?= esc($app['candidate_name'] ?? 'candidate') ?>">
+                                    <span class="communication-chip is-muted">No conversation</span>
+                                </button>
                             <?php endif; ?>
                         </td>
                         <td><?= esc($appliedAt) ?></td>
@@ -655,4 +1214,84 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
             <?= $pager->links('default', 'portal_full') ?>
         </div>
     <?php endif; ?>
+
+    <div class="communication-drawer-backdrop js-communication-drawer-close" id="communicationDrawerBackdrop"></div>
+    <aside class="communication-drawer" id="communicationDrawer" aria-hidden="true" aria-labelledby="communicationDrawerTitle">
+        <div class="communication-drawer-head">
+            <button type="button" class="communication-drawer-close js-communication-drawer-close" aria-label="Close candidate review">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="communication-drawer-title" id="communicationDrawerTitle">Candidate review</h3>
+            <div class="communication-drawer-subtitle" id="communicationDrawerSubtitle"></div>
+        </div>
+        <div class="communication-drawer-body">
+            <div id="communicationDrawerOverview"></div>
+            <div id="communicationDrawerSkills"></div>
+            <div id="communicationDrawerNotes"></div>
+            <div class="communication-drawer-stats" id="communicationDrawerStats"></div>
+            <div class="communication-timeline" id="communicationDrawerTimeline"></div>
+            <div id="communicationDrawerActions"></div>
+        </div>
+    </aside>
+    <div class="schedule-interview-modal" id="scheduleInterviewModal" aria-hidden="true">
+        <form class="schedule-interview-dialog" id="scheduleInterviewForm">
+            <input type="hidden" name="application_id" value="">
+            <div class="schedule-interview-head">
+                <div>
+                    <h3 class="schedule-interview-title">Schedule Interview</h3>
+                    <div class="schedule-interview-subtitle" id="scheduleInterviewSubtitle"></div>
+                </div>
+                <button type="button" class="schedule-interview-close js-schedule-interview-close" aria-label="Close schedule interview">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="schedule-interview-body">
+                <div class="schedule-interview-grid">
+                    <div class="schedule-field">
+                        <label for="scheduleInterviewDate">Date</label>
+                        <input type="date" id="scheduleInterviewDate" name="interview_date" required>
+                    </div>
+                    <div class="schedule-field">
+                        <label for="scheduleInterviewTime">Time</label>
+                        <input type="time" id="scheduleInterviewTime" name="interview_time" required>
+                    </div>
+                    <div class="schedule-field">
+                        <label for="scheduleInterviewDuration">Duration</label>
+                        <select id="scheduleInterviewDuration" name="duration_minutes">
+                            <option value="30">30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60" selected>60 minutes</option>
+                            <option value="90">90 minutes</option>
+                        </select>
+                    </div>
+                    <div class="schedule-field">
+                        <label for="scheduleInterviewMode">Mode</label>
+                        <select id="scheduleInterviewMode" name="interview_mode">
+                            <option value="online">Online</option>
+                            <option value="phone">Phone</option>
+                            <option value="in_person">In person</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="schedule-field">
+                    <label for="scheduleInterviewLocation">Meeting link or location</label>
+                    <input type="text" id="scheduleInterviewLocation" name="interview_location" maxlength="255" placeholder="Google Meet link, office address, or phone details">
+                </div>
+                <div class="schedule-field">
+                    <label for="scheduleInterviewMessage">Message to candidate</label>
+                    <textarea id="scheduleInterviewMessage" name="message" maxlength="1000" placeholder="Add context, preparation notes, or interviewer details."></textarea>
+                </div>
+                <label class="schedule-check">
+                    <input type="checkbox" name="send_email" value="1" checked>
+                    Send email invitation to candidate
+                </label>
+            </div>
+            <div class="schedule-interview-foot">
+                <button type="button" class="review-action-btn js-schedule-interview-close">Cancel</button>
+                <button type="submit" class="review-action-btn">
+                    <i class="fas fa-paper-plane"></i> Send Invitation
+                </button>
+            </div>
+        </form>
+    </div>
 <?php endif; ?>

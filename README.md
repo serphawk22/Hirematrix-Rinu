@@ -198,6 +198,14 @@ Run mailbox synchronization manually or schedule it every 5–10 minutes:
 php spark mailboxes:sync
 ```
 
+If the hosting panel cannot run CLI commands, call the HTTP cron endpoint instead. Set a strong `cron.secret` in `.env`, then schedule:
+
+```text
+{{base_url}}/cron/mailboxes?secret=YOUR_CRON_SECRET
+```
+
+For near real-time recruiter email history, run this every 1-5 minutes. IMAP/SMTP does not push replies to the portal by itself; the cron endpoint polls connected mailboxes and stores any new candidate replies.
+
 OAuth tokens are encrypted with the configured `encryption.key`. Never remove or rotate that key without reconnecting existing mailboxes.
 
 Private/cPanel-hosted company mailboxes can use **Other Provider (IMAP/SMTP)** in the same settings panel. Enter the secure server names and ports supplied by the mail host (normally IMAP 993 with SSL/TLS and SMTP 465 with SSL/TLS, or SMTP 587 with STARTTLS). The portal tests both logins before saving and encrypts the mailbox credential with `encryption.key`.
