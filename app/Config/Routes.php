@@ -117,6 +117,7 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->get('job-search-strategy/(:num)', 'ApiDashboardController::getJobSearchStrategy/$1');
     $routes->get('jobs/featured', 'ApiJobsController::getFeaturedJobs');
     $routes->get('local-companies/init', 'Companies::initLocalCompanies');
+    $routes->get('jobs/detail/(:num)', 'ApiJobsController::getJobDetails/$1');
     $routes->get('jobs/(:num)', 'ApiJobsController::getJobs/$1');
     $routes->get('jobs/saved/(:num)', 'ApiJobsController::getSavedJobs/$1');
     $routes->post('jobs/save', 'ApiJobsController::saveJob');
@@ -185,6 +186,7 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         $routes->get('applications', 'API_RecruiterController::getApplications');
         $routes->get('candidates', 'API_RecruiterController::getCandidateDatabase');
         $routes->post('candidates/invite', 'API_RecruiterController::inviteCandidate');
+        $routes->post('candidates/bulk_invite', 'API_RecruiterController::bulkInviteCandidate');
         $routes->get('candidates/(:num)', 'API_RecruiterController::getCandidateProfile/$1');
         $routes->post('candidates/(:num)/action', 'API_RecruiterController::logCandidateAction/$1');
         $routes->post('candidates/(:num)/message', 'API_RecruiterController::sendCandidateMessage/$1');

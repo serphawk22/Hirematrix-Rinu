@@ -19,6 +19,42 @@ class ApiJobsController extends ResourceController
 {
     protected $format = 'json';
 
+    public function getJobDetails($jobId)
+    {
+        $candidateId = (int) $this->request->getGet('candidate_id');
+        $jobId = (int) $jobId;
+        
+        if ($jobId <= 0) {
+            return $this->fail('Invalid Job ID');
+        }
+
+        $jobModel = new JobModel();
+        
+        $builder = $jobModel->select('jobs.*, companies.name as company_name, companies.logo as company_logo')
+                            ->join('companies', 'companies.id = jobs.company_id', 'left')
+                            ->where('jobs.id', $jobId)
+                            ->where('jobs.status', 'open');
+        
+        $job = $builder->first();
+
+        if (!$job) {
+            return $this->fail('Job not found or is closed');
+        }
+
+        $job['is_saved'] = false;
+        if ($candidateId > 0) {
+            $savedModel = new \App\Models\SavedJobModel();
+            $job['is_saved'] = $savedModel->where(['candidate_id' => $candidateId, 'job_id' => $jobId])->countAllResults() > 0;
+        }
+
+        return $this->respond([
+            'status' => 'success',
+            'data' => [
+                'job' => $job
+            ]
+        ]);
+    }
+
     public function getJobs($candidateId)
     {
         $candidateId = (int) $candidateId;

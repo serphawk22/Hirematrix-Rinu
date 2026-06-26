@@ -1358,6 +1358,16 @@ class API_RecruiterController extends ResourceController
             'workplace_photos' => empty($existingPhotos) ? null : json_encode($existingPhotos)
         ]);
 
+        $allowEmail = (int) ($candidate['job_alert_notify_email'] ?? 1) === 1;
+        if ($allowEmail) {
+            $this->sendCandidateActionEmail(
+                $candidate,
+                'Invitation to Apply',
+                $message,
+                $jobLink
+            );
+        }
+
         return $this->respond([
             'success' => true,
             'message' => 'Company workplace photo uploaded successfully',
@@ -1398,6 +1408,16 @@ class API_RecruiterController extends ResourceController
         $companyModel->update($company['id'], [
             'workplace_photos' => empty($updatedPhotos) ? null : json_encode($updatedPhotos)
         ]);
+
+        $allowEmail = (int) ($candidate['job_alert_notify_email'] ?? 1) === 1;
+        if ($allowEmail) {
+            $this->sendCandidateActionEmail(
+                $candidate,
+                'Invitation to Apply',
+                $message,
+                $jobLink
+            );
+        }
 
         return $this->respond([
             'success' => true,
@@ -2142,10 +2162,155 @@ class API_RecruiterController extends ResourceController
             'created_at' => date('Y-m-d H:i:s'),
         ]);
 
+        $allowEmail = (int) ($candidate['job_alert_notify_email'] ?? 1) === 1;
+        if ($allowEmail) {
+            $this->sendCandidateActionEmail(
+                $candidate,
+                'Invitation to Apply',
+                $message,
+                $jobLink
+            );
+        }
+
         return $this->respond([
             'success' => true,
             'message' => 'Invitation sent successfully.'
         ]);
+    }
+
+    public function bulkInviteCandidate()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        $candidateIdsRaw = $this->request->getVar('candidate_ids');
+        $jobId = $this->request->getVar('job_id');
+        $customMessage = trim((string) ($this->request->getVar('message') ?? ''));
+
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+        if (empty($candidateIdsRaw)) return $this->fail('Candidate IDs required');
+        if (!$jobId) return $this->fail('Job ID required');
+
+        $candidateIds = is_array($candidateIdsRaw) ? $candidateIdsRaw : explode(',', $candidateIdsRaw);
+        $candidateIds = array_map('intval', array_filter($candidateIds));
+
+        if (empty($candidateIds)) {
+            return $this->fail('Invalid candidate IDs format');
+        }
+
+        $job = (new JobModel())
+            ->where('id', $jobId)
+            ->where('recruiter_id', $recruiterId)
+            ->where('status', 'open')
+            ->first();
+
+        if (!$job) {
+            return $this->fail('Select a valid open job before sending invitations.');
+        }
+
+        if (mb_strlen($customMessage) > 500) {
+            return $this->fail('Invitation note is too long. Max 500 characters.');
+        }
+
+        $db = \Config\Database::connect();
+        if (!$db->tableExists('recruiter_job_invitations')) {
+            return $this->fail('Invitation tracking is not ready yet. Run the latest migrations first.');
+        }
+
+        $userModel = new UserModel();
+        $invitationModel = new \App\Models\RecruiterJobInvitationModel();
+        $notificationModel = new \App\Models\NotificationModel();
+        $applicationModel = new ApplicationModel();
+
+        $successCount = 0;
+        $failedCount = 0;
+        $firstError = '';
+
+        foreach ($candidateIds as $candidateId) {
+            $candidate = $userModel->findCandidateWithProfile($candidateId) ?? $userModel->find($candidateId);
+            if (!$candidate || ($candidate['role'] ?? '') !== 'candidate') {
+                $failedCount++;
+                if (!$firstError) $firstError = "Candidate $candidateId not found.";
+                continue;
+            }
+
+            // Check recruiter accessibility
+            $allowPublic = (int) ($candidate['allow_public_recruiter_visibility'] ?? 1) === 1;
+            $hasApplied = false;
+            if (!$allowPublic) {
+                $application = clone $applicationModel;
+                $application = $application
+                    ->select('applications.id')
+                    ->join('jobs', 'jobs.id = applications.job_id')
+                    ->where('applications.candidate_id', $candidateId)
+                    ->where('jobs.recruiter_id', $recruiterId)
+                    ->first();
+                $hasApplied = !empty($application);
+            }
+
+            $candidateName = $candidate['name'] ?? "Candidate #$candidateId";
+
+            if (!$allowPublic && !$hasApplied) {
+                $failedCount++;
+                if (!$firstError) $firstError = "$candidateName's profile is private.";
+                continue;
+            }
+
+            $existingApplication = clone $applicationModel;
+            $existingApplication = $existingApplication
+                ->where('job_id', $jobId)
+                ->where('candidate_id', $candidateId)
+                ->where('status !=', 'withdrawn')
+                ->first();
+
+            if ($existingApplication) {
+                $failedCount++;
+                if (!$firstError) $firstError = "$candidateName already applied for this job.";
+                continue;
+            }
+
+            if ($invitationModel->findActiveInvitation($recruiterId, $candidateId, $jobId)) {
+                $failedCount++;
+                if (!$firstError) $firstError = "Active invitation for $candidateName already exists.";
+                continue;
+            }
+
+            $defaultMessage = "Hi " . ($candidate['name'] ?? 'there') . ", we would love for you to apply to the " . ($job['title'] ?? 'this role') . " position at " . ($job['company'] ?? 'our company') . "!";
+            $message = $customMessage !== '' ? $customMessage : $defaultMessage;
+
+            $invitationId = $invitationModel->createInvitation($recruiterId, $candidateId, $jobId, $message);
+            $jobLink = base_url('job/' . $jobId . '?invitation=' . $invitationId);
+
+            $notificationModel->insert([
+                'user_id' => $candidateId,
+                'application_id' => null,
+                'type' => 'job_invitation',
+                'title' => 'Invitation to Apply',
+                'message' => $message,
+                'action_link' => $jobLink,
+                'is_read' => 0,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            $allowEmail = (int) ($candidate['job_alert_notify_email'] ?? 1) === 1;
+            if ($allowEmail) {
+                $this->sendCandidateActionEmail(
+                    $candidate,
+                    'Invitation to Apply',
+                    $message,
+                    $jobLink
+                );
+            }
+
+            $successCount++;
+        }
+
+        if ($successCount > 0) {
+            return $this->respond([
+                'success' => true,
+                'message' => "Successfully sent $successCount invitation(s)." . ($failedCount > 0 ? " ($failedCount failed: $firstError)" : "")
+            ]);
+        } else {
+            return $this->fail("Failed to send invitations: $firstError");
+        }
     }
 
     public function getCandidateProfile($candidateId)
@@ -2914,6 +3079,16 @@ class API_RecruiterController extends ResourceController
             'capacity' => $capacity
         ]);
 
+        $allowEmail = (int) ($candidate['job_alert_notify_email'] ?? 1) === 1;
+        if ($allowEmail) {
+            $this->sendCandidateActionEmail(
+                $candidate,
+                'Invitation to Apply',
+                $message,
+                $jobLink
+            );
+        }
+
         return $this->respond([
             'success' => true,
             'message' => 'Slot updated successfully'
@@ -2978,6 +3153,16 @@ class API_RecruiterController extends ResourceController
         $userModel->update($recruiterId, [
             'password' => password_hash((string)$newPassword, PASSWORD_DEFAULT),
         ]);
+
+        $allowEmail = (int) ($candidate['job_alert_notify_email'] ?? 1) === 1;
+        if ($allowEmail) {
+            $this->sendCandidateActionEmail(
+                $candidate,
+                'Invitation to Apply',
+                $message,
+                $jobLink
+            );
+        }
 
         return $this->respond([
             'success' => true,
@@ -3341,6 +3526,16 @@ class API_RecruiterController extends ResourceController
             'slot_datetime'  => $newDatetime,
             'booking_status' => 'rescheduled',
         ]);
+
+        $allowEmail = (int) ($candidate['job_alert_notify_email'] ?? 1) === 1;
+        if ($allowEmail) {
+            $this->sendCandidateActionEmail(
+                $candidate,
+                'Invitation to Apply',
+                $message,
+                $jobLink
+            );
+        }
 
         return $this->respond([
             'success' => true,
