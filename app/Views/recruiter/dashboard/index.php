@@ -686,7 +686,7 @@
 
     <div class="container-fluid recruiter-dashboard-main">
 
-        <div class="page-board-header page-board-header-tight recruiter-page-board-header mb-4">
+        <div class="page-board-header page-board-header-tight recruiter-page-board-header mb-3">
             <div class="page-board-copy">
                 <span class="page-board-kicker"><i class="fas fa-chart-line"></i> Hiring analytics</span>
                 <h1 class="page-board-title">Recruitment Overview</h1>
@@ -695,11 +695,108 @@
             <?php if (empty($noJobs)): ?>
                 <div class="page-board-actions">
                     <a href="<?= base_url('recruiter/dashboard/export-excel?type=overview') ?>" class="btn btn-outline-primary">
-                        <i class="fas fa-file-excel"></i> Export Overview Report
+                        <i class="fas fa-file-excel"></i> Export
                     </a>
                 </div>
             <?php endif; ?>
         </div>
+
+        <!-- ── Quick Actions Bar (LinkedIn-style) ── -->
+        <div class="hm-quick-actions mb-4">
+            <a href="<?= base_url('recruiter/post_job') ?>" class="hm-qa-btn">
+                <span class="hm-qa-icon"><i class="fas fa-plus"></i></span>
+                <span class="hm-qa-label">Post Job</span>
+            </a>
+            <a href="<?= base_url('recruiter/jobs') ?>" class="hm-qa-btn">
+                <span class="hm-qa-icon"><i class="fas fa-file-alt"></i></span>
+                <span class="hm-qa-label">Applications</span>
+                <?php if (!empty($pendingActions['pending_screening']) && $pendingActions['pending_screening'] > 0): ?>
+                    <span class="hm-qa-badge"><?= (int)$pendingActions['pending_screening'] ?></span>
+                <?php endif; ?>
+            </a>
+            <a href="<?= base_url('recruiter/candidates') ?>" class="hm-qa-btn">
+                <span class="hm-qa-icon"><i class="fas fa-users"></i></span>
+                <span class="hm-qa-label">Candidates</span>
+            </a>
+            <a href="<?= base_url('recruiter/slots/create') ?>" class="hm-qa-btn">
+                <span class="hm-qa-icon"><i class="fas fa-calendar-plus"></i></span>
+                <span class="hm-qa-label">Create Slot</span>
+            </a>
+            <a href="<?= base_url('recruiter/slots/bookings') ?>" class="hm-qa-btn">
+                <span class="hm-qa-icon"><i class="fas fa-calendar-check"></i></span>
+                <span class="hm-qa-label">Bookings</span>
+                <?php if (!empty($pendingActions['hr_interviews_today']) && $pendingActions['hr_interviews_today'] > 0): ?>
+                    <span class="hm-qa-badge"><?= (int)$pendingActions['hr_interviews_today'] ?></span>
+                <?php endif; ?>
+            </a>
+            <a href="<?= base_url('recruiter/dashboard/leaderboard') ?>" class="hm-qa-btn">
+                <span class="hm-qa-icon"><i class="fas fa-trophy"></i></span>
+                <span class="hm-qa-label">Leaderboard</span>
+            </a>
+        </div>
+        <style>
+        .hm-quick-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .hm-qa-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: 50px;
+            border: 1.5px solid #D9ECE5;
+            background: #fff;
+            color: #16212B;
+            font-size: 13.5px;
+            font-weight: 600;
+            text-decoration: none !important;
+            position: relative;
+            transition: border-color .18s, background .18s, color .18s;
+            white-space: nowrap;
+        }
+        .hm-qa-btn:hover {
+            border-color: #1FB7B5;
+            background: #E8F9F8;
+            color: #0D8A90;
+            text-decoration: none !important;
+        }
+        .hm-qa-icon {
+            width: 26px; height: 26px;
+            background: #E8F9F8;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px;
+            color: #0D8A90;
+            flex-shrink: 0;
+        }
+        .hm-qa-badge {
+            position: absolute;
+            top: -6px; right: -6px;
+            min-width: 18px; height: 18px;
+            background: #1FB7B5;
+            border-radius: 9px;
+            font-size: 10px; font-weight: 700; color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 4px;
+            border: 2px solid #fff;
+        }
+        body.dark .hm-qa-btn {
+            background: #000;
+            border-color: #23343A;
+            color: #94A3B8;
+        }
+        body.dark .hm-qa-btn:hover {
+            border-color: #1FB7B5;
+            background: rgba(31,183,181,.08);
+            color: #1FB7B5;
+        }
+        body.dark .hm-qa-icon {
+            background: #1B3035;
+            color: #1FB7B5;
+        }
+        </style>
 
         <?php if (!empty($noJobs)): ?>
         <div class="card mb-4 recruiter-dashboard-panel-card" style="border-radius: 20px !important;overflow: hidden;">

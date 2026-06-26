@@ -1114,7 +1114,29 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
                             <strong><?= esc($app['candidate_name'] ?? '-') ?></strong>
                             <small><?= esc($app['candidate_email'] ?? '-') ?></small>
                         </td>
-                        <td><span class="status-pill"></i><?= esc($statuses[$appStatus] ?? ucfirst(str_replace('_', ' ', $appStatus))) ?></span></td>
+                        <td onclick="event.stopPropagation();">
+                            <div class="hm-status-drop" style="position:relative;display:inline-block;">
+                                <button class="status-pill hm-status-drop-btn" type="button"
+                                    style="border:none;background:rgba(22,33,43,0.07);cursor:pointer;"
+                                    title="Change status">
+                                    <?= esc($statuses[$appStatus] ?? ucfirst(str_replace('_', ' ', $appStatus))) ?>
+                                </button>
+                                <div class="hm-status-drop-menu" style="display:none;position:absolute;left:0;top:100%;min-width:180px;background:#fff;border:1px solid #D9ECE5;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.08);z-index:9999;padding:4px 0;">
+                                    <?php foreach ($statuses as $sv => $sl): ?>
+                                        <?php if ($sv !== $appStatus && in_array($sv, ['applied','shortlisted','on_hold','rejected'], true)): ?>
+                                            <a class="hm-status-drop-item hm-pipeline-status-change"
+                                               href="#"
+                                               style="display:block;padding:8px 16px;font-size:0.88rem;color:#16212B;text-decoration:none;"
+                                               data-application-id="<?= (int)$app['id'] ?>"
+                                               data-status="<?= esc($sv) ?>"
+                                               data-label="<?= esc($sl) ?>">
+                                                <?= esc($sl) ?>
+                                            </a>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </td>
                         <td><?= esc($app['experience_display'] ?? '-') ?></td>
                         <td>
                             <?php if (!empty($candidateSkills)): ?>
@@ -1294,4 +1316,4 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
             </div>
         </form>
     </div>
-<?php endif; ?>
+<?php endif; ?><style>\nbody.dark .dropdown-menu{background:#162327!important;border-color:#23343A!important;}body.dark .dropdown-item{color:#94A3B8!important;background:transparent!important;}\nbody.dark .dropdown-item:hover{background:rgba(31,183,181,.1)!important;color:#F8FAFC!important;}\n</style><script>\n(function(){\nvar page=document.getElementById("recruiterPipelinePage");\nif(!page)return;\ndocument.addEventListener("click",function(e){\nvar item=e.target.closest(".hm-pipeline-status-change");\nif(!item)return;\ne.preventDefault();e.stopPropagation();\nvar appId=item.dataset.applicationId,status=item.dataset.status,label=item.dataset.label;\nvar drop=item.closest(".hm-status-drop"),btn=drop?drop.querySelector(".hm-status-drop-btn"):null;\nvar base=page.dataset.statusUrlBase||"";\nvar url=base+appId;\nif(status==="shortlisted")url=base.replace("update-status/","shortlist/")+appId;\nelse if(status==="rejected")url=base.replace("update-status/","reject/")+appId;\nif(btn){btn.textContent="...";btn.disabled=true;}\nvar fd=new FormData();\nfd.append(page.dataset.csrfName,page.dataset.csrfHash);\nfd.append("status",status);\nfetch(url,{method:"POST",headers:{"X-Requested-With":"XMLHttpRequest","Accept":"application/json"},body:fd})\n.then(function(r){return r.json().catch(function(){return{success:r.ok};});})\n.then(function(p){\nif(p&&p.csrf_hash&&p.csrf_token_name){page.dataset.csrfHash=p.csrf_hash;document.querySelectorAll("input[name="+p.csrf_token_name+"]").forEach(function(i){i.value=p.csrf_hash;});}\nif(btn){btn.textContent=label;btn.disabled=false;}\n}).catch(function(){if(btn){btn.textContent=label;btn.disabled=false;}});\n});\n})();\n</script>

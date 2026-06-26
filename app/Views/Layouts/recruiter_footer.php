@@ -149,6 +149,8 @@ body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td .text-muted {
     <?php endif; ?>
 <?php endforeach; ?>
 
+<?= view('recruiter/partials/chatbot_widget') ?>
+
 </div>
 </body>
 </html>

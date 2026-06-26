@@ -658,226 +658,222 @@ body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header
     border: none !important;
 }
 
+/* ══════════════════════════════════════
+   INLINE TOOLBAR (stats + filters)
+══════════════════════════════════════ */
+.slots-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #D9ECE5;
+}
+body.dark .slots-toolbar { border-bottom-color: #23343A; }
+
+.slots-stats {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+}
+.slots-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 18px;
+    line-height: 1.2;
+}
+.slots-stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #16212B;
+}
+body.dark .slots-stat-value { color: #F8FAFC; }
+.slots-stat-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94A3B8;
+}
+.slots-stat-divider {
+    width: 1px;
+    height: 28px;
+    background: #D9ECE5;
+    flex-shrink: 0;
+}
+body.dark .slots-stat-divider { background: #23343A; }
+
+.slots-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-left: auto;
+}
+.slots-filter-input {
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid #D9ECE5;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #16212B;
+    background: #fff;
+    outline: none;
+    transition: border-color .2s;
+}
+.slots-filter-input:focus { border-color: #0D8A90; }
+body.dark .slots-filter-input {
+    background: #1B2A2F;
+    border-color: #23343A;
+    color: #F8FAFC;
+}
+.slots-filter-btn {
+    height: 34px;
+    padding: 0 14px;
+    border: 1.5px solid #1FB7B5;
+    border-radius: 6px;
+    background: transparent;
+    color: #1FB7B5;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+}
+.slots-filter-btn:hover { background: #1FB7B5; color: #fff; }
+.slots-filter-clear {
+    font-size: 0.82rem;
+    color: #94A3B8;
+    text-decoration: none !important;
+    white-space: nowrap;
+}
+.slots-filter-clear:hover { color: #ef4444; }
+
 </style>
 <div class="recruiter-slots-jobboard">
 <div class="container-fluid py-5">
     <div class="page-board-header page-board-header-tight recruiter-page-board-header">
         <div class="page-board-copy"> 
-            <h1 class="page-board-title">Interview Slots Management</h1>
+            <h1 class="page-board-title">Interview Slots</h1>
             <p class="page-board-subtitle">Create, review, and manage slots before candidates book interview windows.</p>
         </div>
         <div class="page-board-actions">
-            <a href="<?= base_url('recruiter/slots/create') ?>" class="btn btn-outline-primary">
-               Create New Slots
-            </a>
-            <a href="<?= base_url('recruiter/slots/bookings') ?>" class="btn btn-outline-primary">
-                 View All Bookings
-            </a>
+            <a href="<?= base_url('recruiter/slots/create') ?>" class="btn btn-outline-primary">Create New Slots</a>
+            <a href="<?= base_url('recruiter/slots/bookings') ?>" class="btn btn-outline-primary">View All Bookings</a>
         </div>
     </div>
 
-    <div class="row mb-4">
-        <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card recruiter-stat-card recruiter-stat-applications shadow h-100" style="border-radius: 20px !important;overflow: hidden;">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Slots</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $stats['total_slots'] ?></div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
+    <div class="card shadow-sm recruiter-table-card" style="border-radius:20px !important;overflow:visible;">
+
+        <!-- Inline stat strip + filters in one header row -->
+        <div class="slots-toolbar">
+            <div class="slots-stats">
+                <div class="slots-stat">
+                    <span class="slots-stat-value"><?= $stats['total_slots'] ?></span>
+                    <span class="slots-stat-label">Total</span>
+                </div>
+                <div class="slots-stat-divider"></div>
+                <div class="slots-stat">
+                    <span class="slots-stat-value" style="color:#1FB7B5;"><?= $stats['available_slots'] ?></span>
+                    <span class="slots-stat-label">Available</span>
+                </div>
+                <div class="slots-stat-divider"></div>
+                <div class="slots-stat">
+                    <span class="slots-stat-value" style="color:#f59e0b;"><?= $stats['fully_booked'] ?></span>
+                    <span class="slots-stat-label">Full</span>
+                </div>
+                <div class="slots-stat-divider"></div>
+                <div class="slots-stat">
+                    <span class="slots-stat-value" style="color:#6366f1;"><?= $stats['total_bookings'] ?></span>
+                    <span class="slots-stat-label">Bookings</span>
                 </div>
             </div>
-        </div>
 
-        <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card recruiter-stat-card recruiter-stat-openjobs shadow h-100" style="border-radius: 20px !important;overflow: hidden;">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">Available Slots</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $stats['available_slots'] ?></div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card recruiter-stat-card recruiter-stat-conversion shadow h-100" style="border-radius: 20px !important;overflow: hidden;">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Fully Booked</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $stats['fully_booked'] ?></div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card recruiter-stat-card recruiter-stat-bookings shadow h-100" style="border-radius: 20px !important;overflow: hidden;">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Bookings</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $stats['total_bookings'] ?></div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-users fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card shadow-sm recruiter-filter-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
-        <div class="card-body">
-            <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
-                <div>
-                    <h6 class="m-0 font-weight-bold text-primary">Filters</h6>
-                    <p class="text-muted mb-0">Narrow the schedule by job, date, and slot availability.</p>
-                </div>
-            </div>
-            <form method="get" action="<?= base_url('recruiter/slots') ?>" class="recruiter-slot-filter-form">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Job</label>
-                            <select name="job_id" class="form-control">
-                                <option value="">All Jobs</option>
-                                <?php foreach ($jobs as $job): ?>
-                                    <option value="<?= $job['id'] ?>" <?= ($filters['job_id'] ?? '') == $job['id'] ? 'selected' : '' ?>>
-                                        <?= esc($job['title']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Date</label>
-                            <input type="date" name="date" class="form-control" value="<?= esc($filters['date'] ?? '') ?>">
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Status</label>
-                            <select name="status" class="form-control">
-                                <option value="">All Status</option>
-                                <option value="available" <?= ($filters['status'] ?? '') === 'available' ? 'selected' : '' ?>>Available</option>
-                                <option value="full" <?= ($filters['status'] ?? '') === 'full' ? 'selected' : '' ?>>Fully Booked</option>
-                                <option value="past" <?= ($filters['status'] ?? '') === 'past' ? 'selected' : '' ?>>Past Slots</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-outline-primary btn-block">
-                                <i class="fas fa-search"></i> Filter
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <form method="get" action="<?= base_url('recruiter/slots') ?>" class="slots-filters">
+                <select name="job_id" class="slots-filter-input">
+                    <option value="">All Jobs</option>
+                    <?php foreach ($jobs as $job): ?>
+                        <option value="<?= $job['id'] ?>" <?= ($filters['job_id'] ?? '') == $job['id'] ? 'selected' : '' ?>><?= esc($job['title']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <input type="date" name="date" class="slots-filter-input" value="<?= esc($filters['date'] ?? '') ?>">
+                <select name="status" class="slots-filter-input">
+                    <option value="">All Status</option>
+                    <option value="available" <?= ($filters['status'] ?? '') === 'available' ? 'selected' : '' ?>>Available</option>
+                    <option value="full" <?= ($filters['status'] ?? '') === 'full' ? 'selected' : '' ?>>Fully Booked</option>
+                    <option value="past" <?= ($filters['status'] ?? '') === 'past' ? 'selected' : '' ?>>Past</option>
+                </select>
+                <button type="submit" class="slots-filter-btn"><i class="fas fa-search"></i></button>
+                <?php if (!empty($filters['job_id']) || !empty($filters['date']) || !empty($filters['status'])): ?>
+                    <a href="<?= base_url('recruiter/slots') ?>" class="slots-filter-clear">Clear</a>
+                <?php endif; ?>
             </form>
         </div>
-    </div>
 
-    <div class="card shadow-sm recruiter-table-card" style="border-radius: 20px !important;overflow: hidden;">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Interview Slots</h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover recruiter-slots-table">
-                    <thead class="thead-light">
+        <div class="table-responsive">
+            <table class="table table-hover recruiter-slots-table mb-0">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Job</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Capacity</th>
+                        <th>Booked</th>
+                        <th>Status</th>
+                        <th>Created By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($slots)): ?>
                         <tr>
-                            <th>ID</th>
-                            <th>Job</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Capacity</th>
-                            <th>Booked</th>
-                            <th>Status</th>
-                            <th>Created By</th>
-                            <th>Actions</th>
+                            <td colspan="8" class="text-center py-5">No slots found</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($slots)): ?>
-                            <tr>
-                                <td colspan="9" class="text-center py-5">No slots found</td>
+                    <?php else: ?>
+                        <?php foreach ($slots as $slot): ?>
+                            <?php
+                            $isPast = strtotime($slot['slot_datetime']) < time();
+                            $isAvailable = $slot['is_available'] && !$isPast;
+                            $isFull = $slot['booked_count'] >= $slot['capacity'];
+                            ?>
+                            <tr class="<?= $isPast ? 'table-secondary' : ($isFull ? 'table-warning' : '') ?>">
+                                <td><?= esc($slot['job_title']) ?></td>
+                                <td><?= date('M d, Y', strtotime($slot['slot_date'])) ?></td>
+                                <td><strong><?= date('h:i A', strtotime($slot['slot_time'])) ?></strong></td>
+                                <td><?= $slot['capacity'] ?></td>
+                                <td><?= $slot['booked_count'] ?></td>
+                                <td>
+                                    <?php if ($isPast): ?>
+                                        <span class="status-pill">Past</span>
+                                    <?php elseif ($isFull): ?>
+                                        <span class="status-pill" style="color:#f59e0b;">Full</span>
+                                    <?php elseif ($isAvailable): ?>
+                                        <span class="status-pill">Available</span>
+                                    <?php else: ?>
+                                        <span class="status-pill">Unavailable</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?= esc($slot['created_by_name']) ?></td>
+                                <td>
+                                    <?php if ($slot['booked_count'] == 0): ?>
+                                        <a href="<?= base_url('recruiter/slots/edit/' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        <a href="<?= base_url('recruiter/slots/delete/' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary" onclick="return confirm('Delete this slot?')" style="color:#ef4444;border-color:#ef4444;">Delete</a>
+                                    <?php else: ?>
+                                        <span class="text-muted">Has bookings</span>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
-                        <?php else: ?>
-                            <?php foreach ($slots as $slot): ?>
-                                <?php
-                                $isPast = strtotime($slot['slot_datetime']) < time();
-                                $isAvailable = $slot['is_available'] && !$isPast;
-                                $isFull = $slot['booked_count'] >= $slot['capacity'];
-                                ?>
-                                <tr class="<?= $isPast ? 'table-secondary' : ($isFull ? 'table-warning' : '') ?>">
-                                    <td><?= $slot['id'] ?></td>
-                                    <td><?= esc($slot['job_title']) ?></td>
-                                    <td><?= date('M d, Y', strtotime($slot['slot_date'])) ?></td>
-                                    <td><strong><?= date('h:i A', strtotime($slot['slot_time'])) ?></strong></td>
-                                    <td><?= $slot['capacity'] ?></td>
-                                    <td>
-                                        <span>
-                                            <?= $slot['booked_count'] ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <?php if ($isPast): ?>
-                                            <span>Past</span>
-                                        <?php elseif ($isFull): ?>
-                                            <span >Full</span>
-                                        <?php elseif ($isAvailable): ?>
-                                            <span  >Available</span>
-                                        <?php else: ?>
-                                            <span  >Unavailable</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?= esc($slot['created_by_name']) ?></td>
-                                    <td>
-                                        <?php if ($slot['booked_count'] == 0): ?>
-                                            <a href="<?= base_url('recruiter/slots/edit/' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="<?= base_url('recruiter/slots/delete/' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary" onclick="return confirm('Delete this slot?')" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        <?php else: ?>
-                                            <span class="text-muted">Has bookings</span>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links') && $pager->getPageCount() > 1): ?>
-                <div class="mt-3">
-                    <?= $pager->links('default', 'portal_full') ?>
-                </div>
-            <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
+
+        <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links') && $pager->getPageCount() > 1): ?>
+            <div class="px-3 py-2">
+                <?= $pager->links('default', 'portal_full') ?>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 </div>

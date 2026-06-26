@@ -293,12 +293,7 @@ $payrollType = old('payroll_type', '');
                                 </div>
                             </div>
                             <?php $selectedPolicy = $aiInterviewAllowed ? old('ai_interview_policy', 'REQUIRED_HARD') : 'OFF'; ?>
-                            <div class="col-12" id="aiInterviewUnavailableWrap" <?= $aiInterviewAllowed ? 'style="display: none;"' : '' ?>>
-                                <div class="alert alert-info py-2 mb-3">
-                                    AI interview settings are available only for software and technical jobs.
-                                </div>
-                            </div>
-                            <div class="col-sm-6" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
+                            <div class="col-12" id=<div class="col-sm-6" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
                                 <div class="form-group">
                                     <label>AI Interview Policy</label>
                                     <select class="form-control" name="ai_interview_policy" id="ai_interview_policy" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>

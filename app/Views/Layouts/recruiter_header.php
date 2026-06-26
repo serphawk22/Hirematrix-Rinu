@@ -1494,12 +1494,27 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                 <span class="sb-tooltip">Candidates</span>
             </a>
 
-            <a href="<?= base_url('recruiter/slots') ?>"
-               class="hm-sb-item <?= $isActive('recruiter/slots') ?>">
+            <button class="hm-sb-item <?= ($isActive('recruiter/slots')) ? 'active sb-open' : '' ?>"
+                    id="hmSlotsBtn" aria-expanded="false">
                 <i class="fas fa-calendar-alt sb-icon"></i>
                 <span class="sb-label">Interview Slots</span>
+                <i class="fas fa-chevron-down sb-arrow"></i>
                 <span class="sb-tooltip">Slots</span>
-            </a> 
+            </button>
+            <div class="hm-sb-sub <?= $isActive('recruiter/slots') ? 'sb-open' : '' ?>" id="hmSlotsSub">
+                <a href="<?= base_url('recruiter/slots') ?>"
+                   class="hm-sb-subitem <?= ($isActive('recruiter/slots') && !str_contains($currentUri, 'bookings')) ? 'active' : '' ?>">
+                   Manage Slots
+                </a>
+                <a href="<?= base_url('recruiter/slots/create') ?>"
+                   class="hm-sb-subitem <?= $isActive('recruiter/slots/create') ? 'active' : '' ?>">
+                   Create Slot
+                </a>
+                <a href="<?= base_url('recruiter/slots/bookings') ?>"
+                   class="hm-sb-subitem <?= str_contains($currentUri, 'bookings') ? 'active' : '' ?>">
+                   View Bookings
+                </a>
+            </div>
 
             <a href="<?= base_url('notifications') ?>"
                class="hm-sb-item <?= $isActive('notifications') ?>">
@@ -1520,7 +1535,12 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                 <span class="sb-tooltip">Export Data</span>
             </a>
 
-            
+            <a href="<?= base_url('recruiter/settings') ?>"
+               class="hm-sb-item <?= $isActive('recruiter/settings') ?>">
+                <i class="fas fa-cog sb-icon"></i>
+                <span class="sb-label">Settings</span>
+                <span class="sb-tooltip">Settings</span>
+            </a>
 
         </nav>
 
@@ -1576,6 +1596,8 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     var overlay     = document.getElementById('hmOverlay');
     var jobsBtn     = document.getElementById('hmJobsBtn');
     var jobsSub     = document.getElementById('hmJobsSub');
+    var slotsBtn    = document.getElementById('hmSlotsBtn');
+    var slotsSub    = document.getElementById('hmSlotsSub');
     var profileCard = document.getElementById('hmProfileCard');
     var profileSub  = document.getElementById('hmProfileSub');
  
@@ -1623,6 +1645,12 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
  
     jobsBtn && jobsBtn.addEventListener('click', function () {
         var open = jobsSub.classList.toggle('sb-open');
+        this.classList.toggle('sb-open', open);
+        this.setAttribute('aria-expanded', open);
+    });
+
+    slotsBtn && slotsBtn.addEventListener('click', function () {
+        var open = slotsSub.classList.toggle('sb-open');
         this.classList.toggle('sb-open', open);
         this.setAttribute('aria-expanded', open);
     });

@@ -366,21 +366,7 @@ body.dark .card .card-body h3.text-warning {
     </div>
 
     <?php if (!empty($filters['skill']) || !empty($filters['job_id']) || !empty($filters['sort_by'])): ?>
-        <div class="alert alert-info alert-dismissible fade show recruiter-alert" role="alert">
-            <strong>Active Filters:</strong>
-            <?php if (!empty($filters['sort_by'])): ?>
-                <span class="status-pill">Sort: <?= ucwords(str_replace('_', ' ', $filters['sort_by'])) ?></span>
-            <?php endif; ?>
-            <?php if (!empty($filters['skill'])): ?>
-                <span class="status-pill">Skill: <?= esc($filters['skill']) ?></span>
-            <?php endif; ?>
-            <?php if (!empty($filters['job_id'])): ?>
-                <span class="status-pill">Job Selected</span>
-            <?php endif; ?>
-            <a href="<?= $leaderboardAction ?>" class="btn btn-sm btn-outline-primary ml-2">
-                Clear All
-            </a>
-        </div>
+
     <?php endif; ?>
 
     <div class="card shadow-sm recruiter-leaderboard-card" style="border-radius: 20px !important;overflow: hidden;">
@@ -390,10 +376,6 @@ body.dark .card .card-body h3.text-warning {
             </h6>
         </div>
         <div class="card-body">
-            <div class="alert alert-light border mb-4">
-                <strong>How to use this page:</strong> compare candidate quality here, then open a candidate application to shortlist, reject, or message from the candidate list.
-            </div>
-
             <?php if (empty($candidates)): ?>
                 <div class="text-center py-5"> 
                     <p class="text-muted mb-0">No candidates found for this leaderboard</p>

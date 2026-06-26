@@ -2143,11 +2143,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                     </h6>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-light border mb-4">
-                        <strong>How to use this page:</strong> compare candidate quality here, then return to Candidates to shortlist, reject, or message applicants.
-                    </div>
-
-                    <?php if (empty($leaderboard)): ?>
+<?php if (empty($leaderboard)): ?>
                         <div class="text-center py-5">
                             <i class="fas fa-trophy fa-3x text-muted mb-3"></i>
                             <p class="text-muted mb-0">No candidates found for this leaderboard</p>

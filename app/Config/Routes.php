@@ -132,6 +132,11 @@ $routes->get('career-transition/download-pdf', 'CareerTransitionPDF_TCPDF::downl
 $routes->get('career-transition/history', 'CareerTransition::history', ['filter' => 'candidate']);
 $routes->get('career-transition/reactivate/(:num)', 'CareerTransition::reactivate/$1', ['filter' => 'candidate']);
 // Dashboard Routes (Admin)
+// AI Chatbot routes — no auth filter needed because the controller handles auth itself
+// and returns proper JSON errors instead of HTML redirects that break fetch()
+$routes->post('recruiter/chatbot/ask', 'RecruiterChatbotController::ask');
+$routes->get('recruiter/chatbot/suggestions', 'RecruiterChatbotController::suggestions');
+
 $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recruiter'], function($routes) {
     
     // Main Dashboard
@@ -324,6 +329,3 @@ $routes->group('auth', ['filter' => 'auth'], function($routes) {
 // Cron/Background job routes (no auth, but secret protected)
 $routes->get('cron/reminders', 'CalendarSyncController::runReminders');
 $routes->get('cron/mailboxes', 'MailboxCronController::sync');
- 
-                                
-    
