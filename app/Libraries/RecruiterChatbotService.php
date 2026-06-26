@@ -228,7 +228,7 @@ class RecruiterChatbotService
     {
         $db = \Config\Database::connect();
         $result = $db->query("
-            SELECT u.id, u.name, u.email, u.location, u.created_at
+            SELECT u.id, u.name, u.email, '' AS location, u.created_at
             FROM users u
             WHERE u.id IN (
                 SELECT DISTINCT a.candidate_id
@@ -300,13 +300,13 @@ class RecruiterChatbotService
     {
         $db = \Config\Database::connect();
         $result = $db->query("
-            SELECT ib.id, ib.slot_id, ib.candidate_id, ib.user_id,
+            SELECT ib.id, ib.slot_id, ib.user_id,
                    ib.booking_status AS status, ib.booked_at AS booked_at,
                    s.slot_date, s.slot_time, s.slot_datetime, s.is_available AS slot_is_available,
                    u.name AS candidate_name, u.email AS candidate_email
             FROM interview_bookings ib
             JOIN interview_slots s ON ib.slot_id = s.id
-            JOIN users u ON ib.candidate_id = u.id
+            JOIN users u ON ib.user_id = u.id
             WHERE s.created_by = ?
             ORDER BY s.slot_date DESC
             LIMIT 30

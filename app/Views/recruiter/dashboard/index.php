@@ -1,1096 +1,714 @@
 <?= view('Layouts/recruiter_header', ['title' => 'Recruiter Dashboard', 'showHero' => false]) ?>
 
 <div class="recruiter-dashboard-jobboard">
-    <?php
-    $applicationsUrl = base_url('recruiter/jobs');
-    $jobsUrl         = base_url('recruiter/jobs');
-    $conversionUrl   = base_url('recruiter/dashboard') . '#conversion-metrics';
-    $bookingsUrl     = base_url('recruiter/slots/bookings');
-    $postJobUrl      = base_url('recruiter/post_job');
-    $slotsUrl        = base_url('recruiter/slots');
-    $leaderboardUrl  = base_url('recruiter/dashboard/leaderboard');
+<?php
+$applicationsUrl = base_url('recruiter/jobs');
+$jobsUrl         = base_url('recruiter/jobs');
+$conversionUrl   = base_url('recruiter/dashboard') . '#conversion-metrics';
+$bookingsUrl     = base_url('recruiter/slots/bookings');
+$postJobUrl      = base_url('recruiter/post_job');
+$slotsUrl        = base_url('recruiter/slots');
+$leaderboardUrl  = base_url('recruiter/dashboard/leaderboard');
 
-    $formatRate = static function ($value): string {
-        if ($value === null || $value === '') return 'N/A';
-        return number_format((float) $value, 1) . '%';
-    };
-    $rateClass = static function ($value, float $goodThreshold): string {
-        if ($value === null || $value === '') return 'secondary';
-        return ((float) $value) >= $goodThreshold ? 'success' : 'warning';
-    };
-    ?>
+$formatRate = static function ($value): string {
+    if ($value === null || $value === '') return 'N/A';
+    return number_format((float) $value, 1) . '%';
+};
+?>
 
-    <style>
-    body.dark h4{
-        color:white !important;
-    }
-        /* ══════════════════════════════════════════════
-           RESET & BASE
-        ══════════════════════════════════════════════ */
-        .recruiter-dashboard-jobboard,
-        .hm-page-content {
-            background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%) !important;
-            min-height: 100vh;
-        }
+<style>
+/* ═══════════════════════════════════════════
+   RECRUITER DASHBOARD v2 — Modern + Actionable
+   Cartoon brutalist meets clean SaaS
+═══════════════════════════════════════════ */
 
-        body.dark .recruiter-dashboard-jobboard,
-        body.dark .hm-page-content {
-            background:  #000000 !important;
-        }
-
-        /* ── Full-width container ── */
-        .recruiter-dashboard-main {
-            max-width: 100% !important;
-            padding: 24px 32px !important;
-        }
-
-        /* ══════════════════════════════════════════════
-           CARDS — no shadow, clean borders
-        ══════════════════════════════════════════════ */
-        .card,
-        .card.shadow,
-        .recruiter-dashboard-panel-card,
-        .recruiter-pipeline-card,
-        .recruiter-stat-card,
-        .recruiter-stat-card.shadow {
-            box-shadow: none !important;
-            background: #FFFFFF !important;
-            border: 1px solid #D9ECE5 !important;
-            border-radius: 10px !important;
-        }
-
-        body.dark .card,
-        body.dark .card.shadow,
-        body.dark .recruiter-dashboard-panel-card,
-        body.dark .recruiter-pipeline-card,
-        body.dark .recruiter-stat-card,
-        body.dark .recruiter-action-center-empty {
-               background: #000000 !important;
-    border: 1px solid #2E2E2E !important;
-        }
-
-        /* ── Card headers ── */
-        .card-header,
-        .recruiter-section-header {
-            background: #FFFFFF !important;
-            border-bottom: 1px solid #D9ECE5 !important;
-            border-radius: 10px 10px 0 0 !important;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        body.dark .card-header,
-        body.dark .recruiter-section-header {
-            background: #000000 !important;
-            border-bottom: 1px solid #23343A !important;
-        }
-
-        body.dark .card-header h6,
-        body.dark .card-header .font-weight-bold,
-        body.dark h6.text-primary,
-        body.dark .font-weight-bold.text-primary {
-            color: #FFFFFF !important;
-        }
-
-        /* ══════════════════════════════════════════════
-           STAT CARDS
-        ══════════════════════════════════════════════ */
-        .recruiter-stat-card {
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-
-        .recruiter-stat-card:hover {
-            transform: translateY(-2px);
-            border-color: #1FB7B5 !important;
-        }
-
-        /* Hide decorative ::before */
-        .recruiter-stat-card.recruiter-stat-applications::before,
-        .recruiter-stat-card.recruiter-stat-openjobs::before,
-        .recruiter-stat-card.recruiter-stat-conversion::before,
-        .recruiter-stat-card.recruiter-stat-bookings::before {
-            display: none !important;
-        }
-
-        /* Metric title */
-        .recruiter-dashboard-main .recruiter-stat-card .dashboard-metric-title,
-        .recruiter-dashboard-main .recruiter-stat-card .text-primary.dashboard-metric-title,
-        .recruiter-dashboard-main .recruiter-stat-card .text-info.dashboard-metric-title,
-        .recruiter-dashboard-main .recruiter-stat-card .text-warning.dashboard-metric-title,
-        .recruiter-dashboard-main .recruiter-stat-card .text-success.dashboard-metric-title {
-            font-size: 0.82rem !important;
-            font-weight: 600 !important;
-            color: #94A3B8 !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.04em !important;
-            margin-bottom: 6px !important;
-            display: block !important;
-        }
-
-        body.dark .recruiter-dashboard-main .recruiter-stat-card .dashboard-metric-title,
-        body.dark .recruiter-dashboard-main .recruiter-stat-card .text-primary.dashboard-metric-title,
-        body.dark .recruiter-dashboard-main .recruiter-stat-card .text-info.dashboard-metric-title,
-        body.dark .recruiter-dashboard-main .recruiter-stat-card .text-warning.dashboard-metric-title {
-            color: #FFFFFF !important;
-        }
-
-        /* Large number */
-        .recruiter-dashboard-main .recruiter-stat-card .h4,
-        .recruiter-dashboard-main .recruiter-stat-card .h4.text-gray-800 {
-            font-size: 2rem !important;
-            font-weight: 700 !important;
-            color: #16212B !important;
-            line-height: 1.15 !important;
-        }
-
-        body.dark .recruiter-dashboard-main .recruiter-stat-card .h4 {
-            color: #FFFFFF !important;
-        }
-
-        /* Sub-label */
-        .recruiter-dashboard-main .recruiter-stat-card small.text-muted {
-            font-size: 0.78rem !important;
-            color: #94A3B8 !important;
-            font-weight: 400 !important;
-        }
-
-        body.dark .recruiter-dashboard-main .recruiter-stat-card small.text-muted {
-            color: #FFFFFF !important;
-        }
-
-        /* All icons inside stat cards → teal */
-        .recruiter-dashboard-main .recruiter-stat-card .col-auto i,
-        .recruiter-dashboard-main .recruiter-stat-card i.fa-2x,
-        .recruiter-dashboard-main .recruiter-stat-card .text-gray-300,
-        .recruiter-stat-card i.fas,
-        .recruiter-stat-card i.far,
-        .recruiter-stat-card .fa-2x,
-        .recruiter-stat-card .text-primary,
-        .recruiter-stat-card .text-info,
-        .recruiter-stat-card .text-warning,
-        .recruiter-stat-card .text-success,
-        .recruiter-stat-card .text-secondary {
-            color: #0D8A90 !important;
-        }
-
-        body.dark .recruiter-dashboard-main .recruiter-stat-card .col-auto i,
-        body.dark .recruiter-dashboard-main .recruiter-stat-card i.fa-2x {
-            color: #FFFFFF !important;
-        }
-
-        /* Stat icon bubble */
-        .stat-card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: #E8F9F8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        body.dark .stat-card-icon {
-            background: #1B3035;
-        }
-
-        /* Stat link wrapper */
-        .dashboard-stat-link {
-            text-decoration: none !important;
-            color: inherit !important;
-            display: block;
-        }
-
-        /* ══════════════════════════════════════════════
-           PIPELINE
-        ══════════════════════════════════════════════ */
-        .recruiter-pipeline-stats .pipeline-stat h3 {
-            color: #16212B;
-            font-weight: 700;
-            font-size: 1.6rem;
-        }
-
-        body.dark .recruiter-pipeline-stats .pipeline-stat h3 {
-            color: #FFFFFF !important;
-        }
-
-        body.dark .recruiter-pipeline-stats .text-muted {
-            color: #FFFFFF !important;
-        }
-
-        .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon {
-            background: #E8F9F8 !important;
-            width: 52px !important;
-            height: 52px !important;
-            border-radius: 50% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            margin: 0 auto 10px !important;
-        }
-
-        .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon[class*="bg-"] {
-            background: #E8F9F8 !important;
-        }
-
-        .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon i,
-        .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon .fas {
-            color: #0D8A90 !important;
-        }
-
-        body.dark .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon,
-        body.dark .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon[class*="bg-"] {
-            background: #000000 !important;
-        }
-
-        body.dark .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon i,
-        body.dark .recruiter-dashboard-main .recruiter-pipeline-stats .stat-icon .fas {
-            color: #FFFFFF !important;
-        }
-
-        /* Pipeline conversion text */
-        .recruiter-dashboard-main .recruiter-pipeline-stats .text-success,
-        .recruiter-dashboard-main .recruiter-pipeline-stats small.text-success {
-            color: #0D8A90 !important;
-        }
-
-        body.dark .recruiter-dashboard-main .recruiter-pipeline-stats .text-success,
-        body.dark .recruiter-dashboard-main .recruiter-pipeline-stats small.text-success {
-            color: #FFFFFF !important;
-        }
-
-        /* Pipeline divider arrows between stages */
-        .pipeline-connector {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #D9ECE5;
-            font-size: 1.2rem;
-            padding-top: 10px;
-        }
-
-        body.dark .pipeline-connector {
-            color: #FFFFFF !important;
-        }
-
-        /* Pipeline note */
-        .recruiter-pipeline-note,
-        .alert-light {
-            background: #EDF8F5 !important;
-            border: 1px solid #D9ECE5 !important;
-            color: #64748B !important;
-            border-radius: 8px !important;
-        }
-
-        body.dark .recruiter-pipeline-note,
-        body.dark .alert-light,
-        body.dark .recruiter-alert {
-            background: #000000 !important;
-            border: 1px solid #23343A !important;
-            color: #FFFFFF !important;
-        }
-
-        .recruiter-dashboard-jobboard .alert-warning {
-            background: #FEF7D8 !important;
-            border: 1px solid #F4E29A !important;
-            color: #8A6A08 !important;
-            border-radius: 10px !important;
-        }
-
-        .recruiter-dashboard-jobboard .alert-warning .badge-warning {
-            background: #FFE45C !important;
-            color: #6B5300 !important;
-            border-radius: 999px;
-            padding: 0.35rem 0.55rem;
-            font-weight: 700;
-        }
-
-        .recruiter-dashboard-jobboard .alert-warning .badge-primary {
-            background: rgba(31, 183, 181, 0.14) !important;
-            color: #0D8A90 !important;
-            border-radius: 999px;
-            padding: 0.35rem 0.55rem;
-            font-weight: 700;
-        }
-
-        .recruiter-dashboard-jobboard .alert-warning .close,
-        .recruiter-dashboard-jobboard .alert-warning .close span {
-            color: #8A6A08 !important;
-            opacity: 1 !important;
-            text-shadow: none !important;
-        }
-
-        body.dark .recruiter-dashboard-jobboard .alert-warning {
-            background: #171a14 !important;
-            border: 1px solid #3A3420 !important;
-            color: #D8C27A !important;
-        }
-
-        body.dark .recruiter-dashboard-jobboard .alert-warning i {
-            color: #E1C15B !important;
-        }
-
-        body.dark .recruiter-dashboard-jobboard .alert-warning .badge-warning {
-            background: #2B2515 !important;
-            color: #E9CF74 !important;
-            border: 1px solid #4A4020 !important;
-        }
-
-        body.dark .recruiter-dashboard-jobboard .alert-warning .badge-primary {
-            background: rgba(31, 183, 181, 0.14) !important;
-            color: #57D3D1 !important;
-            border: 1px solid rgba(31, 183, 181, 0.24) !important;
-        }
-
-        body.dark .recruiter-dashboard-jobboard .alert-warning .close,
-        body.dark .recruiter-dashboard-jobboard .alert-warning .close span {
-            color: #D8C27A !important;
-            opacity: 1 !important;
-            text-shadow: none !important;
-        }
-
-        .recruiter-dashboard-jobboard .alert-warning {
-            background: #FEF7D8 !important;
-            border: 1px solid #F4E29A !important;
-            color: #8A6A08 !important;
-            border-radius: 10px !important;
-        }
-
-        .recruiter-dashboard-jobboard .alert-warning .badge-warning {
-            background: #FFE45C !important;
-            color: #6B5300 !important;
-            border-radius: 999px;
-            padding: 0.35rem 0.55rem;
-            font-weight: 700;
-        }
-
-        .recruiter-dashboard-jobboard .alert-warning .badge-primary {
-            background: rgba(31, 183, 181, 0.14) !important;
-            color: #0D8A90 !important;
-            border-radius: 999px;
-            padding: 0.35rem 0.55rem;
-            font-weight: 700;
-        }
-
-        .recruiter-dashboard-jobboard .alert-warning .close,
-        .recruiter-dashboard-jobboard .alert-warning .close span {
-            color: #8A6A08 !important;
-            opacity: 1 !important;
-            text-shadow: none !important;
-        }
-
-        body.dark .recruiter-dashboard-jobboard .alert-warning {
-            background: #171a14 !important;
-            border: 1px solid #3A3420 !important;
-            color: #D8C27A !important;
-        }
-
-        body.dark .recruiter-dashboard-jobboard .alert-warning i {
-            color: #E1C15B !important;
-        }
-
-        body.dark .recruiter-dashboard-jobboard .alert-warning .badge-warning {
-            background: #2B2515 !important;
-            color: #E9CF74 !important;
-            border: 1px solid #4A4020 !important;
-        }
-
-        body.dark .recruiter-dashboard-jobboard .alert-warning .badge-primary {
-            background: rgba(31, 183, 181, 0.14) !important;
-            color: #57D3D1 !important;
-            border: 1px solid rgba(31, 183, 181, 0.24) !important;
-        }
-
-        body.dark .recruiter-dashboard-jobboard .alert-warning .close,
-        body.dark .recruiter-dashboard-jobboard .alert-warning .close span {
-            color: #D8C27A !important;
-            opacity: 1 !important;
-            text-shadow: none !important;
-        }
-
-        /* ══════════════════════════════════════════════
-           TABLES
-        ══════════════════════════════════════════════ */
-        .table th,
-        .table td {
-            color: #16212B;
-            border-color: #D9ECE5 !important;
-            vertical-align: middle;
-        }
-
-        .thead-light th {
-            background: #EDF8F5 !important;
-            color: #64748B !important;
-            border-color: #D9ECE5 !important;
-            font-size: 0.78rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        body.dark .table th,
-        body.dark .table td {
-            color: #FFFFFF !important;
-            background: transparent !important;
-            border-color: #23343A !important;
-        }
-
-        body.dark .thead-light th,
-        body.dark thead th {
-            background: #000000 !important;
-            color: #FFFFFF !important;
-            border-color: #23343A !important;
-        }
-
-        body.dark .table-hover tbody tr:hover td {
-    background: #162327 !important;
-    color: #F8FAFC !important;
+/* ── Page background ── */
+.recruiter-dashboard-jobboard,
+.hm-page-content {
+    background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%) !important;
+    min-height: 100vh;
+}
+body.dark .recruiter-dashboard-jobboard,
+body.dark .hm-page-content {
+    background: #000 !important;
 }
 
-        /* ══════════════════════════════════════════════
-           STATUS PILL
-        ══════════════════════════════════════════════ */
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            background: rgba(13, 138, 144, 0.08);
-            color: #0D8A90;
-            border: 1px solid rgba(13, 138, 144, 0.15);
-            white-space: nowrap;
-        }
+.recruiter-dashboard-main {
+    max-width: 100% !important;
+    padding: 24px 32px !important;
+}
 
-        body.dark .status-pill {
-            background: #000000 !important;
-            color: #1FB7B5;
-            border-color: rgba(31, 183, 181, 0.15);
-        }
+/* ── Cards ── */
+.card, .card.shadow,
+.recruiter-dashboard-panel-card,
+.recruiter-pipeline-card {
+    box-shadow: none !important;
+    background: #fff !important;
+    border: 1.5px solid #D9ECE5 !important;
+    border-radius: 16px !important;
+    transition: transform .15s, box-shadow .15s;
+}
+body.dark .card,
+body.dark .card.shadow,
+body.dark .recruiter-dashboard-panel-card,
+body.dark .recruiter-pipeline-card {
+    background: #000 !important;
+    border-color: #23343A !important;
+}
 
-        /* ══════════════════════════════════════════════
-           ACTION CENTER
-        ══════════════════════════════════════════════ */
-        .action-item-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 20px;
-            border-bottom: 1px solid #D9ECE5;
-            color: #16212B;
-            text-decoration: none;
-            transition: background 0.15s ease;
-        }
+.card-header {
+    background: #fff !important;
+    border-bottom: 1.5px solid #D9ECE5 !important;
+    border-radius: 16px 16px 0 0 !important;
+}
+body.dark .card-header {
+    background: #000 !important;
+    border-color: #23343A !important;
+}
 
-        .action-item-link:last-child {
-            border-bottom: none;
-        }
+/* ── Stat cards ── */
+.stat-card-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: #E8F9F8;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: #0D8A90;
+    font-size: 20px;
+}
+body.dark .stat-card-icon {
+    background: #1B3035;
+    color: #1FB7B5;
+}
 
-        .action-item-link:hover {
-            background: #EDF8F5;
-            color: #16212B;
-        }
+.stat-value {
+    font-size: 1.75rem; font-weight: 700; color: #16212B; line-height: 1.1;
+}
+body.dark .stat-value { color: #fff; }
 
-        body.dark .action-item-link {
-            border-bottom-color: #23343A;
-            color: #94A3B8;
-        }
+.stat-label {
+    font-size: .78rem; font-weight: 600; color: #94A3B8;
+    text-transform: uppercase; letter-spacing: .04em;
+}
 
-        body.dark .action-item-link:hover {
-            background: rgba(31, 183, 181, 0.04);
-            color: #F8FAFC;
-        }
+/* ── Quick action pills ── */
+.hm-quick-actions {
+    display: flex; gap: 10px; flex-wrap: wrap;
+}
+.hm-qa-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 22px; border-radius: 50px;
+    border: 1.5px solid #D9ECE5;
+    background: #fff; color: #16212B;
+    font-size: 13.5px; font-weight: 600;
+    text-decoration: none !important;
+    position: relative;
+    transition: border-color .18s, background .18s, color .18s, transform .15s;
+    white-space: nowrap;
+}
+.hm-qa-btn:hover {
+    border-color: #1FB7B5; background: #E8F9F8;
+    color: #0D8A90; transform: translateY(-1px);
+}
+.hm-qa-icon {
+    width: 28px; height: 28px;
+    background: #E8F9F8; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #0D8A90; flex-shrink: 0;
+}
+.hm-qa-badge {
+    position: absolute; top: -8px; right: -8px;
+    min-width: 20px; height: 20px; border-radius: 10px;
+    background: #1FB7B5; color: #fff;
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 5px; border: 2px solid #fff;
+}
+body.dark .hm-qa-btn {
+    background: #000; border-color: #23343A; color: #94A3B8;
+}
+body.dark .hm-qa-btn:hover {
+    border-color: #1FB7B5; background: rgba(31,183,181,.08); color: #1FB7B5;
+}
+body.dark .hm-qa-icon { background: #1B3035; color: #1FB7B5; }
 
-        body.dark .action-item-label small.text-muted {
-            color: #7A8B96 !important;
-        }
+/* ── Calendar ── */
+.dash-calendar {
+    background: #fff; border-radius: 16px;
+    border: 1.5px solid #D9ECE5; overflow: hidden;
+}
+body.dark .dash-calendar {
+    background: #000; border-color: #23343A;
+}
+.dash-calendar-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px 8px;
+}
+.dash-calendar-header h6 {
+    font-weight: 700; font-size: 1rem; margin: 0; color: #16212B;
+}
+body.dark .dash-calendar-header h6 { color: #fff; }
+.dash-calendar-nav {
+    display: flex; gap: 6px;
+}
+.dash-calendar-nav button {
+    width: 32px; height: 32px; border-radius: 8px;
+    border: 1px solid #D9ECE5; background: #fff;
+    color: #16212B; cursor: pointer; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    transition: .12s;
+}
+.dash-calendar-nav button:hover {
+    background: #E8F9F8; border-color: #1FB7B5; color: #0D8A90;
+}
+body.dark .dash-calendar-nav button {
+    background: #000; border-color: #23343A; color: #94A3B8;
+}
+body.dark .dash-calendar-nav button:hover {
+    background: rgba(31,183,181,.1); border-color: #1FB7B5; color: #1FB7B5;
+}
 
-        /* Empty state */
-        .recruiter-action-center-empty {
-            padding: 36px 20px;
-            text-align: center;
-            border: none !important;
-            background: transparent !important;
-        }
+.dash-calendar-weekdays {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    padding: 4px 10px 0;
+    font-size: .7rem; font-weight: 700; color: #94A3B8;
+    text-transform: uppercase; text-align: center;
+}
 
-        .recruiter-action-center-empty h6 {
-            color: #16212B;
-            font-weight: 600;
-        }
+.dash-calendar-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 2px; padding: 6px 10px 14px;
+}
 
-        body.dark .recruiter-action-center-empty h6 {
-            color: #FFFFFF !important;
-        }
+.dash-calendar-day {
+    aspect-ratio: 1; border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: .82rem; font-weight: 500; color: #16212B;
+    position: relative; cursor: default;
+    transition: .1s;
+    min-height: 38px;
+}
+body.dark .dash-calendar-day { color: #F8FAFC; }
+.dash-calendar-day.other-month { opacity: .25; }
+.dash-calendar-day.today {
+    background: #1FB7B5; color: #fff; font-weight: 700;
+    box-shadow: 0 2px 8px rgba(31,183,181,.35);
+}
+.dash-calendar-day.has-interview::after {
+    content: ''; position: absolute; bottom: 4px;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #F59E0B;
+}
+.dash-calendar-day.today.has-interview::after {
+    background: #fff;
+}
 
-        .recruiter-action-center-empty-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            background: #E8F9F8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 14px;
-            font-size: 20px;
-        }
+/* ── Interview list in sidebar ── */
+.interview-today-card {
+    border: 1.5px solid #D9ECE5; border-radius: 14px;
+    background: #fff; overflow: hidden;
+}
+body.dark .interview-today-card {
+    background: #000; border-color: #23343A;
+}
+.interview-today-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-bottom: 1px solid #D9ECE5;
+    text-decoration: none; color: #16212B;
+    transition: background .12s;
+}
+.interview-today-item:last-child { border-bottom: none; }
+.interview-today-item:hover { background: #E8F9F8; }
+body.dark .interview-today-item {
+    color: #F8FAFC; border-color: #23343A;
+}
+body.dark .interview-today-item:hover { background: rgba(31,183,181,.08); }
+.interview-time-badge {
+    background: #E8F9F8; border-radius: 8px;
+    padding: 4px 10px; font-size: .72rem; font-weight: 700;
+    color: #0D8A90; white-space: nowrap; flex-shrink: 0;
+}
+body.dark .interview-time-badge {
+    background: #1B3035; color: #1FB7B5;
+}
 
-        .recruiter-action-center-empty-icon i,
-        .recruiter-action-center-empty-icon .fas,
-        .recruiter-action-center-empty-icon .fa-check {
-            color: #0D8A90 !important;
-        }
+/* ── Pipeline ── */
+.pipeline-stat h3 {
+    color: #16212B; font-weight: 700; font-size: 1.6rem;
+}
+body.dark .pipeline-stat h3 { color: #fff; }
+.pipeline-stat-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #E8F9F8;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 10px; font-size: 20px; color: #0D8A90;
+}
+body.dark .pipeline-stat-icon { background: #1B3035; color: #1FB7B5; }
+.pipeline-connector {
+    display: flex; align-items: center; justify-content: center;
+    color: #D9ECE5; font-size: 1.2rem; padding-top: 10px;
+}
+body.dark .pipeline-connector { color: #23343A; }
 
-        body.dark .recruiter-action-center-empty-icon {
-            background: #1B3035;
-        }
+/* ── Table ── */
+.table th, .table td {
+    color: #16212B; border-color: #D9ECE5 !important;
+    vertical-align: middle; font-size: .85rem;
+}
+body.dark .table th, body.dark .table td {
+    color: #F8FAFC; border-color: #23343A !important;
+    background: transparent !important;
+}
+.thead-light th {
+    background: #EDF8F5 !important;
+    color: #64748B !important;
+    font-size: .72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .04em;
+}
+body.dark .thead-light th {
+    background: #000 !important; color: #94A3B8 !important;
+}
+.table-hover tbody tr:hover td {
+    background: #E8F9F8 !important;
+}
+body.dark .table-hover tbody tr:hover td {
+    background: #162327 !important;
+}
 
-        body.dark .recruiter-action-center-empty-icon i,
-        body.dark .recruiter-action-center-empty-icon .fas {
-            color: #1FB7B5 !important;
-        }
+/* ── Status pill ── */
+.status-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 14px; border-radius: 50px;
+    font-size: .78rem; font-weight: 600;
+    background: rgba(13,138,144,.08); color: #0D8A90;
+    border: 1px solid rgba(13,138,144,.15);
+    white-space: nowrap;
+}
+body.dark .status-pill {
+    background: #000; color: #1FB7B5;
+    border-color: rgba(31,183,181,.15);
+}
 
-        /* ══════════════════════════════════════════════
-           CONVERSION METRICS
-        ══════════════════════════════════════════════ */
-        .conversion-summary-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 24px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
+/* ── Buttons ── */
+.btn-outline-primary {
+    border: 1.5px solid #1FB7B5 !important;
+    color: #1FB7B5 !important; background: transparent !important;
+    padding: 7px 18px; border-radius: 8px !important;
+    font-size: 13px; font-weight: 600; transition: all .2s;
+}
+.btn-outline-primary:hover {
+    background: #1FB7B5 !important; color: #fff !important;
+    transform: translateY(-1px);
+}
 
-        .conversion-summary-card {
-            background: #EDF8F5;
-            border: 1px solid #D9ECE5;
-            border-radius: 10px;
-            padding: 16px 24px;
-            min-width: 160px; font-weight:500 !important;
-        }
+/* ── Alert ── */
+.alert-warning {
+    background: #FEF7D8 !important;
+    border: 1px solid #F4E29A !important;
+    color: #8A6A08 !important; border-radius: 12px !important;
+}
+body.dark .alert-warning {
+    background: #171a14 !important;
+    border-color: #3A3420 !important; color: #D8C27A !important;
+}
 
-        body.dark .conversion-summary-card {
-            background: #000000 !important;
-            border-color: #23343A !important;
-        }
+/* ── Dark mode general ── */
+body.dark .text-muted { color: #94A3B8 !important; }
+body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important; }
 
-        .conversion-summary-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #64748B;
-            display: block;
-            margin-bottom: 4px;
-        }
+@media (max-width: 480px) {
+    .recruiter-dashboard-main { padding: 16px !important; }
+    .hm-quick-actions { gap: 6px; }
+    .hm-qa-btn { padding: 7px 14px; font-size: 12px; }
+}
+</style>
 
-        body.dark .conversion-summary-label { color: #FFFFFF !important; }
+<div class="container-fluid recruiter-dashboard-main">
 
-        .conversion-summary-value {
-            font-size: 1.2rem !important;
-            font-weight: 500 !important;
-            color: #16212B;
-            line-height: 1.1;
-        }
-
-        body.dark .conversion-summary-value { color: #FFFFFF !important; }
-
-        .conversion-summary-note  {
-            color: #16212B;
-            font-size: 14px;
-        }
-
-        body.dark .conversion-summary-note   { color: #FFFFFF !important; }
-        body.dark .conversion-summary-note p.text-muted { color: #FFFFFF !important; }
-
-        .conversion-table thead th {
-            background: #EDF8F5 !important;
-            color: #64748B !important;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            border-color: #D9ECE5 !important;
-        }
-
-        body.dark .conversion-table thead th {
-            background: #000000 !important;
-            color: #FFFFFF !important;
-            border-color: #23343A !important;
-        }
-
-        body.dark .conversion-table td {
-            color: #FFFFFF !important;
-            border-color: #23343A !important;
-        }
-
-        body.dark .conversion-table tr.font-weight-bold td {
-            color: #FFFFFF !important;
-        }
-
-        /* ══════════════════════════════════════════════
-           BUTTONS
-        ══════════════════════════════════════════════ */
-        .btn-primary,
-        .btn-outline-primary {
-            background: transparent !important;
-            border: 1.5px solid #1FB7B5 !important;
-            color: #1FB7B5 !important;
-            padding: 7px 18px;
-            border-radius: 6px !important;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary:hover,
-        .btn-primary:focus,
-        .btn-outline-primary:hover,
-        .btn-outline-primary:focus {
-            background: #1FB7B5 !important;
-            color: #ffffff !important;
-            transform: translateY(-1px);
-        }
-
-        /* ══════════════════════════════════════════════
-           GENERAL DARK MODE HELPERS
-        ══════════════════════════════════════════════ */
-        body.dark .text-muted { color: #FFFFFF !important; }
-
-        body.dark .card-header,
-        body.dark .recruiter-leaderboard-card,
-        body.dark .recruiter-filter-card,
-        body.dark .recruiter-alert,
-        body.dark .alert-light {
-            background: #000000 !important;
-            border: 1px solid #23343A !important;
-        }
-
-        /* ══════════════════════════════════════════════
-           SECTION LABEL
-        ══════════════════════════════════════════════ */
-        .section-eyebrow {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #94A3B8;
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        body.dark .section-eyebrow { color: #4A5C62; }
-    </style>
-
-    <div class="container-fluid recruiter-dashboard-main">
-
-        <div class="page-board-header page-board-header-tight recruiter-page-board-header mb-3">
-            <div class="page-board-copy">
-                <span class="page-board-kicker"><i class="fas fa-chart-line"></i> Hiring analytics</span>
-                <h1 class="page-board-title">Recruitment Overview</h1>
-                <p class="page-board-subtitle">Review applications, job activity, and pipeline performance across your jobs.</p>
-            </div>
-            <?php if (empty($noJobs)): ?>
-                <div class="page-board-actions">
-                    <a href="<?= base_url('recruiter/dashboard/export-excel?type=overview') ?>" class="btn btn-outline-primary">
-                        <i class="fas fa-file-excel"></i> Export
-                    </a>
-                </div>
-            <?php endif; ?>
+    <!-- ── HEADER ── -->
+    <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+        <div>
+            <span class="section-eyebrow d-block mb-1" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94A3B8;">Hiring analytics</span>
+            <h1 class="m-0" style="font-size:1.6rem;font-weight:700;color:#16212B;">Recruitment Overview</h1>
+            <p class="text-muted mb-0" style="font-size:.9rem;">Review applications, job activity, and pipeline performance across your jobs.</p>
         </div>
-
-        <!-- ── Quick Actions Bar (LinkedIn-style) ── -->
-        <div class="hm-quick-actions mb-4">
-            <a href="<?= base_url('recruiter/post_job') ?>" class="hm-qa-btn">
-                <span class="hm-qa-icon"><i class="fas fa-plus"></i></span>
-                <span class="hm-qa-label">Post Job</span>
+        <?php if (empty($noJobs)): ?>
+            <a href="<?= base_url('recruiter/dashboard/export-excel?type=overview') ?>" class="btn btn-outline-primary">
+                <i class="fas fa-file-excel"></i> Export
             </a>
-            <a href="<?= base_url('recruiter/jobs') ?>" class="hm-qa-btn">
-                <span class="hm-qa-icon"><i class="fas fa-file-alt"></i></span>
-                <span class="hm-qa-label">Applications</span>
-                <?php if (!empty($pendingActions['pending_screening']) && $pendingActions['pending_screening'] > 0): ?>
-                    <span class="hm-qa-badge"><?= (int)$pendingActions['pending_screening'] ?></span>
-                <?php endif; ?>
-            </a>
-            <a href="<?= base_url('recruiter/candidates') ?>" class="hm-qa-btn">
-                <span class="hm-qa-icon"><i class="fas fa-users"></i></span>
-                <span class="hm-qa-label">Candidates</span>
-            </a>
-            <a href="<?= base_url('recruiter/slots/create') ?>" class="hm-qa-btn">
-                <span class="hm-qa-icon"><i class="fas fa-calendar-plus"></i></span>
-                <span class="hm-qa-label">Create Slot</span>
-            </a>
-            <a href="<?= base_url('recruiter/slots/bookings') ?>" class="hm-qa-btn">
-                <span class="hm-qa-icon"><i class="fas fa-calendar-check"></i></span>
-                <span class="hm-qa-label">Bookings</span>
-                <?php if (!empty($pendingActions['hr_interviews_today']) && $pendingActions['hr_interviews_today'] > 0): ?>
-                    <span class="hm-qa-badge"><?= (int)$pendingActions['hr_interviews_today'] ?></span>
-                <?php endif; ?>
-            </a>
-            <a href="<?= base_url('recruiter/dashboard/leaderboard') ?>" class="hm-qa-btn">
-                <span class="hm-qa-icon"><i class="fas fa-trophy"></i></span>
-                <span class="hm-qa-label">Leaderboard</span>
-            </a>
-        </div>
-        <style>
-        .hm-quick-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .hm-qa-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 9px 18px;
-            border-radius: 50px;
-            border: 1.5px solid #D9ECE5;
-            background: #fff;
-            color: #16212B;
-            font-size: 13.5px;
-            font-weight: 600;
-            text-decoration: none !important;
-            position: relative;
-            transition: border-color .18s, background .18s, color .18s;
-            white-space: nowrap;
-        }
-        .hm-qa-btn:hover {
-            border-color: #1FB7B5;
-            background: #E8F9F8;
-            color: #0D8A90;
-            text-decoration: none !important;
-        }
-        .hm-qa-icon {
-            width: 26px; height: 26px;
-            background: #E8F9F8;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px;
-            color: #0D8A90;
-            flex-shrink: 0;
-        }
-        .hm-qa-badge {
-            position: absolute;
-            top: -6px; right: -6px;
-            min-width: 18px; height: 18px;
-            background: #1FB7B5;
-            border-radius: 9px;
-            font-size: 10px; font-weight: 700; color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            padding: 0 4px;
-            border: 2px solid #fff;
-        }
-        body.dark .hm-qa-btn {
-            background: #000;
-            border-color: #23343A;
-            color: #94A3B8;
-        }
-        body.dark .hm-qa-btn:hover {
-            border-color: #1FB7B5;
-            background: rgba(31,183,181,.08);
-            color: #1FB7B5;
-        }
-        body.dark .hm-qa-icon {
-            background: #1B3035;
-            color: #1FB7B5;
-        }
-        </style>
-
-        <?php if (!empty($noJobs)): ?>
-        <div class="card mb-4 recruiter-dashboard-panel-card" style="border-radius: 20px !important;overflow: hidden;">
-            <div class="card-body p-4 text-center">
-                <h4 class="mb-2">No jobs posted yet</h4>
-                <p class="text-muted mb-3">Post your first job to start receiving applications and build your hiring pipeline.</p>
-                <a href="<?= $postJobUrl ?>" class="btn btn-outline-primary">
-                    <i class="fas fa-plus"></i> Post Your First Job
-                </a>
-            </div>
-        </div>
         <?php endif; ?>
+    </div>
 
-        <?php if (empty($noJobs) && array_sum($pendingActions) > 0): ?>
-        <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
-             <i class="fas fa-exclamation-triangle"></i> Pending Actions: 
-            <?php if ($pendingActions['pending_screening'] > 0): ?>
-                <span class="badge badge-warning"><?= $pendingActions['pending_screening'] ?></span> applications to screen,
-            <?php endif; ?>
-            <?php if ($pendingActions['hr_interviews_today'] > 0): ?>
-                <span class="badge badge-primary"><?= $pendingActions['hr_interviews_today'] ?></span> HR interviews today
-            <?php endif; ?>
-            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-        </div>
+
+    <?php if (!empty($noJobs)): ?>
+    <div class="card mb-4 p-5 text-center">
+        <h4 class="mb-2" style="font-weight:600;">No jobs posted yet</h4>
+        <p class="text-muted mb-3">Post your first job to start receiving applications and build your hiring pipeline.</p>
+        <a href="<?= $postJobUrl ?>" class="btn btn-outline-primary"><i class="fas fa-plus"></i> Post Your First Job</a>
+    </div>
+    <?php endif; ?>
+
+    <?php if (empty($noJobs) && array_sum($pendingActions) > 0): ?>
+    <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> Pending Actions:
+        <?php if ($pendingActions['pending_screening'] > 0): ?>
+            <span class="badge badge-warning ml-1"><?= $pendingActions['pending_screening'] ?></span> applications to screen,
         <?php endif; ?>
+        <?php if ($pendingActions['hr_interviews_today'] > 0): ?>
+            <span class="badge badge-primary ml-1"><?= $pendingActions['hr_interviews_today'] ?></span> interviews today
+        <?php endif; ?>
+        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+    </div>
+    <?php endif; ?>
 
-        <!-- ── ROW 1: 4 Stat Cards ── -->
-        <div class="row mb-4">
-            <div class="col-xl-3 col-md-6 mb-3">
-                <a href="<?= $applicationsUrl ?>" class="dashboard-stat-link">
-                    <div class="card recruiter-stat-card recruiter-stat-applications h-100" style="border-radius: 20px !important;overflow: hidden;">
-                        <div class="card-body d-flex align-items-center gap-3" style="gap:16px;">
-                            <div class="stat-card-icon">
-                                <i class="fas fa-file-alt fa-lg"></i>
-                            </div>
-                            <div>
-                                <div class="dashboard-metric-title text-primary">Total Applications</div>
-                                <div class="h4 mb-0 text-gray-800" style="font-weight:500 !important;font-size:1.2rem !important;"><?= number_format($funnel['total_applications']) ?></div>
-                                <small class="text-muted">Across all active jobs</small>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-xl-3 col-md-6 mb-3">
-                <a href="<?= $jobsUrl ?>" class="dashboard-stat-link">
-                    <div class="card recruiter-stat-card recruiter-stat-openjobs h-100" style="border-radius: 20px !important;overflow: hidden;">
-                        <div class="card-body d-flex align-items-center" style="gap:16px;">
-                            <div class="stat-card-icon">
-                                <i class="fas fa-briefcase fa-lg"></i>
-                            </div>
-                            <div>
-                                <div class="dashboard-metric-title text-info">Open Jobs</div>
-                                <div class="h4 mb-0 text-gray-800"  style="font-weight:500 !important;font-size:1.2rem !important;"><?= $jobStats['active_jobs'] ?></div>
-                                <small class="text-muted">Currently hiring</small>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-xl-3 col-md-6 mb-3">
-                <a href="<?= $conversionUrl ?>" class="dashboard-stat-link">
-                    <div class="card recruiter-stat-card recruiter-stat-conversion h-100" style="border-radius: 20px !important;overflow: hidden;">
-                        <div class="card-body d-flex align-items-center" style="gap:16px;">
-                            <div class="stat-card-icon">
-                                <i class="fas fa-chart-pie fa-lg"></i>
-                            </div>
-                            <div>
-                                <div class="dashboard-metric-title text-warning">Conversion Rate</div>
-                                <div class="h4 mb-0 text-gray-800" style="font-weight:500 !important;font-size:1.2rem !important;"><?= $conversionMetrics['overall_conversion'] ?? 0 ?>%</div>
-                                <small class="text-muted">Pipeline efficiency</small>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-xl-3 col-md-6 mb-3">
-                <a href="<?= $bookingsUrl ?>" class="dashboard-stat-link">
-                    <div class="card recruiter-stat-card recruiter-stat-bookings h-100" style="border-radius: 20px !important;overflow: hidden;">
-                        <div class="card-body d-flex align-items-center" style="gap:16px;">
-                            <div class="stat-card-icon">
-                                <i class="fas fa-calendar-check fa-lg"></i>
-                            </div>
-                            <div>
-                                <div class="dashboard-metric-title text-info">Interview Bookings</div>
-                                <div class="h4 mb-0 text-gray-800"  style="font-weight:500 !important;font-size:1.2rem !important;"><?= number_format($jobStats['interview_bookings'] ?? 0) ?></div>
-                                <small class="text-muted">HR rounds scheduled</small>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- ── ROW 2: Pipeline (full width) ── -->
-        <div class="row mb-4" id="conversion-metrics">
-            <div class="col-12">
-                <div class="card recruiter-dashboard-panel-card recruiter-pipeline-card" style="border-radius: 20px !important;overflow: hidden;">
-                    <div class="card-header py-3 recruiter-section-header">
+    <!-- ════════════════════ ROW 1: 4 STAT CARDS ════════════════════ -->
+    <div class="row g-3 mb-4" style="row-gap:16px;">
+        <div class="col-xl-3 col-md-6">
+            <a href="<?= $applicationsUrl ?>" class="text-decoration-none d-block">
+                <div class="card p-3 h-100" style="border-radius:16px;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-card-icon"><i class="fas fa-file-alt"></i></div>
                         <div>
-                            <h6 class="m-0 font-weight-bold text-primary">  Recruitment Pipeline</h6>
-                            <small class="text-muted">Volume, screening progress, and where the process slows down.</small>
-                        </div>
-                        <a href="<?= $jobsUrl ?>" class="btn btn-outline-primary btn-sm">Review Jobs</a>
-                    </div>
-                    <div class="card-body">
-                        <?php $screeningCompleted = (int) ($funnel['ai_interview_completed'] ?? 0) + (int) ($funnel['shortlisted'] ?? 0) + (int) ($funnel['rejected'] ?? 0); ?>
-                        <div class="row text-center recruiter-pipeline-stats align-items-center">
-                            <div class="col-md col-6 mb-3 mb-md-0">
-                                <div class="pipeline-stat">
-                                    <div class="stat-icon bg-primary"><i class="fas fa-inbox"></i></div>
-                                    <h4 style="font-weight:500 !important"><?= number_format($funnel['total_applications']) ?></h4>
-                                    <p class="text-muted mb-0 small">Applications</p>
-                                </div>
-                            </div>
-                            <div class="col-md-auto d-none d-md-flex pipeline-connector"><i class="fas fa-chevron-right"></i></div>
-                            <div class="col-md col-6 mb-3 mb-md-0">
-                                <div class="pipeline-stat">
-                                    <div class="stat-icon bg-info"><i class="fas fa-cogs"></i></div>
-                                    <h4 style="font-weight:500 !important"><?= number_format($screeningCompleted) ?></h4>
-                                    <p class="text-muted mb-0 small">Screening Completed</p>
-                                    <small class="text-success"><i class="fas fa-arrow-right"></i> <?= $funnel['total_applications'] > 0 ? round(($screeningCompleted / $funnel['total_applications']) * 100, 1) : 0 ?>% from applications</small>
-                                </div>
-                            </div>
-                            <div class="col-md-auto d-none d-md-flex pipeline-connector"><i class="fas fa-chevron-right"></i></div>
-                            <div class="col-md col-6">
-                                <div class="pipeline-stat">
-                                    <div class="stat-icon bg-success"><i class="fas fa-star"></i></div>
-                                    <h4 style="font-weight:500 !important"><?= number_format($funnel['shortlisted']) ?></h4>
-                                    <p class="text-muted mb-0 small">Shortlisted</p>
-                                    <small class="text-success"><i class="fas fa-arrow-right"></i> <?= $screeningCompleted > 0 ? round(($funnel['shortlisted'] / $screeningCompleted) * 100, 1) : 0 ?>% from screened</small>
-                                </div>
-                            </div>
-                            <div class="col-md-auto d-none d-md-flex pipeline-connector"><i class="fas fa-chevron-right"></i></div>
-                            <div class="col-md col-6">
-                                <div class="pipeline-stat">
-                                    <div class="stat-icon bg-warning"><i class="fas fa-calendar-check"></i></div>
-                                    <h4 style="font-weight:500 !important"><?= number_format($funnel['interview_slot_booked']) ?></h4>
-                                    <p class="text-muted mb-0 small">HR Interviews</p>
-                                    <small class="text-success"><i class="fas fa-arrow-right"></i> <?= $funnel['shortlisted'] > 0 ? round(($funnel['interview_slot_booked'] / $funnel['shortlisted']) * 100, 1) : 0 ?>% from shortlisted</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alert alert-light mt-3 mb-0 recruiter-pipeline-note">
-                            <small class="text-muted"><i class="fas fa-info-circle"></i> Each stage shows conversion rate from the previous stage.</small>
+                            <div class="stat-label">Total Applications</div>
+                            <div class="stat-value"><?= number_format($funnel['total_applications']) ?></div>
+                            <small class="text-muted">Across all active jobs</small>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
-
-        <!-- ── ROW 3: Recent Applications (left) + Conversion Metrics (right) ── -->
-        <div class="row mb-4">
-            <!-- Recent Applications -->
-            <div class="col-xl-7 col-lg-6 mb-4 mb-lg-0">
-                <div class="card recruiter-dashboard-panel-card h-100" style="border-radius: 20px !important;overflow: hidden;">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">  Recent Applications</h6>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th class="pl-3">ID</th>
-                                        <th>Candidate</th>
-                                        <th>Job</th>
-                                        <th>Status</th>
-                                        <th>Applied</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (!empty($recentApplications)): ?>
-                                        <?php foreach ($recentApplications as $app): ?>
-                                            <tr onclick="window.location='<?= base_url('recruiter/jobs/' . $app['job_id'] . '/leaderboard') ?>'" style="cursor:pointer;">
-                                                <td class="pl-3 text-muted">#<?= $app['id'] ?></td>
-                                                <td> <?= esc($app['candidate_name']) ?> </td>
-                                                <td><?= esc($app['job_title']) ?></td>
-                                                <td>
-                                                    <span class="status-pill"><?= ucwords(str_replace('_', ' ', $app['status'])) ?></span>
-                                                </td>
-                                                <td class="text-muted"><?= date('M d, Y', strtotime($app['applied_at'])) ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <tr>
-                                            <td colspan="5" class="text-center py-4 text-muted">No recent applications</td>
-                                        </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
+        <div class="col-xl-3 col-md-6">
+            <a href="<?= $jobsUrl ?>" class="text-decoration-none d-block">
+                <div class="card p-3 h-100" style="border-radius:16px;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-card-icon"><i class="fas fa-briefcase"></i></div>
+                        <div>
+                            <div class="stat-label">Open Jobs</div>
+                            <div class="stat-value"><?= $jobStats['active_jobs'] ?></div>
+                            <small class="text-muted">Currently hiring</small>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Conversion Metrics -->
-            <div class="col-xl-5 col-lg-6">
-                <div class="card recruiter-dashboard-panel-card h-100" style="border-radius: 20px !important;overflow: hidden;">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-funnel-dollar mr-1"></i> Conversion Metrics</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="conversion-summary-card mb-3">
-                            <span class="conversion-summary-label">Overall Conversion</span>
-                            <div class="conversion-summary-value"><?= number_format((float) ($conversionMetrics['overall_conversion'] ?? 0), 1) ?>%</div>
+            </a>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <a href="<?= $conversionUrl ?>" class="text-decoration-none d-block">
+                <div class="card p-3 h-100" style="border-radius:16px;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-card-icon"><i class="fas fa-chart-pie"></i></div>
+                        <div>
+                            <div class="stat-label">Conversion Rate</div>
+                            <div class="stat-value"><?= $conversionMetrics['overall_conversion'] ?? 0 ?>%</div>
                             <small class="text-muted">Pipeline efficiency</small>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-sm conversion-table mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Stage Transition</th>
-                                        <th class="text-right">Rate</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Application → Screening</td>
-                                        <td class="text-right"><span class="status-pill"><?= $formatRate($conversionMetrics['application_to_screening'] ?? null) ?></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Screening → Shortlist</td>
-                                        <td class="text-right"><span class="status-pill"><?= $formatRate($conversionMetrics['screening_to_shortlist'] ?? null) ?></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Shortlist → HR Interview</td>
-                                        <td class="text-right"><span class="status-pill"><?= $formatRate($conversionMetrics['shortlist_to_hr_interview'] ?? null) ?></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>HR Interview → Selection</td>
-                                        <td class="text-right"><span class="status-pill"><?= $formatRate($conversionMetrics['hr_interview_to_selection'] ?? null) ?></span></td>
-                                    </tr>
-                                    <tr class="font-weight-bold">
-                                        <td style="font-weight:500 !important">Overall Conversion</td>
-                                        <td class="text-right"><span class="status-pill"><?= number_format((float) ($conversionMetrics['overall_conversion'] ?? 0), 1) ?>%</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <a href="<?= $bookingsUrl ?>" class="text-decoration-none d-block">
+                <div class="card p-3 h-100" style="border-radius:16px;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-card-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div>
+                            <div class="stat-label">Interview Bookings</div>
+                            <div class="stat-value"><?= number_format($jobStats['interview_bookings'] ?? 0) ?></div>
+                            <small class="text-muted">HR rounds scheduled</small>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- ════════════════════ ROW 2: PIPELINE + CALENDAR ════════════════════ -->
+    <div class="row g-4 mb-4">
+        <!-- ── Pipeline ── -->
+        <div class="col-lg-8">
+            <div class="card h-100" style="border-radius:16px;">
+                <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div>
+                        <h6 class="m-0 font-weight-bold" style="font-weight:600;">Recruitment Pipeline</h6>
+                        <small class="text-muted">Volume, screening, and conversion tracking</small>
+                    </div>
+                    <a href="<?= $jobsUrl ?>" class="btn btn-outline-primary btn-sm">Review Jobs</a>
+                </div>
+                <div class="card-body">
+                    <?php $screeningCompleted = (int)($funnel['ai_interview_completed'] ?? 0) + (int)($funnel['shortlisted'] ?? 0) + (int)($funnel['rejected'] ?? 0); ?>
+                    <div class="row text-center align-items-center g-3">
+                        <div class="col-md col-6">
+                            <div class="pipeline-stat-icon"><i class="fas fa-inbox"></i></div>
+                            <h3><?= number_format($funnel['total_applications']) ?></h3>
+                            <p class="text-muted mb-0 small">Applications</p>
+                        </div>
+                        <div class="col-md-auto d-none d-md-flex pipeline-connector"><i class="fas fa-chevron-right"></i></div>
+                        <div class="col-md col-6">
+                            <div class="pipeline-stat-icon"><i class="fas fa-cogs"></i></div>
+                            <h3><?= number_format($screeningCompleted) ?></h3>
+                            <p class="text-muted mb-0 small">Screening Done</p>
+                            <small class="text-muted"><?= $funnel['total_applications'] > 0 ? round(($screeningCompleted / $funnel['total_applications']) * 100, 1) : 0 ?>% from applications</small>
+                        </div>
+                        <div class="col-md-auto d-none d-md-flex pipeline-connector"><i class="fas fa-chevron-right"></i></div>
+                        <div class="col-md col-6">
+                            <div class="pipeline-stat-icon"><i class="fas fa-star"></i></div>
+                            <h3><?= number_format($funnel['shortlisted']) ?></h3>
+                            <p class="text-muted mb-0 small">Shortlisted</p>
+                            <small class="text-muted"><?= $screeningCompleted > 0 ? round(($funnel['shortlisted'] / $screeningCompleted) * 100, 1) : 0 ?>% from screened</small>
+                        </div>
+                        <div class="col-md-auto d-none d-md-flex pipeline-connector"><i class="fas fa-chevron-right"></i></div>
+                        <div class="col-md col-6">
+                            <div class="pipeline-stat-icon"><i class="fas fa-calendar-check"></i></div>
+                            <h3><?= number_format($funnel['interview_slot_booked']) ?></h3>
+                            <p class="text-muted mb-0 small">HR Interviews</p>
+                            <small class="text-muted"><?= $funnel['shortlisted'] > 0 ? round(($funnel['interview_slot_booked'] / $funnel['shortlisted']) * 100, 1) : 0 ?>% from shortlisted</small>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ── ROW 4: Action Center (full width) ── -->
-        <?php if (empty($noJobs)): ?>
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card recruiter-dashboard-panel-card recruiter-pipeline-card" style="border-radius: 20px !important;overflow: hidden;">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary"> Action Center</h6>
-                    </div>
-                    <div class="card-body p-0">
-                        <?php $hasActionCenterItems = ((int) ($pendingActions['pending_screening'] ?? 0) > 0) || ((int) ($pendingActions['hr_interviews_today'] ?? 0) > 0); ?>
-                        <?php if ($hasActionCenterItems): ?>
-                            <?php if ((int) ($pendingActions['pending_screening'] ?? 0) > 0): ?>
-                                <a href="<?= $jobsUrl ?>" class="action-item-link">
-                                    <div class="action-item-label">
-                                       Screen New Applications 
-                                        <small class="text-muted d-block">Review and shortlist incoming candidates.</small>
-                                    </div>
-                                    <span class="badge badge-warning"><?= (int) ($pendingActions['pending_screening'] ?? 0) ?></span>
-                                </a>
-                            <?php endif; ?>
-                            <?php if ((int) ($pendingActions['hr_interviews_today'] ?? 0) > 0): ?>
-                                <a href="<?= $bookingsUrl ?>" class="action-item-link">
-                                    <div class="action-item-label">
-                                        Interviews Today 
-                                        <small class="text-muted d-block">Track today's booked interviews and status.</small>
-                                    </div>
-                                    <span class="status-pill"><?= (int) ($pendingActions['hr_interviews_today'] ?? 0) ?></span>
-                                </a>
-                            <?php endif; ?>
-                        <?php else: ?>
-                            <div class="recruiter-action-center-empty">
-                                 
-                                <h6 class="mb-2" style="font-weight:500 !important">All caught up!</h6>
-                                <p class="text-muted mb-3 small">No pending screenings or interviews right now.</p>
-                                <a href="<?= $jobsUrl ?>" class="btn btn-outline-primary btn-sm">
-                                 Review Jobs
-                                </a>
-                            </div>
+        <!-- ── Calendar + Today's Interviews ── -->
+        <div class="col-lg-4">
+            <div class="dash-calendar" id="dashCalendar"></div>
+
+            <div class="interview-today-card mt-3">
+                <div class="card-header py-2" style="border-radius:14px 14px 0 0;">
+                    <h6 class="m-0" style="font-weight:600;font-size:.9rem;">
+                        <i class="fas fa-clock"></i> Today's Interviews
+                        <?php if (count($todayInterviews) > 0): ?>
+                            <span class="badge ml-1" style="background:#1FB7B5;color:#fff;border-radius:20px;font-size:10px;"><?= count($todayInterviews) ?></span>
                         <?php endif; ?>
+                    </h6>
+                </div>
+                <?php if (count($todayInterviews) > 0): ?>
+                    <?php foreach ($todayInterviews as $iv): ?>
+                        <a href="<?= base_url('recruiter/slots/bookings') ?>" class="interview-today-item">
+                            <span class="interview-time-badge"><?= date('h:i A', strtotime($iv['slot_time'])) ?></span>
+                            <div>
+                                <strong style="font-size:.85rem;"><?= esc($iv['candidate_name']) ?></strong>
+                                <small class="d-block text-muted" style="font-size:.75rem;"><?= esc($iv['job_title'] ?? 'Interview') ?></small>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="p-3 text-center text-muted" style="font-size:.85rem;">
+                        <i class="fas fa-check-circle" style="color:#1FB7B5;"></i> No interviews scheduled today
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- ── Actionable mini-card: pending screening ── -->
+            <?php if (!empty($pendingActions['pending_screening']) && $pendingActions['pending_screening'] > 0): ?>
+                <a href="<?= $jobsUrl ?>" class="d-flex align-items-center justify-content-between p-3 mt-3" style="border:1.5px solid #F4E29A;border-radius:14px;background:#FEF7D8;text-decoration:none;">
+                    <div>
+                        <strong style="font-size:.85rem;color:#8A6A08;"><i class="fas fa-file-signature"></i> Screen Applications</strong>
+                        <small class="d-block" style="color:#B89A3A;font-size:.75rem;">Pending: <?= $pendingActions['pending_screening'] ?> candidates</small>
+                    </div>
+                    <span class="badge" style="background:#FFE45C;color:#6B5300;font-size:1rem;font-weight:700;border-radius:10px;padding:4px 10px;"><?= $pendingActions['pending_screening'] ?></span>
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- ════════════════════ ROW 3: RECENT APPS + CONVERSION ════════════════════ -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card h-100" style="border-radius:16px;">
+                <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h6 class="m-0 font-weight-bold" style="font-weight:600;">Recent Applications</h6>
+                    <a href="<?= $applicationsUrl ?>" class="btn btn-outline-primary btn-sm">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="thead-light">
+                                <tr><th class="pl-3">ID</th><th>Candidate</th><th>Job</th><th>Status</th><th>Applied</th></tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($recentApplications)): ?>
+                                    <?php foreach ($recentApplications as $app): ?>
+                                        <tr onclick="window.location='<?= base_url('recruiter/jobs/' . $app['job_id'] . '/leaderboard') ?>'" style="cursor:pointer;">
+                                            <td class="pl-3 text-muted">#<?= $app['id'] ?></td>
+                                            <td><strong><?= esc($app['candidate_name']) ?></strong></td>
+                                            <td><?= esc($app['job_title']) ?></td>
+                                            <td><span class="status-pill"><?= ucwords(str_replace('_', ' ', $app['status'])) ?></span></td>
+                                            <td class="text-muted"><?= date('M d, Y', strtotime($app['applied_at'])) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr><td colspan="5" class="text-center py-4 text-muted">No recent applications</td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
-        <?php endif; ?>
 
-    </div><!-- /.recruiter-dashboard-main -->
+        <div class="col-lg-5">
+            <div class="card h-100" style="border-radius:16px;">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold" style="font-weight:600;"><i class="fas fa-funnel-dollar mr-1"></i> Conversion Metrics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between p-3 mb-3" style="background:#E8F9F8;border-radius:12px;border:1px solid #D9ECE5;">
+                        <div>
+                            <span class="d-block text-uppercase" style="font-size:.7rem;font-weight:700;color:#94A3B8;letter-spacing:.05em;">Overall Conversion</span>
+                            <span style="font-size:1.3rem;font-weight:700;color:#16212B;"><?= number_format((float)($conversionMetrics['overall_conversion'] ?? 0), 1) ?>%</span>
+                        </div>
+                        <div style="width:56px;height:56px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#0D8A90;font-size:22px;">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <table class="table table-sm mb-0" style="font-size:.85rem;">
+                        <thead><tr><th>Stage Transition</th><th class="text-right">Rate</th></tr></thead>
+                        <tbody>
+                            <?php
+                            $stages = [
+                                'application_to_screening' => 'Application → Screening',
+                                'screening_to_shortlist' => 'Screening → Shortlist',
+                                'shortlist_to_hr_interview' => 'Shortlist → HR Interview',
+                                'hr_interview_to_selection' => 'HR Interview → Selection'
+                            ];
+                            foreach ($stages as $key => $label): ?>
+                                <tr>
+                                    <td><?= $label ?></td>
+                                    <td class="text-right"><span class="status-pill"><?= $formatRate($conversionMetrics[$key] ?? null) ?></span></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            <tr class="font-weight-bold">
+                                <td>Overall</td>
+                                <td class="text-right"><span class="status-pill"><?= number_format((float)($conversionMetrics['overall_conversion'] ?? 0), 1) ?>%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════ ACTION CENTER ════════════════════ -->
+    <?php if (empty($noJobs)): ?>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card" style="border-radius:16px;">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold" style="font-weight:600;"><i class="fas fa-bolt"></i> Action Center</h6>
+                </div>
+                <div class="card-body p-0">
+                    <?php $hasActions = ((int)($pendingActions['pending_screening'] ?? 0) > 0) || ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0); ?>
+                    <?php if ($hasActions): ?>
+                        <?php if ((int)($pendingActions['pending_screening'] ?? 0) > 0): ?>
+                        <a href="<?= $jobsUrl ?>" class="d-flex align-items-center justify-content-between p-3" style="border-bottom:1px solid #D9ECE5;text-decoration:none;color:#16212B;transition:background.12s;" onmouseover="this.style.background='#E8F9F8'" onmouseout="this.style.background='transparent'">
+                            <div>
+                                <strong><i class="fas fa-file-signature" style="color:#0D8A90;"></i> Screen New Applications</strong>
+                                <small class="d-block text-muted">Review and shortlist incoming candidates.</small>
+                            </div>
+                            <span class="badge" style="background:#FFE45C;color:#6B5300;border-radius:20px;font-weight:700;padding:5px 12px;"><?= (int)$pendingActions['pending_screening'] ?></span>
+                        </a>
+                        <?php endif; ?>
+                        <?php if ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0): ?>
+                        <a href="<?= $bookingsUrl ?>" class="d-flex align-items-center justify-content-between p-3" style="border-bottom:1px solid #D9ECE5;text-decoration:none;color:#16212B;transition:background.12s;" onmouseover="this.style.background='#E8F9F8'" onmouseout="this.style.background='transparent'">
+                            <div>
+                                <strong><i class="fas fa-calendar-check" style="color:#0D8A90;"></i> Interviews Today</strong>
+                                <small class="d-block text-muted">Track today's booked interviews and update status.</small>
+                            </div>
+                            <span class="status-pill"><?= (int)$pendingActions['hr_interviews_today'] ?></span>
+                        </a>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <div class="text-center py-5">
+                            <div style="width:56px;height:56px;border-radius:50%;background:#E8F9F8;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:#0D8A90;font-size:22px;"><i class="fas fa-check"></i></div>
+                            <h6 style="font-weight:600;">All caught up!</h6>
+                            <p class="text-muted small">No pending screenings or interviews right now.</p>
+                            <a href="<?= $jobsUrl ?>" class="btn btn-outline-primary btn-sm">Review Jobs</a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
+</div><!-- /.recruiter-dashboard-main -->
+
+<script>
+(function() {
+    'use strict';
+
+    var interviewDates = <?= json_encode($interviewDates ?? []) ?>;
+    var todayStr = '<?= date('Y-m-d') ?>';
+
+    function buildCalendar(baseDate) {
+        var year = baseDate.getFullYear();
+        var month = baseDate.getMonth();
+
+        var firstDay = new Date(year, month, 1);
+        var lastDay = new Date(year, month + 1, 0);
+        var startPad = firstDay.getDay(); // 0=Sun
+        var totalDays = lastDay.getDate();
+
+        var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+        var html = '';
+
+        // Header
+        html += '<div class="dash-calendar-header">';
+        html += '<h6>' + monthNames[month] + ' ' + year + '</h6>';
+        html += '<div class="dash-calendar-nav">';
+        html += '<button type="button" class="dash-cal-prev" aria-label="Previous month"><i class="fas fa-chevron-left"></i></button>';
+        html += '<button type="button" class="dash-cal-next" aria-label="Next month"><i class="fas fa-chevron-right"></i></button>';
+        html += '</div></div>';
+
+        // Weekday headers
+        html += '<div class="dash-calendar-weekdays">';
+        ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(d) { html += '<span>' + d + '</span>'; });
+        html += '</div>';
+
+        // Grid
+        html += '<div class="dash-calendar-grid">';
+
+        // Padding cells from previous month
+        var prevMonthDays = new Date(year, month, 0).getDate();
+        for (var p = startPad - 1; p >= 0; p--) {
+            html += '<div class="dash-calendar-day other-month">' + (prevMonthDays - p) + '</div>';
+        }
+
+        // Actual days
+        for (var d = 1; d <= totalDays; d++) {
+            var dateStr = year + '-' + String(month + 1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+            var classes = 'dash-calendar-day';
+            if (dateStr === todayStr) classes += ' today';
+            if (interviewDates[dateStr]) classes += ' has-interview';
+            html += '<div class="' + classes + '" title="' + (interviewDates[dateStr] ? interviewDates[dateStr] + ' interview(s)' : '') + '">' + d + '</div>';
+        }
+
+        // Trailing cells for next month
+        var used = startPad + totalDays;
+        var remaining = (7 - (used % 7)) % 7;
+        for (var t = 1; t <= remaining; t++) {
+            html += '<div class="dash-calendar-day other-month">' + t + '</div>';
+        }
+
+        html += '</div>';
+
+        var container = document.getElementById('dashCalendar');
+        container.innerHTML = html;
+
+        // Nav buttons
+        container.querySelector('.dash-cal-prev').addEventListener('click', function(e) {
+            e.stopPropagation();
+            buildCalendar(new Date(year, month - 1, 1));
+        });
+        container.querySelector('.dash-cal-next').addEventListener('click', function(e) {
+            e.stopPropagation();
+            buildCalendar(new Date(year, month + 1, 1));
+        });
+    }
+
+    buildCalendar(new Date());
+})();
+</script>
+
 </div><!-- /.recruiter-dashboard-jobboard -->
-
 <?= view('Layouts/recruiter_footer') ?>

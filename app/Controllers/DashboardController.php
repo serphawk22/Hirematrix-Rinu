@@ -198,6 +198,46 @@ class DashboardController extends BaseController
         // Monthly Trends (Last 6 months)
         $monthlyTrends = $this->getMonthlyTrends();
 
+        // ── Upcoming Interviews (next 30 days for the calendar) ──
+        $upcomingInterviews = model('InterviewBookingModel')
+            ->select("
+                interview_bookings.id,
+                interview_bookings.slot_datetime,
+                interview_bookings.booking_status,
+                interview_bookings.user_id AS candidate_id,
+                s.slot_date,
+                s.slot_time,
+                u.name AS candidate_name,
+                u.email AS candidate_email,
+                j.title AS job_title,
+                j.id AS job_id
+            ")
+            ->join('interview_slots s', 'interview_bookings.slot_id = s.id')
+            ->join('users u', 'interview_bookings.user_id = u.id')
+            ->join('jobs j', 'interview_bookings.job_id = j.id')
+            ->where('s.created_by', $currentUserId)
+            ->where('s.slot_date >=', date('Y-m-d'))
+            ->where('s.slot_date <=', date('Y-m-d', strtotime('+30 days')))
+            ->whereIn('interview_bookings.booking_status', ['booked', 'confirmed', 'rescheduled'])
+            ->orderBy('s.slot_date', 'ASC')
+            ->orderBy('s.slot_time', 'ASC')
+            ->findAll();
+
+        // Group interview dates for calendar dots
+        $interviewDates = [];
+        foreach ($upcomingInterviews as $iv) {
+            $d = $iv['slot_date'];
+            if (!isset($interviewDates[$d])) {
+                $interviewDates[$d] = 0;
+            }
+            $interviewDates[$d]++;
+        }
+
+        // Today's interviews
+        $todayInterviews = array_values(array_filter($upcomingInterviews, function ($iv) {
+            return $iv['slot_date'] === date('Y-m-d');
+        }));
+
         return view('recruiter/dashboard/index', [
             'funnel' => $funnel,
             'pendingActions' => $pendingActions,
@@ -206,9 +246,12 @@ class DashboardController extends BaseController
             'jobStats' => $jobStats,
             'topJobs' => $topJobs,
             'conversionMetrics' => $conversionMetrics,
-            'monthlyTrends' => $monthlyTrends
-            , 'reminders' => $reminders
-            , 'unread_count' => $unreadNotificationsCount
+            'monthlyTrends' => $monthlyTrends,
+            'reminders' => $reminders,
+            'unread_count' => $unreadNotificationsCount,
+            'upcomingInterviews' => $upcomingInterviews,
+            'interviewDates' => $interviewDates,
+            'todayInterviews' => $todayInterviews,
         ]);
     }
 
