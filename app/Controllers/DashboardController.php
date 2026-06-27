@@ -52,6 +52,11 @@ class DashboardController extends BaseController
                 'topJobs' => [],
                 'conversionMetrics' => [],
                 'monthlyTrends' => [],
+                'reminders' => [],
+                'unread_count' => model('NotificationModel')->getUnreadCount($currentUserId),
+                'upcomingInterviews' => [],
+                'interviewDates' => [],
+                'todayInterviews' => [],
                 'noJobs' => true
             ]);
         }
