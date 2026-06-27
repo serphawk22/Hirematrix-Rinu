@@ -121,7 +121,7 @@ class LegalPages extends Controller
                     ],
                 ],
                 [
-                    'title' => '5. Data Retention',
+                    'title' => '5. Data Collection',
                     'paragraphs' => [
                         'We retain information for as long as reasonably necessary to operate the job portal, maintain hiring records, comply with legal obligations, resolve disputes, enforce agreements, and support legitimate business needs.',
                     ],
@@ -162,6 +162,12 @@ class LegalPages extends Controller
                         'Questions about this Privacy Policy can be directed to the HireMatrix team through the support or contact channel published on the portal.',
                     ],
                 ],
+                [
+                    'title' => '12. Google Ads',
+            'paragraphs' => [
+    'This website uses Google AdSense, a web advertising service provided by Google LLC. Google AdSense uses cookies to serve ads based on your prior visits to this website or other websites. You may opt out of personalized advertising by visiting Google\'s Ads Settings.'
+],
+                    ],
             ],
         ]);
     }
