@@ -42,6 +42,8 @@
                         <div class="contact-point">
                             <h3>Support</h3>
                             <p>Questions about access, profile issues, applications, or interview flow.</p>
+                            <p>Mail ID : info.serphawk@gmail.com</p>
+                            <p>Contact No : +91 97477 51235</p>
                         </div>
                         <div class="contact-point">
                             <h3>Business enquiries</h3>
