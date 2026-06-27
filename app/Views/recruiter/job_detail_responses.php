@@ -1640,6 +1640,198 @@ body.dark .recruiter-pipeline-page small { color: #94A3B8; }
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
+
+/* Job detail review surface refresh */
+.recruiter-pipeline-page .pipeline-shell.container-fluid {
+  padding-top: 32px !important;
+}
+.recruiter-pipeline-page .pipeline-job-head {
+  align-items: stretch !important;
+  background: #FFFFFF !important;
+  border: 0 !important;
+  border-radius: 28px !important;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.05) !important;
+  margin-bottom: 18px;
+  padding: 26px 30px !important;
+}
+.recruiter-pipeline-page .pipeline-job-head .page-board-copy {
+  align-self: center;
+}
+.recruiter-pipeline-page .pipeline-job-status {
+  align-items: center;
+  background: #EAF8F4;
+  border: 1px solid #BFE8DF;
+  border-radius: 999px;
+  color: #0D8A90;
+  display: inline-flex;
+  font-size: 0.76rem;
+  font-weight: 800;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+}
+.recruiter-pipeline-page .pipeline-job-status.is-closed {
+  background: #F1F5F9;
+  border-color: #E2E8F0;
+  color: #64748B;
+}
+.recruiter-pipeline-page .pipeline-head-actions .btn {
+  min-height: 38px;
+}
+.recruiter-pipeline-page .pipeline-work-nav {
+  background: #FFFFFF;
+  border: 1px solid #D9ECE5 !important;
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.04);
+  display: inline-flex;
+  margin-bottom: 16px;
+  padding: 6px;
+}
+.recruiter-pipeline-page .pipeline-work-nav .nav-link {
+  border-bottom: 0 !important;
+  border-radius: 12px !important;
+  margin: 0;
+  padding: 10px 18px;
+}
+.recruiter-pipeline-page .pipeline-work-nav .nav-link.active,
+.recruiter-pipeline-page .pipeline-work-nav .nav-link:hover {
+  background: #E0F5F0 !important;
+  border-bottom: 0 !important;
+  color: #0D8A90 !important;
+}
+.recruiter-pipeline-page .pipeline-board {
+  background: #FFFFFF;
+  border: 1px solid #D9ECE5;
+  border-radius: 24px;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.04);
+  overflow: hidden;
+}
+.recruiter-pipeline-page .pipeline-summary-bar {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F7FCFA 100%);
+  border-bottom: 1px solid #D9ECE5;
+  padding: 18px 20px 14px;
+}
+.recruiter-pipeline-page .pipeline-summary-main {
+  gap: 10px;
+}
+.recruiter-pipeline-page .pipeline-summary-title {
+  align-items: baseline;
+  display: inline-flex;
+  gap: 8px;
+}
+.recruiter-pipeline-page .pipeline-summary-title strong {
+  color: #16212B;
+  font-size: 1.04rem;
+}
+.recruiter-pipeline-page .pipeline-summary-title span {
+  color: #64748B;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+.recruiter-pipeline-page .pipeline-stage-rail {
+  background: #FFFFFF;
+  border-bottom: 1px solid #D9ECE5;
+  gap: 8px;
+  margin: 0;
+  padding: 14px 20px;
+}
+.recruiter-pipeline-page .stage-ajax-link {
+  border-color: #BFE8DF !important;
+  border-radius: 999px !important;
+  min-height: 38px;
+  padding: 8px 15px;
+}
+.recruiter-pipeline-page .stage-ajax-link.active {
+  box-shadow: 0 10px 22px rgba(31, 183, 181, 0.16);
+}
+.recruiter-pipeline-page .pipeline-toolbar {
+  background: #F8FCFB;
+  border-bottom: 1px solid #D9ECE5;
+  margin: 0;
+  padding: 14px 20px;
+}
+.recruiter-pipeline-page .pipeline-search {
+  border-radius: 12px;
+  min-height: 44px;
+}
+.recruiter-pipeline-page .pipeline-toolbar .btn {
+  min-height: 42px;
+}
+.recruiter-pipeline-page #advancedFilterCollapse .bg-light {
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #D9ECE5 !important;
+}
+.recruiter-pipeline-page #advancedFilterCollapse .form-group {
+  margin-bottom: 10px;
+}
+.recruiter-pipeline-page #advancedFilterCollapse label {
+  margin-bottom: 4px;
+}
+body.dark .recruiter-pipeline-page .pipeline-job-head,
+body.dark .recruiter-pipeline-page .pipeline-work-nav,
+body.dark .recruiter-pipeline-page .pipeline-board,
+body.dark .recruiter-pipeline-page .pipeline-summary-bar,
+body.dark .recruiter-pipeline-page .pipeline-stage-rail,
+body.dark .recruiter-pipeline-page .pipeline-toolbar,
+body.dark .recruiter-pipeline-page #advancedFilterCollapse .bg-light {
+  background: #000000 !important;
+  border-color: #23343A !important;
+  box-shadow: none !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-summary-title strong,
+body.dark .recruiter-pipeline-page .pipeline-summary-title span {
+  color: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-job-status {
+  background: #0A0A0A !important;
+  border-color: #2B2B2B !important;
+  color: #5EEAD4 !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-job-status.is-closed {
+  background: #0A0A0A !important;
+  border-color: #2B2B2B !important;
+  color: #A8B0BC !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-work-nav .nav-link.active,
+body.dark .recruiter-pipeline-page .pipeline-work-nav .nav-link:hover {
+  background: #0A0A0A !important;
+  border: 1px solid #2B2B2B !important;
+  color: #5EEAD4 !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-work-nav .nav-link {
+  border: 1px solid transparent !important;
+}
+body.dark .recruiter-pipeline-page .recruiter-leaderboard-card .table-responsive,
+body.dark .recruiter-pipeline-page .pipeline-table-wrap {
+  background: #000000 !important;
+  scrollbar-color: #555555 #0A0A0A;
+}
+body.dark .recruiter-pipeline-page .recruiter-leaderboard-card .table-responsive::-webkit-scrollbar,
+body.dark .recruiter-pipeline-page .pipeline-table-wrap::-webkit-scrollbar {
+  height: 12px;
+}
+body.dark .recruiter-pipeline-page .recruiter-leaderboard-card .table-responsive::-webkit-scrollbar-track,
+body.dark .recruiter-pipeline-page .pipeline-table-wrap::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+body.dark .recruiter-pipeline-page .recruiter-leaderboard-card .table-responsive::-webkit-scrollbar-thumb,
+body.dark .recruiter-pipeline-page .pipeline-table-wrap::-webkit-scrollbar-thumb {
+  background: #555555;
+  border: 2px solid #0A0A0A;
+  border-radius: 999px;
+}
+@media (max-width: 768px) {
+  .recruiter-pipeline-page .pipeline-job-head {
+    border-radius: 20px !important;
+    padding: 20px !important;
+  }
+  .recruiter-pipeline-page .pipeline-work-nav {
+    display: flex;
+    overflow-x: auto;
+    width: 100%;
+  }
+}
 </style>
 <?php
 $statusTones = [
@@ -1688,6 +1880,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
 <div class="pipeline-shell container-fluid">
     <div class="page-board-header page-board-header-tight recruiter-page-board-header pipeline-job-head">
         <div class="page-board-copy"> 
+            <span class="pipeline-job-status <?= esc($statusClass) ?>"><?= esc($statusLabel) ?></span>
             <h1 class="page-board-title"><?= esc($job['title']) ?></h1>
             <div class="pipeline-meta">
                 <?php foreach ($metaParts as $part): ?>
@@ -1811,7 +2004,10 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
             <div class="pipeline-board">
                 <div class="pipeline-summary-bar">
                     <div class="pipeline-summary-main">
-                        <?= $allApplicationsLabel ?> Candidates 
+                        <span class="pipeline-summary-title">
+                            <strong><?= $allApplicationsLabel ?> Candidates</strong>
+                            <span><?= $safeActiveStage === 'all' ? 'All stages' : esc($statuses[$safeActiveStage] ?? ucwords(str_replace('_', ' ', $safeActiveStage))) ?></span>
+                        </span>
                         <span class="pipeline-hiring-chip"><i class="fas fa-users"></i> <?= max(0, $openings) ?> openings</span>
                         <span class="pipeline-hiring-chip"><i class="fas fa-bullseye"></i> <?= $avgMatch ?>% avg match</span>
                     </div>

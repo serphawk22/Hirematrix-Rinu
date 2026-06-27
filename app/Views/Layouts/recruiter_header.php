@@ -1613,10 +1613,6 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                    class="<?= $isActive('recruiter/company-profile') ?>">
                     <i class="fas fa-building"></i> Company Profile
                 </a>
-                <a href="<?= base_url('recruiter/settings') ?>"
-                   class="<?= $isActive('recruiter/settings') ?>">
-                    <i class="fas fa-cog"></i> Settings
-                </a>
                 <a href="<?= base_url('logout') ?>" class="prof-logout">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>

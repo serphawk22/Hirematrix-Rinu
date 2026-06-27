@@ -38,7 +38,8 @@
     bottom: 90px;
     right: 24px;
     width: 380px;
-    height: 520px;
+    height: min(720px, calc(100vh - 118px));
+    min-height: 560px;
     background: #fff;
     border: 1px solid #D9ECE5;
     border-radius: 16px;
@@ -149,7 +150,7 @@
 
 /* Quick suggestions */
 .hm-chat-suggestions {
-    padding: 0 16px 10px;
+    padding: 0 0 4px;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
@@ -276,7 +277,8 @@ body.dark .hm-chat-suggestions button:hover {
         left: 12px;
         bottom: 80px;
         width: auto;
-        height: 70vh;
+        height: calc(100vh - 104px);
+        min-height: 0;
     }
     .hm-chat-fab {
         right: 16px;
@@ -315,9 +317,8 @@ body.dark .hm-chat-suggestions button:hover {
             </div>
             <div class="hm-msg-time">Just now</div>
         </div>
+        <div class="hm-chat-suggestions" id="hmChatSuggestions"></div>
     </div>
-
-    <div class="hm-chat-suggestions" id="hmChatSuggestions"></div>
 
     <div class="hm-chat-input-wrap">
         <input type="text" class="hm-chat-input" id="hmChatInput"

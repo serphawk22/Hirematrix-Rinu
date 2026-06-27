@@ -120,16 +120,16 @@
                 { status: 'applied', label: 'Reopen', icon: 'fa-undo' },
                 { status: 'shortlisted', label: 'Shortlist', icon: 'fa-check-circle' },
                 { schedule: true, label: 'Schedule Interview', icon: 'fa-calendar-plus' },
-                { status: 'on_hold', label: 'Hold', icon: 'fa-pause-circle' }
+                { status: 'hold', label: 'Hold', icon: 'fa-pause-circle' }
             ],
             shortlisted: [
                 { schedule: true, label: 'Schedule Interview', icon: 'fa-calendar-plus' },
-                { status: 'on_hold', label: 'Hold', icon: 'fa-pause-circle' },
+                { status: 'hold', label: 'Hold', icon: 'fa-pause-circle' },
                 { status: 'rejected', label: 'Reject', icon: 'fa-times-circle', danger: true }
             ],
             interview_scheduled: [
                 { status: 'shortlisted', label: 'Back to Shortlist', icon: 'fa-arrow-left' },
-                { status: 'on_hold', label: 'Hold', icon: 'fa-pause-circle' },
+                { status: 'hold', label: 'Hold', icon: 'fa-pause-circle' },
                 { status: 'rejected', label: 'Reject', icon: 'fa-times-circle', danger: true }
             ],
             on_hold: [
@@ -141,7 +141,7 @@
         var actions = actionSets[currentStatus] || [
             { status: 'shortlisted', label: 'Shortlist', icon: 'fa-check-circle' },
             { schedule: true, label: 'Schedule Interview', icon: 'fa-calendar-plus' },
-            { status: 'on_hold', label: 'Hold', icon: 'fa-pause-circle' },
+            { status: 'hold', label: 'Hold', icon: 'fa-pause-circle' },
             { status: 'rejected', label: 'Reject', icon: 'fa-times-circle', danger: true }
         ];
 
@@ -601,6 +601,7 @@
         var statusLabels = {
             applied: 'Reopened',
             shortlisted: 'Shortlisted',
+            hold: 'On Hold',
             on_hold: 'On Hold',
             rejected: 'Rejected'
         };
@@ -617,7 +618,12 @@
             success: function (res) {
                 updateCsrf(config, res);
                 if (res.status === 'success') {
-                    location.reload();
+                    closeCommunicationDrawer();
+                    refreshApplicationsAjax().then(function (didRefresh) {
+                        if (!didRefresh) {
+                            location.reload();
+                        }
+                    });
                 }
             }
         });
