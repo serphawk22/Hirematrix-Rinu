@@ -63,7 +63,7 @@ body.dark .m-0.font-weight-bold{
       #EEF9F2 100%
     ) !important;
 }
-body.dark .hm-page-content,body.dark .recruiter-slot-bookings-jobboard, body.dark .recruiter-summary-card, body.dark .recruiter-filter-card,body.dark .recruiter-table-card,body.dark .card-header,body.dark .table.table-bordered.table-hover.recruiter-bookings-table{
+body.dark .hm-page-content,body.dark .recruiter-slot-bookings-jobboard, body.dark .recruiter-summary-card, body.dark .recruiter-filter-card,body.dark .recruiter-table-card{
     background: #000000 !important;
     border: 1px solid #23343A !important;
 } 
@@ -212,6 +212,55 @@ body.dark .recruiter-booking-filter-hint {
         width: 100%;
     }
 }
+.recruiter-slot-bookings-jobboard .recruiter-table-card {
+    border-radius: 20px !important;
+    overflow: hidden;
+}
+.recruiter-slot-bookings-jobboard .recruiter-table-card .card-header {
+    border: 0 !important;
+    border-bottom: 1px solid #D9ECE5 !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-table-card .card-body {
+    padding: 0 !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-table-card .table-responsive {
+    border: 0 !important;
+    border-radius: 0 !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-bookings-table {
+    border: 0 !important;
+    border-collapse: collapse !important;
+    margin: 0 !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-bookings-table th,
+.recruiter-slot-bookings-jobboard .recruiter-bookings-table td {
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    border-bottom: 1px solid #D9ECE5 !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-bookings-table thead th {
+    background: #FFFFFF !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-bookings-table tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+body.dark .recruiter-slot-bookings-jobboard .recruiter-bookings-table th,
+body.dark .recruiter-slot-bookings-jobboard .recruiter-bookings-table td {
+    border-bottom-color: #23343A !important;
+}
+body.dark .recruiter-slot-bookings-jobboard .recruiter-table-card .card-header {
+    background: #000000 !important;
+    border: 0 !important;
+    border-bottom: 1px solid #23343A !important;
+}
+body.dark .recruiter-slot-bookings-jobboard .recruiter-bookings-table {
+    border: 0 !important;
+}
+body.dark .recruiter-slot-bookings-jobboard .recruiter-bookings-table thead th,
+body.dark .recruiter-slot-bookings-jobboard .recruiter-bookings-table td {
+    background: #000000 !important;
+}
 </style>
 <div class="recruiter-slot-bookings-jobboard">
     <div class="container-fluid py-5">
@@ -262,7 +311,7 @@ body.dark .recruiter-booking-filter-hint {
             <div class="card-body">
                 <div class="recruiter-booking-filter-head">
                     <h6 class="recruiter-booking-filter-title">Filters</h6>
-                    <p class="recruiter-booking-filter-hint">Job and status</p>
+                    
                 </div>
                 <form method="get" action="<?= base_url('recruiter/slots/bookings') ?>" class="recruiter-job-form">
                     <div class="recruiter-booking-filter-grid">
@@ -305,7 +354,7 @@ body.dark .recruiter-booking-filter-hint {
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover recruiter-bookings-table">
+                    <table class="table table-hover recruiter-bookings-table">
                         <thead class="thead-light">
                             <tr>
                                 <th>ID</th>

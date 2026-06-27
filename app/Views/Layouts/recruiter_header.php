@@ -1563,7 +1563,7 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
             </button>
             <div class="hm-sb-sub <?= $isActive('recruiter/slots') ? 'sb-open' : '' ?>" id="hmSlotsSub">
                 <a href="<?= base_url('recruiter/slots') ?>"
-                   class="hm-sb-subitem <?= ($isActive('recruiter/slots') && !str_contains($currentUri, 'bookings')) ? 'active' : '' ?>">
+                   class="hm-sb-subitem <?= ($currentUri === 'recruiter/slots') ? 'active' : '' ?>">
                    Manage Slots
                 </a>
                 <a href="<?= base_url('recruiter/slots/create') ?>"
