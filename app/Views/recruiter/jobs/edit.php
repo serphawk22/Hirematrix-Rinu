@@ -568,13 +568,7 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
                                  data-initial-items="<?= esc(json_encode(array_values($questionnaireRows)), 'attr') ?>"></div>
                         </div>
 
-                        <div class="form-group" id="aiInterviewUnavailableWrap" <?= $aiInterviewAllowed ? 'style="display: none;"' : '' ?>>
-                            <div class="alert alert-info py-2 mb-0">
-                                AI interview settings are available only for software and technical jobs.
-                            </div>
-                        </div>
-
-                        <div class="form-group" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
+<div class="form-group" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
                             <?php $policy = $aiInterviewAllowed ? strtoupper(old('ai_interview_policy', $job['ai_interview_policy'] ?? 'REQUIRED_HARD')) : 'OFF'; ?>
                             <label>AI Interview Policy *</label>
                             <select name="ai_interview_policy" id="ai_interview_policy" class="form-control" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>

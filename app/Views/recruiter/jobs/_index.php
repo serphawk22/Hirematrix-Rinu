@@ -245,7 +245,6 @@ body.dark .status-pill{
                     <thead class="thead-light">
                         <tr>
                             <th>Job Title</th>
-                            <th>Location</th>
                             <th>Applications</th>
                             <th>AI Policy</th>
                             <th>Status</th>
@@ -256,15 +255,14 @@ body.dark .status-pill{
                     <tbody>
                         <?php if (!empty($jobs)): ?>
                             <?php foreach ($jobs as $job): ?>
-                                <tr>
-                                    <td><strong><?= esc($job['title']) ?></strong></td>
-                                    <td><?= esc($job['location']) ?></td>
+                                <tr style="cursor:pointer;" onclick="window.location='<?= base_url('recruiter/jobs/view/' . $job['id']) ?>'">
+                                    <td onclick="event.stopPropagation();"><strong><?= esc($job['title']) ?></strong><br><small class="text-muted"><?= esc($job['location']) ?></small></td>
                                     <td>
-                                        <a href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>">
-                                            <span class="badge badge-primary"><?= $job['application_count'] ?></span>
+                                        <a href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>" onclick="event.stopPropagation();">
+                                            <span class="badge badge-primary" style="font-size:13px;padding:5px 10px;"><?= $job['application_count'] ?></span>
                                         </a>
                                     </td>
-                                    <td>
+                                    <td onclick="event.stopPropagation();">
                                         <?php
                                         $policy = strtoupper($job['ai_interview_policy'] ?? 'REQUIRED_HARD');
                                         $policyMap = [
@@ -280,34 +278,32 @@ body.dark .status-pill{
                                             <small><?= esc($policyMeta['hint']) ?></small>
                                         </div>
                                     </td>
-                                    <td>
+                                    <td onclick="event.stopPropagation();">
                                        <?php $statusColor = $job['status'] == 'open' ? '#1FB7B5' : '#ef4444'; ?>
 <span style="color: <?= $statusColor ?>; font-weight: 600;">
     <?= ucfirst($job['status']) ?> 
                                     </td>
                                     <td><?= date('M d, Y', strtotime($job['created_at'])) ?></td>
-                                    <td>
-                                        <div class="job-actions-wrap">
-                                            <a href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>" class="status-pill">
-                                                 Edit
-                                            </a>
+                                    <td onclick="event.stopPropagation();">
+                                        <div class="job-actions-wrap" style="flex-wrap:nowrap;">
                                             <a href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>" class="status-pill">
-                                               View Applications
+                                                <i class="fas fa-users"></i> Applications
                                             </a>
-                                            <a href="<?= base_url('recruiter/jobs/' . $job['id'] . '/leaderboard') ?>" class="status-pill">
-                                                Leaderboard
-                                            </a>
-                                            <?php if ($job['status'] == 'open'): ?>
-                                                <a href="<?= base_url('recruiter/jobs/close/' . $job['id']) ?>"
-                                                   class="status-pill"
-                                                   onclick="return confirm('Are you sure you want to close this job?')">
-                                                  Close
-                                                </a>
-                                            <?php else: ?>
-                                                <a href="<?= base_url('recruiter/jobs/reopen/' . $job['id']) ?>" class="status-pill">
-                                                      Reopen
-                                                </a>
-                                            <?php endif; ?>
+                                            <div class="dropdown d-inline-block">
+                                                <button class="status-pill" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border:none;cursor:pointer;">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-right" style="min-width:160px;border-radius:10px;border:1px solid #D9ECE5;box-shadow:0 4px 16px rgba(0,0,0,.08);">
+                                                    <a class="dropdown-item" href="<?= base_url('recruiter/jobs/' . $job['id'] . '/leaderboard') ?>"><i class="fas fa-trophy mr-2"></i>Leaderboard</a>
+                                                    <a class="dropdown-item" href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>"><i class="fas fa-edit mr-2"></i>Edit</a>
+                                                    <?php if ($job['status'] == 'open'): ?>
+                                                        <div class="dropdown-divider"></div>
+                                                        <a class="dropdown-item text-danger" href="<?= base_url('recruiter/jobs/close/' . $job['id']) ?>" onclick="return confirm('Close this job?')"><i class="fas fa-times-circle mr-2"></i>Close Job</a>
+                                                    <?php else: ?>
+                                                        <a class="dropdown-item" href="<?= base_url('recruiter/jobs/reopen/' . $job['id']) ?>"><i class="fas fa-redo mr-2"></i>Reopen</a>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>

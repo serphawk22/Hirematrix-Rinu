@@ -207,6 +207,21 @@ body.dark .ai-error {
     transform: translateY(-1px);
 
 }
+/* Inline status dropdown */
+.hm-status-dropdown .dropdown-toggle::after { margin-left: 6px; }
+.hm-status-pill-btn { background: none; }
+body.dark .hm-status-dropdown .dropdown-menu {
+    background: #111111 !important;
+    border-color: #23343A !important;
+}
+body.dark .hm-status-dropdown .dropdown-item {
+    color: #94A3B8 !important;
+    background: transparent !important;
+}
+body.dark .hm-status-dropdown .dropdown-item:hover {
+    background: rgba(31,183,181,.1) !important;
+    color: #F8FAFC !important;
+}
 
     .page-board-title{
         font-size: 26px !important; 
@@ -612,9 +627,25 @@ body.dark .recruiter-job-form label, body.dark h6 {
                                         ];
                                         $label = $statusLabels[$app['status']] ?? ucwords(str_replace('_', ' ', $app['status']));
                                         ?>
-                                        <span class="status-pill" data-status="<?= esc($app['status']) ?>">
-                                            <?= esc($label) ?>
-                                        </span>
+                                        <div class="dropdown hm-status-dropdown">
+                                            <button class="status-pill dropdown-toggle hm-status-pill-btn" data-toggle="dropdown" data-status="<?= esc($app['status']) ?>" style="border:none;cursor:pointer;" title="Click to change status">
+                                                <?= esc($label) ?>
+                                            </button>
+                                            <div class="dropdown-menu" style="min-width:180px;border-radius:10px;border:1px solid #D9ECE5;box-shadow:0 4px 16px rgba(0,0,0,.08);">
+                                                <?php foreach ($statusLabels as $sv => $sl): ?>
+                                                    <?php if ($sv !== $app['status']): ?>
+                                                        <a class="dropdown-item hm-inline-status-change"
+                                                           href="#"
+                                                           data-application-id="<?= (int)$app['id'] ?>"
+                                                           data-status="<?= esc($sv) ?>"
+                                                           data-label="<?= esc($sl) ?>"
+                                                           data-csrf="<?= csrf_token() ?>">
+                                                            <?= esc($sl) ?>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
                                         <?php
@@ -796,6 +827,48 @@ body.dark .recruiter-job-form label, body.dark h6 {
         });
     });
 })();
+
+/* ── Inline status change ── */
+document.addEventListener('click', function (e) {
+    const item = e.target.closest('.hm-inline-status-change');
+    if (!item) return;
+    e.preventDefault();
+    const appId   = item.dataset.applicationId;
+    const status  = item.dataset.status;
+    const label   = item.dataset.label;
+    const csrf    = item.dataset.csrf;
+    const dropdown = item.closest('.hm-status-dropdown');
+    const pill    = dropdown ? dropdown.querySelector('.hm-status-pill-btn') : null;
+    if (pill) { pill.textContent = '…'; pill.disabled = true; }
+    const fd = new FormData();
+    fd.append(csrf, document.querySelector('input[name="' + csrf + '"]') ? document.querySelector('input[name="' + csrf + '"]').value : '');
+    fd.append('status', status);
+    // Try shortlist/reject endpoints first, fall back to generic update
+    const url = status === 'shortlisted'
+        ? '<?= base_url('recruiter/applications/shortlist/') ?>' + appId
+        : status === 'rejected'
+        ? '<?= base_url('recruiter/applications/reject/') ?>' + appId
+        : '<?= base_url('recruiter/applications/update-status/') ?>' + appId;
+    fetch(url, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
+        body: fd
+    })
+    .then(function(res) { return res.json().catch(function(){ return {success: res.ok}; }); })
+    .then(function(payload) {
+        if (pill) {
+            pill.textContent = label;
+            pill.disabled = false;
+            pill.dataset.status = status;
+        }
+        if (payload && payload.csrf_hash && payload.csrf_token_name) {
+            document.querySelectorAll('input[name="' + payload.csrf_token_name + '"]').forEach(function(i){ i.value = payload.csrf_hash; });
+        }
+    })
+    .catch(function() {
+        if (pill) { pill.textContent = label; pill.disabled = false; }
+    });
+});
 
 /* ── AI Report modal ── */
 document.addEventListener('click', function (e) {

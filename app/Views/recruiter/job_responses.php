@@ -97,7 +97,7 @@ body.dark .recruiter-jobs-jobboard .form-control::placeholder {
     background: white !important;
     border: 1px solid #D9ECE5 !important;
     border-radius: 12px !important;
-    overflow: hidden;
+    overflow: visible !important;
     box-shadow: none !important;
 }
 body.dark .recruiter-jobs-jobboard .recruiter-table-card,
@@ -419,11 +419,26 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
     padding-left: 34px !important;
     padding-right: 34px !important;
 }
- .recruiter-jobs-jobboard #jobs-list .card,
+.recruiter-jobs-jobboard #jobs-list .card,
 .recruiter-jobs-jobboard .recruiter-filter-card{
     border-radius: 20px !important;
     overflow: hidden;
 }
+.recruiter-jobs-jobboard .hm-job-dropdown-menu { display:none; }
+.recruiter-jobs-jobboard .hm-job-dropdown-item {
+    display:block;
+    padding:8px 16px;
+    font-size:0.88rem;
+    font-weight:500;
+    color:#16212B;
+    text-decoration:none !important;
+    transition:background .15s;
+    white-space:nowrap;
+}
+.recruiter-jobs-jobboard .hm-job-dropdown-item:hover { background:#EDF8F5; color:#0D8A90; }
+body.dark .recruiter-jobs-jobboard .hm-job-dropdown-menu { background:#111 !important; border-color:#23343A !important; }
+body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item { color:#94A3B8 !important; }
+body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item:hover { background:rgba(31,183,181,.1) !important; color:#F8FAFC !important; }
 </style> 
 
 <div
@@ -465,36 +480,53 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
             <?php if (empty($jobs)): ?>
                 <div class="alert alert-info">No jobs found matching your criteria.</div>
             <?php else: ?>
-                <div class="table-responsive recruiter-table-card" style="border-radius: 20px !important;overflow: hidden;">
-                    <table class="table table-hover bg-white border rounded recruiter-jobs-table" >
+                <div class="table-responsive recruiter-table-card" style="border-radius:20px !important;overflow:visible !important;">
+                    <table class="table table-hover bg-white border rounded recruiter-jobs-table" style="overflow:visible;">
                         <thead class="bg-light">
                             <tr>
                                 <th>Job Title</th>
                                 <th>Status</th>
                                 <th>Applicants</th>
-                                <th class="text-right">Action</th>
+                                <th class="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($jobs as $job): ?>
-                                <tr>
+                                <tr class="hm-job-row" data-href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>" style="cursor:pointer;">
                                     <td>
                                         <div class="job-title"><?= esc($job['title']) ?></div>
                                         <small class="text-muted"><?= esc($job['location']) ?></small>
                                     </td>
                                     <td>
                                         <?php $statusColor = $job['status'] == 'open' ? '#1FB7B5' : '#ef4444'; ?>
-<span style="color: <?= $statusColor ?>; font-weight: 600;">
-    <?= ucfirst($job['status']) ?> 
+                                        <span style="color:<?= $statusColor ?>;font-weight:600;"><?= ucfirst($job['status']) ?></span>
                                     </td>
-                                    <td><?= $job['applicant_count'] ?> (<?= $job['shortlisted_count'] ?> Shortlisted)</td>
-                                    <td class="text-right">
-                                        <a href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>" class="btn btn-sm btn-outline-primary mr-1">
-                                            <i class="fas fa-users mr-1"></i> Pipeline
-                                        </a>
-                                        <a href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>" class="btn btn-sm btn-outline-primary">
-                                             Edit
-                                        </a>
+                                    <td>
+                                        <strong><?= $job['applicant_count'] ?></strong>
+                                        <small class="text-muted d-block"><?= $job['shortlisted_count'] ?> shortlisted</small>
+                                    </td>
+                                    <td class="text-right hm-job-actions-cell" style="overflow:visible;">
+                                        <div class="hm-job-dropdown" style="position:relative;display:inline-block;">
+                                            <button class="btn btn-sm btn-outline-primary hm-job-more-btn" type="button" title="More actions" style="padding:5px 11px;border:1.5px solid #1FB7B5 !important;border-radius:6px !important;">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+  <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
+  <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+  <circle cx="13" cy="8" r="1.5" fill="currentColor"/>
+</svg>
+                                            </button>
+                                            <div class="hm-job-dropdown-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);min-width:160px;background:#fff;border:1px solid #D9ECE5;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:99999;padding:4px 0;">
+                                                <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>">View Pipeline</a>
+                                                <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/' . $job['id'] . '/leaderboard') ?>">Leaderboard</a>
+                                                <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>">Edit Job</a>
+                                                <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/preview/' . $job['id']) ?>" target="_blank">Preview</a>
+                                                <div style="height:1px;background:#D9ECE5;margin:4px 0;"></div>
+                                                <?php if ($job['status'] === 'open'): ?>
+                                                <a class="hm-job-dropdown-item" style="color:#ef4444;" href="<?= base_url('recruiter/jobs/close/' . $job['id']) ?>" onclick="return confirm('Close this job?')">Close Job</a>
+                                                <?php else: ?>
+                                                <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/reopen/' . $job['id']) ?>">Reopen Job</a>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -513,8 +545,35 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
 </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Row click → pipeline (skip actions cell)
+    document.querySelectorAll('.hm-job-row').forEach(function (row) {
+        row.addEventListener('click', function (e) {
+            if (e.target.closest('.hm-job-actions-cell')) return;
+            window.location = row.dataset.href;
+        });
+    });
+
+    // … button toggle
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('.hm-job-more-btn');
+        if (btn) {
+            e.preventDefault();
+            e.stopPropagation();
+            var menu = btn.parentElement.querySelector('.hm-job-dropdown-menu');
+            var isOpen = menu.style.display === 'block';
+            document.querySelectorAll('.hm-job-dropdown-menu').forEach(function (m) { m.style.display = 'none'; });
+            menu.style.display = isOpen ? 'none' : 'block';
+            return;
+        }
+        // close on outside click
+        if (!e.target.closest('.hm-job-dropdown')) {
+            document.querySelectorAll('.hm-job-dropdown-menu').forEach(function (m) { m.style.display = 'none'; });
+        }
+    });
+});
+</script>
 <?= view('Layouts/recruiter_footer', [
     'pageScripts' => [base_url('jobboard/js/recruiter-jobs.js?v=' . @filemtime(FCPATH . 'jobboard/js/recruiter-jobs.js'))],
 ]) ?>
-
-

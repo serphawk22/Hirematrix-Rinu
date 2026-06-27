@@ -220,10 +220,10 @@ body.dark .recruiter-summary-card{
                             </div>
                         </div>
 
-                        <div class="alert alert-info recruiter-summary-card">
+                        <!-- <div class="alert alert-info recruiter-summary-card">
                             <h6 class="alert-heading"><i class="fas fa-info-circle"></i> Summary</h6>
                             <p class="mb-0" id="slotSummary">Please fill in the form to see the summary of slots to be created.</p>
-                        </div>
+                        </div> -->
 
                         <div class="form-group mb-0">
                             <button type="submit" class="btn btn-outline-primary btn-lg">
