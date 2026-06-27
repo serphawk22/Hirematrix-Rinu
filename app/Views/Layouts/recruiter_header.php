@@ -41,6 +41,7 @@
         --sb-width:          250px;
         --sb-width-mini:      66px;
         --topbar-h:           60px;
+        --recruiter-page-gutter: 32px;
 
         /* brand */
         --hm-primary:        #1FB7B5;
@@ -50,10 +51,11 @@
         --hm-brand-grad:     linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
 
         /* surface */
-        --hm-bg:             #F4FBFA;
-        --hm-bg-2:           #EEF9F2;
-        --hm-surface-grad:   linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%);
+        --hm-bg:             #F4F7FB;
+        --hm-bg-2:           #F4F7FB;
+        --hm-surface-grad:   #F4F7FB;
         --hm-card:           #ffffff;
+        --hm-card-soft:      #F8FBFF;
 
         /* text */
         --hm-text:           #16212B;
@@ -61,11 +63,14 @@
         --hm-light:          #94A3B8;
 
         /* borders */
-        --hm-border:         #D9ECE5;
+        --hm-border:         #DFE6EE;
+        --hm-card-radius:    22px;
+        --hm-section-radius: 30px;
+        --hm-control-radius: 8px;
 
         /* states */
-        --hm-active-bg:      #E0F5F0;
-        --hm-hover-bg:       #EBF7F4;
+        --hm-active-bg:      #E8F7F7;
+        --hm-hover-bg:       #E8F7F7;
     }
 
     /* ═══════════════════════════════════════════
@@ -89,6 +94,7 @@
     body.recruiter-jobboard {
         margin: 0; padding: 0;
         background: var(--hm-surface-grad);
+        color: var(--hm-text);
     }
 
     body.dark.recruiter-jobboard { 
@@ -96,6 +102,7 @@
         --hm-bg-2: #000000 !important;
         --hm-surface-grad: #000000 !important;
         --hm-card: #000000 !important;
+        --hm-card-soft: #111111 !important;
         --hm-text: #FFFFFF !important; 
         --hm-muted: #94A3B8;
         --hm-light: #7A8B96;
@@ -247,15 +254,21 @@
     body.recruiter-jobboard .table-responsive-wrap {
         background: var(--hm-card) !important;
         border-color: var(--hm-border) !important;
+        border-radius: var(--hm-card-radius) !important;
         box-shadow: none !important;
+        overflow: hidden;
     }
 
     body.recruiter-jobboard .page-board-header,
     body.recruiter-jobboard .page-board-header.page-board-header-tight,
     body.recruiter-jobboard .recruiter-page-board-header {
-        background: transparent !important;
+        background: var(--hm-card) !important;
         border: 0 !important;
+        border-radius: var(--hm-section-radius) !important;
         box-shadow: none !important;
+        color: var(--hm-text) !important;
+        margin-bottom: 16px !important;
+        padding: 24px 28px !important;
     }
 
     body.recruiter-jobboard .card,
@@ -271,6 +284,7 @@
     body.recruiter-jobboard .recruiter-notification-card,
     body.recruiter-jobboard .recruiter-notification-empty {
         border: 1px solid var(--hm-border) !important;
+        border-radius: var(--hm-card-radius) !important;
     }
 
     body.recruiter-jobboard .card-header,
@@ -285,6 +299,10 @@
         font-weight: 700 !important;
         line-height: 1.3 !important;
         letter-spacing: 0.04em !important;
+    }
+
+    body.recruiter-jobboard .card-header:first-child {
+        border-radius: var(--hm-card-radius) var(--hm-card-radius) 0 0 !important;
     }
 
     body.recruiter-jobboard .card-body,
@@ -634,6 +652,7 @@
         display: flex;
         min-height: 100vh;
         margin: 0; padding: 0;
+        background: var(--hm-bg) !important;
     }
 
     /* ═══════════════════════════════════════════
@@ -643,7 +662,7 @@
         position: fixed;
         top: 0; left: 0; bottom: 0;
         width: var(--sb-width);
-        background: var(--hm-surface-grad);
+        background: #F3FBF8;
         border-right: 1.5px solid var(--hm-border);
         display: flex;
         flex-direction: column;
@@ -1074,6 +1093,7 @@
         margin-left: var(--sb-width);
         flex: 1; display: flex; flex-direction: column;
         min-width: 0; min-height: 100vh;
+        background: var(--hm-bg) !important;
         transition: margin-left .28s cubic-bezier(.4,0,.2,1);
     }
     body.recruiter-jobboard.sb-collapsed-body .hm-main {
@@ -1134,7 +1154,44 @@
     }
     .hm-sb-overlay.show { display: block; }
 
-    .hm-page-content { flex: 1; padding: 0; }
+    .hm-page-content {
+        flex: 1;
+        padding: 0;
+        background: var(--hm-bg) !important;
+    }
+    body.recruiter-jobboard .hm-page-content > main {
+        min-height: 100vh;
+        background: var(--hm-bg) !important;
+    }
+    body.recruiter-jobboard main > [class*="-jobboard"] {
+        background: var(--hm-bg) !important;
+        color: var(--hm-text) !important;
+        min-height: 100vh;
+        padding: var(--recruiter-page-gutter) !important;
+    }
+    body.recruiter-jobboard main > [class*="-jobboard"] .container,
+    body.recruiter-jobboard main > [class*="-jobboard"] .container-fluid {
+        max-width: none !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        width: 100% !important;
+    }
+    body.recruiter-jobboard .recruiter-dashboard-main {
+        max-width: none !important;
+        padding: 0 !important;
+    }
+    body.recruiter-jobboard .recruiter-dashboard-jobboard .card,
+    body.recruiter-jobboard .recruiter-dashboard-jobboard .card.shadow,
+    body.recruiter-jobboard .recruiter-dashboard-jobboard .recruiter-dashboard-panel-card,
+    body.recruiter-jobboard .recruiter-dashboard-jobboard .recruiter-pipeline-card,
+    body.recruiter-jobboard .recruiter-dashboard-jobboard .dash-calendar,
+    body.recruiter-jobboard .recruiter-dashboard-jobboard .interview-today-card {
+        background: var(--hm-card) !important;
+        border: 1px solid var(--hm-border) !important;
+        border-radius: var(--hm-card-radius) !important;
+        box-shadow: none !important;
+        overflow: hidden;
+    }
     body.recruiter-jobboard .recruiter-global-hero { margin: 0; }
 
     /* ═══════════════════════════════════════════
@@ -1160,6 +1217,9 @@
         .hm-sidebar .hm-sb-section { padding: 12px 16px 4px !important; }
         .hm-main { margin-left: 0 !important; }
         .hm-mobile-toggle { display: flex !important; }
+        body.recruiter-jobboard {
+            --recruiter-page-gutter: 16px;
+        }
     }
     /* ═══════════════════════════════════════════
    DARK THEME — SIDEBAR

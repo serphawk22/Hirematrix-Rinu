@@ -273,6 +273,100 @@ body.dark .recruiter-candidate-filter-form label.small {
     font-size: 1rem;
 }
 
+.recruiter-candidates-jobboard .recruiter-filter-card {
+    margin-bottom: 14px !important;
+}
+
+.recruiter-candidates-jobboard .recruiter-filter-card .card-body {
+    padding: 14px 16px !important;
+}
+
+.recruiter-filter-compact-head {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.recruiter-filter-compact-title {
+    color: #16212B;
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.recruiter-filter-compact-hint {
+    color: #64748B;
+    font-size: 0.78rem;
+    margin: 0;
+}
+
+body.dark .recruiter-filter-compact-title,
+body.dark .recruiter-filter-compact-hint {
+    color: #ffffff !important;
+}
+
+.recruiter-filter-grid {
+    align-items: end;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: minmax(210px, 1.4fr) minmax(150px, 0.9fr) minmax(150px, 0.9fr) minmax(92px, 0.5fr) minmax(92px, 0.5fr) minmax(190px, 1fr) auto;
+}
+
+.recruiter-filter-grid .form-control {
+    min-height: 40px !important;
+    padding: 8px 12px !important;
+}
+
+.recruiter-filter-actions-compact {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.recruiter-filter-actions-compact .btn {
+    min-height: 40px;
+    padding: 8px 14px !important;
+}
+
+.recruiter-filter-actions-compact .btn-icon {
+    width: 44px;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+@media (max-width: 1399.98px) {
+    .recruiter-filter-grid {
+        grid-template-columns: minmax(210px, 1.35fr) minmax(150px, 0.9fr) minmax(150px, 0.9fr) repeat(2, minmax(92px, 0.5fr));
+    }
+
+    .recruiter-filter-grid .filter-job,
+    .recruiter-filter-grid .recruiter-filter-actions-compact {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .recruiter-filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .recruiter-filter-grid .filter-job,
+    .recruiter-filter-grid .recruiter-filter-actions-compact {
+        grid-column: auto;
+    }
+
+    .recruiter-filter-actions-compact {
+        justify-content: stretch;
+    }
+
+    .recruiter-filter-actions-compact .btn {
+        flex: 1 1 auto;
+    }
+}
+
 /* ── Responsive ── */
 .table-responsive {
     overflow-x: auto;
@@ -560,39 +654,37 @@ $hasSelectableCandidates = $candidateCount > 0 || $aiSuggestionCount > 0;
         <div class="alert alert-danger recruiter-alert"><?= session()->getFlashdata('error') ?></div>
     <?php endif; ?>
 
-    <div class="card shadow-sm recruiter-filter-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
+    <div class="card shadow-sm recruiter-filter-card" style="border-radius: 20px !important;overflow: hidden;">
         <div class="card-body">
-            <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
-                <div>
-                    <h6 class="mb-3">Search Filters</h6>
-                    <p class="text-muted mb-0">Narrow down the candidate database by skill, experience, location, and job fit.</p>
-                </div>
+            <div class="recruiter-filter-compact-head">
+                <h6 class="recruiter-filter-compact-title">Search Filters</h6>
+                <p class="recruiter-filter-compact-hint">Skill, location, experience, and job fit</p>
             </div>
 
             <form method="get" action="<?= base_url('recruiter/candidates') ?>" class="recruiter-candidate-filter-form" >
-                <div class="row">
-                    <div class="col-md-3">
-                        <label class="small text-muted mb-1">Keyword</label>
+                <div class="recruiter-filter-grid">
+                    <div>
+                        <label class="sr-only">Keyword</label>
                         <input type="text" name="keyword" class="form-control" value="<?= esc($filters['keyword'] ?? '') ?>" placeholder="Name / Email / Skill">
                     </div>
-                    <div class="col-md-2">
-                        <label class="small text-muted mb-1">Skills</label>
+                    <div>
+                        <label class="sr-only">Skills</label>
                         <input type="text" name="skills" class="form-control" value="<?= esc($filters['skills'] ?? '') ?>" placeholder="e.g. PHP">
                     </div>
-                    <div class="col-md-2">
-                        <label class="small text-muted mb-1">Location</label>
+                    <div>
+                        <label class="sr-only">Location</label>
                         <input type="text" name="location" class="form-control" value="<?= esc($filters['location'] ?? '') ?>" placeholder="City / State">
                     </div>
-                    <div class="col-md-2">
-                        <label class="small text-muted mb-1">Exp Min (Years)</label>
-                        <input type="number" step="0.5" min="0" name="exp_min" class="form-control" value="<?= esc($filters['exp_min'] ?? '') ?>">
+                    <div>
+                        <label class="sr-only">Experience minimum in years</label>
+                        <input type="number" step="0.5" min="0" name="exp_min" class="form-control" value="<?= esc($filters['exp_min'] ?? '') ?>" placeholder="Min yrs">
                     </div>
-                    <div class="col-md-2">
-                        <label class="small text-muted mb-1">Exp Max (Years)</label>
-                        <input type="number" step="0.5" min="0" name="exp_max" class="form-control" value="<?= esc($filters['exp_max'] ?? '') ?>">
+                    <div>
+                        <label class="sr-only">Experience maximum in years</label>
+                        <input type="number" step="0.5" min="0" name="exp_max" class="form-control" value="<?= esc($filters['exp_max'] ?? '') ?>" placeholder="Max yrs">
                     </div>
-                    <div class="col-md-2">
-                        <label class="small text-muted mb-1">Job Role</label>
+                    <div class="filter-job">
+                        <label class="sr-only">Job Role</label>
                         <select name="job_id" class="form-control">
                             <option value="">Select Job</option>
                             <?php foreach (($recruiterJobs ?? []) as $job): ?>
@@ -602,11 +694,11 @@ $hasSelectableCandidates = $candidateCount > 0 || $aiSuggestionCount > 0;
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-outline-primary">
+                    <div class="recruiter-filter-actions-compact">
+                        <button type="submit" class="btn btn-outline-primary btn-icon" aria-label="Search candidates" title="Search candidates">
                             <i class="fas fa-search"></i>
-                        </button>&#160;&#160;
-                         <a href="<?= base_url('recruiter/candidates') ?>" class="btn btn-outline-primary">Reset</a>
+                        </button>
+                        <a href="<?= base_url('recruiter/candidates') ?>" class="btn btn-outline-primary">Reset</a>
                     </div>
                 </div> 
             </form>

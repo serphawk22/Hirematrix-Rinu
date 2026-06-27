@@ -191,7 +191,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.alert.alert-success, .alert.alert-danger, .alert.alert-warning, .alert.alert-info').forEach(function (alertEl) {
-            if (alertEl.dataset.hmAlertShown === '1') {
+            if (alertEl.dataset.hmAlertShown === '1' || alertEl.dataset.hmAlertInline === '1') {
                 return;
             }
             var message = (alertEl.textContent || '').replace(/\s+/g, ' ').trim();

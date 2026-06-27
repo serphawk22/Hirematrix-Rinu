@@ -326,7 +326,7 @@ body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important
 <div class="container-fluid recruiter-dashboard-main">
 
     <!-- ── HEADER ── -->
-    <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+    <div class="page-board-header page-board-header-tight recruiter-page-board-header d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
         <div>
             <span class="section-eyebrow d-block mb-1" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94A3B8;">Hiring analytics</span>
             <h1 class="m-0" style="font-size:1.6rem;font-weight:700;color:#16212B;">Recruitment Overview</h1>

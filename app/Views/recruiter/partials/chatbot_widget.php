@@ -10,23 +10,27 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 100%);
+    background: var(--hm-primary, var(--primary, #1FB7B5));
     color: #fff;
     border: none;
-    box-shadow: 0 4px 20px rgba(31, 183, 181, 0.4);
+    box-shadow: none;
     cursor: pointer;
     z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, background 0.2s;
 }
 .hm-chat-fab:hover {
-    transform: scale(1.08);
-    box-shadow: 0 6px 28px rgba(31, 183, 181, 0.55);
+    background: var(--hm-primary-dark, var(--primary-dark, #0D8A90));
+    transform: scale(1.04);
 }
-.hm-chat-fab:focus { outline: none; }
+.hm-chat-fab:focus,
+.hm-chat-fab:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.18);
+}
 
 /* Widget panel */
 .hm-chat-widget {

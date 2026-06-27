@@ -8,14 +8,17 @@
    PAGE & BACKGROUNDS
 ══════════════════════════════════════════ */
 .recruiter-jobs-jobboard,
-.recruiter-jobs-jobboard .page-board-header,
 .recruiter-jobs-jobboard,.hm-page-content {
     background:none !important;
 }
 body.dark .recruiter-jobs-jobboard,
-body.dark .recruiter-jobs-jobboard .page-board-header,
 body.dark .recruiter-jobs-jobboard,body.dark .hm-page-content {
     background: #000000 !important;
+}
+
+.recruiter-jobs-jobboard .page-board-header.page-board-header-tight.recruiter-page-board-header,
+body.dark .recruiter-jobs-jobboard .page-board-header.page-board-header-tight.recruiter-page-board-header {
+    border: none !important;
 }
 
 /* ══════════════════════════════════════════
@@ -87,6 +90,36 @@ body.dark .recruiter-jobs-jobboard .card.bg-light .form-control {
 }
 body.dark .recruiter-jobs-jobboard .form-control::placeholder {
     color: #FFFFFF !important;
+}
+
+.recruiter-jobs-jobboard .recruiter-filter-card {
+    margin-bottom: 14px !important;
+}
+.recruiter-jobs-jobboard .recruiter-filter-card .card-body {
+    padding: 14px 16px !important;
+}
+.recruiter-jobs-filter-grid {
+    align-items: end;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: minmax(260px, 1fr) minmax(180px, 0.7fr) auto;
+}
+.recruiter-jobs-filter-grid .form-control {
+    min-height: 40px !important;
+    padding: 8px 12px !important;
+}
+.recruiter-jobs-filter-actions .btn {
+    min-height: 40px;
+    min-width: 150px;
+    padding: 8px 16px !important;
+}
+@media (max-width: 767.98px) {
+    .recruiter-jobs-filter-grid {
+        grid-template-columns: 1fr;
+    }
+    .recruiter-jobs-filter-actions .btn {
+        width: 100%;
+    }
 }
 
 /* ══════════════════════════════════════════
@@ -448,30 +481,35 @@ body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item:hover { background:rgba
     data-csrf-name="<?= csrf_token() ?>"
     data-csrf-hash="<?= csrf_hash() ?>"
 >
-<div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 font-weight-bold">Jobs Management</h1>
-        <a href="<?= base_url('recruiter/post_job') ?>" class="btn btn-primary"> Post New Job</a>
+<div class="container-fluid py-5">
+    <div class="page-board-header page-board-header-tight recruiter-page-board-header">
+        <div class="page-board-copy">
+            <h1 class="page-board-title">Jobs Management</h1>
+            <p class="page-board-subtitle">Review job posts, applicant volume, and hiring status from one workspace.</p>
+        </div>
+        <div class="page-board-actions">
+            <a href="<?= base_url('recruiter/post_job') ?>" class="btn btn-primary">Post New Job</a>
+        </div>
     </div>
 
     <div id="jobs-list">
-            <div class="card mb-4 bg-light recruiter-filter-card">
+            <div class="card bg-light recruiter-filter-card">
                 <div class="card-body">
-                    <form action="<?= base_url('recruiter/jobs') ?>" method="get" class="row align-items-end">
-                        <div class="col-md-5 mb-2">
-                            <label class="small font-weight-bold text-muted">Search Jobs</label>
+                    <form action="<?= base_url('recruiter/jobs') ?>" method="get" class="recruiter-jobs-filter-grid">
+                        <div>
+                            <label class="sr-only">Search Jobs</label>
                             <input type="text" name="q" id="q" class="form-control" placeholder="Search by title..." value="<?= esc($filters['q']) ?>">
                         </div>
-                        <div class="col-md-4 mb-2">
-                            <label class="small font-weight-bold text-muted">Status</label>
+                        <div>
+                            <label class="sr-only">Status</label>
                             <select name="status" class="form-control">
                                 <option value="active" <?= $filters['status'] === 'active' ? 'selected' : '' ?>>Active Jobs</option>
                                 <option value="closed" <?= $filters['status'] === 'closed' ? 'selected' : '' ?>>Closed Jobs</option>
                                 <option value="all" <?= $filters['status'] === 'all' ? 'selected' : '' ?>>All Jobs</option>
                             </select>
                         </div>
-                        <div class="col-md-3 mb-2">
-                            <button type="submit" class="btn btn-primary btn-block">Filter</button>
+                        <div class="recruiter-jobs-filter-actions">
+                            <button type="submit" class="btn btn-primary">Filter</button>
                         </div>
                     </form>
                 </div>
