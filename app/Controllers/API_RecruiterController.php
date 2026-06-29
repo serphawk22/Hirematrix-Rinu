@@ -166,10 +166,53 @@ class API_RecruiterController extends ResourceController
             $trends[] = ['date' => $date, 'count' => $count];
         }
 
+        // Upcoming Interviews (next 30 days for the calendar)
+        $upcomingInterviews = [];
+        $interviewDates = [];
+        $todayInterviews = [];
+
+        if (!empty($jobIds)) {
+            $upcomingInterviews = $bookingModel
+                ->select("
+                    interview_bookings.id,
+                    interview_bookings.slot_datetime,
+                    interview_bookings.booking_status,
+                    interview_bookings.user_id AS candidate_id,
+                    interview_bookings.job_id,
+                    interview_bookings.application_id,
+                    users.name AS candidate_name,
+                    jobs.title AS job_title,
+                    interview_slots.slot_date,
+                    interview_slots.slot_time
+                ")
+                ->join('users', 'users.id = interview_bookings.user_id', 'left')
+                ->join('jobs', 'jobs.id = interview_bookings.job_id', 'left')
+                ->join('interview_slots', 'interview_slots.id = interview_bookings.slot_id', 'left')
+                ->whereIn('interview_bookings.job_id', $jobIds)
+                ->where('interview_slots.slot_date >=', date('Y-m-d'))
+                ->where('interview_slots.slot_date <=', date('Y-m-d', strtotime('+30 days')))
+                ->where('interview_bookings.booking_status !=', 'cancelled')
+                ->orderBy('interview_slots.slot_date', 'ASC')
+                ->orderBy('interview_slots.slot_time', 'ASC')
+                ->findAll();
+
+            foreach ($upcomingInterviews as $iv) {
+                $d = $iv['slot_date'];
+                if (!isset($interviewDates[$d])) {
+                    $interviewDates[$d] = 0;
+                }
+                $interviewDates[$d]++;
+            }
+
+            $todayInterviews = array_values(array_filter($upcomingInterviews, function ($iv) {
+                return $iv['slot_date'] === date('Y-m-d');
+            }));
+        }
+
         return $this->respond([
             'success' => true,
             'recruiter' => [
-                'id' => (string)$recruiter['id'],
+            'id' => (string)$recruiter['id'],
             'full_name' => $recruiter['recruiter_full_name'] ?? $recruiter['name'],
             'company_name' => $recruiter['company_name'],
             'email' => $recruiter['email'],
@@ -188,7 +231,10 @@ class API_RecruiterController extends ResourceController
                 'need_review' => $pipeline['Applied'] + $pipeline['Screening'],
                 'application_trends' => $trends
             ],
-            'pipeline_stats' => $pipeline
+            'pipeline_stats' => $pipeline,
+            'upcomingInterviews' => $upcomingInterviews,
+            'interviewDates' => $interviewDates,
+            'todayInterviews' => $todayInterviews
         ]);
     }
 
@@ -934,6 +980,42 @@ class API_RecruiterController extends ResourceController
         }
 
         return $this->fail('Failed to update job');
+    }
+
+    /**
+     * POST api/mobile/jobs/update-status
+     * Close or reopen a job. Body: recruiter_id, job_id, status (open|closed)
+     */
+    public function updateJobStatus()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        $jobId       = $this->request->getVar('job_id');
+        $newStatus   = $this->request->getVar('status'); // 'open' or 'closed'
+
+        if (!$recruiterId || !$jobId || !in_array($newStatus, ['open', 'closed'])) {
+            return $this->fail('recruiter_id, job_id and status (open/closed) are required');
+        }
+
+        $jobModel = new \App\Models\JobModel();
+        $job = $jobModel->find((int)$jobId);
+
+        if (!$job) {
+            return $this->failNotFound('Job not found');
+        }
+
+        // Security: ensure the job belongs to the recruiter
+        if ((string)$job['recruiter_id'] !== (string)$recruiterId) {
+            return $this->failForbidden('You do not have permission to update this job');
+        }
+
+        $jobModel->update((int)$jobId, ['status' => $newStatus]);
+
+        return $this->respond([
+            'success'    => true,
+            'message'    => $newStatus === 'open' ? 'Job reopened successfully' : 'Job closed successfully',
+            'job_id'     => (string)$jobId,
+            'new_status' => $newStatus,
+        ]);
     }
 
     public function getActivity()
@@ -3771,4 +3853,62 @@ class API_RecruiterController extends ResourceController
             'message' => 'Review submitted successfully',
         ]);
     }
+
+    public function askChatbot()
+    {
+        $recruiterId = (int) ($this->request->getVar('recruiter_id') ?? $this->request->getPost('recruiter_id') ?? $this->request->getJSON(true)['recruiter_id'] ?? 0);
+
+        if (!$recruiterId) {
+            return $this->response
+                ->setStatusCode(401)
+                ->setJSON([
+                    'success' => false,
+                    'answer'  => 'Recruiter ID is required.',
+                ]);
+        }
+
+        $question = trim((string) ($this->request->getPost('question') ?? $this->request->getJSON(true)['question'] ?? ''));
+        if ($question === '') {
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON([
+                    'success' => false,
+                    'answer'  => 'Please enter a question.',
+                ]);
+        }
+
+        $service = new \App\Libraries\RecruiterChatbotService();
+        $result  = $service->answer($recruiterId, $question);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'answer'  => $result['answer'],
+        ]);
+    }
+
+    public function getChatbotSuggestions()
+    {
+        $recruiterId = (int) ($this->request->getVar('recruiter_id') ?? 0);
+
+        if (!$recruiterId) {
+            return $this->response->setStatusCode(401)->setJSON(['success' => false]);
+        }
+
+        $suggestions = [
+            'How many open jobs do I have?',
+            'How many applications have I received?',
+            'Show me my recent applications',
+            'What candidates do I have?',
+            'How many interview bookings do I have?',
+            'Give me a summary of my hiring',
+            'Which jobs have the most applications?',
+            'Do I have any upcoming interviews?',
+        ];
+
+        return $this->response->setJSON([
+            'success'     => true,
+            'suggestions' => $suggestions,
+        ]);
+    }
+
 }
