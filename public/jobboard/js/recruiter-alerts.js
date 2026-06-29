@@ -6,54 +6,29 @@
     }
 
     var css = [
-        '.hm-alert-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.48);backdrop-filter:blur(3px);padding:20px}',
-        '.hm-alert-overlay.is-visible{display:flex}',
-        '.hm-alert-box{width:min(430px,100%);border-radius:22px;background:#fff;border:1px solid rgba(217,236,229,.95);box-shadow:0 28px 70px rgba(15,23,42,.26);padding:28px 26px 24px;text-align:center;transform:translateY(10px) scale(.98);opacity:0;transition:opacity .18s ease,transform .18s ease;font-family:var(--portal-font-family,"Nunito",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif)}',
-        '.hm-alert-overlay.is-visible .hm-alert-box{opacity:1;transform:translateY(0) scale(1)}',
-        '.hm-alert-icon{width:64px;height:64px;margin:0 auto 16px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900}',
-        '.hm-alert-icon.is-success{background:rgba(31,183,181,.12);color:#0d8a90;border:1px solid rgba(31,183,181,.28)}',
-        '.hm-alert-icon.is-error{background:rgba(239,68,68,.10);color:#dc2626;border:1px solid rgba(239,68,68,.24)}',
-        '.hm-alert-icon.is-warning{background:rgba(245,158,11,.12);color:#d97706;border:1px solid rgba(245,158,11,.25)}',
-        '.hm-alert-icon.is-info{background:rgba(59,130,246,.10);color:#2563eb;border:1px solid rgba(59,130,246,.22)}',
-        '.hm-alert-title{margin:0 0 8px;font-size:1.18rem;line-height:1.25;font-weight:800;color:#0f172a}',
-        '.hm-alert-message{margin:0;color:#475569;font-size:.95rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}',
-        '.hm-alert-actions{display:flex;justify-content:center;gap:10px;margin-top:22px}',
-        '.hm-alert-btn{min-width:108px;border:1.5px solid #1fb7b5;border-radius:12px;padding:10px 18px;background:#1fb7b5;color:#fff;font-weight:800;cursor:pointer;box-shadow:none;transition:transform .16s ease,background .16s ease,border-color .16s ease}',
-        '.hm-alert-btn:hover,.hm-alert-btn:focus{background:#0d8a90;border-color:#0d8a90;transform:translateY(-1px);outline:none}',
-        '.hm-alert-btn.is-cancel{background:#fff;color:#64748b;border-color:#d9ece5}',
-        '.hm-alert-btn.is-cancel:hover,.hm-alert-btn.is-cancel:focus{background:#f8fcfb;color:#0f172a;border-color:#b8d8d0}',
-        'body.dark .hm-alert-box{background:#111;border-color:#23343a;box-shadow:0 28px 70px rgba(0,0,0,.55)}',
-        'body.dark .hm-alert-title{color:#f8fafc}',
-        'body.dark .hm-alert-message{color:#cbd5e1}',
-        'body.dark .hm-alert-btn.is-cancel{background:#111;color:#cbd5e1;border-color:#23343a}'
+        '.hm-inline-notice-region{display:grid;gap:10px;margin:0 0 16px}',
+        '.hm-inline-notice{display:flex;align-items:flex-start;gap:10px;border:1px solid #d9ece5;border-radius:12px;background:#f8fcfb;color:#16212b;padding:12px 14px;font-family:var(--portal-font-family,"Nunito",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif);font-size:13.5px;line-height:1.45}',
+        '.hm-inline-notice strong{display:block;margin-bottom:2px;color:#16212b;font-size:13.5px}',
+        '.hm-inline-notice-icon{width:24px;height:24px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 24px;font-size:13px;font-weight:800;background:rgba(31,183,181,.12);color:#0d8a90}',
+        '.hm-inline-notice-message{min-width:0;white-space:normal;word-break:break-word}',
+        '.hm-inline-notice.is-success{border-color:rgba(31,183,181,.28);background:rgba(31,183,181,.08)}',
+        '.hm-inline-notice.is-error{border-color:rgba(239,68,68,.24);background:rgba(239,68,68,.08)}',
+        '.hm-inline-notice.is-warning{border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.10)}',
+        '.hm-inline-notice.is-info{border-color:#d9ece5;background:#f8fcfb}',
+        '.hm-inline-notice.is-success .hm-inline-notice-icon{background:rgba(31,183,181,.12);color:#0d8a90}',
+        '.hm-inline-notice.is-error .hm-inline-notice-icon{background:rgba(239,68,68,.10);color:#dc2626}',
+        '.hm-inline-notice.is-warning .hm-inline-notice-icon{background:rgba(245,158,11,.12);color:#d97706}',
+        'body.dark .hm-inline-notice{background:#071214;color:#cbd5e1;border-color:#23343a}',
+        'body.dark .hm-inline-notice strong{color:#f8fafc}',
+        'body.dark .hm-inline-notice.is-success{background:rgba(31,183,181,.08);border-color:rgba(31,183,181,.22)}',
+        'body.dark .hm-inline-notice.is-error{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.22)}',
+        'body.dark .hm-inline-notice.is-warning{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.22)}'
     ].join('');
 
     var style = document.createElement('style');
-    style.id = 'hm-alert-style';
+    style.id = 'hm-inline-notice-style';
     style.appendChild(document.createTextNode(css));
     document.head.appendChild(style);
-
-    var overlay = document.createElement('div');
-    overlay.className = 'hm-alert-overlay';
-    overlay.setAttribute('role', 'dialog');
-    overlay.setAttribute('aria-modal', 'true');
-    overlay.innerHTML = [
-        '<div class="hm-alert-box" role="document">',
-        '  <div class="hm-alert-icon is-info" aria-hidden="true">i</div>',
-        '  <h3 class="hm-alert-title">Notice</h3>',
-        '  <p class="hm-alert-message"></p>',
-        '  <div class="hm-alert-actions">',
-        '    <button type="button" class="hm-alert-btn is-cancel" data-hm-alert-cancel style="display:none">Cancel</button>',
-        '    <button type="button" class="hm-alert-btn" data-hm-alert-ok>OK</button>',
-        '  </div>',
-        '</div>'
-    ].join('');
-    document.addEventListener('DOMContentLoaded', function () {
-        document.body.appendChild(overlay);
-    });
-
-    var queue = [];
-    var active = false;
 
     function normalizeIcon(icon) {
         icon = String(icon || 'info').toLowerCase();
@@ -65,7 +40,7 @@
 
     function iconGlyph(icon) {
         return {
-            success: '✓',
+            success: 'OK',
             error: '!',
             warning: '!',
             info: 'i'
@@ -80,6 +55,9 @@
         if (/success|sent|scheduled|saved|updated|completed|imported|connected|deleted/.test(text)) {
             return 'success';
         }
+        if (/pending|confirm|warning|attention/.test(text)) {
+            return 'warning';
+        }
         return 'info';
     }
 
@@ -90,96 +68,69 @@
         return {
             success: 'Success',
             error: 'Something went wrong',
-            warning: 'Please confirm',
+            warning: 'Notice',
             info: 'Notice'
         }[icon] || 'Notice';
     }
 
-    function fire(options) {
+    function getRegion() {
+        var existing = document.querySelector('[data-hm-inline-notice-region]');
+        if (existing) {
+            return existing;
+        }
+
+        var region = document.createElement('div');
+        region.className = 'hm-inline-notice-region';
+        region.setAttribute('data-hm-inline-notice-region', '1');
+        region.setAttribute('aria-live', 'polite');
+
+        var target = document.querySelector('main .container-fluid, main .container, .hm-page-content, main') || document.body;
+        if (target.firstChild) {
+            target.insertBefore(region, target.firstChild);
+        } else {
+            target.appendChild(region);
+        }
+
+        return region;
+    }
+
+    function showInline(options) {
         if (typeof options === 'string') {
             options = { text: options };
         }
         options = options || {};
 
-        return new Promise(function (resolve) {
-            queue.push({ options: options, resolve: resolve });
-            runNext();
-        });
-    }
-
-    function runNext() {
-        if (active || queue.length === 0 || !document.body) {
-            return;
+        var text = String(options.text || options.message || '').trim();
+        if (!text) {
+            return Promise.resolve({ isConfirmed: true, isDismissed: false });
         }
-        active = true;
 
-        var item = queue.shift();
-        var options = item.options || {};
-        var icon = normalizeIcon(options.icon || inferIcon(options.text || options.message || ''));
+        var icon = normalizeIcon(options.icon || inferIcon(text));
         var title = inferTitle(icon, options.title);
-        var text = String(options.text || options.message || '');
-        var showCancel = !!options.showCancelButton;
-        var okText = String(options.confirmButtonText || 'OK');
-        var cancelText = String(options.cancelButtonText || 'Cancel');
+        var region = getRegion();
+        var notice = document.createElement('div');
+        notice.className = 'hm-inline-notice is-' + icon;
+        notice.innerHTML = [
+            '<span class="hm-inline-notice-icon" aria-hidden="true"></span>',
+            '<span class="hm-inline-notice-message"><strong></strong><span></span></span>'
+        ].join('');
 
-        var iconEl = overlay.querySelector('.hm-alert-icon');
-        var titleEl = overlay.querySelector('.hm-alert-title');
-        var msgEl = overlay.querySelector('.hm-alert-message');
-        var okBtn = overlay.querySelector('[data-hm-alert-ok]');
-        var cancelBtn = overlay.querySelector('[data-hm-alert-cancel]');
+        notice.querySelector('.hm-inline-notice-icon').textContent = iconGlyph(icon);
+        notice.querySelector('strong').textContent = title;
+        notice.querySelector('.hm-inline-notice-message span').textContent = text;
 
-        iconEl.className = 'hm-alert-icon is-' + icon;
-        iconEl.textContent = iconGlyph(icon);
-        titleEl.textContent = title;
-        msgEl.textContent = text;
-        okBtn.textContent = okText;
-        cancelBtn.textContent = cancelText;
-        cancelBtn.style.display = showCancel ? '' : 'none';
+        region.appendChild(notice);
+        notice.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 
-        function close(result) {
-            overlay.classList.remove('is-visible');
-            okBtn.removeEventListener('click', onOk);
-            cancelBtn.removeEventListener('click', onCancel);
-            document.removeEventListener('keydown', onKey);
-            window.setTimeout(function () {
-                active = false;
-                item.resolve(result);
-                runNext();
-            }, 150);
-        }
-
-        function onOk() {
-            close({ isConfirmed: true, isDismissed: false });
-        }
-
-        function onCancel() {
-            close({ isConfirmed: false, isDismissed: true });
-        }
-
-        function onKey(event) {
-            if (event.key === 'Escape' && showCancel) {
-                event.preventDefault();
-                onCancel();
-            }
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                onOk();
-            }
-        }
-
-        okBtn.addEventListener('click', onOk);
-        cancelBtn.addEventListener('click', onCancel);
-        document.addEventListener('keydown', onKey);
-        overlay.classList.add('is-visible');
-        window.setTimeout(function () { okBtn.focus(); }, 30);
+        return Promise.resolve({ isConfirmed: true, isDismissed: false });
     }
 
     window.HMAlert = {
-        fire: fire,
-        success: function (message, title) { return fire({ icon: 'success', title: title || 'Success', text: message }); },
-        error: function (message, title) { return fire({ icon: 'error', title: title || 'Something went wrong', text: message }); },
-        info: function (message, title) { return fire({ icon: 'info', title: title || 'Notice', text: message }); },
-        warning: function (message, title) { return fire({ icon: 'warning', title: title || 'Please confirm', text: message }); }
+        fire: showInline,
+        success: function (message, title) { return showInline({ icon: 'success', title: title || 'Success', text: message }); },
+        error: function (message, title) { return showInline({ icon: 'error', title: title || 'Something went wrong', text: message }); },
+        info: function (message, title) { return showInline({ icon: 'info', title: title || 'Notice', text: message }); },
+        warning: function (message, title) { return showInline({ icon: 'warning', title: title || 'Notice', text: message }); }
     };
 
     window.alert = function (message) {
@@ -188,23 +139,4 @@
             text: String(message || '')
         });
     };
-
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.alert.alert-success, .alert.alert-danger, .alert.alert-warning, .alert.alert-info').forEach(function (alertEl) {
-            if (alertEl.dataset.hmAlertShown === '1' || alertEl.dataset.hmAlertInline === '1') {
-                return;
-            }
-            var message = (alertEl.textContent || '').replace(/\s+/g, ' ').trim();
-            if (!message) {
-                return;
-            }
-            alertEl.dataset.hmAlertShown = '1';
-            alertEl.style.display = 'none';
-            var icon = alertEl.classList.contains('alert-success') ? 'success'
-                : alertEl.classList.contains('alert-danger') ? 'error'
-                    : alertEl.classList.contains('alert-warning') ? 'warning'
-                        : 'info';
-            window.HMAlert.fire({ icon: icon, text: message });
-        });
-    });
 })();

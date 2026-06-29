@@ -49,13 +49,13 @@ class CandidateChatbotController extends BaseController
         }
 
         $suggestions = [
-            'Find matching jobs from my profile',
-            'Show remote PHP jobs',
-            'Find hybrid jobs in Bangalore',
-            'Save job #1',
-            'Apply to job #1',
-            'Compare job #1 and job #2',
-            'Explain why job #1 matches me',
+            ['text' => 'Find matching jobs from my profile', 'mode' => 'send'],
+            ['text' => 'Show remote PHP jobs', 'mode' => 'send'],
+            ['text' => 'Find hybrid jobs in Bangalore', 'mode' => 'send'],
+            ['text' => 'Save job #ID', 'mode' => 'edit'],
+            ['text' => 'Apply to job #ID', 'mode' => 'edit'],
+            ['text' => 'Compare job #ID and job #ID', 'mode' => 'edit'],
+            ['text' => 'Explain why job #ID matches me', 'mode' => 'edit'],
         ];
 
         return $this->response->setJSON([

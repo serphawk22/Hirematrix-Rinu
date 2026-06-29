@@ -415,12 +415,23 @@ body.dark .hm-chat-suggestions button:hover {
             .then(function (data) {
                 if (!data || !data.suggestions) return;
                 hasLoadedSuggestions = true;
-                data.suggestions.forEach(function (text) {
+                data.suggestions.forEach(function (item) {
+                    var text = typeof item === 'string' ? item : (item && item.text ? item.text : '');
+                    var mode = typeof item === 'object' && item ? (item.mode || 'send') : 'send';
+                    if (!text) return;
                     var btn = document.createElement('button');
                     btn.textContent = text;
                     btn.type = 'button';
                     btn.addEventListener('click', function () {
                         input.value = text;
+                        input.focus();
+                        if (mode === 'edit') {
+                            var marker = input.value.indexOf('#ID');
+                            if (marker >= 0 && input.setSelectionRange) {
+                                input.setSelectionRange(marker + 1, marker + 3);
+                            }
+                            return;
+                        }
                         sendMessage();
                     });
                     suggBox.appendChild(btn);

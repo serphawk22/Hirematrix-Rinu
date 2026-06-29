@@ -251,6 +251,53 @@ body.dark .pipeline-stat-icon { background: #1B3035; color: #1FB7B5; }
 body.dark .pipeline-connector { color: #23343A; }
 
 /* ── Table ── */
+/* Conversion metrics */
+.conversion-overall-card {
+    align-items: center;
+    background: #E8F9F8;
+    border: 1px solid #D9ECE5;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+.conversion-overall-label {
+    color: #94A3B8;
+    display: block;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+.conversion-overall-value {
+    color: #16212B;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+.conversion-overall-icon {
+    align-items: center;
+    background: #FFFFFF;
+    border-radius: 50%;
+    color: #0D8A90;
+    display: flex;
+    font-size: 22px;
+    height: 56px;
+    justify-content: center;
+    width: 56px;
+}
+body.dark .conversion-overall-card {
+    background: #071214 !important;
+    border-color: #23343A !important;
+}
+body.dark .conversion-overall-value {
+    color: #F8FAFC !important;
+}
+body.dark .conversion-overall-icon {
+    background: #0E1D21 !important;
+    color: #1FB7B5 !important;
+}
+
 .table th, .table td {
     color: #16212B; border-color: #D9ECE5 !important;
     vertical-align: middle; font-size: .85rem;
@@ -551,12 +598,12 @@ body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important
                     <h6 class="m-0 font-weight-bold" style="font-weight:600;"><i class="fas fa-funnel-dollar mr-1"></i> Conversion Metrics</h6>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between p-3 mb-3" style="background:#E8F9F8;border-radius:12px;border:1px solid #D9ECE5;">
+                    <div class="conversion-overall-card">
                         <div>
-                            <span class="d-block text-uppercase" style="font-size:.7rem;font-weight:700;color:#94A3B8;letter-spacing:.05em;">Overall Conversion</span>
-                            <span style="font-size:1.3rem;font-weight:700;color:#16212B;"><?= number_format((float)($conversionMetrics['overall_conversion'] ?? 0), 1) ?>%</span>
+                            <span class="conversion-overall-label">Overall Conversion</span>
+                            <span class="conversion-overall-value"><?= number_format((float)($conversionMetrics['overall_conversion'] ?? 0), 1) ?>%</span>
                         </div>
-                        <div style="width:56px;height:56px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#0D8A90;font-size:22px;">
+                        <div class="conversion-overall-icon">
                             <i class="fas fa-chart-line"></i>
                         </div>
                     </div>

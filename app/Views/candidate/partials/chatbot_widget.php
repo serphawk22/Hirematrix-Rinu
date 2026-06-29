@@ -171,12 +171,23 @@
             .then(data => {
                 if (!data || !Array.isArray(data.suggestions)) return;
                 suggestions.innerHTML = '';
-                data.suggestions.forEach(text => {
+                data.suggestions.forEach(item => {
+                    const text = typeof item === 'string' ? item : (item && item.text ? item.text : '');
+                    const mode = typeof item === 'object' && item ? (item.mode || 'send') : 'send';
+                    if (!text) return;
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.textContent = text;
                     btn.addEventListener('click', () => {
                         input.value = text;
+                        input.focus();
+                        if (mode === 'edit') {
+                            const marker = input.value.indexOf('#ID');
+                            if (marker >= 0 && input.setSelectionRange) {
+                                input.setSelectionRange(marker + 1, marker + 3);
+                            }
+                            return;
+                        }
                         sendMessage();
                     });
                     suggestions.appendChild(btn);

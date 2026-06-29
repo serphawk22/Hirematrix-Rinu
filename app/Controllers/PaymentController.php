@@ -24,6 +24,12 @@ class PaymentController extends BaseController
             return $this->response->setStatusCode(401)->setJSON(['error' => 'Not authenticated']);
         }
 
+        $credentials = $this->getRazorpayCredentials();
+        if (!empty($credentials['error'])) {
+            log_message('error', 'Razorpay configuration error: ' . $credentials['error']);
+            return $this->response->setStatusCode(500)->setJSON(['error' => $credentials['error']]);
+        }
+
         $planId = (int) $this->request->getPost('plan_id');
         $plan   = $this->subscriptionModel->find($planId);
 
@@ -69,7 +75,7 @@ class PaymentController extends BaseController
             'order_id'  => $response['id'],
             'amount'    => $amountPaise,
             'currency'  => $payload['currency'],
-            'key_id'    => getenv('RAZORPAY_KEY_ID'),
+            'key_id'    => $credentials['key_id'],
             'plan_name' => $plan['name'],
         ]);
     }
@@ -93,11 +99,17 @@ class PaymentController extends BaseController
             return $this->response->setStatusCode(400)->setJSON(['error' => 'Missing payment details']);
         }
 
+        $credentials = $this->getRazorpayCredentials();
+        if (!empty($credentials['error'])) {
+            log_message('error', 'Razorpay verification configuration error: ' . $credentials['error']);
+            return $this->response->setStatusCode(500)->setJSON(['error' => 'Payment verification is not configured. Please contact support.']);
+        }
+
         // Verify HMAC-SHA256 signature
         $expectedSignature = hash_hmac(
             'sha256',
             $razorpayOrderId . '|' . $razorpayPaymentId,
-            getenv('RAZORPAY_KEY_SECRET')
+            $credentials['key_secret']
         );
 
         if (!hash_equals($expectedSignature, $razorpaySignature)) {
@@ -249,8 +261,13 @@ class PaymentController extends BaseController
      */
     private function razorpayRequest(string $method, string $endpoint, array $payload = []): array
     {
-        $keyId     = getenv('RAZORPAY_KEY_ID');
-        $keySecret = getenv('RAZORPAY_KEY_SECRET');
+        $credentials = $this->getRazorpayCredentials();
+        if (!empty($credentials['error'])) {
+            return ['error' => $credentials['error']];
+        }
+
+        $keyId     = $credentials['key_id'];
+        $keySecret = $credentials['key_secret'];
         $url       = 'https://api.razorpay.com/v1/' . $endpoint;
 
         $ch = curl_init($url);
@@ -267,8 +284,51 @@ class PaymentController extends BaseController
         }
 
         $response = curl_exec($ch);
+        $curlError = curl_error($ch);
+        $statusCode = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         curl_close($ch);
 
-        return is_string($response) ? (json_decode($response, true) ?? []) : [];
+        if ($response === false) {
+            return ['error' => $curlError ?: 'Razorpay request failed'];
+        }
+
+        $decoded = json_decode((string) $response, true);
+        if (!is_array($decoded)) {
+            return ['error' => 'Invalid Razorpay response'];
+        }
+
+        if ($statusCode >= 400) {
+            $message = $decoded['error']['description'] ?? $decoded['error']['reason'] ?? 'Razorpay request failed';
+            return ['error' => $message, 'status_code' => $statusCode];
+        }
+
+        return $decoded;
+    }
+
+    /**
+     * @return array{key_id?: string, key_secret?: string, error?: string}
+     */
+    private function getRazorpayCredentials(): array
+    {
+        $keyId = trim((string) getenv('RAZORPAY_KEY_ID'));
+        $keySecret = trim((string) getenv('RAZORPAY_KEY_SECRET'));
+
+        if ($keyId === '' || $keySecret === '') {
+            return ['error' => 'Razorpay live keys are not configured. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env.'];
+        }
+
+        if (strpos($keyId, 'rzp_') !== 0) {
+            return ['error' => 'Invalid Razorpay key id configured. Use the key_id from Razorpay API Keys.'];
+        }
+
+        $environment = defined('ENVIRONMENT') ? ENVIRONMENT : (getenv('CI_ENVIRONMENT') ?: 'production');
+        if ($environment === 'production' && strpos($keyId, 'rzp_test_') === 0) {
+            return ['error' => 'Razorpay is still using a test key. Replace it with your live key_id and key_secret in .env.'];
+        }
+
+        return [
+            'key_id' => $keyId,
+            'key_secret' => $keySecret,
+        ];
     }
 }

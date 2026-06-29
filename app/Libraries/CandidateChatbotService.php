@@ -75,6 +75,10 @@ class CandidateChatbotService
             return $this->actionResult('save_job', $this->saveJobFromPrompt($candidateId, $question));
         }
 
+        if (preg_match('/\b(save|bookmark)\b.*\b(jobs?|roles?|openings?|opportunities?)\b/i', $question)) {
+            return $this->actionResult('find_jobs_to_save', $this->findJobsForCandidate($candidateId, $question, true));
+        }
+
         if (preg_match('/\b(apply|submit application)\b.*\bjobs?\s*#?\d+\b/i', $question)) {
             return $this->actionResult('apply_job', $this->applyToJobFromPrompt($candidateId, $question));
         }
@@ -105,7 +109,7 @@ class CandidateChatbotService
         ];
     }
 
-    private function findJobsForCandidate(int $candidateId, string $question): string
+    private function findJobsForCandidate(int $candidateId, string $question, bool $forSaveRequest = false): string
     {
         $filters = $this->extractJobFilters($question);
         $jobs = $this->fetchRecommendedJobs($candidateId, $filters, 10);
@@ -114,7 +118,7 @@ class CandidateChatbotService
             return 'I could not find open jobs matching those filters. Try a broader search like "find matching jobs" or remove location, salary, or skill filters.';
         }
 
-        $lines = ['Here are matching open jobs I found:'];
+        $lines = [$forSaveRequest ? 'I found these matching jobs. Choose one to save by job ID:' : 'Here are matching open jobs I found:'];
         foreach (array_slice($jobs, 0, 8) as $job) {
             $score = (int) round((float) ($job['match_score'] ?? 0));
             $parts = [
@@ -136,7 +140,9 @@ class CandidateChatbotService
         }
 
         $lines[] = '';
-        $lines[] = 'You can ask: "save job #ID", "apply to job #ID", "compare job #ID and job #ID", or "explain why job #ID matches me".';
+        $lines[] = $forSaveRequest
+            ? 'To save one, ask: save job #ID. I will not save multiple jobs automatically without the exact IDs.'
+            : 'You can ask: "save job #ID", "apply to job #ID", "compare job #ID and job #ID", or "explain why job #ID matches me".';
 
         return implode("\n", $lines);
     }
@@ -676,6 +682,11 @@ class CandidateChatbotService
         if (preg_match('/\b(?:for|as)\s+([a-z0-9+#. -]{3,60})/i', $question, $matches)) {
             $keyword = preg_replace('/\b(?:in|at|near|with|using|salary|remote|hybrid|onsite)\b.*$/i', '', trim((string) $matches[1])) ?? '';
             $filters['keyword'] = trim($keyword, " \t\n\r\0\x0B.,");
+        }
+
+        if (preg_match('/\b(?:save|bookmark)\b.*\b(?:for|as)\s+([a-z0-9+#. -]{3,70})/i', $question, $matches)) {
+            $filters['keyword'] = trim((string) $matches[1], " \t\n\r\0\x0B.,");
+            $filters['title_query'] = $filters['keyword'];
         }
 
         if (preg_match('/\b(?:suggest(?:ions?)?|recommend(?:ations?)?)\s+for\s+([a-z0-9+#. -]{3,70})\s+(?:jobs?|roles?|openings?|opportunities?)\b/i', $question, $matches)) {
