@@ -492,7 +492,7 @@ body.dark .recruiter-pipeline-page .pipeline-summary-main {
   border: none;
   text-decoration: none !important;
   white-space: nowrap;
-  cursor: pointer;
+  cursor: default;
 }
 body.dark .recruiter-pipeline-page .pipeline-hiring-chip {
  background: #000000 !important;

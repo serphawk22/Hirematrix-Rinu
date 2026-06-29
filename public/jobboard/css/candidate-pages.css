@@ -10332,6 +10332,14 @@ body.candidate-app .cand-leftnav__group-label:hover {
     color: var(--candidate-nav-primary-dark) !important;
 }
 
+body.candidate-app .cand-leftnav__group-label:focus,
+body.candidate-app .cand-leftnav__group-label:focus-visible,
+body.candidate-app .cand-leftnav__group-label:active {
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+}
+
 body.candidate-app .cand-leftnav__chevron {
     margin-left: auto !important;
     color: var(--candidate-nav-light) !important;

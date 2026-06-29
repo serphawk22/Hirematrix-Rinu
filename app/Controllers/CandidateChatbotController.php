@@ -49,12 +49,13 @@ class CandidateChatbotController extends BaseController
         }
 
         $suggestions = [
-            'What jobs are available for me?',
-            'Show me my applications',
-            'Which roles did I save?',
-            'Do I have any upcoming interviews?',
-            'How is my profile looking?',
-            'What should I do next to improve my chances?',
+            'Find matching jobs from my profile',
+            'Show remote PHP jobs',
+            'Find hybrid jobs in Bangalore',
+            'Save job #1',
+            'Apply to job #1',
+            'Compare job #1 and job #2',
+            'Explain why job #1 matches me',
         ];
 
         return $this->response->setJSON([

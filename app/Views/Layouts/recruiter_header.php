@@ -819,19 +819,73 @@
     .hm-sb-sub.sb-open { max-height: 200px; }
     .hm-sidebar.sb-collapsed .hm-sb-sub { display: none; }
 
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle:hover,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle.active {
+        background: transparent !important;
+        color: var(--hm-light) !important;
+        font-size: 10.5px !important;
+        font-weight: 700 !important;
+        letter-spacing: .8px !important;
+        line-height: 1.2 !important;
+        padding: 12px 16px 4px !important;
+        text-transform: uppercase !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle .sb-icon,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle.active .sb-icon {
+        display: none !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle .sb-arrow {
+        color: var(--hm-light) !important;
+        margin-left: auto !important;
+        transform: none !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle .sb-label {
+        color: inherit !important;
+        font-size: inherit !important;
+        font-weight: inherit !important;
+        letter-spacing: inherit !important;
+        text-transform: inherit !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle:focus,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle:focus-visible,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle:active {
+        border-color: transparent !important;
+        box-shadow: none !important;
+        outline: 0 !important;
+    }
+
     body.recruiter-jobboard .hm-sidebar .hm-sb-subitem {
         display: flex !important;
         align-items: center !important;
-        padding: 8px 13px 8px 48px !important;
-        margin: 1px 8px !important;
-        border-radius: 8px !important;
-        color: var(--hm-muted) !important;
-        font-size: 13.5px !important;
+        gap: 11px !important;
+        width: calc(100% - 16px) !important;
+        padding: 10px 13px !important;
+        margin: 2px 8px !important;
+        border-radius: 10px !important;
+        color: var(--hm-text) !important;
+        font-size: 14.5px !important;
         font-weight: 500 !important;
+        line-height: 1.4 !important;
         text-decoration: none !important;
         transition: background .15s, color .15s !important;
         position: relative !important;
         background: transparent !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-subitem .sb-icon {
+        color: inherit !important;
+        flex-shrink: 0 !important;
+        font-size: 17px !important;
+        line-height: 1 !important;
+        text-align: center !important;
+        width: 21px !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-subitem .sb-label {
+        color: inherit !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
     body.recruiter-jobboard .hm-sidebar .hm-sb-subitem::before {
         display:none;
@@ -1267,8 +1321,26 @@ body.dark .hm-sidebar .hm-sb-item.active {
     background: rgba(13, 138, 144, 0.2) !important;
     color: #1FB7B5 !important;
 }
+body.dark .hm-sidebar .hm-sb-group-toggle,
+body.dark .hm-sidebar .hm-sb-group-toggle:hover,
+body.dark .hm-sidebar .hm-sb-group-toggle.active {
+    background: transparent !important;
+    color: #94A3B8 !important;
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    letter-spacing: .8px !important;
+    text-transform: uppercase !important;
+}
+body.dark .hm-sidebar .hm-sb-group-toggle .sb-icon,
+body.dark .hm-sidebar .hm-sb-group-toggle.active .sb-icon {
+    display: none !important;
+}
 body.dark .hm-sidebar .hm-sb-item.active .sb-icon {
     color: #1FB7B5 !important;
+}
+body.dark .hm-sidebar .hm-sb-item.hm-sb-group-toggle.active .sb-icon,
+body.dark .hm-sidebar .hm-sb-item.hm-sb-group-toggle .sb-arrow {
+    color: #94A3B8 !important;
 }
 body.dark .hm-sidebar .hm-sb-item.active::before {
    display:none;
@@ -1521,86 +1593,99 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
 
         <!-- NAV -->
         <nav class="hm-sb-body"> 
-            <a href="<?= base_url('recruiter/dashboard') ?>"
-               class="hm-sb-item <?= $isActive('recruiter/dashboard') ?>">
+            <button class="hm-sb-item hm-sb-group-toggle sb-open" id="hmOverviewBtn" aria-expanded="true">
                 <i class="fas fa-th-large sb-icon"></i>
-                <span class="sb-label">Dashboard</span>
-                <span class="sb-tooltip">Dashboard</span>
-            </a>
+                <span class="sb-label">OVERVIEW</span>
+                <i class="fas fa-chevron-down sb-arrow"></i>
+                <span class="sb-tooltip">Overview</span>
+            </button>
+            <div class="hm-sb-sub sb-open" id="hmOverviewSub">
+                <a href="<?= base_url('recruiter/dashboard') ?>"
+                   class="hm-sb-subitem <?= $isActive('recruiter/dashboard') ?>">
+                    <i class="fas fa-th-large sb-icon"></i>
+                    <span class="sb-label">Dashboard</span>
+                </a>
+                <a href="<?= base_url('notifications') ?>"
+                   class="hm-sb-subitem <?= $isActive('notifications') ?>">
+                    <i class="fas fa-bell sb-icon"></i>
+                    <span class="sb-label">Notifications</span>
+                    <?php if ($recruiterUnreadNotificationCount > 0): ?>
+                        <span class="sb-badge js-recruiter-notification-badge">
+                            <?= $recruiterUnreadNotificationCount > 99 ? '99+' : $recruiterUnreadNotificationCount ?>
+                        </span>
+                    <?php endif; ?>
+                </a>
+            </div>
 
-            <button class="hm-sb-item <?= ($isActive('recruiter/jobs') || $isActive('recruiter/post_job')) ? 'active sb-open' : '' ?>"
-                    id="hmJobsBtn" aria-expanded="false">
+            <button class="hm-sb-item hm-sb-group-toggle sb-open <?= ($isActive('recruiter/jobs') || $isActive('recruiter/post_job')) ? 'active' : '' ?>"
+                    id="hmJobsBtn" aria-expanded="true">
                 <i class="fas fa-briefcase sb-icon"></i>
-                <span class="sb-label">Jobs</span>
+                <span class="sb-label">JOBS</span>
                 <i class="fas fa-chevron-down sb-arrow"></i>
                 <span class="sb-tooltip">Jobs</span>
             </button>
-            <div class="hm-sb-sub <?= ($isActive('recruiter/jobs') || $isActive('recruiter/post_job')) ? 'sb-open' : '' ?>"
+            <div class="hm-sb-sub sb-open"
                  id="hmJobsSub">
                 <a href="<?= base_url('recruiter/jobs') ?>"
                    class="hm-sb-subitem <?= ($isActive('recruiter/jobs') && !$isActive('recruiter/post_job')) ? 'active' : '' ?>">
-                   My Jobs
+                    <i class="fas fa-briefcase sb-icon"></i>
+                    <span class="sb-label">My Jobs</span>
                 </a>
                 <a href="<?= base_url('recruiter/post_job') ?>"
                    class="hm-sb-subitem <?= $isActive('recruiter/post_job') ? 'active' : '' ?>">
-                   Post a Job
+                    <i class="fas fa-plus-square sb-icon"></i>
+                    <span class="sb-label">Post a Job</span>
+                </a>
+                <a href="<?= base_url('recruiter/candidates') ?>"
+                   class="hm-sb-subitem <?= $isActive('recruiter/candidates') ?>">
+                    <i class="fas fa-users sb-icon"></i>
+                    <span class="sb-label">Candidates</span>
                 </a>
             </div>
 
-            <a href="<?= base_url('recruiter/candidates') ?>"
-               class="hm-sb-item <?= $isActive('recruiter/candidates') ?>">
-                <i class="fas fa-users sb-icon"></i>
-                <span class="sb-label">Candidates</span>
-                <span class="sb-tooltip">Candidates</span>
-            </a>
-
-            <button class="hm-sb-item <?= ($isActive('recruiter/slots')) ? 'active sb-open' : '' ?>"
-                    id="hmSlotsBtn" aria-expanded="false">
+            <button class="hm-sb-item hm-sb-group-toggle sb-open <?= ($isActive('recruiter/slots')) ? 'active' : '' ?>"
+                    id="hmSlotsBtn" aria-expanded="true">
                 <i class="fas fa-calendar-alt sb-icon"></i>
-                <span class="sb-label">Interview Slots</span>
+                <span class="sb-label">INTERVIEW SLOTS</span>
                 <i class="fas fa-chevron-down sb-arrow"></i>
                 <span class="sb-tooltip">Slots</span>
             </button>
-            <div class="hm-sb-sub <?= $isActive('recruiter/slots') ? 'sb-open' : '' ?>" id="hmSlotsSub">
+            <div class="hm-sb-sub sb-open" id="hmSlotsSub">
                 <a href="<?= base_url('recruiter/slots') ?>"
                    class="hm-sb-subitem <?= ($currentUri === 'recruiter/slots') ? 'active' : '' ?>">
-                   Manage Slots
+                    <i class="fas fa-calendar-check sb-icon"></i>
+                    <span class="sb-label">Manage Slots</span>
                 </a>
                 <a href="<?= base_url('recruiter/slots/create') ?>"
                    class="hm-sb-subitem <?= $isActive('recruiter/slots/create') ? 'active' : '' ?>">
-                   Create Slot
+                    <i class="fas fa-calendar-plus sb-icon"></i>
+                    <span class="sb-label">Create Slot</span>
                 </a>
                 <a href="<?= base_url('recruiter/slots/bookings') ?>"
                    class="hm-sb-subitem <?= str_contains($currentUri, 'bookings') ? 'active' : '' ?>">
-                   View Bookings
+                    <i class="fas fa-book-open sb-icon"></i>
+                    <span class="sb-label">View Bookings</span>
                 </a>
             </div>
 
-            <a href="<?= base_url('notifications') ?>"
-               class="hm-sb-item <?= $isActive('notifications') ?>">
-                <i class="fas fa-bell sb-icon"></i>
-                <span class="sb-label">Notifications</span>
-                <?php if ($recruiterUnreadNotificationCount > 0): ?>
-                    <span class="sb-badge js-recruiter-notification-badge">
-                        <?= $recruiterUnreadNotificationCount > 99 ? '99+' : $recruiterUnreadNotificationCount ?>
-                    </span>
-                <?php endif; ?>
-                <span class="sb-tooltip">Notifications</span>
-            </a> 
-
-            <a href="<?= base_url('recruiter/dashboard/export-excel') ?>"
-               class="hm-sb-item <?= $isActive('recruiter/dashboard/export-excel') ?>">
-                <i class="fas fa-file-excel sb-icon"></i>
-                <span class="sb-label">Export Data</span>
-                <span class="sb-tooltip">Export Data</span>
-            </a>
-
-            <a href="<?= base_url('recruiter/settings') ?>"
-               class="hm-sb-item <?= $isActive('recruiter/settings') ?>">
+            <button class="hm-sb-item hm-sb-group-toggle sb-open" id="hmToolsBtn" aria-expanded="true">
                 <i class="fas fa-cog sb-icon"></i>
-                <span class="sb-label">Settings</span>
-                <span class="sb-tooltip">Settings</span>
-            </a>
+                <span class="sb-label">TOOLS</span>
+                <i class="fas fa-chevron-down sb-arrow"></i>
+                <span class="sb-tooltip">Tools</span>
+            </button>
+            <div class="hm-sb-sub sb-open" id="hmToolsSub">
+                <a href="<?= base_url('recruiter/dashboard/export-excel') ?>"
+                   class="hm-sb-subitem <?= $isActive('recruiter/dashboard/export-excel') ?>">
+                    <i class="fas fa-file-excel sb-icon"></i>
+                    <span class="sb-label">Export Data</span>
+                </a>
+                <a href="<?= base_url('recruiter/settings') ?>"
+                   class="hm-sb-subitem <?= $isActive('recruiter/settings') ?>">
+                    <i class="fas fa-cog sb-icon"></i>
+                    <span class="sb-label">Settings</span>
+                </a>
+            </div>
 
         </nav>
 
@@ -1650,10 +1735,14 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     var toggleArea  = document.getElementById('hmSbToggle');
     var mobileBtn   = document.getElementById('hmMobileToggle');
     var overlay     = document.getElementById('hmOverlay');
+    var overviewBtn = document.getElementById('hmOverviewBtn');
+    var overviewSub = document.getElementById('hmOverviewSub');
     var jobsBtn     = document.getElementById('hmJobsBtn');
     var jobsSub     = document.getElementById('hmJobsSub');
     var slotsBtn    = document.getElementById('hmSlotsBtn');
     var slotsSub    = document.getElementById('hmSlotsSub');
+    var toolsBtn    = document.getElementById('hmToolsBtn');
+    var toolsSub    = document.getElementById('hmToolsSub');
     var profileCard = document.getElementById('hmProfileCard');
     var profileSub  = document.getElementById('hmProfileSub');
  
@@ -1699,17 +1788,23 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     mobileBtn && mobileBtn.addEventListener('click', openMobile);
     overlay.addEventListener('click', closeMobile);
  
-    jobsBtn && jobsBtn.addEventListener('click', function () {
-        var open = jobsSub.classList.toggle('sb-open');
-        this.classList.toggle('sb-open', open);
-        this.setAttribute('aria-expanded', open);
-    });
+    function keepRecruiterSubnavOpen(button, submenu) {
+        if (!button || !submenu) return;
+        button.classList.add('sb-open');
+        submenu.classList.add('sb-open');
+        button.setAttribute('aria-expanded', 'true');
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+            button.classList.add('sb-open');
+            submenu.classList.add('sb-open');
+            button.setAttribute('aria-expanded', 'true');
+        });
+    }
 
-    slotsBtn && slotsBtn.addEventListener('click', function () {
-        var open = slotsSub.classList.toggle('sb-open');
-        this.classList.toggle('sb-open', open);
-        this.setAttribute('aria-expanded', open);
-    });
+    keepRecruiterSubnavOpen(overviewBtn, overviewSub);
+    keepRecruiterSubnavOpen(jobsBtn, jobsSub);
+    keepRecruiterSubnavOpen(slotsBtn, slotsSub);
+    keepRecruiterSubnavOpen(toolsBtn, toolsSub);
  
 })();
 </script><script>

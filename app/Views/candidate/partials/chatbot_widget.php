@@ -94,6 +94,7 @@
     margin-bottom: 10px;
     font-size: 13.5px;
     line-height: 1.5;
+    white-space: pre-wrap;
 }
 .hm-candidate-chat-bubble.bot { background: #eef4ff; color: #14213d; }
 .hm-candidate-chat-bubble.user { background: var(--candidate-accent, var(--primary, #1FB7B5)); color: #fff; margin-left: auto; }

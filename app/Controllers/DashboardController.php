@@ -13,7 +13,6 @@ class DashboardController extends BaseController
     public function index()
     {
         $applicationModel = model('ApplicationModel');
-        $userModel = model('UserModel');
         $jobModel = model('JobModel');
         $slotModel = model('InterviewSlotModel');
 

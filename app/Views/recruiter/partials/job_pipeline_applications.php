@@ -1056,6 +1056,12 @@ body.dark .pipeline-row-action:hover {
     border-radius: 0 !important;
     border-right: 0;
 }
+.pipeline-empty {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    min-height: 170px;
+}
 .pipeline-table thead th {
     background: #F2FBF8 !important;
     padding-bottom: 12px;
@@ -1105,6 +1111,10 @@ body.dark .pipeline-table thead th,
 body.dark .pipeline-table tbody tr,
 body.dark .pipeline-table tbody tr:hover {
     background: #000000 !important;
+}
+body.dark .pipeline-empty {
+    background: transparent !important;
+    border: 0 !important;
 }
 body.dark .ats-score strong {
     color: #1FB7B5;

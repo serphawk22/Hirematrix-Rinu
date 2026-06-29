@@ -129,6 +129,7 @@
     font-size: 13.5px;
     line-height: 1.5;
     text-align: left;
+    white-space: pre-wrap;
     word-wrap: break-word;
 }
 .hm-msg.bot .hm-msg-bubble {
