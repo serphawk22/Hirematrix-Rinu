@@ -90,11 +90,14 @@ body.dark .page-board-title {
 .recruiter-filter-card {
     border: 1px solid #D9ECE5 !important;
     border-radius: 12px !important;
+    box-shadow: none !important;
+    outline: 0 !important;
     overflow: hidden;
 }
 body.dark .recruiter-table-card,
 body.dark .recruiter-filter-card {
     border-color: #23343A !important;
+    box-shadow: none !important;
 }
 
 /* ── Table base ── */
@@ -433,8 +436,15 @@ body.dark .title{
     background: #fff;
     color: var(--foreground, #16212B);
 }
-body.dark .card,body.dark .card-header, body.dark .card-body{
- border: 1px solid #23343A !important;
+body.dark .recruiter-candidates-jobboard .card {
+    border: 1px solid #23343A !important;
+}
+body.dark .recruiter-candidates-jobboard .card-header {
+    border: 0 !important;
+    border-bottom: 1px solid #23343A !important;
+}
+body.dark .recruiter-candidates-jobboard .card-body {
+    border: 0 !important;
 }
 body.dark .recruiter-candidate-filter-form .form-control {
     border: 1px solid #23343A !important;
