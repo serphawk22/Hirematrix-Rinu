@@ -696,4 +696,59 @@ class ApiDashboardController extends ResourceController
             'message' => 'Subscription activated successfully'
         ]);
     }
+    public function askChatbot()
+    {
+        $candidateId = (int) ($this->request->getVar('candidate_id') ?? $this->request->getPost('candidate_id') ?? $this->request->getJSON(true)['candidate_id'] ?? 0);
+
+        if (!$candidateId) {
+            return $this->response
+                ->setStatusCode(401)
+                ->setJSON([
+                    'success' => false,
+                    'answer'  => 'Candidate ID is required.',
+                ]);
+        }
+
+        $question = trim((string) ($this->request->getPost('question') ?? $this->request->getJSON(true)['question'] ?? ''));
+        if ($question === '') {
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON([
+                    'success' => false,
+                    'answer'  => 'Please enter a question.',
+                ]);
+        }
+
+        $service = new \App\Libraries\CandidateChatbotService();
+        $result  = $service->answer($candidateId, $question);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'answer'  => $result['answer'],
+        ]);
+    }
+
+    public function getChatbotSuggestions()
+    {
+        $candidateId = (int) ($this->request->getVar('candidate_id') ?? 0);
+
+        if (!$candidateId) {
+            return $this->response->setStatusCode(401)->setJSON(['success' => false]);
+        }
+
+        $suggestions = [
+            'Find matching jobs from my profile',
+            'Show remote PHP jobs',
+            'Find hybrid jobs in Bangalore',
+            'Save job #ID',
+            'Apply to job #ID',
+            'Compare job #ID and job #ID',
+            'Explain why job #ID matches me',
+        ];
+
+        return $this->response->setJSON([
+            'success'     => true,
+            'suggestions' => $suggestions,
+        ]);
+    }
 }

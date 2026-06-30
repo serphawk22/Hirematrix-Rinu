@@ -113,6 +113,8 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->post('profile/upload_video', 'ApiProfileController::uploadVideo');
     $routes->post('profile/upload_photo', 'ApiProfileController::uploadPhoto');
     $routes->post('profile/delete_photo', 'ApiProfileController::deletePhoto');
+    $routes->post('chatbot/ask', 'ApiDashboardController::askChatbot');
+    $routes->get('chatbot/suggestions', 'ApiDashboardController::getChatbotSuggestions');
     $routes->get('dashboard/(:num)', 'ApiDashboardController::getDashboard/$1');
     $routes->get('job-search-strategy/(:num)', 'ApiDashboardController::getJobSearchStrategy/$1');
     $routes->get('jobs/featured', 'ApiJobsController::getFeaturedJobs');
