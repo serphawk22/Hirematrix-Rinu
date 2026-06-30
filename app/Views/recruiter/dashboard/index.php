@@ -91,6 +91,46 @@ body.dark .stat-value { color: #fff; }
     text-transform: uppercase; letter-spacing: .04em;
 }
 
+.recruiter-dashboard-stat-row {
+    margin-left: -12px;
+    margin-right: -12px;
+}
+.recruiter-dashboard-stat-row > [class*="col-"] {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+.recruiter-dashboard-stat-card {
+    padding: 20px 18px !important;
+}
+.recruiter-dashboard-stat-body {
+    gap: 16px;
+}
+.recruiter-dashboard-stat-copy {
+    min-width: 0;
+}
+
+.recruiter-action-center-link {
+    border-bottom: 1px solid #D9ECE5;
+    color: #16212B;
+    text-decoration: none !important;
+    transition: background-color .12s ease, color .12s ease;
+}
+.recruiter-action-center-link:hover,
+.recruiter-action-center-link:focus {
+    background: #E8F9F8 !important;
+    color: #16212B;
+    text-decoration: none !important;
+}
+body.dark .recruiter-action-center-link {
+    border-color: #23343A !important;
+    color: #F8FAFC !important;
+}
+body.dark .recruiter-action-center-link:hover,
+body.dark .recruiter-action-center-link:focus {
+    background: rgba(31,183,181,.08) !important;
+    color: #F8FAFC !important;
+}
+
 /* ── Quick action pills ── */
 .hm-quick-actions {
     display: flex; gap: 10px; flex-wrap: wrap;
@@ -232,6 +272,51 @@ body.dark .interview-time-badge {
     background: #1B3035; color: #1FB7B5;
 }
 
+.recruiter-pending-screen-card {
+    border: 1.5px solid #F4E29A;
+    border-radius: 14px;
+    background: #FEF7D8;
+    color: #8A6A08;
+    text-decoration: none !important;
+    transition: background-color .12s ease, border-color .12s ease;
+}
+.recruiter-pending-screen-card strong {
+    color: #8A6A08;
+    font-size: .85rem;
+}
+.recruiter-pending-screen-card small {
+    color: #B89A3A;
+    font-size: .75rem;
+}
+.recruiter-pending-screen-badge {
+    background: #FFE45C;
+    color: #6B5300;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 4px 10px;
+}
+body.dark .recruiter-pending-screen-card {
+    background: #071214;
+    border-color: #23343A;
+    color: #F8FAFC;
+}
+body.dark .recruiter-pending-screen-card:hover,
+body.dark .recruiter-pending-screen-card:focus {
+    background: rgba(31,183,181,.08);
+    border-color: #1FB7B5;
+}
+body.dark .recruiter-pending-screen-card strong {
+    color: #F8FAFC;
+}
+body.dark .recruiter-pending-screen-card small {
+    color: #94A3B8;
+}
+body.dark .recruiter-pending-screen-badge {
+    background: #1B3035;
+    color: #1FB7B5;
+}
+
 /* ── Pipeline ── */
 .pipeline-stat h3 {
     color: #16212B; font-weight: 700; font-size: 1.6rem;
@@ -249,6 +334,18 @@ body.dark .pipeline-stat-icon { background: #1B3035; color: #1FB7B5; }
     color: #D9ECE5; font-size: 1.2rem; padding-top: 10px;
 }
 body.dark .pipeline-connector { color: #23343A; }
+.recruiter-pipeline-overview-card {
+    height: auto !important;
+}
+.recruiter-pipeline-overview-card .card-body {
+    padding: 24px 28px 26px !important;
+}
+.recruiter-dashboard-main-stack,
+.recruiter-dashboard-side-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
 
 /* ── Table ── */
 /* Conversion metrics */
@@ -362,6 +459,15 @@ body.dark .alert-warning {
 /* ── Dark mode general ── */
 body.dark .text-muted { color: #94A3B8 !important; }
 body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important; }
+body.dark .recruiter-dashboard-kicker {
+    color: #7DD3FC !important;
+}
+body.dark .recruiter-dashboard-title {
+    color: #F8FAFC !important;
+}
+body.dark .recruiter-dashboard-subtitle {
+    color: #C8D7E3 !important;
+}
 
 @media (max-width: 480px) {
     .recruiter-dashboard-main { padding: 16px !important; }
@@ -375,9 +481,9 @@ body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important
     <!-- ── HEADER ── -->
     <div class="page-board-header page-board-header-tight recruiter-page-board-header d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
         <div>
-            <span class="section-eyebrow d-block mb-1" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94A3B8;">Hiring analytics</span>
-            <h1 class="m-0" style="font-size:1.6rem;font-weight:700;color:#16212B;">Recruitment Overview</h1>
-            <p class="text-muted mb-0" style="font-size:.9rem;">Review applications, job activity, and pipeline performance across your jobs.</p>
+            <span class="section-eyebrow recruiter-dashboard-kicker d-block mb-1" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94A3B8;">Hiring analytics</span>
+            <h1 class="recruiter-dashboard-title m-0" style="font-size:1.6rem;font-weight:700;color:#16212B;">Recruitment Overview</h1>
+            <p class="recruiter-dashboard-subtitle text-muted mb-0" style="font-size:.9rem;">Review applications, job activity, and pipeline performance across your jobs.</p>
         </div>
         <?php if (empty($noJobs)): ?>
             <a href="<?= base_url('recruiter/dashboard/export-excel?type=overview') ?>" class="btn btn-outline-primary">
@@ -409,13 +515,13 @@ body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important
     <?php endif; ?>
 
     <!-- ════════════════════ ROW 1: 4 STAT CARDS ════════════════════ -->
-    <div class="row g-3 mb-4" style="row-gap:16px;">
+    <div class="row recruiter-dashboard-stat-row mb-4" style="row-gap:16px;">
         <div class="col-xl-3 col-md-6">
             <a href="<?= $applicationsUrl ?>" class="text-decoration-none d-block">
-                <div class="card p-3 h-100" style="border-radius:16px;">
-                    <div class="d-flex align-items-center gap-3">
+                <div class="card recruiter-dashboard-stat-card h-100" style="border-radius:16px;">
+                    <div class="recruiter-dashboard-stat-body d-flex align-items-center">
                         <div class="stat-card-icon"><i class="fas fa-file-alt"></i></div>
-                        <div>
+                        <div class="recruiter-dashboard-stat-copy">
                             <div class="stat-label">Total Applications</div>
                             <div class="stat-value"><?= number_format($funnel['total_applications']) ?></div>
                             <small class="text-muted">Across all active jobs</small>
@@ -426,10 +532,10 @@ body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important
         </div>
         <div class="col-xl-3 col-md-6">
             <a href="<?= $jobsUrl ?>" class="text-decoration-none d-block">
-                <div class="card p-3 h-100" style="border-radius:16px;">
-                    <div class="d-flex align-items-center gap-3">
+                <div class="card recruiter-dashboard-stat-card h-100" style="border-radius:16px;">
+                    <div class="recruiter-dashboard-stat-body d-flex align-items-center">
                         <div class="stat-card-icon"><i class="fas fa-briefcase"></i></div>
-                        <div>
+                        <div class="recruiter-dashboard-stat-copy">
                             <div class="stat-label">Open Jobs</div>
                             <div class="stat-value"><?= $jobStats['active_jobs'] ?></div>
                             <small class="text-muted">Currently hiring</small>
@@ -440,10 +546,10 @@ body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important
         </div>
         <div class="col-xl-3 col-md-6">
             <a href="<?= $conversionUrl ?>" class="text-decoration-none d-block">
-                <div class="card p-3 h-100" style="border-radius:16px;">
-                    <div class="d-flex align-items-center gap-3">
+                <div class="card recruiter-dashboard-stat-card h-100" style="border-radius:16px;">
+                    <div class="recruiter-dashboard-stat-body d-flex align-items-center">
                         <div class="stat-card-icon"><i class="fas fa-chart-pie"></i></div>
-                        <div>
+                        <div class="recruiter-dashboard-stat-copy">
                             <div class="stat-label">Conversion Rate</div>
                             <div class="stat-value"><?= $conversionMetrics['overall_conversion'] ?? 0 ?>%</div>
                             <small class="text-muted">Pipeline efficiency</small>
@@ -454,10 +560,10 @@ body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important
         </div>
         <div class="col-xl-3 col-md-6">
             <a href="<?= $bookingsUrl ?>" class="text-decoration-none d-block">
-                <div class="card p-3 h-100" style="border-radius:16px;">
-                    <div class="d-flex align-items-center gap-3">
+                <div class="card recruiter-dashboard-stat-card h-100" style="border-radius:16px;">
+                    <div class="recruiter-dashboard-stat-body d-flex align-items-center">
                         <div class="stat-card-icon"><i class="fas fa-calendar-check"></i></div>
-                        <div>
+                        <div class="recruiter-dashboard-stat-copy">
                             <div class="stat-label">Interview Bookings</div>
                             <div class="stat-value"><?= number_format($jobStats['interview_bookings'] ?? 0) ?></div>
                             <small class="text-muted">HR rounds scheduled</small>
@@ -469,10 +575,10 @@ body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important
     </div>
 
     <!-- ════════════════════ ROW 2: PIPELINE + CALENDAR ════════════════════ -->
-    <div class="row g-4 mb-4">
+    <div class="row g-4 mb-4 align-items-start">
         <!-- ── Pipeline ── -->
-        <div class="col-lg-8">
-            <div class="card h-100" style="border-radius:16px;">
+        <div class="col-lg-8 recruiter-dashboard-main-stack">
+            <div class="card recruiter-pipeline-overview-card" style="border-radius:16px;">
                 <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div>
                         <h6 class="m-0 font-weight-bold" style="font-weight:600;">Recruitment Pipeline</h6>
@@ -512,55 +618,8 @@ body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- ── Calendar + Today's Interviews ── -->
-        <div class="col-lg-4">
-            <div class="dash-calendar" id="dashCalendar"></div>
-
-            <div class="interview-today-card mt-3">
-                <div class="card-header py-2" style="border-radius:14px 14px 0 0;">
-                    <h6 class="m-0" style="font-weight:600;font-size:.9rem;">
-                        <i class="fas fa-clock"></i> Today's Interviews
-                        <?php if (count($todayInterviews) > 0): ?>
-                            <span class="badge ml-1" style="background:#1FB7B5;color:#fff;border-radius:20px;font-size:10px;"><?= count($todayInterviews) ?></span>
-                        <?php endif; ?>
-                    </h6>
-                </div>
-                <?php if (count($todayInterviews) > 0): ?>
-                    <?php foreach ($todayInterviews as $iv): ?>
-                        <a href="<?= base_url('recruiter/slots/bookings') ?>" class="interview-today-item">
-                            <span class="interview-time-badge"><?= date('h:i A', strtotime($iv['slot_time'])) ?></span>
-                            <div>
-                                <strong style="font-size:.85rem;"><?= esc($iv['candidate_name']) ?></strong>
-                                <small class="d-block text-muted" style="font-size:.75rem;"><?= esc($iv['job_title'] ?? 'Interview') ?></small>
-                            </div>
-                        </a>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="p-3 text-center text-muted" style="font-size:.85rem;">
-                        <i class="fas fa-check-circle" style="color:#1FB7B5;"></i> No interviews scheduled today
-                    </div>
-                <?php endif; ?>
-            </div>
-
-            <!-- ── Actionable mini-card: pending screening ── -->
-            <?php if (!empty($pendingActions['pending_screening']) && $pendingActions['pending_screening'] > 0): ?>
-                <a href="<?= $jobsUrl ?>" class="d-flex align-items-center justify-content-between p-3 mt-3" style="border:1.5px solid #F4E29A;border-radius:14px;background:#FEF7D8;text-decoration:none;">
-                    <div>
-                        <strong style="font-size:.85rem;color:#8A6A08;"><i class="fas fa-file-signature"></i> Screen Applications</strong>
-                        <small class="d-block" style="color:#B89A3A;font-size:.75rem;">Pending: <?= $pendingActions['pending_screening'] ?> candidates</small>
-                    </div>
-                    <span class="badge" style="background:#FFE45C;color:#6B5300;font-size:1rem;font-weight:700;border-radius:10px;padding:4px 10px;"><?= $pendingActions['pending_screening'] ?></span>
-                </a>
-            <?php endif; ?>
-        </div>
-    </div>
-
-    <!-- ════════════════════ ROW 3: RECENT APPS + CONVERSION ════════════════════ -->
-    <div class="row g-4 mb-4">
-        <div class="col-lg-7">
-            <div class="card h-100" style="border-radius:16px;">
+            <div class="card" style="border-radius:16px;">
                 <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <h6 class="m-0 font-weight-bold" style="font-weight:600;">Recent Applications</h6>
                     <a href="<?= $applicationsUrl ?>" class="btn btn-outline-primary btn-sm">View All</a>
@@ -590,10 +649,78 @@ body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important
                     </div>
                 </div>
             </div>
+
+            <?php if (empty($noJobs)): ?>
+            <div class="card" style="border-radius:16px;">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold" style="font-weight:600;"><i class="fas fa-bolt"></i> Action Center</h6>
+                </div>
+                <div class="card-body p-0">
+                    <?php $hasActions = ((int)($pendingActions['pending_screening'] ?? 0) > 0) || ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0); ?>
+                    <?php if ($hasActions): ?>
+                        <?php if ((int)($pendingActions['pending_screening'] ?? 0) > 0): ?>
+                        <a href="<?= $jobsUrl ?>" class="recruiter-action-center-link d-flex align-items-center justify-content-between p-3">
+                            <div>
+                                <strong><i class="fas fa-file-signature" style="color:#0D8A90;"></i> Screen New Applications</strong>
+                                <small class="d-block text-muted">Review and shortlist incoming candidates.</small>
+                            </div>
+                            <span class="badge" style="background:#FFE45C;color:#6B5300;border-radius:20px;font-weight:700;padding:5px 12px;"><?= (int)$pendingActions['pending_screening'] ?></span>
+                        </a>
+                        <?php endif; ?>
+                        <?php if ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0): ?>
+                        <a href="<?= $bookingsUrl ?>" class="recruiter-action-center-link d-flex align-items-center justify-content-between p-3">
+                            <div>
+                                <strong><i class="fas fa-calendar-check" style="color:#0D8A90;"></i> Interviews Today</strong>
+                                <small class="d-block text-muted">Track today's booked interviews and update status.</small>
+                            </div>
+                            <span class="status-pill"><?= (int)$pendingActions['hr_interviews_today'] ?></span>
+                        </a>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <div class="text-center py-4">
+                            <div style="width:48px;height:48px;border-radius:50%;background:#E8F9F8;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:#0D8A90;font-size:20px;"><i class="fas fa-check"></i></div>
+                            <h6 style="font-weight:600;">All caught up!</h6>
+                            <p class="text-muted small mb-3">No pending screenings or interviews right now.</p>
+                            <a href="<?= $jobsUrl ?>" class="btn btn-outline-primary btn-sm">Review Jobs</a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
         </div>
 
-        <div class="col-lg-5">
-            <div class="card h-100" style="border-radius:16px;">
+        <div class="col-lg-4 recruiter-dashboard-side-stack">
+            <div class="dash-calendar" id="dashCalendar"></div>
+
+            <div class="interview-today-card">
+                <div class="card-header py-2" style="border-radius:14px 14px 0 0;">
+                    <h6 class="m-0" style="font-weight:600;font-size:.9rem;">
+                        <i class="fas fa-clock"></i> Today's Interviews
+                        <?php if (count($todayInterviews) > 0): ?>
+                            <span class="badge ml-1" style="background:#1FB7B5;color:#fff;border-radius:20px;font-size:10px;"><?= count($todayInterviews) ?></span>
+                        <?php endif; ?>
+                    </h6>
+                </div>
+                <?php if (count($todayInterviews) > 0): ?>
+                    <?php foreach ($todayInterviews as $iv): ?>
+                        <a href="<?= base_url('recruiter/slots/bookings') ?>" class="interview-today-item">
+                            <span class="interview-time-badge"><?= date('h:i A', strtotime($iv['slot_time'])) ?></span>
+                            <div>
+                                <strong style="font-size:.85rem;"><?= esc($iv['candidate_name']) ?></strong>
+                                <small class="d-block text-muted" style="font-size:.75rem;"><?= esc($iv['job_title'] ?? 'Interview') ?></small>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="p-3 text-center text-muted" style="font-size:.85rem;">
+                        <i class="fas fa-check-circle" style="color:#1FB7B5;"></i> No interviews scheduled today
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- ── Actionable mini-card: pending screening ── -->
+            <div class="card" style="border-radius:16px;">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold" style="font-weight:600;"><i class="fas fa-funnel-dollar mr-1"></i> Conversion Metrics</h6>
                 </div>
@@ -633,49 +760,6 @@ body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important
             </div>
         </div>
     </div>
-
-    <!-- ════════════════════ ACTION CENTER ════════════════════ -->
-    <?php if (empty($noJobs)): ?>
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card" style="border-radius:16px;">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold" style="font-weight:600;"><i class="fas fa-bolt"></i> Action Center</h6>
-                </div>
-                <div class="card-body p-0">
-                    <?php $hasActions = ((int)($pendingActions['pending_screening'] ?? 0) > 0) || ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0); ?>
-                    <?php if ($hasActions): ?>
-                        <?php if ((int)($pendingActions['pending_screening'] ?? 0) > 0): ?>
-                        <a href="<?= $jobsUrl ?>" class="d-flex align-items-center justify-content-between p-3" style="border-bottom:1px solid #D9ECE5;text-decoration:none;color:#16212B;transition:background.12s;" onmouseover="this.style.background='#E8F9F8'" onmouseout="this.style.background='transparent'">
-                            <div>
-                                <strong><i class="fas fa-file-signature" style="color:#0D8A90;"></i> Screen New Applications</strong>
-                                <small class="d-block text-muted">Review and shortlist incoming candidates.</small>
-                            </div>
-                            <span class="badge" style="background:#FFE45C;color:#6B5300;border-radius:20px;font-weight:700;padding:5px 12px;"><?= (int)$pendingActions['pending_screening'] ?></span>
-                        </a>
-                        <?php endif; ?>
-                        <?php if ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0): ?>
-                        <a href="<?= $bookingsUrl ?>" class="d-flex align-items-center justify-content-between p-3" style="border-bottom:1px solid #D9ECE5;text-decoration:none;color:#16212B;transition:background.12s;" onmouseover="this.style.background='#E8F9F8'" onmouseout="this.style.background='transparent'">
-                            <div>
-                                <strong><i class="fas fa-calendar-check" style="color:#0D8A90;"></i> Interviews Today</strong>
-                                <small class="d-block text-muted">Track today's booked interviews and update status.</small>
-                            </div>
-                            <span class="status-pill"><?= (int)$pendingActions['hr_interviews_today'] ?></span>
-                        </a>
-                        <?php endif; ?>
-                    <?php else: ?>
-                        <div class="text-center py-5">
-                            <div style="width:56px;height:56px;border-radius:50%;background:#E8F9F8;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:#0D8A90;font-size:22px;"><i class="fas fa-check"></i></div>
-                            <h6 style="font-weight:600;">All caught up!</h6>
-                            <p class="text-muted small">No pending screenings or interviews right now.</p>
-                            <a href="<?= $jobsUrl ?>" class="btn btn-outline-primary btn-sm">Review Jobs</a>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
 
 </div><!-- /.recruiter-dashboard-main -->
 

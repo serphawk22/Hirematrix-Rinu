@@ -1663,7 +1663,7 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                 </a>
                 <a href="<?= base_url('recruiter/slots/bookings') ?>"
                    class="hm-sb-subitem <?= str_contains($currentUri, 'bookings') ? 'active' : '' ?>">
-                    <i class="fas fa-book-open sb-icon"></i>
+                    <i class="fas fa-eye sb-icon"></i>
                     <span class="sb-label">View Bookings</span>
                 </a>
             </div>

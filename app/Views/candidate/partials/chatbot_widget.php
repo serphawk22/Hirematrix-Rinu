@@ -105,6 +105,52 @@
 .hm-candidate-chat-input { flex: 1; border: 1px solid #dbeafe; border-radius: 999px; padding: 10px 14px; font-size: 14px; color: #0f172a; }
 .hm-candidate-chat-input:focus { outline: none; border-color: var(--candidate-accent, var(--primary, #1FB7B5)); box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.12); }
 .hm-candidate-chat-send { border: none; background: var(--candidate-accent, var(--primary, #1FB7B5)); color: #fff; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; }
+body.dark .hm-candidate-chat-widget {
+    background: #050505;
+    border: 1px solid #23343A;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+body.dark .hm-candidate-chat-header small {
+    color: rgba(255, 255, 255, 0.86);
+    opacity: 1;
+}
+body.dark .hm-candidate-chat-messages {
+    background: #071012;
+}
+body.dark .hm-candidate-chat-bubble.bot {
+    background: #142033;
+    color: #F4F8FF;
+}
+body.dark .hm-candidate-chat-suggestions {
+    background: #030707;
+}
+body.dark .hm-candidate-chat-suggestions button {
+    background: #082124;
+    border-color: rgba(31, 183, 181, 0.42);
+    color: #D8FFFF;
+}
+body.dark .hm-candidate-chat-suggestions button:hover,
+body.dark .hm-candidate-chat-suggestions button:focus {
+    background: rgba(31, 183, 181, 0.22);
+    border-color: rgba(31, 183, 181, 0.75);
+    color: #FFFFFF;
+}
+body.dark .hm-candidate-chat-input-wrap {
+    background: #030707;
+    border-top-color: #23343A;
+}
+body.dark .hm-candidate-chat-input {
+    background: #111315;
+    border-color: #3A444A;
+    color: #F8FAFC;
+}
+body.dark .hm-candidate-chat-input::placeholder {
+    color: #AAB4BF;
+}
+body.dark .hm-candidate-chat-input:focus {
+    border-color: var(--candidate-accent, var(--primary, #1FB7B5));
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.16);
+}
 @media (max-width: 480px) {
     .hm-candidate-chat-widget { right: 12px; left: 12px; width: auto; height: 70vh; bottom: 80px; }
     .hm-candidate-chat-fab { right: 16px; bottom: 16px; }
