@@ -10494,13 +10494,15 @@ body.candidate-app .cand-leftnav__avatar {
     font-size: 15px !important;
     font-weight: 700 !important;
     overflow: hidden !important;
-    box-shadow: 0 2px 8px rgba(31, 183, 181, 0.35) !important;
+    box-shadow: none !important;
 }
 
 body.candidate-app .cand-leftnav__avatar img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
+    box-shadow: none !important;
+    filter: none !important;
 }
 
 body.candidate-app .cand-leftnav__user-info {
@@ -10589,13 +10591,21 @@ body.candidate-app .cand-leftnav__dropdown-avatar {
     color: var(--candidate-nav-primary-dark, #0D8A90) !important;
     font-size: 13px !important;
     font-weight: 800 !important;
-    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.75), 0 0 0 1px rgba(31, 183, 181, 0.28) !important;
+    box-shadow: none !important;
 }
 
 body.candidate-app .cand-leftnav__dropdown-avatar img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+body.candidate-app .hm-drawer-avatar,
+body.candidate-app .hm-drawer-avatar img {
+    box-shadow: none !important;
+    filter: none !important;
 }
 
 body.candidate-app .cand-leftnav__dropdown-user {

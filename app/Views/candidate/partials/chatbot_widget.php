@@ -10,7 +10,7 @@
     background: var(--candidate-accent, var(--primary, #1FB7B5));
     color: #fff;
     border: none;
-    box-shadow: 0 6px 24px rgba(31, 183, 181, 0.25);
+    box-shadow: none;
     cursor: pointer;
     z-index: 9999;
     display: flex;
@@ -19,14 +19,17 @@
     font-size: 24px;
 }
 .hm-candidate-chat-fab:hover { transform: scale(1.05); }
-.hm-candidate-chat-fab:focus,
-.hm-candidate-chat-fab:focus-visible,
 .hm-candidate-chat-send:focus,
 .hm-candidate-chat-send:focus-visible,
 .hm-candidate-chat-header-close:focus,
 .hm-candidate-chat-header-close:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.18);
+}
+.hm-candidate-chat-fab:focus,
+.hm-candidate-chat-fab:focus-visible {
+    outline: none;
+    box-shadow: none;
 }
 .hm-candidate-chat-widget {
     position: fixed;
