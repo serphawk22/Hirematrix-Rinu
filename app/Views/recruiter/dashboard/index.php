@@ -655,7 +655,7 @@ body.dark h4, body.dark h6, body.dark h5, body.dark .h4 { color: #fff !important
                         </a>
                         <?php endif; ?>
                         <?php if ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0): ?>
-                        <a href="<?= $bookingsUrl ?>" class="d-flex align-items-center justify-content-between p-3" style="border-bottom:1px solid #D9ECE5;text-decoration:none;color:#16212B;transition:background.12s;" onmouseover="this.style.background='#E8F9F8'" onmouseout="this.style.background='transparent'">
+                        <a href="<?= $bookingsUrl ?>" class="d-flex align-items-center justify-content-between p-3" style="border-bottom:1px solid #D9ECE5;text-decoration:none;color:#16212B;transition:background.12s;" onmouseover="this.style.background='#e8f9f817'" onmouseout="this.style.background='transparent'">
                             <div>
                                 <strong><i class="fas fa-calendar-check" style="color:#0D8A90;"></i> Interviews Today</strong>
                                 <small class="d-block text-muted">Track today's booked interviews and update status.</small>

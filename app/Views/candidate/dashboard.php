@@ -1,4 +1,4 @@
-                        <?= view('Layouts/candidate_header', ['title' => 'Dashboard']) ?>
+<?= view('Layouts/candidate_header', ['title' => 'Dashboard']) ?>
 
 
 <?php
@@ -86,12 +86,330 @@ $resolveAssetUrl = static function (string $path): string {
     }
     return base_url(ltrim($path, '/'));
 };
+// ── PRO feature card data ────────────────────────────────────────────
+// Topics mirror the former 3-slide tour popup (AI Interview, Career
+// Transition AI, Resume Studio) plus an extra slide pulled from the
+// portal-trailer feature showcase (Job Search Strategy Coach).
+$candidateName = trim((string) (session()->get('user_name') ?? ''));
+$candidateName = $candidateName !== '' ? $candidateName : 'Your Profile';
+$candidateAvatar = trim((string) ($candidateAvatar ?? ''));
+$candidateInitial = strtoupper(substr($candidateName, 0, 1) ?: 'C');
+$profileHeadline = trim((string) ($profileHeadline ?? ''));
+$profileUpdatedAgo = trim((string) ($profileUpdatedAgo ?? ''));
+
+$proFeatureSlides = [
+    [
+        'eyebrow' => 'AI Interview Practice',
+        'title' => 'Practice with the AI Interview',
+        'rows' => [
+            'Role-specific mock interview rounds',
+            'Structured answer frameworks',
+            'Instant post-round feedback',
+        ],
+        'cta_label' => 'Start practising',
+        'cta_url' => base_url('candidate/applications'),
+        'video_url' => base_url('videos/ai-interview-demo.mp4'),
+        'video_title' => 'Your Guide to Acing the AI Interview',
+    ],
+    [
+        'eyebrow' => 'Career Transition AI',
+        'title' => 'Plan Your Next Career Move',
+        'rows' => [
+            'Personalised role-change roadmap',
+            'Skill gap analysis vs target role',
+            'Certification & learning path guide',
+        ],
+        'cta_label' => 'Generate my roadmap',
+        'cta_url' => base_url('career-transition'),
+    ],
+    [
+        'eyebrow' => 'Resume Studio',
+        'title' => 'Build a Resume That Gets Noticed',
+        'rows' => [
+            'Role-targeted resume per job',
+            'ATS-friendly formatting checks',
+            'AI rewrite & positioning tips',
+        ],
+        'cta_label' => 'Build my resume',
+        'cta_url' => base_url('candidate/resume-studio'),
+    ],
+    [
+        'eyebrow' => 'Job Search Strategy Coach',
+        'title' => 'Search Smarter, Not Harder',
+        'rows' => [
+            'Weekly application priorities',
+            'Post-application follow-up plan',
+            'Traction-focused role targeting',
+        ],
+        'cta_label' => 'Open Full Strategy',
+        'cta_url' => base_url('candidate/job-search-strategy'),
+    ],
+];
 ?>
+
 <div class="dashboard-jobboard">
 <div class="dash-grid">
 
     <!-- CENTER: main content -->
     <div class="dash-grid__main">
+          <!-- ═══════════════ PRO FEATURE PROMO (top of page) ═══════════════ -->
+    <?php if (empty($premiumSubscription ?? null)): ?>
+    <style>
+    .dash-pro-promo{ margin: 8px 0 32px; }
+    .dash-pro-promo-head{
+      display:flex;justify-content:space-between;align-items:flex-end;
+      gap:16px;margin-bottom:18px;flex-wrap:wrap;
+    }
+    .dash-pro-promo-head h2{
+      font-size:22px;font-weight:800;color:var(--foreground);margin:0 0 4px;
+    }
+    .dash-pro-promo-head p{margin:0;color:var(--muted-foreground);font-size:14px;}
+    .dash-pro-promo-cta{
+      background:var(--gradient-primary);color:#fff !important;border:none;
+      border-radius:99px !important;padding:10px 24px;font-size:13px;font-weight:700;
+      text-decoration:none !important;white-space:nowrap;
+      box-shadow:0 4px 14px rgba(31,183,181,.25);
+      transition:transform .15s,box-shadow .15s;
+    }
+    .dash-pro-promo-cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(31,183,181,.35);color:#fff !important;}
+
+    .dash-pro-grid{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:18px;
+    }
+    @media (max-width: 1199px){ .dash-pro-grid{grid-template-columns:repeat(2, 1fr);} }
+    @media (max-width: 575px){ .dash-pro-grid{grid-template-columns:1fr;} }
+
+    .dash-pro-card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:10px !important;
+      padding:22px;
+      display:flex;flex-direction:column;
+      position:relative;
+      overflow:hidden;
+      transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      cursor:pointer;
+    }
+    .dash-pro-card:hover{
+      transform:translateY(-1px) !important;
+      box-shadow:0 4px 10px rgba(31, 183, 181, 0.07) !important;
+      border-color:var(--primary);
+    }
+    .dash-pro-card::before{
+      display:none;
+    }
+    .dash-pro-card-icon{
+      width:44px;height:44px;border-radius:12px;
+      background:var(--gradient-soft);
+      display:flex;align-items:center;justify-content:center;
+      margin-bottom:14px;
+      position:relative;
+    }
+    .dash-pro-card-icon i{
+      font-size:18px;
+      background:var(--gradient-primary);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .dash-pro-card-play-badge{
+      position:absolute;top:-6px;right:-6px;
+      width:20px;height:20px;border-radius:50%;
+      background:var(--gradient-primary);
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 2px 6px rgba(31,183,181,.4);
+      border:2px solid var(--card);
+    }
+    .dash-pro-card-play-badge i{
+      font-size:8px;color:#fff;background:none;-webkit-text-fill-color:#fff;margin-left:1px;
+    }
+    .dash-pro-card-eyebrow{
+      display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;
+      text-transform:uppercase;color:var(--primary-dark);
+      background:var(--muted);border:1px solid var(--border);
+      padding:3px 10px;border-radius:999px;margin-bottom:10px;align-self:flex-start;
+    }
+    .dash-pro-card-title{
+      font-size:15px;font-weight:700;color:var(--foreground);margin:0 0 12px;line-height:1.35;
+    }
+    .dash-pro-card-rows{list-style:none;margin:0 0 16px;padding:0;flex:1;}
+    .dash-pro-card-rows li{
+      display:flex;align-items:flex-start;gap:8px;font-size:12.5px;
+      color:var(--muted-foreground);margin-bottom:8px;line-height:1.4;
+    }
+    .dash-pro-card-rows li i{
+      color:var(--secondary);margin-top:2px;font-size:12px;flex-shrink:0;
+    }
+    .dash-pro-card-watch{
+      display:inline-flex;align-items:center;gap:6px;
+      font-size:12.5px;font-weight:700;color:var(--primary-dark);
+      margin-top:auto;
+    }
+    .dash-pro-card-watch i{font-size:11px;}
+
+    /* Video modal */
+    .dash-pro-video-modal{
+      display:none;position:fixed;inset:0;z-index:1080;
+      align-items:center;justify-content:center;
+      background:rgba(15, 23, 28, 0.72);
+      padding:20px;
+    }
+    .dash-pro-video-modal.is-open{display:flex;}
+    .dash-pro-video-modal-box{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      width:100%;max-width:920px !important;
+      overflow:hidden;
+      box-shadow:0 20px 60px rgba(0,0,0,.35);
+    }
+    .dash-pro-video-modal-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:16px 20px;border-bottom:1px solid var(--border);
+      gap:12px;
+    }
+    .dash-pro-video-modal-head h4{
+      margin:0;font-size:15px;font-weight:700;color:var(--foreground);
+    }
+    .dash-pro-video-modal-close{
+      background:var(--muted);border:none !important;
+      color:var(--foreground);width:30px;height:30px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;flex-shrink:0;font-size:13px;line-height:1;
+      transition:background .15s,color .15s,transform .15s;
+      outline:none !important;
+      box-shadow:none !important;
+      -webkit-tap-highlight-color:transparent;
+    }
+     .dash-pro-video-modal-close:focus,
+    .dash-pro-video-modal-close:active,
+    .dash-pro-video-modal-close:focus-visible{
+      outline:none !important;
+      box-shadow:none !important;
+      border:none !important;
+    }
+    .dash-pro-video-modal-close:hover{
+         transform:translateY(-1px) !important;
+    }
+    .dash-pro-video-modal-body{ background:#000; }
+    .dash-pro-video-modal-body video{
+      display:block;width:100%;max-height:70vh;background:#000;
+    }
+    </style>
+
+    <section class="dashboard-section pt-0">
+        <div class="container-fluid px-lg-5">
+            <div class="dash-pro-promo">
+                <div class="dash-pro-promo-head">
+                    <div>
+                        <h2>Unlock more with PRO</h2>
+                        <p>AI-powered tools to help you land your next role faster.</p>
+                    </div>
+                    <a href="<?= base_url('premium/plans') ?>" class="btn btn-primary">
+                        Become a Pro
+                    </a>
+                </div>
+
+                <div class="dash-pro-grid">
+                    <?php foreach ($proFeatureSlides as $slide):
+                        $hasVideo = !empty($slide['video_url']);
+                        $cardTag = $hasVideo ? 'div' : 'a';
+                        ?>
+                        <<?= $cardTag ?>
+                            <?php if ($hasVideo): ?>
+                                role="button" tabindex="0"
+                                data-video-src="<?= esc($slide['video_url'], 'attr') ?>"
+                                data-video-title="<?= esc($slide['video_title'] ?? ($slide['title'] ?? ''), 'attr') ?>"
+                                onclick="dashProOpenVideo(this)"
+                                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();dashProOpenVideo(this);}"
+                            <?php else: ?>
+                                href="<?= esc($slide['cta_url'] ?? base_url('premium/plans')) ?>" style="text-decoration:none;"
+                            <?php endif; ?>
+                            class="dash-pro-card"
+                        >
+                            <div class="dash-pro-card-icon">
+                                <i class="<?= esc($pickJobIcon($slide['eyebrow'] ?? '')) ?>" aria-hidden="true"></i>
+                                <?php if ($hasVideo): ?>
+                                    <span class="dash-pro-card-play-badge"><i class="fas fa-play"></i></span>
+                                <?php endif; ?>
+                            </div>
+                            <span class="dash-pro-card-eyebrow"><?= esc($slide['eyebrow'] ?? '') ?></span>
+                            <h3 class="dash-pro-card-title"><?= esc($slide['title'] ?? ($slide['eyebrow'] ?? '')) ?></h3>
+                            <ul class="dash-pro-card-rows">
+                                <?php foreach (array_slice((array) ($slide['rows'] ?? []), 0, 3) as $row): ?>
+                                    <li><i class="fas fa-check-circle"></i> <?= esc($row) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <?php if ($hasVideo): ?>
+                                <span class="dash-pro-card-watch"><i class="fas fa-circle-play"></i> Watch the guide</span>
+                            <?php endif; ?>
+                        </<?= $cardTag ?>>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video guide modal (shared by any PRO card with a video) -->
+    <div class="dash-pro-video-modal" id="dashProVideoModal" aria-hidden="true">
+        <div class="dash-pro-video-modal-box" role="dialog" aria-modal="true" aria-labelledby="dashProVideoModalTitle">
+            <div class="dash-pro-video-modal-head">
+                <h4 id="dashProVideoModalTitle">Your Guide to Acing the AI Interview</h4>
+                <button type="button" class="dash-pro-video-modal-close" onclick="dashProCloseVideo()" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="dash-pro-video-modal-body">
+                <video id="dashProVideoModalPlayer" controls controlsList="nofullscreen noremoteplayback" preload="none"></video>
+            </div>
+        </div>
+    </div>
+
+    <script>
+  function dashProOpenVideo(el){
+    var modal = document.getElementById('dashProVideoModal');
+    var player = document.getElementById('dashProVideoModalPlayer');
+    var titleEl = document.getElementById('dashProVideoModalTitle');
+    var src = el.getAttribute('data-video-src');
+    var title = el.getAttribute('data-video-title') || 'Video guide';
+
+    if (!src) { return; }
+
+    if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+    }
+
+    titleEl.textContent = title;
+    player.src = src;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    player.play().catch(function(){ /* autoplay blocked, user can press play */ });
+}
+
+    function dashProCloseVideo(){
+        var modal = document.getElementById('dashProVideoModal');
+        var player = document.getElementById('dashProVideoModalPlayer');
+
+        player.pause();
+        player.removeAttribute('src');
+        player.load();
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape') { dashProCloseVideo(); }
+    });
+
+    document.getElementById('dashProVideoModal').addEventListener('click', function(e){
+        if (e.target === this) { dashProCloseVideo(); }
+    });
+    </script>
+    <?php endif; ?>
+    <!-- ═══════════════ END PRO FEATURE PROMO ═══════════════ -->
+
     <section class="dashboard-section pt-0">
         <div class="container-fluid px-lg-5">
             <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
@@ -99,7 +417,7 @@ $resolveAssetUrl = static function (string $path): string {
                     <h2 class="section-title">Jobs Matching Your Profile</h2>
                     <p class="section-subtitle">Based on your skills, target roles, and work preferences</p>
                 </div>
-                <a href="<?= base_url('jobs?tab=suggested') ?>" class="btn btn-ghost text-primary">View all jobs</a>
+                <a href="<?= base_url('jobs?tab=suggested') ?>" class="btn btn-primary">View all jobs</a>
             </div>
 
             <div class="dashboard-jobs-grid">
@@ -129,32 +447,31 @@ $resolveAssetUrl = static function (string $path): string {
                         $isExternalJob = (int) ($job['is_external'] ?? 0) === 1;
                         $externalSource = trim((string) ($job['external_source'] ?? ''));
                         ?>
-                        <div class="job-card dashboard-card">
-                            <div class="job-card-icon">
-                                <?php if ($companyLogoResolved !== ''): ?>
-                                    <img src="<?= esc($companyLogoResolved) ?>" alt="<?= esc($company) ?>" data-google-logo="<?= esc($googleLogoUrl) ?>" onerror="<?= esc($logoErrorJs, 'attr') ?>">
-                                <?php else: ?>
-                                    <span><?= esc($companyInitial) ?></span>
-                                <?php endif; ?>
-                            </div>
-                            <h3 class="job-card-title"><?= esc($title) ?></h3>
-                            <p class="job-card-company"><?= esc($company) ?></p>
-                            <div class="job-card-meta">
-                                <span><i class="fas fa-map-pin"></i> <?= esc($location) ?></span>
-                                <?php if ($experience !== ''): ?>
-                                    <span><i class="fas fa-briefcase"></i> <?= esc($experience) ?></span>
-                                <?php endif; ?>
-                                <?php if ($salary !== ''): ?>
-                                    <span><i class="fas fa-rupee-sign"></i> <?= esc($salary) ?></span>
-                                <?php endif; ?>
-                                <span><i class="fas fa-clock"></i> <?= esc($postedAt) ?></span>
-                            </div>
-                            <div class="job-card-tags">
-                                <span class="badge badge-primary"><?= esc($job['employment_type'] ?: 'Full-time') ?></span>
-                                <span class="badge badge-secondary"><?= esc(substr($title, 0, 15) ?: 'Role') ?></span>
-                            </div>
-                            <a href="<?= base_url('job/' . (int) $job['id']) ?>" class="view-details">View Details &rarr;</a>
-                        </div>
+                       <a href="<?= base_url('job/' . (int) $job['id']) ?>" class="job-card dashboard-card" style="text-decoration:none;">
+    <div class="job-card-icon">
+        <?php if ($companyLogoResolved !== ''): ?>
+            <img src="<?= esc($companyLogoResolved) ?>" alt="<?= esc($company) ?>" data-google-logo="<?= esc($googleLogoUrl) ?>" onerror="<?= esc($logoErrorJs, 'attr') ?>">
+        <?php else: ?>
+            <span><?= esc($companyInitial) ?></span>
+        <?php endif; ?>
+    </div>
+    <h3 class="job-card-title"><?= esc($title) ?></h3>
+    <p class="job-card-company"><?= esc($company) ?></p>
+    <div class="job-card-meta">
+        <span><i class="fas fa-map-pin"></i> <?= esc($location) ?></span>
+        <?php if ($experience !== ''): ?>
+            <span><i class="fas fa-briefcase"></i> <?= esc($experience) ?></span>
+        <?php endif; ?>
+        <?php if ($salary !== ''): ?>
+            <span><i class="fas fa-rupee-sign"></i> <?= esc($salary) ?></span>
+        <?php endif; ?>
+        <span><i class="fas fa-clock"></i> <?= esc($postedAt) ?></span>
+    </div>
+    <div class="job-card-tags">
+        <span class="badge badge-primary"><?= esc($job['employment_type'] ?: 'Full-time') ?></span>
+        <span class="badge badge-secondary"><?= esc(substr($title, 0, 15) ?: 'Role') ?></span>
+    </div>
+</a>
                         <?php endforeach; ?>
                 <?php else: ?>
                     <div class="dashboard-panel" style="grid-column:1/-1">
@@ -188,7 +505,7 @@ $resolveAssetUrl = static function (string $path): string {
                         <?php endif; ?>
                     </ul>
                     <a href="<?= base_url('candidate/job-search-strategy') ?>" class="btn btn-primary dashboard-strategy-btn">
-                        Open Full Strategy <i class="fas fa-arrow-right ms-2"></i>
+                        Open Full Strategy 
                     </a>
                 </div>
                 
@@ -227,7 +544,7 @@ $resolveAssetUrl = static function (string $path): string {
                             </div>
                         </div>
                         <a href="<?= base_url('premium/plans') ?>" class="btn btn-primary dashboard-cta-btn">
-                            View Plans <i class="fas fa-arrow-right ms-2"></i>
+                            View Plans 
                         </a>
                     </div>
                     <div class="dashboard-cta-art d-none d-lg-flex" aria-hidden="true">
@@ -388,195 +705,6 @@ $resolveAssetUrl = static function (string $path): string {
 
 
 
-<!-- ═══════════════ FEATURE TOUR POPUP ═══════════════ -->
-<style>
-#hm-backdrop{
-  position:fixed;inset:0;z-index:9998;
-  background:rgba(22,33,43,0.55);
-  display:none;align-items:center;justify-content:center;padding:20px;
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-}
-#hm-backdrop.visible{display:flex;animation:hmFadeIn .22s ease;}
-@keyframes hmFadeIn{from{opacity:0}to{opacity:1}}
-#hm-modal{
-  background:var(--card,#fff);border:1px solid var(--border,#D9ECE5);
-  border-radius:10px;width:100%;max-width:440px;overflow:hidden;
-  animation:hmPop .3s cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes hmPop{from{opacity:0;transform:scale(.93) translateY(18px)}to{opacity:1;transform:none}}
-.hm-header{padding:18px 20px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
-.hm-header-left{display:flex;flex-direction:column;gap:4px;}
-.hm-eyebrow{font-size:18px !important;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);}
-.hm-counter{font-size:10px;font-weight:600;color:var(--text-light);letter-spacing:.04em;}
-.hm-close{
-  width:26px;height:26px;border-radius:5px;flex-shrink:0;
-  border:1px solid var(--border);background:transparent;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--text-light);font-size:13px;margin-top:1px;
-  transition:background .15s,color .15s,border-color .15s;
-}
-.hm-close:hover{background:var(--muted);color:var(--foreground);border-color:var(--primary);}
-.hm-progress{padding:14px 20px 0;display:flex;gap:4px;}
-.hm-pip{height:2px;flex:1;border-radius:2px;background:var(--border);transition:background .3s;}
-.hm-pip.active{background:var(--primary);}
-.hm-pip.past{background:var(--secondary);}
-.hm-slides{overflow:hidden;}
-.hm-slide{display:none;animation:hmSlide .2s ease;}
-.hm-slide.active{display:block;}
-@keyframes hmSlide{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
-.hm-body{padding:16px 20px 0;}
-.hm-slide-title{font-size:19px;font-weight:700;color:var(--foreground);line-height:1.3;margin-bottom:8px;}
-.hm-slide-title em{
-  font-style:normal;background:var(--gradient-primary);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.hm-slide-desc{font-size:13px;color:var(--muted-foreground);line-height:1.65;margin-bottom:14px;}
-.hm-rills2{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
-.hm-rill2{
-  display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;
-  background:var(--muted);border:1px solid var(--border);
-  font-size:12px;font-weight:600;color:var(--primary-dark);white-space:nowrap;
-}
-.hm-rill-dot{width:5px;height:5px;border-radius:50%;background:var(--primary);flex-shrink:0;}
-.hm-divider{height:1px;background:var(--border);}
-.hm-footer{padding:14px 20px;display:flex;align-items:center;gap:8px;}
-.hm-btn-cta{
-  padding:8px 18px;border-radius:6px;background:var(--gradient-primary);
-  color:#fff !important;font-size:13px;font-weight:600;border:none;cursor:pointer;
-  text-decoration:none !important;display:inline-block;white-space:nowrap;
-  transition:opacity .15s,transform .15s;
-}
-.hm-btn-cta:hover{opacity:.88;transform:translateY(-1px);}
-.hm-btn-next{
-  padding:8px 16px;border-radius:6px;background:transparent;
-  border:1px solid var(--border);color:var(--muted-foreground);
-  font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;
-  transition:border-color .15s,color .15s,background .15s;
-}
-.hm-btn-next:hover{border-color:var(--primary);color:var(--primary);background:var(--muted);}
-.hm-btn-skip{
-  margin-left:auto;font-size:12px;color:var(--text-light);
-  background:none;border:none;cursor:pointer;padding:2px;transition:color .15s;
-}
-.hm-btn-skip:hover{color:var(--muted-foreground);} 
-  body.dark #hm-backdrop{background:#000000 !important;}
-  body.dark #hm-modal{background:#000000 !important;border-color:#23343A;}
-  body.dark .hm-close{border-color:#23343A;color:#7A8B96;}
-  body.dark .hm-close:hover{background:#000000;color:#F8FAFC;border-color:#1FB7B5;}
-  body.dark .hm-pip{background:#000000 !important;}  
-  body.dark .hm-rill2{background:#000000 !important;border-color:#23343A;color:#1FB7B5;}
-  body.dark .hm-divider{background:#000000;}
-  body.dark .hm-btn-next{border-color:#23343A;color:#94A3B8;}
-  body.dark .hm-btn-next:hover{border-color:#1FB7B5;color:#1FB7B5;background:#000000;}
-  body.dark .hm-btn-skip{color:#7A8B96;}
-  body.dark .hm-slide-title{color:#F8FAFC;}
-  body.dark .hm-slide-desc{color:#94A3B8;} 
-  /* Dark Theme */ 
-</style>
-
-<div id="hm-backdrop" role="dialog" aria-modal="true" aria-label="HireMatrix Feature Tour">
- <div id="hm-modal">
-  <div class="hm-header">
-   <div class="hm-header-left">
-    <span class="hm-eyebrow">HireMatrix AI Features</span>
-    <span class="hm-counter" id="hmCounter"></span>
-   </div>
-   <button class="hm-close" id="hmClose" aria-label="Close">✕</button>
-  </div>
-  <div class="hm-progress" id="hmProgress"></div>
-  <div class="hm-slides">
-
-   <div class="hm-slide active" id="hm-s1">
-    <div class="hm-body">
-     <h3 class="hm-slide-title">Your personalised path to a <em>new career</em></h3>
-     <p class="hm-slide-desc">Not sure how to switch roles? AI maps your current skills against your target role and hands you a complete, step-by-step transition plan.</p>
-     <div class="hm-rills2">
-      <span class="hm-rill2"> Skill gap analysis</span>
-      <span class="hm-rill2"> Learning path</span>
-      <span class="hm-rill2"> Certification guide</span>
-      <span class="hm-rill2"> Role roadmap</span>
-     </div>
-    </div>
-    <div class="hm-divider"></div>
-    <div class="hm-footer">
-     <a href="<?= base_url('career-transition') ?>" class="btn btn-outline-primary">Generate my roadmap</a>
-     <button class="hm-btn-next" onclick="hmGoTo(2)">Next →</button>
-     <button class="hm-btn-skip" onclick="hmClose()">Skip tour</button>
-    </div>
-   </div>
-
-   <div class="hm-slide" id="hm-s2">
-    <div class="hm-body">
-     <h3 class="hm-slide-title">Walk in prepared, <em>walk out confident</em></h3>
-     <p class="hm-slide-desc">Practice with AI-driven mock interviews tailored to your exact role — real questions, structured answer guidance, and instant post-round feedback.</p>
-     <div class="hm-rills2">
-      <span class="hm-rill2"> Role-specific questions</span>
-      <span class="hm-rill2"> Mock rounds</span>
-      <span class="hm-rill2">  Answer frameworks</span>
-      <span class="hm-rill2"> Instant feedback</span>
-     </div>
-    </div>
-    <div class="hm-divider"></div>
-    <div class="hm-footer">
-     <a href="<?= base_url('register') ?>" class="btn btn-outline-primary">Start practising</a>
-     <button class="hm-btn-next" onclick="hmGoTo(3)">Next →</button>
-     <button class="hm-btn-skip" onclick="hmClose()">Skip tour</button>
-    </div>
-   </div>
-
-   <div class="hm-slide" id="hm-s3">
-    <div class="hm-body">
-     <h3 class="hm-slide-title">A tailored resume for <em>every application</em></h3>
-     <p class="hm-slide-desc">Stop sending one CV to every job. Resume Studio adapts your resume per role, highlights what recruiters want, and gets you past ATS filters.</p>
-     <div class="hm-rills2">
-      <span class="hm-rill2"> Role-targeted CVs</span>
-      <span class="hm-rill2"> ATS optimisation</span>
-      <span class="hm-rill2"> AI improvement tips</span>
-      <span class="hm-rill2"> Job fit scoring</span>
-     </div>
-    </div>
-    <div class="hm-divider"></div>
-    <div class="hm-footer">
-     <a href="<?= base_url('register') ?>" class="btn btn-outline-primary">Build my resume</a>
-     <button class="hm-btn-next" onclick="hmClose()">Done ✓</button>
-    </div>
-   </div>
-
-  </div>
- </div>
-</div>
-
-<script>
-(function(){
-  if(sessionStorage.getItem('hm_tour_seen')){document.getElementById('hm-backdrop').remove();return;}
-  var cur=1,tot=3,labels=['Career Transition AI','AI Interview Practice','Resume Studio'];
-  function pips(){
-    var c=document.getElementById('hmProgress');c.innerHTML='';
-    for(var i=1;i<=tot;i++){
-      var p=document.createElement('div');
-      p.className='hm-pip'+(i<cur?' past':i===cur?' active':'');
-      c.appendChild(p);
-    }
-    document.getElementById('hmCounter').textContent=cur+' of '+tot+' — '+labels[cur-1];
-  }
-  window.hmGoTo=function(n){
-    document.getElementById('hm-s'+cur).classList.remove('active');
-    cur=n;document.getElementById('hm-s'+cur).classList.add('active');pips();
-  };
-  window.hmClose=function(){
-    sessionStorage.setItem('hm_tour_seen','1');
-    var b=document.getElementById('hm-backdrop');
-    b.style.transition='opacity .18s';b.style.opacity='0';
-    setTimeout(function(){b.remove();},200);
-  };
-  document.getElementById('hmClose').addEventListener('click',hmClose);
-  document.getElementById('hm-backdrop').addEventListener('click',function(e){if(e.target===this)hmClose();});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')hmClose();});
-  pips();
-  setTimeout(function(){document.getElementById('hm-backdrop').classList.add('visible');},1200);
-})();
-</script>
+ 
 
 <?= view('Layouts/candidate_footer') ?>
-            
-
