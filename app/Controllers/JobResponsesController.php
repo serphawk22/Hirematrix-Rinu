@@ -885,7 +885,9 @@ class JobResponsesController extends BaseController
             return $this->response->setJSON(['status' => 'error', 'message' => 'New status is required.'])->setStatusCode(400);
         }
 
-        $allowedStatuses = ['applied', 'shortlisted', 'on_hold', 'rejected'];
+        $statusAliases = ['on_hold' => 'hold'];
+        $newStatus = $statusAliases[$newStatus] ?? $newStatus;
+        $allowedStatuses = ['applied', 'shortlisted', 'hold', 'rejected'];
         if (!in_array($newStatus, $allowedStatuses, true)) {
             return $this->response->setJSON([
                 'status' => 'error',
@@ -913,7 +915,11 @@ class JobResponsesController extends BaseController
             (new \App\Libraries\ApplicationRejectionMailer())->sendIfEnabled((int) $applicationId, $recruiterId);
         }
 
-        return $this->response->setJSON(['status' => 'success', 'message' => 'Application status updated.']);
+        return $this->response->setJSON([
+            'status' => 'success',
+            'message' => 'Application status updated.',
+            'updated_status' => $newStatus,
+        ]);
     }
 
     public function scheduleInterview(int $applicationId)
@@ -1080,7 +1086,7 @@ class JobResponsesController extends BaseController
         $message = match ($status) {
             'applied' => 'Your application has been reopened and is back under recruiter review.',
             'shortlisted' => 'Congratulations! You are shortlisted. Please book your interview slot.',
-            'on_hold' => 'Your application has been placed on hold for future review.',
+            'hold', 'on_hold' => 'Your application has been placed on hold for future review.',
             'rejected' => 'Your application has been updated to Rejected.',
             default => 'Your application status has been updated.',
         };

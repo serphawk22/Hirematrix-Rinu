@@ -63,7 +63,7 @@ body.dark .m-0.font-weight-bold{
       #EEF9F2 100%
     ) !important;
 }
-body.dark .hm-page-content,body.dark .recruiter-slot-bookings-jobboard, body.dark .recruiter-summary-card, body.dark .recruiter-filter-card,body.dark .recruiter-table-card,body.dark .card-header,body.dark .table.table-bordered.table-hover.recruiter-bookings-table{
+body.dark .hm-page-content,body.dark .recruiter-slot-bookings-jobboard, body.dark .recruiter-summary-card, body.dark .recruiter-filter-card,body.dark .recruiter-table-card{
     background: #000000 !important;
     border: 1px solid #23343A !important;
 } 
@@ -160,6 +160,107 @@ body.dark .m-0.font-weight-bold,body.dark .recruiter-summary-item{
 body.dark span{
     color:#FFFFFF !important;
 }
+.recruiter-slot-bookings-jobboard .recruiter-filter-card {
+    margin-bottom: 14px !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-filter-card .card-body {
+    padding: 14px 16px !important;
+}
+.recruiter-booking-filter-head {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.recruiter-booking-filter-title {
+    color: #16212B;
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+}
+.recruiter-booking-filter-hint {
+    color: #64748B;
+    font-size: 0.78rem;
+    margin: 0;
+}
+.recruiter-booking-filter-grid {
+    align-items: end;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: minmax(260px, 1fr) minmax(180px, 0.7fr) auto;
+}
+.recruiter-booking-filter-grid .form-control {
+    min-height: 40px !important;
+    padding: 8px 12px !important;
+}
+.recruiter-booking-filter-actions .btn {
+    min-height: 40px;
+    min-width: 150px;
+    padding: 8px 16px !important;
+}
+body.dark .recruiter-booking-filter-title,
+body.dark .recruiter-booking-filter-hint {
+    color: #FFFFFF !important;
+}
+@media (max-width: 767.98px) {
+    .recruiter-booking-filter-grid {
+        grid-template-columns: 1fr;
+    }
+    .recruiter-booking-filter-actions .btn {
+        width: 100%;
+    }
+}
+.recruiter-slot-bookings-jobboard .recruiter-table-card {
+    border-radius: 20px !important;
+    overflow: hidden;
+}
+.recruiter-slot-bookings-jobboard .recruiter-table-card .card-header {
+    border: 0 !important;
+    border-bottom: 1px solid #D9ECE5 !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-table-card .card-body {
+    padding: 0 !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-table-card .table-responsive {
+    border: 0 !important;
+    border-radius: 0 !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-bookings-table {
+    border: 0 !important;
+    border-collapse: collapse !important;
+    margin: 0 !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-bookings-table th,
+.recruiter-slot-bookings-jobboard .recruiter-bookings-table td {
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    border-bottom: 1px solid #D9ECE5 !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-bookings-table thead th {
+    background: #FFFFFF !important;
+}
+.recruiter-slot-bookings-jobboard .recruiter-bookings-table tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+body.dark .recruiter-slot-bookings-jobboard .recruiter-bookings-table th,
+body.dark .recruiter-slot-bookings-jobboard .recruiter-bookings-table td {
+    border-bottom-color: #23343A !important;
+}
+body.dark .recruiter-slot-bookings-jobboard .recruiter-table-card .card-header {
+    background: #000000 !important;
+    border: 0 !important;
+    border-bottom: 1px solid #23343A !important;
+}
+body.dark .recruiter-slot-bookings-jobboard .recruiter-bookings-table {
+    border: 0 !important;
+}
+body.dark .recruiter-slot-bookings-jobboard .recruiter-bookings-table thead th,
+body.dark .recruiter-slot-bookings-jobboard .recruiter-bookings-table td {
+    background: #000000 !important;
+}
 </style>
 <div class="recruiter-slot-bookings-jobboard">
     <div class="container-fluid py-5">
@@ -206,50 +307,40 @@ body.dark span{
             </div>
         </div>
 
-        <div class="card shadow-sm recruiter-filter-card mb-4" style="border-radius: 20px !important;overflow: hidden;">
+        <div class="card shadow-sm recruiter-filter-card" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
-                    <div>
-                        <h6 class="m-0 font-weight-bold">Filters</h6>
-                        <p class="text-muted mb-0">Narrow bookings by job and status.</p>
-                    </div>
+                <div class="recruiter-booking-filter-head">
+                    <h6 class="recruiter-booking-filter-title">Filters</h6>
+                    
                 </div>
                 <form method="get" action="<?= base_url('recruiter/slots/bookings') ?>" class="recruiter-job-form">
-                    <div class="row">
-                        <div class="col-lg-5 col-md-6">
-                            <div class="form-group">
-                                <label>Job</label>
-                                <select name="job_id" class="form-control">
-                                    <option value="">All Jobs</option>
-                                    <?php foreach ($jobs as $job): ?>
-                                        <option value="<?= $job['id'] ?>" <?= ($filters['job_id'] ?? '') == $job['id'] ? 'selected' : '' ?>>
-                                            <?= esc($job['title']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
+                    <div class="recruiter-booking-filter-grid">
+                        <div>
+                            <label class="sr-only">Job</label>
+                            <select name="job_id" class="form-control">
+                                <option value="">All Jobs</option>
+                                <?php foreach ($jobs as $job): ?>
+                                    <option value="<?= $job['id'] ?>" <?= ($filters['job_id'] ?? '') == $job['id'] ? 'selected' : '' ?>>
+                                        <?= esc($job['title']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
-
-                        <div class="col-lg-4 col-md-6">
-                            <div class="form-group">
-                                <label>Status</label>
-                                <select name="status" class="form-control">
-                                    <option value="">All Status</option>
-                                    <option value="confirmed" <?= ($filters['status'] ?? '') === 'confirmed' ? 'selected' : '' ?>>Confirmed</option>
-                                    <option value="completed" <?= ($filters['status'] ?? '') === 'completed' ? 'selected' : '' ?>>Completed</option>
-                                    <option value="rescheduled" <?= ($filters['status'] ?? '') === 'rescheduled' ? 'selected' : '' ?>>Rescheduled</option>
-                                    <option value="no_show" <?= ($filters['status'] ?? '') === 'no_show' ? 'selected' : '' ?>>No Show</option>
-                                    <option value="cancelled" <?= ($filters['status'] ?? '') === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                                </select>
-                            </div>
+                        <div>
+                            <label class="sr-only">Status</label>
+                            <select name="status" class="form-control">
+                                <option value="">All Status</option>
+                                <option value="confirmed" <?= ($filters['status'] ?? '') === 'confirmed' ? 'selected' : '' ?>>Confirmed</option>
+                                <option value="completed" <?= ($filters['status'] ?? '') === 'completed' ? 'selected' : '' ?>>Completed</option>
+                                <option value="rescheduled" <?= ($filters['status'] ?? '') === 'rescheduled' ? 'selected' : '' ?>>Rescheduled</option>
+                                <option value="no_show" <?= ($filters['status'] ?? '') === 'no_show' ? 'selected' : '' ?>>No Show</option>
+                                <option value="cancelled" <?= ($filters['status'] ?? '') === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                            </select>
                         </div>
-
-                        <div class="col-lg-3 col-md-12 d-flex align-items-end">
-                            <div class="form-group w-100">
-                                <button type="submit" class="btn btn-outline-first btn-block">
-                                 Filter
-                                </button>
-                            </div>
+                        <div class="recruiter-booking-filter-actions">
+                            <button type="submit" class="btn btn-outline-first">
+                                Filter
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -263,7 +354,7 @@ body.dark span{
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover recruiter-bookings-table">
+                    <table class="table table-hover recruiter-bookings-table">
                         <thead class="thead-light">
                             <tr>
                                 <th>ID</th>

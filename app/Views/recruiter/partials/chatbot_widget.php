@@ -10,23 +10,27 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 100%);
+    background: var(--hm-primary, var(--primary, #1FB7B5));
     color: #fff;
     border: none;
-    box-shadow: 0 4px 20px rgba(31, 183, 181, 0.4);
+    box-shadow: none;
     cursor: pointer;
     z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, background 0.2s;
 }
 .hm-chat-fab:hover {
-    transform: scale(1.08);
-    box-shadow: 0 6px 28px rgba(31, 183, 181, 0.55);
+    background: var(--hm-primary-dark, var(--primary-dark, #0D8A90));
+    transform: scale(1.04);
 }
-.hm-chat-fab:focus { outline: none; }
+.hm-chat-fab:focus,
+.hm-chat-fab:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.18);
+}
 
 /* Widget panel */
 .hm-chat-widget {
@@ -34,7 +38,8 @@
     bottom: 90px;
     right: 24px;
     width: 380px;
-    height: 520px;
+    height: min(720px, calc(100vh - 118px));
+    min-height: 560px;
     background: #fff;
     border: 1px solid #D9ECE5;
     border-radius: 16px;
@@ -124,6 +129,7 @@
     font-size: 13.5px;
     line-height: 1.5;
     text-align: left;
+    white-space: pre-wrap;
     word-wrap: break-word;
 }
 .hm-msg.bot .hm-msg-bubble {
@@ -145,7 +151,7 @@
 
 /* Quick suggestions */
 .hm-chat-suggestions {
-    padding: 0 16px 10px;
+    padding: 0 0 4px;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
@@ -272,7 +278,8 @@ body.dark .hm-chat-suggestions button:hover {
         left: 12px;
         bottom: 80px;
         width: auto;
-        height: 70vh;
+        height: calc(100vh - 104px);
+        min-height: 0;
     }
     .hm-chat-fab {
         right: 16px;
@@ -311,9 +318,8 @@ body.dark .hm-chat-suggestions button:hover {
             </div>
             <div class="hm-msg-time">Just now</div>
         </div>
+        <div class="hm-chat-suggestions" id="hmChatSuggestions"></div>
     </div>
-
-    <div class="hm-chat-suggestions" id="hmChatSuggestions"></div>
 
     <div class="hm-chat-input-wrap">
         <input type="text" class="hm-chat-input" id="hmChatInput"
@@ -409,12 +415,23 @@ body.dark .hm-chat-suggestions button:hover {
             .then(function (data) {
                 if (!data || !data.suggestions) return;
                 hasLoadedSuggestions = true;
-                data.suggestions.forEach(function (text) {
+                data.suggestions.forEach(function (item) {
+                    var text = typeof item === 'string' ? item : (item && item.text ? item.text : '');
+                    var mode = typeof item === 'object' && item ? (item.mode || 'send') : 'send';
+                    if (!text) return;
                     var btn = document.createElement('button');
                     btn.textContent = text;
                     btn.type = 'button';
                     btn.addEventListener('click', function () {
                         input.value = text;
+                        input.focus();
+                        if (mode === 'edit') {
+                            var marker = input.value.indexOf('#ID');
+                            if (marker >= 0 && input.setSelectionRange) {
+                                input.setSelectionRange(marker + 1, marker + 3);
+                            }
+                            return;
+                        }
                         sendMessage();
                     });
                     suggBox.appendChild(btn);

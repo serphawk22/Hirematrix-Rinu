@@ -194,6 +194,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
  </div>
 
+<?= view('candidate/partials/chatbot_widget') ?>
+
 </body>
 
 </html>

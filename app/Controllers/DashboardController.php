@@ -13,7 +13,6 @@ class DashboardController extends BaseController
     public function index()
     {
         $applicationModel = model('ApplicationModel');
-        $userModel = model('UserModel');
         $jobModel = model('JobModel');
         $slotModel = model('InterviewSlotModel');
 
@@ -52,6 +51,11 @@ class DashboardController extends BaseController
                 'topJobs' => [],
                 'conversionMetrics' => [],
                 'monthlyTrends' => [],
+                'reminders' => [],
+                'unread_count' => model('NotificationModel')->getUnreadCount($currentUserId),
+                'upcomingInterviews' => [],
+                'interviewDates' => [],
+                'todayInterviews' => [],
                 'noJobs' => true
             ]);
         }

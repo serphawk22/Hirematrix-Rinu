@@ -310,6 +310,8 @@ $routes->get('career-transition/reactivate/(:num)', 'CareerTransition::reactivat
 // and returns proper JSON errors instead of HTML redirects that break fetch()
 $routes->post('recruiter/chatbot/ask', 'RecruiterChatbotController::ask');
 $routes->get('recruiter/chatbot/suggestions', 'RecruiterChatbotController::suggestions');
+$routes->post('candidate/chatbot/ask', 'CandidateChatbotController::ask');
+$routes->get('candidate/chatbot/suggestions', 'CandidateChatbotController::suggestions');
 
 $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recruiter'], function($routes) {
     

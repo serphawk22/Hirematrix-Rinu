@@ -225,6 +225,16 @@ body.dark .status-pill {
     background: rgba(122, 139, 150, 0.18);
     color: #1FB7B5;
 }
+.status-pill:focus,
+.status-pill:focus-visible,
+.status-pill:active,
+.hm-status-drop-btn:focus,
+.hm-status-drop-btn:focus-visible,
+.hm-status-drop-btn:active {
+    border-color: rgba(31, 183, 181, 0.38) !important;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.12) !important;
+    outline: 0 !important;
+}
 
 /* ══════════════════════════════════════════
    STAGE PILLS  (coloured per tone)
@@ -395,6 +405,13 @@ body.dark .activity-stack span i { color: #4A5C63; }
     padding: 0;
     text-align: left;
     white-space: normal;
+}
+.communication-stack:focus,
+.communication-stack:focus-visible,
+.communication-stack:active {
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: 0 !important;
 }
 .communication-stack:hover .communication-preview,
 .communication-stack:focus .communication-preview {
@@ -641,6 +658,15 @@ body.dark .communication-chip.is-muted {
     background: #1FB7B5;
     color: #FFFFFF;
 }
+.review-action-btn:focus,
+.review-action-btn:focus-visible,
+.review-action-btn:active,
+.review-action-link:focus,
+.review-action-link:focus-visible,
+.review-action-link:active {
+    outline: 0 !important;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.12) !important;
+}
 .review-action-btn.is-danger {
     border-color: #FCA5A5;
     color: #B91C1C;
@@ -851,6 +877,88 @@ body.dark .communication-latest strong {
 /* ══════════════════════════════════════════
    ROW ACTIONS
 ══════════════════════════════════════════ */
+/* Neutral dark drawer surfaces: black theme, teal only as accent. */
+body.dark .communication-drawer {
+    background: #000000 !important;
+    border-left-color: #262626 !important;
+    box-shadow: -18px 0 40px rgba(0, 0, 0, 0.58) !important;
+}
+body.dark .communication-drawer-head {
+    background: #000000 !important;
+    border-bottom-color: #262626 !important;
+}
+body.dark .communication-drawer-body {
+    background: #000000 !important;
+    scrollbar-color: #555555 #0A0A0A;
+}
+body.dark .communication-drawer-body::-webkit-scrollbar {
+    width: 12px;
+}
+body.dark .communication-drawer-body::-webkit-scrollbar-track {
+    background: #0A0A0A;
+}
+body.dark .communication-drawer-body::-webkit-scrollbar-thumb {
+    background: #555555;
+    border: 2px solid #0A0A0A;
+    border-radius: 999px;
+}
+body.dark .communication-drawer-title,
+body.dark .review-section-title,
+body.dark .review-metric strong,
+body.dark .review-key-value strong,
+body.dark .communication-timeline-subject {
+    color: #F8FAFC !important;
+}
+body.dark .communication-drawer-subtitle,
+body.dark .review-metric span,
+body.dark .review-key-value span,
+body.dark .review-note-box,
+body.dark .communication-timeline-meta,
+body.dark .communication-timeline-preview,
+body.dark .communication-empty-state {
+    color: #A8B0BC !important;
+}
+body.dark .review-section,
+body.dark .review-metric,
+body.dark .review-note-box,
+body.dark .communication-timeline-item,
+body.dark .communication-empty-state {
+    background: #050505 !important;
+    border-color: #262626 !important;
+}
+body.dark .review-metric {
+    background: #0A0A0A !important;
+}
+body.dark .review-chip,
+body.dark .communication-chip {
+    background: rgba(31, 183, 181, 0.12) !important;
+    border-color: rgba(31, 183, 181, 0.32) !important;
+    color: #5EEAD4 !important;
+}
+body.dark .review-chip.is-missing {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border-color: rgba(248, 113, 113, 0.38) !important;
+    color: #FCA5A5 !important;
+}
+body.dark .communication-chip.is-muted {
+    background: #111111 !important;
+    border-color: #2B2B2B !important;
+    color: #A8B0BC !important;
+}
+body.dark .communication-drawer-close {
+    background: #0A0A0A !important;
+    border-color: #2B2B2B !important;
+    color: #A8B0BC !important;
+}
+body.dark .communication-drawer-close:hover,
+body.dark .communication-drawer-close:focus {
+    background: #141414 !important;
+    border-color: #3A3A3A !important;
+    color: #F8FAFC !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
 .pipeline-row-actions {
     display: flex;
     align-items: center;
@@ -930,6 +1038,88 @@ body.dark .pipeline-row-action:hover {
 /* ══════════════════════════════════════════
    PAGINATION WRAPPER
 ══════════════════════════════════════════ */
+/* Focus the pipeline table on decision-making data. */
+.pipeline-table {
+    min-width: 1060px;
+}
+.pipeline-table thead th:nth-child(10),
+.pipeline-table td:nth-child(10),
+.pipeline-table thead th:nth-child(11),
+.pipeline-table td:nth-child(11),
+.pipeline-table thead th:nth-child(13),
+.pipeline-table td:nth-child(13) {
+    display: none;
+}
+.pipeline-table-wrap {
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 0 !important;
+    border-right: 0;
+}
+.pipeline-empty {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    min-height: 170px;
+}
+.pipeline-table thead th {
+    background: #F2FBF8 !important;
+    padding-bottom: 12px;
+    padding-top: 12px;
+}
+.pipeline-table tbody tr {
+    border-bottom-color: #E6F1ED;
+}
+.pipeline-table tbody tr:hover {
+    background: #F8FCFB;
+}
+.pipeline-table td {
+    padding-bottom: 14px;
+    padding-top: 14px;
+}
+.pipeline-table .candidate-name-cell strong {
+    font-size: 0.9rem;
+}
+.stage-pill,
+.status-pill,
+.communication-chip {
+    border-radius: 999px;
+}
+.ats-score {
+    min-width: 88px;
+}
+.ats-score strong {
+    color: #0D8A90;
+    font-size: 0.9rem;
+}
+.ats-score-bar {
+    background: #E6F1ED;
+    border-radius: 999px;
+    display: block;
+    height: 6px;
+    margin-top: 5px;
+    overflow: hidden;
+    width: 86px;
+}
+.ats-score-bar span {
+    background: #1FB7B5;
+    border-radius: inherit;
+    display: block;
+    height: 100%;
+}
+body.dark .pipeline-table thead th,
+body.dark .pipeline-table tbody tr,
+body.dark .pipeline-table tbody tr:hover {
+    background: #000000 !important;
+}
+body.dark .pipeline-empty {
+    background: transparent !important;
+    border: 0 !important;
+}
+body.dark .ats-score strong {
+    color: #1FB7B5;
+}
+
 .pipeline-table-wrap + div,
 div.p-3.bg-white {
     background: #FFFFFF !important;
@@ -1030,7 +1220,8 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
             <tbody>
                 <?php foreach ($paginatedApplications as $app): ?>
                     <?php
-                        $appStatus = $app['status'] ?? 'applied';
+                        $rawAppStatus = (string) ($app['status'] ?? 'applied');
+                        $appStatus = ['hold' => 'on_hold', '' => 'applied'][$rawAppStatus] ?? $rawAppStatus;
                         $tone = $statusTones[$appStatus] ?? 'neutral';
                         $appliedAt = !empty($app['applied_at']) ? date('d M, Y', strtotime($app['applied_at'])) : '-';
                         $lastActive = !empty($app['last_login']) ? date('M d, Y', strtotime($app['last_login'])) : 'Never';
@@ -1128,7 +1319,7 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
                                                href="#"
                                                style="display:block;padding:8px 16px;font-size:0.88rem;color:#16212B;text-decoration:none;"
                                                data-application-id="<?= (int)$app['id'] ?>"
-                                               data-status="<?= esc($sv) ?>"
+                                               data-status="<?= esc($sv === 'on_hold' ? 'hold' : $sv) ?>"
                                                data-label="<?= esc($sl) ?>">
                                                 <?= esc($sl) ?>
                                             </a>

@@ -64,6 +64,9 @@ body.dark .hm-page-content,body.dark .recruiter-slot-reschedule-jobboard,body.da
     background: #000000 !important;
     border: 1px solid #23343A !important;
 } 
+.recruiter-slot-reschedule-jobboard .recruiter-form-stack {
+    min-width: 0;
+}
 .recruiter-info-card,.recruiter-info-label,.recruiter-form-card,h6.m-0.font-weight-bold.text-primary,.recruiter-help-list,.recruiter-tip-item{
      font-size: 1rem;
     font-weight: 500 !important;
@@ -141,6 +144,42 @@ body.dark .recruiter-job-form label, body.dark h6 {
 .recruiter-slot-picker {
     display: grid;
     gap: 1rem;
+}
+
+.recruiter-inline-empty {
+    align-items: flex-start;
+    background: #E8F7F7 !important;
+    border: 1px solid rgba(31, 183, 181, 0.22) !important;
+    border-radius: 14px !important;
+    color: #1F3B73 !important;
+    display: flex;
+    gap: 12px;
+    margin: 8px 0 0;
+    padding: 14px 16px;
+}
+
+.recruiter-inline-empty i {
+    color: #0D8A90;
+    flex: 0 0 auto;
+    margin-top: 3px;
+}
+
+.recruiter-inline-empty strong {
+    color: #16212B;
+    display: block;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.recruiter-inline-empty p {
+    margin: 0;
+}
+
+.recruiter-inline-empty .alert-link {
+    display: inline-flex;
+    font-weight: 700;
+    margin-top: 8px;
+    text-decoration: none;
 }
 
 .recruiter-slot-date-group {
@@ -226,6 +265,16 @@ body.dark .recruiter-slot-date-group {
     border-color: #23343A !important;
 }
 
+body.dark .recruiter-inline-empty {
+    background: rgba(31, 183, 181, 0.12) !important;
+    border-color: rgba(31, 183, 181, 0.24) !important;
+    color: #D8E4EA !important;
+}
+
+body.dark .recruiter-inline-empty strong {
+    color: #FFFFFF !important;
+}
+
 body.dark .recruiter-slot-date-head,
 body.dark .recruiter-slot-date-head i { 
     color: #FFFFFF !important;
@@ -309,7 +358,7 @@ body.dark .custom-control-label .text-primary {
         <?php endif; ?>
 
         <div class="recruiter-form-layout recruiter-slot-reschedule-layout">
-            <div class="recruiter-form-card" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="recruiter-form-stack">
                 <div class="card shadow-sm mb-4 recruiter-info-card">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Current Booking Details</h6>
@@ -372,10 +421,13 @@ body.dark .custom-control-label .text-primary {
                             <div class="form-group">
                                 <label>Available Slots <span class="text-danger">*</span></label>
                                 <?php if (empty($available_slots)): ?>
-                                    <div class="alert alert-info recruiter-alert">
+                                    <div class="alert alert-info recruiter-alert recruiter-inline-empty" data-hm-alert-inline="1" role="status">
                                         <i class="fas fa-exclamation-triangle"></i>
-                                        No available slots found for this job position.
-                                        <a href="<?= base_url('recruiter/slots/create') ?>" class="alert-link" style="color:#0D8A90;">Create new slots</a>
+                                        <div>
+                                            <strong>No available slots found for this job position.</strong>
+                                            <p>Create a new slot, then return here to finish rescheduling this interview.</p>
+                                            <a href="<?= base_url('recruiter/slots/create') ?>" class="alert-link" style="color:#0D8A90;">Create new slots</a>
+                                        </div>
                                     </div>
                                 <?php else: ?>
                                     <div class="recruiter-slot-picker">

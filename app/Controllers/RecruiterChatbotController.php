@@ -57,14 +57,15 @@ class RecruiterChatbotController extends BaseController
         }
 
         $suggestions = [
-            'How many open jobs do I have?',
-            'How many applications have I received?',
-            'Show me my recent applications',
-            'What candidates do I have?',
-            'How many interview bookings do I have?',
-            'Give me a summary of my hiring',
-            'Which jobs have the most applications?',
-            'Do I have any upcoming interviews?',
+            ['text' => 'Post job for Front End Developer', 'mode' => 'send'],
+            ['text' => 'Draft job description for PHP Developer', 'mode' => 'send'],
+            ['text' => 'Create screening questions for job #ID', 'mode' => 'edit'],
+            ['text' => 'Shortlist candidates for job #ID with ATS above 70', 'mode' => 'edit'],
+            ['text' => 'Suggest interview slots for job #ID', 'mode' => 'edit'],
+            ['text' => 'Draft shortlist email for job #ID', 'mode' => 'edit'],
+            ['text' => 'Draft rejection email for job #ID', 'mode' => 'edit'],
+            ['text' => 'Export candidate data', 'mode' => 'send'],
+            ['text' => 'Give me a summary of my hiring', 'mode' => 'send'],
         ];
 
         return $this->response->setJSON([
