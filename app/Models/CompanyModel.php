@@ -20,6 +20,11 @@ class CompanyModel extends Model
         'instagram',
         'youtube',
         'industry',
+        'company_type',
+        'company_tags',
+        'profile_status',
+        'is_verified',
+        'is_featured',
         'size',
         'founded_year',
         'hq',
@@ -38,6 +43,7 @@ class CompanyModel extends Model
         'contact_public',
         'source',
         'last_enriched_at',
+        'data_source_note',
     ];
 
     public function upsertByName(string $name, array $data): int

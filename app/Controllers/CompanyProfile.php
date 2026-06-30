@@ -240,27 +240,6 @@ class CompanyProfile extends BaseController
         $openJobs = $jobModel->where('company_id', $companyId)->where('status', 'open')->orderBy('created_at', 'DESC')->findAll(5);
         $openJobsCount = $jobModel->where('company_id', $companyId)->where('status', 'open')->countAllResults();
 
-        if (empty($openJobs) && (
-            trim((string) ($company['website'] ?? '')) !== '' ||
-            trim((string) ($company['career_page'] ?? '')) !== ''
-        )) {
-            try {
-                $service = new TargetCompanyJobService();
-                $importedJobs = $service->fetchJobs((string) $company['name'], '', '', 10);
-                foreach ($importedJobs as $job) {
-                    $jobModel->upsertExternalJob(
-                        $companyId,
-                        (string) ($company['name'] ?? 'Company'),
-                        $job,
-                        (string) ($company['career_page'] ?? $company['website'] ?? '')
-                    );
-                }
-                $openJobs = $jobModel->where('company_id', $companyId)->where('status', 'open')->orderBy('created_at', 'DESC')->findAll(5);
-                $openJobsCount = $jobModel->where('company_id', $companyId)->where('status', 'open')->countAllResults();
-            } catch (\Throwable $e) {
-                log_message('warning', 'Company profile fallback job enrichment failed: ' . $e->getMessage());
-            }
-        }
         $reviews = $companyReviewModel
             ->select('company_reviews.*, users.name as candidate_name')
             ->join('users', 'users.id = company_reviews.candidate_id', 'left')

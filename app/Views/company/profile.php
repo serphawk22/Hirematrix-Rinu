@@ -77,7 +77,7 @@ $companySocialLinks = array_filter([
                 <span class="page-board-kicker"><i class="fas fa-building"></i> Company profile</span>
                 <h1 class="page-board-title"><?= esc($companyName) ?></h1>
                 <p class="page-board-subtitle">
-                    <?= $companyShortDescription !== '' ? esc($companyShortDescription) : 'Explore the company overview, open roles, workplace culture, and reviews before you apply.' ?>
+                    <?= $companyShortDescription !== '' ? esc($companyShortDescription) : 'Explore the company overview, workplace culture, jobs, and reviews before you apply.' ?>
                 </p>
             </div>
             <div class="company-profile-actions page-board-actions">

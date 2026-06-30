@@ -381,6 +381,7 @@
 
             <div class="cand-leftnav__section" id="navSection-overview">
                 <button class="cand-leftnav__group-label" data-section="overview" aria-expanded="true">
+                    <span class="cand-leftnav__group-icon"><i class="fas fa-compass"></i></span>
                     <span>Overview</span>
                     <i class="fas fa-chevron-down cand-leftnav__chevron"></i>
                 </button>
@@ -401,6 +402,7 @@
 
             <div class="cand-leftnav__section" id="navSection-jobs">
                 <button class="cand-leftnav__group-label" data-section="jobs" aria-expanded="true">
+                    <span class="cand-leftnav__group-icon"><i class="fas fa-briefcase"></i></span>
                     <span>Jobs</span>
                     <i class="fas fa-chevron-down cand-leftnav__chevron"></i>
                 </button>
@@ -433,6 +435,7 @@
 
             <div class="cand-leftnav__section" id="navSection-discover">
                 <button class="cand-leftnav__group-label" data-section="discover" aria-expanded="true">
+                    <span class="cand-leftnav__group-icon"><i class="fas fa-search"></i></span>
                     <span>Discover</span>
                     <i class="fas fa-chevron-down cand-leftnav__chevron"></i>
                 </button>
@@ -450,6 +453,7 @@
 
             <div class="cand-leftnav__section" id="navSection-career">
                 <button class="cand-leftnav__group-label" data-section="career" aria-expanded="true">
+                    <span class="cand-leftnav__group-icon"><i class="fas fa-chart-line"></i></span>
                     <span>Career Tools</span>
                     <i class="fas fa-chevron-down cand-leftnav__chevron"></i>
                 </button>

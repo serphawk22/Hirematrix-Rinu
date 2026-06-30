@@ -4,7 +4,6 @@ $name = trim((string) ($company['name'] ?? 'Company'));
 $location = trim((string) ($company['location'] ?? 'India'));
 $industry = trim((string) ($company['industry'] ?? 'Hiring company'));
 $description = trim((string) ($company['description'] ?? 'Explore this company and review current opportunities.'));
-$openJobs = (int) ($company['open_jobs'] ?? 0);
 $website = trim((string) ($company['website'] ?? ''));
 $jobsUrl = trim((string) ($company['jobs_url'] ?? ''));
 $logo = trim((string) ($company['logo'] ?? ''));
@@ -28,7 +27,6 @@ $logoUrl = $logo !== '' && preg_match('/^https?:\/\//i', $logo) ? $logo : ($logo
     </div>
     <div class="local-company-meta">
         <span class="local-company-pill"><i class="fas fa-map-marker-alt"></i> <?= esc($location) ?></span>
-        <span class="local-company-pill"><i class="fas fa-briefcase"></i> <?= $openJobs > 0 ? esc((string) $openJobs) . ' open' : 'Verify openings' ?></span>
     </div>
     <p class="local-company-description"><?= esc($description) ?></p>
     <?php if ($jobsUrl !== '' || $website !== ''): ?>

@@ -2,6 +2,14 @@
 
 <h3 class="mb-4 fw-bold">Companies</h3>
 
+<?php if (session()->getFlashdata('success')): ?>
+    <div class="alert alert-success"><?= esc(session()->getFlashdata('success')) ?></div>
+<?php endif; ?>
+
+<?php if (session()->getFlashdata('error')): ?>
+    <div class="alert alert-danger"><?= esc(session()->getFlashdata('error')) ?></div>
+<?php endif; ?>
+
 <!-- FILTER -->
 <form method="get" class="row g-2 mb-3 align-items-stretch">
 
@@ -24,6 +32,29 @@
     </div>
 
 </form>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <strong>Bulk Company Import</strong>
+        <a href="<?= base_url('admin/companies/template') ?>" class="btn btn-sm btn-outline-primary">Download CSV Template</a>
+    </div>
+    <div class="card-body">
+        <p class="text-muted small mb-3">
+            Upload public company profile data with columns like <code>name</code>, <code>website</code>, <code>industry</code>, <code>company_type</code>, <code>company_tags</code>, <code>hq</code>, and <code>short_description</code>.
+            Existing companies are updated by name.
+        </p>
+        <form method="post" action="<?= base_url('admin/companies/import') ?>" enctype="multipart/form-data" class="row g-2 align-items-end">
+            <?= csrf_field() ?>
+            <div class="col-md-8">
+                <label class="form-label">CSV File</label>
+                <input type="file" name="csv_file" class="form-control" accept=".csv,.txt" required>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100">Import Companies</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- TABLE -->
 <div class="card shadow-sm">

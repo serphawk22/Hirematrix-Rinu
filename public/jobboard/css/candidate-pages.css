@@ -10608,6 +10608,138 @@ body.candidate-app .hm-drawer-avatar img {
     filter: none !important;
 }
 
+@media (min-width: 1100px) {
+    body.candidate-app .cand-leftnav {
+        overflow: visible !important;
+    }
+
+    body.candidate-app .cand-leftnav__nav {
+        padding: 12px 10px !important;
+        overflow: visible !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    body.candidate-app .cand-leftnav__section {
+        position: relative !important;
+        display: block !important;
+    }
+
+    body.candidate-app .cand-leftnav__section::after {
+        content: "" !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 100% !important;
+        width: 12px !important;
+        height: 100% !important;
+        pointer-events: auto !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-label {
+        min-height: 48px !important;
+        padding: 7px 10px !important;
+        gap: 10px !important;
+        border-radius: 12px !important;
+        color: var(--candidate-nav-text) !important;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.7px !important;
+        background: transparent !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-label:hover,
+    body.candidate-app .cand-leftnav__section.has-active-link .cand-leftnav__group-label,
+    body.candidate-app .cand-leftnav__section:focus-within .cand-leftnav__group-label {
+        background: rgba(31, 183, 181, 0.10) !important;
+        color: var(--candidate-nav-primary-dark) !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-icon {
+        width: 32px !important;
+        height: 32px !important;
+        flex: 0 0 32px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 10px !important;
+        background: rgba(31, 183, 181, 0.11) !important;
+        color: var(--candidate-nav-primary-dark) !important;
+        font-size: 14px !important;
+        line-height: 1 !important;
+    }
+
+    body.candidate-app .cand-leftnav__chevron {
+        transform: rotate(-90deg) !important;
+        opacity: 0.65 !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-label[aria-expanded="true"] .cand-leftnav__chevron,
+    body.candidate-app .cand-leftnav__section:hover .cand-leftnav__chevron,
+    body.candidate-app .cand-leftnav__section:focus-within .cand-leftnav__chevron {
+        transform: rotate(-90deg) translateY(2px) !important;
+        opacity: 1 !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-body,
+    body.candidate-app .cand-leftnav__group-body.is-collapsed {
+        position: absolute !important;
+        left: calc(100% + 10px) !important;
+        top: 0 !important;
+        min-width: 238px !important;
+        max-width: 280px !important;
+        max-height: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 4px !important;
+        padding: 8px !important;
+        border: 1px solid var(--candidate-nav-border) !important;
+        border-radius: 12px !important;
+        background: #ffffff !important;
+        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12) !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        transform: translateX(-4px) !important;
+        transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease !important;
+        z-index: 1090 !important;
+    }
+
+    body.candidate-app .cand-leftnav__section:hover .cand-leftnav__group-body,
+    body.candidate-app .cand-leftnav__section:focus-within .cand-leftnav__group-body {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        transform: translateX(0) !important;
+    }
+
+    body.candidate-app .cand-leftnav__link {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 10px 11px !important;
+        border-radius: 9px !important;
+    }
+
+    body.dark.candidate-app .cand-leftnav__group-label:hover,
+    body.dark.candidate-app .cand-leftnav__section.has-active-link .cand-leftnav__group-label,
+    body.dark.candidate-app .cand-leftnav__section:focus-within .cand-leftnav__group-label {
+        background: #181818 !important;
+        color: #f4f4f5 !important;
+    }
+
+    body.dark.candidate-app .cand-leftnav__group-icon {
+        background: rgba(31, 183, 181, 0.14) !important;
+        color: #2dd4d1 !important;
+    }
+
+    body.dark.candidate-app .cand-leftnav__group-body,
+    body.dark.candidate-app .cand-leftnav__group-body.is-collapsed {
+        background: #111111 !important;
+        border-color: #272727 !important;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.38) !important;
+    }
+}
+
 body.candidate-app .cand-leftnav__dropdown-user {
     min-width: 0 !important;
 }
@@ -10810,6 +10942,214 @@ body.dark.candidate-app {
     --candidate-nav-border: #272727;
     --candidate-nav-active: rgba(13, 138, 144, 0.2);
     --candidate-nav-hover: rgba(31, 183, 181, 0.1);
+}
+
+@media (min-width: 1100px) {
+    body.candidate-app {
+        --candidate-sb-width: 72px;
+        --cln-w: 72px;
+    }
+
+    body.candidate-app .cand-leftnav {
+        width: 72px !important;
+        overflow: hidden !important;
+        transition: width 0.2s ease, box-shadow 0.2s ease !important;
+    }
+
+    body.candidate-app .cand-leftnav:hover,
+    body.candidate-app .cand-leftnav:focus-within {
+        width: 250px !important;
+        box-shadow: 10px 0 28px rgba(15, 23, 42, 0.08) !important;
+    }
+
+    body.candidate-app .cand-leftnav__brand {
+        padding: 0 !important;
+        justify-content: center !important;
+    }
+
+    body.candidate-app .cand-leftnav:hover .cand-leftnav__brand,
+    body.candidate-app .cand-leftnav:focus-within .cand-leftnav__brand {
+        padding: 0 14px !important;
+        justify-content: flex-start !important;
+    }
+
+    body.candidate-app .cand-leftnav__brand-text,
+    body.candidate-app .cand-leftnav__user-info,
+    body.candidate-app .cand-leftnav__user-more {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        transition: opacity 0.14s ease, visibility 0.14s ease !important;
+    }
+
+    body.candidate-app .cand-leftnav:hover .cand-leftnav__brand-text,
+    body.candidate-app .cand-leftnav:focus-within .cand-leftnav__brand-text,
+    body.candidate-app .cand-leftnav:hover .cand-leftnav__user-info,
+    body.candidate-app .cand-leftnav:focus-within .cand-leftnav__user-info,
+    body.candidate-app .cand-leftnav:hover .cand-leftnav__user-more,
+    body.candidate-app .cand-leftnav:focus-within .cand-leftnav__user-more {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+
+    body.candidate-app .cand-leftnav__nav {
+        padding: 14px 10px !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        gap: 10px !important;
+    }
+
+    body.candidate-app .cand-leftnav__section {
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    body.candidate-app .cand-leftnav__section::after {
+        display: none !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-label {
+        min-height: 48px !important;
+        padding: 8px 0 !important;
+        justify-content: center !important;
+        gap: 12px !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+    }
+
+    body.candidate-app .cand-leftnav:hover .cand-leftnav__group-label,
+    body.candidate-app .cand-leftnav:focus-within .cand-leftnav__group-label {
+        padding: 8px 10px !important;
+        justify-content: flex-start !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-label > span:not(.cand-leftnav__group-icon),
+    body.candidate-app .cand-leftnav__chevron {
+        max-width: 0 !important;
+        overflow: hidden !important;
+        flex: 0 0 0 !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        transition: opacity 0.14s ease, visibility 0.14s ease, max-width 0.14s ease !important;
+    }
+
+    body.candidate-app .cand-leftnav:hover .cand-leftnav__group-label > span:not(.cand-leftnav__group-icon),
+    body.candidate-app .cand-leftnav:focus-within .cand-leftnav__group-label > span:not(.cand-leftnav__group-icon),
+    body.candidate-app .cand-leftnav:hover .cand-leftnav__chevron,
+    body.candidate-app .cand-leftnav:focus-within .cand-leftnav__chevron {
+        max-width: 160px !important;
+        flex: 0 1 auto !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-icon {
+        margin: 0 !important;
+    }
+
+    body.candidate-app .cand-leftnav__section.has-active-link .cand-leftnav__group-label {
+        background: transparent !important;
+        color: var(--candidate-nav-text) !important;
+    }
+
+    body.candidate-app .cand-leftnav__section.has-active-link .cand-leftnav__group-icon,
+    body.candidate-app .cand-leftnav__group-label:hover .cand-leftnav__group-icon,
+    body.candidate-app .cand-leftnav__section:focus-within .cand-leftnav__group-icon {
+        background: rgba(31, 183, 181, 0.16) !important;
+        color: var(--candidate-nav-primary-dark) !important;
+    }
+
+    body.dark.candidate-app .cand-leftnav__section.has-active-link .cand-leftnav__group-label {
+        background: transparent !important;
+        color: var(--candidate-nav-text) !important;
+    }
+
+    body.candidate-app .cand-leftnav__chevron,
+    body.candidate-app .cand-leftnav__group-label[aria-expanded="true"] .cand-leftnav__chevron,
+    body.candidate-app .cand-leftnav__section:hover .cand-leftnav__chevron,
+    body.candidate-app .cand-leftnav__section:focus-within .cand-leftnav__chevron {
+        margin-left: auto !important;
+        transform: rotate(0deg) !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-label[aria-expanded="true"] .cand-leftnav__chevron,
+    body.candidate-app .cand-leftnav__section:hover .cand-leftnav__chevron,
+    body.candidate-app .cand-leftnav__section:focus-within .cand-leftnav__chevron {
+        transform: rotate(180deg) !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-body,
+    body.candidate-app .cand-leftnav__group-body.is-collapsed {
+        position: static !important;
+        left: auto !important;
+        top: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        width: auto !important;
+        max-height: none !important;
+        padding: 0 0 6px 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        transform: none !important;
+        transition: none !important;
+        z-index: auto !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-body.is-collapsed {
+        display: none !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-body:not(.is-collapsed) {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 3px !important;
+    }
+
+    body.candidate-app .cand-leftnav__link {
+        width: calc(100% - 10px) !important;
+        margin: 0 0 0 5px !important;
+        padding: 9px 10px 9px 44px !important;
+        font-size: 13.5px !important;
+    }
+
+    body.candidate-app .cand-leftnav__bottom {
+        overflow: visible !important;
+    }
+
+    body.candidate-app .cand-leftnav__user-btn {
+        padding: 8px 0 !important;
+        gap: 10px !important;
+        justify-content: center !important;
+    }
+
+    body.candidate-app .cand-leftnav:hover .cand-leftnav__user-btn,
+    body.candidate-app .cand-leftnav:focus-within .cand-leftnav__user-btn {
+        padding: 8px 13px !important;
+        justify-content: flex-start !important;
+    }
+
+    body.candidate-app .cand-leftnav__user-dropdown {
+        left: 8px !important;
+        right: 8px !important;
+        width: auto !important;
+    }
+
+    body.candidate-app .cand-leftnav__user:hover .cand-leftnav__user-dropdown,
+    body.candidate-app .cand-leftnav__user:focus-within .cand-leftnav__user-dropdown {
+        max-height: 360px !important;
+    }
+
+    body.candidate-app .cand-leftnav__user:hover .cand-leftnav__user-more,
+    body.candidate-app .cand-leftnav__user:focus-within .cand-leftnav__user-more {
+        transform: rotate(180deg) !important;
+    }
 }
 
 /* Recommended jobs tab counts: keep badges on the candidate theme palette. */
@@ -22037,6 +22377,264 @@ body.dark .candidate-app .cand-leftnav__pill--accent { background: #1FB7B5 !impo
 body.dark.candidate-app .cand-leftnav__badge,
 body.dark .candidate-app .cand-leftnav__badge { background: #1FB7B5 !important; color: #fff !important; border: 0 !important; box-shadow: none !important; }
 
+/* Company Discovery Hub */
+body.candidate-app .company-discovery-hub {
+    background: var(--background, #F4F8FC) !important;
+}
+
+body.candidate-app .company-discovery-shell {
+    max-width: 1280px !important;
+    padding: 24px 28px 48px !important;
+}
+
+body.candidate-app .company-discovery-hero {
+    align-items: center !important;
+    gap: 20px !important;
+}
+
+body.candidate-app .company-discovery-trust {
+    max-width: 320px !important;
+    padding: 14px 16px !important;
+    border: 1px solid rgba(31, 183, 181, 0.20) !important;
+    border-radius: 12px !important;
+    background: rgba(31, 183, 181, 0.08) !important;
+}
+
+body.candidate-app .company-discovery-trust strong,
+body.candidate-app .company-discovery-trust span {
+    display: block !important;
+}
+
+body.candidate-app .company-discovery-trust strong {
+    color: var(--foreground, #16212B) !important;
+    font-size: 0.92rem !important;
+}
+
+body.candidate-app .company-discovery-trust span {
+    margin-top: 4px !important;
+    color: var(--muted-foreground, #64748B) !important;
+    font-size: 0.82rem !important;
+    line-height: 1.45 !important;
+}
+
+body.candidate-app .company-discovery-search {
+    margin-bottom: 18px !important;
+    padding: 18px !important;
+    border: 1px solid var(--border, #D9E2EC) !important;
+    border-radius: 14px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .company-discovery-search-grid {
+    display: grid !important;
+    grid-template-columns: minmax(220px, 1.2fr) minmax(180px, 0.8fr) minmax(180px, 0.8fr) minmax(150px, 0.7fr) auto !important;
+    gap: 12px !important;
+    align-items: end !important;
+}
+
+body.candidate-app .company-discovery-search label {
+    display: block !important;
+    margin-bottom: 7px !important;
+    color: #0D8A90 !important;
+    font-size: 0.75rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.07em !important;
+    text-transform: uppercase !important;
+}
+
+body.candidate-app .company-discovery-search .form-control {
+    min-height: 44px !important;
+    border-radius: 10px !important;
+}
+
+body.candidate-app .company-discovery-search .btn {
+    min-height: 44px !important;
+    border-radius: 10px !important;
+}
+
+body.candidate-app .company-discovery-segments {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+    gap: 12px !important;
+    margin: 0 0 22px !important;
+}
+
+body.candidate-app .company-segment-card {
+    display: grid !important;
+    grid-template-columns: 38px minmax(0, 1fr) !important;
+    grid-template-areas: "icon title" "icon count" !important;
+    align-items: center !important;
+    gap: 0 10px !important;
+    min-height: 74px !important;
+    padding: 13px !important;
+    border: 1px solid var(--border, #D9E2EC) !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    color: var(--foreground, #16212B) !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .company-segment-card:hover,
+body.candidate-app .company-segment-card.is-active {
+    border-color: rgba(31, 183, 181, 0.45) !important;
+    background: rgba(31, 183, 181, 0.08) !important;
+}
+
+body.candidate-app .company-segment-icon {
+    grid-area: icon !important;
+    width: 38px !important;
+    height: 38px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    background: rgba(31, 183, 181, 0.12) !important;
+    color: #0D8A90 !important;
+}
+
+body.candidate-app .company-segment-card strong {
+    grid-area: title !important;
+    min-width: 0 !important;
+    color: inherit !important;
+    font-size: 0.92rem !important;
+    line-height: 1.2 !important;
+}
+
+body.candidate-app .company-segment-card small {
+    grid-area: count !important;
+    color: var(--muted-foreground, #64748B) !important;
+    font-size: 0.78rem !important;
+}
+
+body.candidate-app .company-discovery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)) !important;
+}
+
+body.candidate-app .company-discovery-card {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+}
+
+body.candidate-app .company-discovery-card-link {
+    color: inherit !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+}
+
+body.candidate-app .company-discovery-card-link:hover,
+body.candidate-app .company-discovery-card-link:focus {
+    color: inherit !important;
+    text-decoration: none !important;
+    border-color: rgba(31, 183, 181, 0.42) !important;
+}
+
+body.candidate-app .company-discovery-card-link .job-card-title {
+    color: var(--foreground, #16212B) !important;
+}
+
+body.candidate-app .company-discovery-tags {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+}
+
+body.candidate-app .company-discovery-tags span {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 24px !important;
+    padding: 4px 8px !important;
+    border: 1px solid rgba(31, 183, 181, 0.18) !important;
+    border-radius: 999px !important;
+    background: rgba(31, 183, 181, 0.08) !important;
+    color: #0D8A90 !important;
+    font-size: 0.73rem !important;
+    font-weight: 700 !important;
+}
+
+body.candidate-app .company-discovery-summary {
+    min-height: 44px !important;
+    margin: 0 !important;
+    color: var(--muted-foreground, #64748B) !important;
+    font-size: 0.88rem !important;
+    line-height: 1.55 !important;
+}
+
+body.candidate-app .company-discovery-card-foot {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    margin-top: auto !important;
+    padding-top: 12px !important;
+    border-top: 1px solid var(--border, #D9E2EC) !important;
+}
+
+body.candidate-app .company-discovery-card-foot > span {
+    color: var(--muted-foreground, #64748B) !important;
+    font-size: 0.84rem !important;
+    font-weight: 700 !important;
+}
+
+body.candidate-app .company-discovery-card-foot > span.is-hiring {
+    color: #0D8A90 !important;
+}
+
+body.candidate-app .company-discovery-active-filters {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    margin-top: 8px !important;
+}
+
+body.candidate-app .company-discovery-active-filters span {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 24px !important;
+    padding: 4px 9px !important;
+    border: 1px solid rgba(31, 183, 181, 0.24) !important;
+    border-radius: 999px !important;
+    background: rgba(31, 183, 181, 0.08) !important;
+    color: #0D8A90 !important;
+    font-size: 0.74rem !important;
+    font-weight: 800 !important;
+}
+
+body.dark.candidate-app .company-discovery-hub,
+body.dark.candidate-app .company-discovery-shell {
+    background: #050505 !important;
+}
+
+body.dark.candidate-app .company-discovery-search,
+body.dark.candidate-app .company-segment-card,
+body.dark.candidate-app .company-discovery-trust {
+    background: #111111 !important;
+    border-color: #272727 !important;
+}
+
+body.dark.candidate-app .company-segment-card:hover,
+body.dark.candidate-app .company-segment-card.is-active {
+    background: #181818 !important;
+    border-color: #3d3d3d !important;
+}
+
+body.dark.candidate-app .company-discovery-trust strong,
+body.dark.candidate-app .company-segment-card strong {
+    color: #f4f4f5 !important;
+}
+
+@media (max-width: 991.98px) {
+    body.candidate-app .company-discovery-shell {
+        padding: 18px 14px 36px !important;
+    }
+
+    body.candidate-app .company-discovery-search-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
 /* 9. Workbar */
 body.dark.candidate-app .candidate-workbar { background: #111111 !important; border-color: #272727 !important; }
 body.dark.candidate-app .candidate-workbar__field { background: #111111 !important; border-color: #272727 !important; }
@@ -23124,4 +23722,1042 @@ html body.dark.candidate-app main .job-details-page-header {
     border: 1px solid #272727 !important;
     border-radius: 24px !important;
     box-shadow: none !important;
+}
+
+/* Company discovery: remove the extra hero canvas. */
+html body.candidate-app main .companies-directory-jobboard .page-board-header.company-discovery-hero,
+html body.candidate-app main [class*="-jobboard"].companies-directory-jobboard .page-board-header.company-discovery-hero,
+html body.candidate-app:not(.dark) main .companies-directory-jobboard .page-board-header.company-discovery-hero,
+html body.dark.candidate-app main .companies-directory-jobboard .page-board-header.company-discovery-hero {
+    margin: 0 0 16px !important;
+    padding: 10px 0 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Company discovery: flatten every wrapper so there is no outer result canvas. */
+html body.candidate-app .companies-directory-jobboard.company-discovery-hub,
+html body.candidate-app .companies-directory-jobboard .company-discovery-shell,
+html body.candidate-app .companies-directory-jobboard .company-discovery-grid,
+html body.candidate-app .companies-directory-jobboard .company-directory-grid.company-discovery-grid,
+html body.dark.candidate-app .companies-directory-jobboard.company-discovery-hub,
+html body.dark.candidate-app .companies-directory-jobboard .company-discovery-shell,
+html body.dark.candidate-app .companies-directory-jobboard .company-discovery-grid,
+html body.dark.candidate-app .companies-directory-jobboard .company-directory-grid.company-discovery-grid {
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+html body.candidate-app .companies-directory-jobboard .company-directory-grid.company-discovery-grid,
+html body.dark.candidate-app .companies-directory-jobboard .company-directory-grid.company-discovery-grid {
+    padding: 0 !important;
+    overflow: visible !important;
+}
+
+/* Company jobs page: portal roles plus discovered jobs loader. */
+body.candidate-app .company-jobs-loader-page .company-jobs-hero {
+    margin-bottom: 0 !important;
+}
+
+body.candidate-app .company-jobs-meta {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-top: 12px !important;
+}
+
+body.candidate-app .company-jobs-meta span,
+body.candidate-app .company-external-job-tags span {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-height: 26px !important;
+    padding: 5px 9px !important;
+    border: 1px solid rgba(31, 183, 181, 0.20) !important;
+    border-radius: 999px !important;
+    background: rgba(31, 183, 181, 0.08) !important;
+    color: #0D8A90 !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+}
+
+body.candidate-app .company-jobs-section {
+    margin-bottom: 20px !important;
+}
+
+body.candidate-app .company-jobs-section-head {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    margin-bottom: 12px !important;
+}
+
+body.candidate-app .company-jobs-section-head h3 {
+    margin: 0 !important;
+    color: var(--foreground, #16212B) !important;
+    font-size: 1.18rem !important;
+    font-weight: 800 !important;
+}
+
+body.candidate-app .company-jobs-section-head p {
+    margin: 3px 0 0 !important;
+    color: var(--muted-foreground, #64748B) !important;
+}
+
+body.candidate-app .company-jobs-empty,
+body.candidate-app .company-jobs-loading {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    min-height: 72px !important;
+    padding: 16px !important;
+    border: 1px solid var(--border, #D9E2EC) !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    color: var(--muted-foreground, #64748B) !important;
+}
+
+body.candidate-app .company-external-jobs-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+    gap: 12px !important;
+}
+
+body.candidate-app .company-external-job-card {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+    min-height: 184px !important;
+    padding: 16px !important;
+    border: 1px solid var(--border, #D9E2EC) !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .company-external-job-card h4 {
+    margin: 0 0 8px !important;
+    color: var(--foreground, #16212B) !important;
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    line-height: 1.3 !important;
+}
+
+body.candidate-app .company-external-job-card p {
+    margin: 0 0 10px !important;
+    color: var(--muted-foreground, #64748B) !important;
+}
+
+body.candidate-app .company-external-job-tags {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+}
+
+body.dark.candidate-app .company-jobs-empty,
+body.dark.candidate-app .company-jobs-loading,
+body.dark.candidate-app .company-external-job-card {
+    background: #111111 !important;
+    border-color: #272727 !important;
+}
+
+body.dark.candidate-app .company-jobs-section-head h3,
+body.dark.candidate-app .company-external-job-card h4 {
+    color: #f4f4f5 !important;
+}
+
+/* Company detail + jobs hub: tabbed profile/jobs experience. */
+body.candidate-app .company-detail-jobs-page {
+    background: var(--candidate-bg, #F4F7FB) !important;
+}
+
+body.candidate-app .company-detail-shell {
+    max-width: 1280px !important;
+    padding: 24px 28px 46px !important;
+}
+
+body.candidate-app .company-detail-hero {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 20px !important;
+    padding: 18px 0 14px !important;
+    border-bottom: 1px solid var(--border, #D9E2EC) !important;
+}
+
+body.candidate-app .company-detail-brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    min-width: 0 !important;
+}
+
+body.candidate-app .company-detail-logo {
+    width: 72px !important;
+    height: 72px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 72px !important;
+    border: 1px solid var(--border, #D9E2EC) !important;
+    border-radius: 14px !important;
+    background: #fff !important;
+    color: var(--primary-dark, #0D8A90) !important;
+    font-size: 1.65rem !important;
+    font-weight: 800 !important;
+    overflow: hidden !important;
+}
+
+body.candidate-app .company-detail-logo img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    padding: 10px !important;
+}
+
+body.candidate-app .company-detail-hero h1 {
+    margin: 4px 0 8px !important;
+    color: var(--foreground, #16212B) !important;
+    font-size: clamp(2rem, 4vw, 3rem) !important;
+    font-weight: 800 !important;
+    line-height: 1.05 !important;
+}
+
+body.candidate-app .company-detail-meta,
+body.candidate-app .company-detail-tags,
+body.candidate-app .company-opening-meta,
+body.candidate-app .company-opening-tags {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 7px !important;
+}
+
+body.candidate-app .company-detail-meta span,
+body.candidate-app .company-detail-tags span,
+body.candidate-app .company-opening-tags span {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-height: 26px !important;
+    padding: 5px 9px !important;
+    border: 1px solid rgba(31, 183, 181, 0.20) !important;
+    border-radius: 999px !important;
+    background: rgba(31, 183, 181, 0.08) !important;
+    color: #0D8A90 !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+}
+
+body.candidate-app .company-detail-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    justify-content: flex-end !important;
+}
+
+body.candidate-app .company-detail-tabs {
+    display: flex !important;
+    gap: 22px !important;
+    margin: 18px 0 26px !important;
+    border-bottom: 1px solid var(--border, #D9E2EC) !important;
+}
+
+body.candidate-app .company-detail-tab {
+    appearance: none !important;
+    border: 0 !important;
+    border-bottom: 3px solid transparent !important;
+    background: transparent !important;
+    color: #637093 !important;
+    padding: 0 0 10px !important;
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+}
+
+body.candidate-app .company-detail-tab.is-active {
+    color: var(--foreground, #16212B) !important;
+    border-bottom-color: var(--foreground, #16212B) !important;
+}
+
+body.candidate-app .company-detail-panel[hidden] {
+    display: none !important;
+}
+
+body.candidate-app .company-overview-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr) !important;
+    gap: 16px !important;
+}
+
+body.candidate-app .company-overview-card,
+body.candidate-app .company-side-card,
+body.candidate-app .company-opening-card {
+    border: 1px solid var(--border, #D9E2EC) !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .company-overview-card {
+    padding: 20px !important;
+}
+
+body.candidate-app .company-overview-card-wide {
+    grid-row: span 2 !important;
+}
+
+body.candidate-app .company-overview-card h2,
+body.candidate-app .company-side-card h3,
+body.candidate-app .company-section-title h2,
+body.candidate-app .company-jobs-toolbar h2 {
+    margin: 0 0 10px !important;
+    color: var(--foreground, #16212B) !important;
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+}
+
+body.candidate-app .company-overview-card p,
+body.candidate-app .company-section-title p,
+body.candidate-app .company-jobs-toolbar p,
+body.candidate-app .company-side-card p {
+    color: var(--muted-foreground, #64748B) !important;
+    line-height: 1.6 !important;
+}
+
+body.candidate-app .company-snapshot-list {
+    display: grid !important;
+    grid-template-columns: 110px minmax(0, 1fr) !important;
+    gap: 9px 12px !important;
+    margin: 0 !important;
+}
+
+body.candidate-app .company-snapshot-list dt {
+    color: #69728c !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+}
+
+body.candidate-app .company-snapshot-list dd {
+    margin: 0 !important;
+    color: var(--foreground, #16212B) !important;
+    font-weight: 700 !important;
+}
+
+body.candidate-app .company-link-list {
+    display: grid !important;
+    gap: 10px !important;
+}
+
+body.candidate-app .company-link-list a {
+    color: var(--primary-dark, #0D8A90) !important;
+    font-weight: 800 !important;
+    text-decoration: none !important;
+}
+
+body.candidate-app .company-department-strip {
+    margin-bottom: 28px !important;
+    padding: 20px !important;
+    border: 1px solid #F2DDA8 !important;
+    border-radius: 16px !important;
+    background: #FFF8E8 !important;
+    overflow: hidden !important;
+}
+
+body.candidate-app .company-department-row {
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: minmax(180px, 1fr) !important;
+    gap: 12px !important;
+    overflow-x: auto !important;
+    padding-top: 8px !important;
+}
+
+body.candidate-app .company-department-card {
+    min-height: 88px !important;
+    padding: 14px !important;
+    border: 1px solid #EDF1F7 !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    text-align: left !important;
+}
+
+body.candidate-app .company-department-card strong {
+    display: block !important;
+    color: var(--foreground, #16212B) !important;
+    line-height: 1.25 !important;
+}
+
+body.candidate-app .company-department-card span {
+    display: block !important;
+    margin-top: 8px !important;
+    color: #1f5eff !important;
+    font-weight: 800 !important;
+}
+
+body.candidate-app .company-jobs-toolbar {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    gap: 16px !important;
+    margin-bottom: 16px !important;
+}
+
+body.candidate-app .company-job-filters {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+}
+
+body.candidate-app .company-job-filters button {
+    min-height: 34px !important;
+    padding: 6px 12px !important;
+    border: 1px solid #9CA8CC !important;
+    border-radius: 999px !important;
+    background: #fff !important;
+    color: #56607f !important;
+    font-weight: 700 !important;
+}
+
+body.candidate-app .company-jobs-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 320px !important;
+    gap: 20px !important;
+    align-items: start !important;
+}
+
+body.candidate-app .company-opening-list {
+    display: grid !important;
+    gap: 14px !important;
+}
+
+body.candidate-app .company-opening-card {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 18px !important;
+    padding: 20px !important;
+}
+
+body.candidate-app .company-opening-card h3 {
+    margin: 0 0 6px !important;
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    line-height: 1.35 !important;
+}
+
+body.candidate-app .company-opening-card h3 a {
+    color: var(--foreground, #16212B) !important;
+    text-decoration: none !important;
+}
+
+body.candidate-app .company-opening-company {
+    margin: 0 0 12px !important;
+    color: #687291 !important;
+    font-weight: 700 !important;
+}
+
+body.candidate-app .company-opening-company span {
+    margin-left: 8px !important;
+    color: #7b86a6 !important;
+    font-weight: 600 !important;
+}
+
+body.candidate-app .company-opening-meta {
+    margin-bottom: 12px !important;
+    color: #637093 !important;
+    font-size: 0.92rem !important;
+}
+
+body.candidate-app .company-opening-action {
+    align-self: start !important;
+    color: var(--primary-dark, #0D8A90) !important;
+    font-weight: 800 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+}
+
+body.candidate-app .company-jobs-side {
+    display: grid !important;
+    gap: 14px !important;
+    position: sticky !important;
+    top: 96px !important;
+}
+
+body.candidate-app .company-side-card {
+    padding: 18px !important;
+}
+
+body.candidate-app .company-detail-back {
+    margin-top: 28px !important;
+    text-align: center !important;
+}
+
+body.dark.candidate-app .company-detail-logo,
+body.dark.candidate-app .company-overview-card,
+body.dark.candidate-app .company-side-card,
+body.dark.candidate-app .company-opening-card,
+body.dark.candidate-app .company-department-card,
+body.dark.candidate-app .company-job-filters button {
+    background: #111111 !important;
+    border-color: #272727 !important;
+}
+
+body.dark.candidate-app .company-department-strip {
+    background: #15130d !important;
+    border-color: #3a3120 !important;
+}
+
+body.dark.candidate-app .company-detail-hero h1,
+body.dark.candidate-app .company-detail-tab.is-active,
+body.dark.candidate-app .company-opening-card h3 a,
+body.dark.candidate-app .company-overview-card h2,
+body.dark.candidate-app .company-side-card h3,
+body.dark.candidate-app .company-section-title h2,
+body.dark.candidate-app .company-jobs-toolbar h2,
+body.dark.candidate-app .company-snapshot-list dd,
+body.dark.candidate-app .company-department-card strong {
+    color: #f4f4f5 !important;
+}
+
+@media (max-width: 991.98px) {
+    body.candidate-app .company-detail-shell {
+        padding: 18px 14px 36px !important;
+    }
+
+    body.candidate-app .company-detail-hero,
+    body.candidate-app .company-jobs-toolbar {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    body.candidate-app .company-overview-grid,
+    body.candidate-app .company-jobs-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    body.candidate-app .company-jobs-side {
+        position: static !important;
+    }
+}
+
+/* Company jobs: candidate-page aligned cached jobs experience. */
+html body.candidate-app .company-jobs-page,
+html body.dark.candidate-app .company-jobs-page {
+    background: var(--candidate-bg, #F4F7FB) !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-shell {
+    max-width: 1280px !important;
+    padding: 24px 28px 46px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-header {
+    align-items: center !important;
+    margin: 0 0 16px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-identity {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    min-width: 0 !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-logo {
+    width: 70px !important;
+    height: 70px !important;
+    flex: 0 0 70px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid var(--border, #D9E2EC) !important;
+    border-radius: 12px !important;
+    background: var(--candidate-surface, #fff) !important;
+    color: var(--primary-dark, #0D8A90) !important;
+    font-size: 1.55rem !important;
+    font-weight: 800 !important;
+    overflow: hidden !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-logo img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    padding: 10px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-header h1 {
+    margin: 4px 0 6px !important;
+    font-size: clamp(2rem, 4vw, 2.85rem) !important;
+    line-height: 1.05 !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-meta,
+html body.candidate-app .company-jobs-page .company-jobs-pills,
+html body.candidate-app .company-jobs-page .company-job-meta {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 7px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-meta span,
+html body.candidate-app .company-jobs-page .company-jobs-pills span {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-height: 26px !important;
+    padding: 5px 9px !important;
+    border: 1px solid rgba(31, 183, 181, 0.20) !important;
+    border-radius: 999px !important;
+    background: rgba(31, 183, 181, 0.08) !important;
+    color: #0D8A90 !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-tabs {
+    display: flex !important;
+    gap: 10px !important;
+    margin: 0 0 16px !important;
+    padding: 5px !important;
+    width: fit-content !important;
+    border: 1px solid var(--border, #D9E2EC) !important;
+    border-radius: 12px !important;
+    background: var(--candidate-surface, #fff) !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-tab {
+    min-height: 38px !important;
+    padding: 7px 14px !important;
+    border: 0 !important;
+    border-radius: 9px !important;
+    background: transparent !important;
+    color: var(--muted-foreground, #64748B) !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-tab.is-active {
+    background: rgba(31, 183, 181, 0.12) !important;
+    color: var(--primary-dark, #0D8A90) !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-tab span {
+    margin-left: 6px !important;
+    color: inherit !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-panel[hidden] {
+    display: none !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-overview-grid,
+html body.candidate-app .company-jobs-page .company-jobs-content-grid {
+    display: grid !important;
+    gap: 16px !important;
+    align-items: start !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-overview-grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr) !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-content-grid {
+    grid-template-columns: minmax(0, 1fr) 320px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-card,
+html body.candidate-app .company-jobs-page .company-job-card,
+html body.candidate-app .company-jobs-page .company-jobs-toolbar,
+html body.candidate-app .company-jobs-page .company-jobs-empty-state,
+html body.candidate-app .company-jobs-page .company-jobs-note {
+    border: 1px solid var(--border, #D9E2EC) !important;
+    border-radius: 12px !important;
+    background: var(--candidate-surface, #fff) !important;
+    box-shadow: none !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-card {
+    padding: 18px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-card-wide {
+    grid-row: span 2 !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-card h2,
+html body.candidate-app .company-jobs-page .company-jobs-toolbar h2 {
+    margin: 0 0 8px !important;
+    color: var(--foreground, #16212B) !important;
+    font-size: 1.08rem !important;
+    font-weight: 800 !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-card p,
+html body.candidate-app .company-jobs-page .company-jobs-toolbar p,
+html body.candidate-app .company-jobs-page .company-jobs-section-head p,
+html body.candidate-app .company-jobs-page .company-job-card p {
+    color: var(--muted-foreground, #64748B) !important;
+    line-height: 1.6 !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-snapshot {
+    display: grid !important;
+    grid-template-columns: 90px minmax(0, 1fr) !important;
+    gap: 9px 12px !important;
+    margin: 0 !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-snapshot dt {
+    color: var(--muted-foreground, #64748B) !important;
+    font-size: .78rem !important;
+    font-weight: 800 !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-snapshot dd {
+    margin: 0 !important;
+    color: var(--foreground, #16212B) !important;
+    font-weight: 700 !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-links {
+    display: grid !important;
+    gap: 10px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-links a,
+html body.candidate-app .company-jobs-page .company-job-card h3 a,
+html body.candidate-app .company-jobs-page .company-job-action {
+    color: var(--primary-dark, #0D8A90) !important;
+    text-decoration: none !important;
+    font-weight: 800 !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-toolbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+    margin-bottom: 16px !important;
+    padding: 16px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-list,
+html body.candidate-app .company-jobs-page .company-jobs-list-inner,
+html body.candidate-app .company-jobs-page .company-jobs-side {
+    display: grid !important;
+    gap: 12px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-side {
+    position: sticky !important;
+    top: 96px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-section-label {
+    color: var(--foreground, #16212B) !important;
+    font-size: .96rem !important;
+    font-weight: 800 !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-section-head {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 14px !important;
+    margin-top: 6px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-section-head p,
+html body.candidate-app .company-jobs-page .company-jobs-section-head span {
+    margin: 2px 0 0 !important;
+    color: var(--muted-foreground, #64748B) !important;
+    font-size: .9rem !important;
+}
+
+html body.candidate-app .company-jobs-page .company-job-card {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 18px !important;
+    padding: 18px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-job-source {
+    width: fit-content !important;
+    margin-bottom: 8px !important;
+    padding: 4px 8px !important;
+    border-radius: 999px !important;
+    background: rgba(31, 183, 181, .10) !important;
+    color: var(--primary-dark, #0D8A90) !important;
+    font-size: .72rem !important;
+    font-weight: 900 !important;
+    letter-spacing: .02em !important;
+    text-transform: uppercase !important;
+}
+
+html body.candidate-app .company-jobs-page .company-job-card h3 {
+    margin: 0 0 8px !important;
+    color: var(--foreground, #16212B) !important;
+    font-size: 1.05rem !important;
+    line-height: 1.35 !important;
+    font-weight: 800 !important;
+}
+
+html body.candidate-app .company-jobs-page .company-job-meta {
+    margin-bottom: 10px !important;
+    color: var(--muted-foreground, #64748B) !important;
+    font-size: .9rem !important;
+}
+
+html body.candidate-app .company-jobs-page .company-job-meta span {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+}
+
+html body.candidate-app .company-jobs-page .company-job-action {
+    align-self: start !important;
+    white-space: nowrap !important;
+}
+
+html body.candidate-app .company-jobs-page .company-jobs-empty-state,
+html body.candidate-app .company-jobs-page .company-jobs-note {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    min-height: 72px !important;
+    padding: 16px !important;
+    color: var(--muted-foreground, #64748B) !important;
+}
+
+html body.dark.candidate-app .company-jobs-page .company-jobs-logo,
+html body.dark.candidate-app .company-jobs-page .company-jobs-tabs,
+html body.dark.candidate-app .company-jobs-page .company-jobs-card,
+html body.dark.candidate-app .company-jobs-page .company-job-card,
+html body.dark.candidate-app .company-jobs-page .company-jobs-toolbar,
+html body.dark.candidate-app .company-jobs-page .company-jobs-empty-state,
+html body.dark.candidate-app .company-jobs-page .company-jobs-note {
+    background: #111111 !important;
+    border-color: #272727 !important;
+}
+
+html body.dark.candidate-app .company-jobs-page .company-jobs-card h2,
+html body.dark.candidate-app .company-jobs-page .company-jobs-toolbar h2,
+html body.dark.candidate-app .company-jobs-page .company-jobs-section-label,
+html body.dark.candidate-app .company-jobs-page .company-job-card h3,
+html body.dark.candidate-app .company-jobs-page .company-jobs-snapshot dd {
+    color: #f4f4f5 !important;
+}
+
+@media (max-width: 991.98px) {
+    html body.candidate-app .company-jobs-page .company-jobs-shell {
+        padding: 18px 14px 36px !important;
+    }
+
+    html body.candidate-app .company-jobs-page .company-jobs-header,
+    html body.candidate-app .company-jobs-page .company-jobs-toolbar {
+        align-items: flex-start !important;
+        flex-direction: column !important;
+    }
+
+    html body.candidate-app .company-jobs-page .company-jobs-overview-grid,
+    html body.candidate-app .company-jobs-page .company-jobs-content-grid,
+    html body.candidate-app .company-jobs-page .company-job-card {
+        grid-template-columns: 1fr !important;
+    }
+
+    html body.candidate-app .company-jobs-page .company-jobs-side {
+        position: static !important;
+    }
+}
+
+/* Company jobs final alignment: match the wider candidate page rhythm. */
+html body.candidate-app main .company-jobs-page .company-jobs-shell,
+html body.dark.candidate-app main .company-jobs-page .company-jobs-shell {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 24px 28px 46px !important;
+}
+
+html body.candidate-app main > .jobs-page-jobboard.company-jobs-page > .container.company-jobs-shell,
+html body.candidate-app .jobs-page-jobboard.company-jobs-page > .container.company-jobs-shell,
+html body.dark.candidate-app main > .jobs-page-jobboard.company-jobs-page > .container.company-jobs-shell,
+html body.dark.candidate-app .jobs-page-jobboard.company-jobs-page > .container.company-jobs-shell {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: var(--candidate-page-gutter, 16px) !important;
+    padding-right: var(--candidate-page-gutter, 16px) !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-panel,
+html body.candidate-app main .company-jobs-page .company-jobs-panel.is-active,
+html body.dark.candidate-app main .company-jobs-page .company-jobs-panel,
+html body.dark.candidate-app main .company-jobs-page .company-jobs-panel.is-active {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+}
+
+html body.candidate-app main .company-jobs-page .page-board-header.company-jobs-header,
+html body.dark.candidate-app main .company-jobs-page .page-board-header.company-jobs-header {
+    margin: 0 0 16px !important;
+    padding: 22px 24px !important;
+    border: 1px solid var(--border, #D9E2EC) !important;
+    border-radius: var(--candidate-section-radius, 24px) !important;
+    background: var(--candidate-surface, #ffffff) !important;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.035) !important;
+}
+
+html body.dark.candidate-app main .company-jobs-page .page-board-header.company-jobs-header {
+    background: #111111 !important;
+    border-color: #272727 !important;
+    box-shadow: none !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-identity {
+    gap: 14px !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-logo {
+    width: 56px !important;
+    height: 56px !important;
+    flex-basis: 56px !important;
+    border-radius: 12px !important;
+    font-size: 1.25rem !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-logo img {
+    padding: 8px !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-header h1 {
+    margin: 2px 0 5px !important;
+    color: var(--foreground, #16212B) !important;
+    font-size: 2rem !important;
+    line-height: 1.16 !important;
+    font-weight: 800 !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-header p,
+html body.candidate-app main .company-jobs-page .company-jobs-toolbar p,
+html body.candidate-app main .company-jobs-page .company-jobs-card p,
+html body.candidate-app main .company-jobs-page .company-job-card p {
+    margin-bottom: 0 !important;
+    color: var(--muted-foreground, #64748B) !important;
+    font-size: .94rem !important;
+    line-height: 1.55 !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-meta {
+    margin-top: 10px !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-meta span,
+html body.candidate-app main .company-jobs-page .company-jobs-pills span {
+    min-height: 24px !important;
+    padding: 4px 8px !important;
+    font-size: .74rem !important;
+    line-height: 1.2 !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-tabs {
+    margin: 0 0 16px !important;
+    border-radius: 10px !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-tab {
+    min-height: 34px !important;
+    padding: 6px 12px !important;
+    font-size: .9rem !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-toolbar {
+    margin-bottom: 14px !important;
+    padding: 14px 16px !important;
+    border-radius: 12px !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-toolbar h2,
+html body.candidate-app main .company-jobs-page .company-jobs-card h2 {
+    margin: 0 0 5px !important;
+    font-size: 1rem !important;
+    line-height: 1.35 !important;
+    font-weight: 800 !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-content-grid {
+    grid-template-columns: minmax(0, 1fr) 320px !important;
+    gap: 18px !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-job-card,
+html body.candidate-app main .company-jobs-page .company-jobs-card {
+    border-radius: 12px !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-job-card {
+    gap: 14px !important;
+    padding: 16px !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-job-card h3 {
+    margin-bottom: 7px !important;
+    color: var(--foreground, #16212B) !important;
+    font-size: 1rem !important;
+    line-height: 1.35 !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-job-meta {
+    margin-bottom: 9px !important;
+    font-size: .86rem !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-job-source {
+    margin-bottom: 7px !important;
+    padding: 4px 8px !important;
+    font-size: .68rem !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-section-head {
+    margin-top: 2px !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-section-label {
+    font-size: .95rem !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-side {
+    gap: 12px !important;
+}
+
+html body.candidate-app main .company-jobs-page .company-jobs-card {
+    padding: 16px !important;
+}
+
+@media (max-width: 991.98px) {
+    html body.candidate-app main .company-jobs-page .company-jobs-shell,
+    html body.dark.candidate-app main .company-jobs-page .company-jobs-shell {
+        width: 100% !important;
+        padding: 18px 14px 36px !important;
+    }
+
+    html body.candidate-app main .company-jobs-page .company-jobs-content-grid {
+        grid-template-columns: 1fr !important;
+    }
 }

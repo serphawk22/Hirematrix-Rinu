@@ -1837,7 +1837,6 @@ class CandidateDashboardController extends BaseController
         }
 
         $companyModel = new CompanyModel();
-        $jobModel = new JobModel();
         $request = service('request');
 
         // --- Company Directory Logic (adapted from CompanyController) ---
@@ -1845,63 +1844,186 @@ class CandidateDashboardController extends BaseController
             'q'        => trim((string) $request->getGet('q')),
             'industry' => trim((string) $request->getGet('industry')),
             'location' => trim((string) $request->getGet('location')),
+            'segment'  => trim((string) $request->getGet('segment')),
+            'jobs'     => trim((string) $request->getGet('jobs')),
         ];
 
-        $companiesBuilder = $companyModel->orderBy('name', 'ASC');
+        $db = \Config\Database::connect();
+        $companyFields = $db->getFieldNames('companies') ?: [];
+        $hasCompanyType = in_array('company_type', $companyFields, true);
+        $hasCompanyTags = in_array('company_tags', $companyFields, true);
+        $hasVerified = in_array('is_verified', $companyFields, true);
+        $hasFeatured = in_array('is_featured', $companyFields, true);
+        $hasProfileStatus = in_array('profile_status', $companyFields, true);
+
+        $segments = $this->companyDiscoverySegments();
+        $activeSegment = $segments[$filters['segment']] ?? null;
+
+        $companiesBuilder = $companyModel
+            ->select('companies.*, COUNT(DISTINCT jobs.id) AS open_jobs_count')
+            ->join('jobs', "jobs.company_id = companies.id AND jobs.status = 'open'", 'left')
+            ->groupBy('companies.id');
 
         if (!empty($filters['q'])) {
-             $companiesBuilder->like('name', $filters['q'], 'both');
+            $companiesBuilder->groupStart()
+                ->like('companies.name', $filters['q'], 'both')
+                ->orLike('companies.industry', $filters['q'], 'both')
+                ->orLike('companies.short_description', $filters['q'], 'both')
+                ->groupEnd();
         }
         if (!empty($filters['industry'])) {
-            $companiesBuilder->where('industry', $filters['industry']);
+            $companiesBuilder->where('companies.industry', $filters['industry']);
         }
         if (!empty($filters['location'])) {
             $companiesBuilder->groupStart()
-                             ->like('hq', $filters['location'], 'both')
-                             ->orLike('branches', $filters['location'], 'both')
+                             ->like('companies.hq', $filters['location'], 'both')
+                             ->orLike('companies.branches', $filters['location'], 'both')
                              ->groupEnd();
         }
+        if ($activeSegment) {
+            $companiesBuilder->groupStart();
+            foreach ($activeSegment['terms'] as $index => $term) {
+                if ($index === 0) {
+                    $companiesBuilder->like('companies.industry', $term, 'both');
+                } else {
+                    $companiesBuilder->orLike('companies.industry', $term, 'both');
+                }
+                if ($hasCompanyType) {
+                    $companiesBuilder->orLike('companies.company_type', $term, 'both');
+                }
+                if ($hasCompanyTags) {
+                    $companiesBuilder->orLike('companies.company_tags', $term, 'both');
+                }
+                $companiesBuilder->orLike('companies.short_description', $term, 'both');
+            }
+            $companiesBuilder->groupEnd();
+        }
+        if ($filters['jobs'] === 'active') {
+            $companiesBuilder->having('open_jobs_count >', 0);
+        }
+
+        if ($hasFeatured) {
+            $companiesBuilder->orderBy('companies.is_featured', 'DESC');
+        }
+        if ($hasVerified) {
+            $companiesBuilder->orderBy('companies.is_verified', 'DESC');
+        }
+        $companiesBuilder
+            ->orderBy('open_jobs_count', 'DESC')
+            ->orderBy('companies.name', 'ASC');
 
         $viewAll = $this->request->getGet('view_all') === '1';
         $companiesPerPage = $viewAll ? 500 : 16;
         $companies = $companiesBuilder->paginate($companiesPerPage);
 
-        // Fetch open job counts for each company
-        $companyIds = array_column($companies, 'id');
-        $openJobsCounts = [];
-        if (!empty($companyIds)) {
-            $jobCounts = $jobModel->select('company_id, COUNT(id) as count')
-                                  ->whereIn('company_id', $companyIds)
-                                  ->where('status', 'open')
-                                  ->groupBy('company_id')
-                                  ->findAll();
-            foreach ($jobCounts as $count) {
-                $openJobsCounts[$count['company_id']] = (int) $count['count'];
-            }
-        }
-
         foreach ($companies as &$company) {
-            $company['open_jobs_count'] = $openJobsCounts[$company['id']] ?? 0;
+            $company['open_jobs_count'] = (int) ($company['open_jobs_count'] ?? 0);
             $company['profile_url'] = base_url('company/' . $company['id']);
+            $company['jobs_url'] = base_url('candidate/company-jobs/' . rawurlencode((string) ($company['name'] ?? '')));
+            $company['discovery_tags'] = $this->buildCompanyDiscoveryTags($company, $hasCompanyType, $hasCompanyTags, $hasVerified, $hasProfileStatus);
         }
         unset($company);
 
         $hasSearchQuery = !empty($filters['q']);
         $foundRegisteredCompanies = !empty($companies);
-        $shouldAutoTriggerAiSearch = $hasSearchQuery && !$foundRegisteredCompanies;
-        $industries = $companyModel->select('industry')->distinct()->where('industry IS NOT NULL')->orderBy('industry', 'ASC')->findAll();
+        $shouldAutoTriggerAiSearch = false;
+        $industries = $companyModel->select('industry')->distinct()->where('industry IS NOT NULL')->where('industry !=', '')->orderBy('industry', 'ASC')->findAll();
         $industries = array_column($industries, 'industry');
+        $segmentCards = $this->companyDiscoverySegmentCards($segments, $hasCompanyType, $hasCompanyTags);
+        $allCompanyCount = (int) $db->table('companies')->countAllResults();
 
         return view('candidate/combined_job_company_discovery', [
             'companies' => $companies,
             'filters' => $filters,
             'industries' => $industries,
+            'segments' => $segmentCards,
+            'allCompanyCount' => $allCompanyCount,
+            'activeSegmentKey' => $filters['segment'],
             'pager' => $companyModel->pager,
             'hasSearchQuery' => $hasSearchQuery,
             'foundRegisteredCompanies' => $foundRegisteredCompanies,
             'shouldAutoTriggerAiSearch' => $shouldAutoTriggerAiSearch,
             'viewAll' => $viewAll,
         ]);
+    }
+
+    private function companyDiscoverySegments(): array
+    {
+        return [
+            'indian-mnc' => ['label' => 'Indian MNCs', 'icon' => 'fa-building-flag', 'terms' => ['indian mnc', 'mnc', 'enterprise', 'corporate']],
+            'global-indian' => ['label' => 'Global Indian', 'icon' => 'fa-globe-asia', 'terms' => ['global indian', 'global', 'export', 'international']],
+            'corporate' => ['label' => 'Corporate', 'icon' => 'fa-city', 'terms' => ['corporate', 'enterprise', 'large company']],
+            'startups' => ['label' => 'Startups', 'icon' => 'fa-rocket', 'terms' => ['startup', 'saas', 'product']],
+            'product' => ['label' => 'Product Companies', 'icon' => 'fa-cube', 'terms' => ['product', 'saas', 'platform']],
+            'service' => ['label' => 'Service Companies', 'icon' => 'fa-people-carry-box', 'terms' => ['service', 'services', 'consulting', 'agency']],
+            'remote-friendly' => ['label' => 'Remote Friendly', 'icon' => 'fa-laptop-house', 'terms' => ['remote', 'hybrid', 'distributed']],
+            'freshers' => ['label' => 'Freshers Hiring', 'icon' => 'fa-user-graduate', 'terms' => ['fresher', 'graduate', 'entry level', 'junior']],
+        ];
+    }
+
+    private function companyDiscoverySegmentCards(array $segments, bool $hasCompanyType, bool $hasCompanyTags): array
+    {
+        $db = \Config\Database::connect();
+        $cards = [];
+
+        foreach ($segments as $key => $segment) {
+            $builder = $db->table('companies');
+            $builder->groupStart();
+            foreach ($segment['terms'] as $index => $term) {
+                if ($index === 0) {
+                    $builder->like('industry', $term, 'both');
+                } else {
+                    $builder->orLike('industry', $term, 'both');
+                }
+                if ($hasCompanyType) {
+                    $builder->orLike('company_type', $term, 'both');
+                }
+                if ($hasCompanyTags) {
+                    $builder->orLike('company_tags', $term, 'both');
+                }
+                $builder->orLike('short_description', $term, 'both');
+            }
+            $builder->groupEnd();
+            $count = (int) $builder->countAllResults();
+
+            $cards[] = [
+                'key' => $key,
+                'label' => $segment['label'],
+                'icon' => $segment['icon'],
+                'count' => $count,
+            ];
+        }
+
+        return $cards;
+    }
+
+    private function buildCompanyDiscoveryTags(array $company, bool $hasCompanyType, bool $hasCompanyTags, bool $hasVerified, bool $hasProfileStatus): array
+    {
+        $tags = [];
+        if ($hasCompanyType && trim((string) ($company['company_type'] ?? '')) !== '') {
+            $tags[] = trim((string) $company['company_type']);
+        }
+        if (trim((string) ($company['industry'] ?? '')) !== '') {
+            $tags[] = trim((string) $company['industry']);
+        }
+        if ($hasCompanyTags && trim((string) ($company['company_tags'] ?? '')) !== '') {
+            foreach (preg_split('/[,|;\n]+/', (string) $company['company_tags']) ?: [] as $tag) {
+                $tag = trim($tag);
+                if ($tag !== '') {
+                    $tags[] = $tag;
+                }
+            }
+        }
+        if ($hasVerified && (int) ($company['is_verified'] ?? 0) === 1) {
+            $tags[] = 'Verified';
+        } elseif ($hasProfileStatus) {
+            $status = trim((string) ($company['profile_status'] ?? ''));
+            if ($status !== '') {
+                $tags[] = ucfirst(str_replace('_', ' ', $status));
+            }
+        }
+
+        return array_slice(array_values(array_unique($tags)), 0, 4);
     }
 }
                 
