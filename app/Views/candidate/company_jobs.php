@@ -69,6 +69,7 @@ $jobExcerpt = static function ($value): string {
                 </div>
                 <div class="page-board-copy">
                     <h1><?= esc($companyName) ?></h1>
+                    <span id="companyJobsTotalCount" hidden><?= (int) $totalCount ?></span>
                     <div class="company-jobs-meta">
                         <?php if ($companyHq !== ''): ?><span><i class="fas fa-map-marker-alt"></i><?= esc($companyHq) ?></span><?php endif; ?>
                         <?php if ($companyIndustry !== ''): ?><span><i class="fas fa-building"></i><?= esc($companyIndustry) ?></span><?php endif; ?>
@@ -84,9 +85,9 @@ $jobExcerpt = static function ($value): string {
             </div>
         </div>
 
-        <div class="company-jobs-tabs" role="tablist" aria-label="Company sections">
-            <button type="button" class="company-jobs-tab" data-company-tab="overview" role="tab" aria-selected="false">Overview</button>
-            <button type="button" class="company-jobs-tab is-active" data-company-tab="jobs" role="tab" aria-selected="true">Jobs <span id="companyJobsTabCount"><?= (int) $totalCount ?></span></button>
+        <div class="company-jobs-tabs tab-pills" role="tablist" aria-label="Company sections">
+            <button type="button" class="tab-pill" data-company-tab="overview" role="tab" aria-selected="false">Overview</button>
+            <button type="button" class="tab-pill active" data-company-tab="jobs" role="tab" aria-selected="true">Jobs <span id="companyJobsTabCount" class="pill-count"><?= (int) $totalCount ?></span></button>
         </div>
 
         <section class="company-jobs-panel" data-company-panel="overview" hidden>
@@ -100,7 +101,7 @@ $jobExcerpt = static function ($value): string {
                     <?php if (!empty($companyTags)): ?>
                         <div class="company-jobs-pills">
                             <?php foreach ($companyTags as $tag): ?>
-                                <span><?= esc($tag) ?></span>
+                                <span class="skill-chip"><?= esc($tag) ?></span>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
@@ -151,10 +152,11 @@ $jobExcerpt = static function ($value): string {
                                     <span><i class="fas fa-calendar"></i><?= esc($formatDate($job['created_at'] ?? '')) ?></span>
                                 </div>
                                 <p><?= esc($jobExcerpt($job['description'] ?? '')) ?></p>
-                                <div class="company-jobs-pills">
-                                    <span><?= esc($job['employment_type'] ?? 'Full-time') ?></span>
-                                    <span>Portal posted</span>
-                                </div>
+                                <?php if (!empty($job['employment_type'])): ?>
+                                    <div class="company-jobs-pills">
+                                        <span class="skill-chip"><?= esc($job['employment_type']) ?></span>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             <a href="<?= base_url('job/' . (int) $job['id']) ?>" class="company-job-action">View Details</a>
                         </article>
@@ -174,12 +176,11 @@ $jobExcerpt = static function ($value): string {
                                         <span><i class="fas fa-layer-group"></i><?= esc($job['source_platform'] ?? 'Official/public source') ?></span>
                                         <span><i class="fas fa-clock"></i><?= esc($job['posted_at_raw'] ?? 'Recently') ?></span>
                                     </div>
-                                    <div class="company-jobs-pills">
-                                        <span><?= $isStale ? 'Needs refresh' : 'Available' ?></span>
-                                        <?php if (!empty($job['last_sync_at'])): ?>
-                                            <span>Checked <?= esc($formatDate($job['last_sync_at'])) ?></span>
-                                        <?php endif; ?>
-                                    </div>
+                                    <?php if (!empty($job['employment_type'])): ?>
+                                        <div class="company-jobs-pills">
+                                            <span class="skill-chip"><?= esc($job['employment_type']) ?></span>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <a href="<?= esc($applyUrl) ?>" target="_blank" rel="noopener" class="company-job-action">Apply <i class="fas fa-external-link-alt"></i></a>
                             </article>
@@ -203,15 +204,19 @@ $jobExcerpt = static function ($value): string {
                             <dt>Discovered</dt><dd id="companyJobsCachedCount"><?= (int) $externalCount ?> roles</dd>
                             <dt>Status</dt><dd>Active links only</dd>
                             <dt>Window</dt><dd>Last 30 days</dd>
+                            <dt>Last Checked</dt><dd id="companyJobsLastChecked"><?= esc($lastCheckedLabel) ?></dd>
                         </dl>
                     </article>
                     <article class="company-jobs-card">
-                        <h2>Before You Apply</h2>
+                        <div class="company-jobs-card-header">
+                            <h2>Before You Apply</h2>
+                            <button id="refreshDiscoveredJobsBtn" type="button" class="btn btn-outline-secondary btn-sm">Refresh openings</button>
+                        </div>
                         <p><?= esc($companyDescription) ?></p>
                         <?php if (!empty($companyTags)): ?>
                             <div class="company-jobs-pills">
                                 <?php foreach (array_slice($companyTags, 0, 5) as $tag): ?>
-                                    <span><?= esc($tag) ?></span>
+                                    <span class="skill-chip"><?= esc($tag) ?></span>
                                 <?php endforeach; ?>
                             </div>
                         <?php endif; ?>
@@ -262,10 +267,18 @@ $jobExcerpt = static function ($value): string {
 
     const setCounts = (externalCount) => {
         const total = portalCount + externalCount;
-        totalCountEl.textContent = String(total);
-        tabCountEl.textContent = String(total);
-        cachedCountEl.textContent = externalCount + (externalCount === 1 ? ' role' : ' roles');
-        emptyState.hidden = total > 0;
+        if (totalCountEl) {
+            totalCountEl.textContent = String(total);
+        }
+        if (tabCountEl) {
+            tabCountEl.textContent = String(total);
+        }
+        if (cachedCountEl) {
+            cachedCountEl.textContent = externalCount + (externalCount === 1 ? ' role' : ' roles');
+        }
+        if (emptyState) {
+            emptyState.hidden = total > 0;
+        }
     };
 
     const jobCardHtml = (job) => {
@@ -274,21 +287,18 @@ $jobExcerpt = static function ($value): string {
         const location = escapeHtml(job.location || 'Remote/Multiple');
         const source = escapeHtml(job.source_platform || job.source || 'Official/public source');
         const posted = escapeHtml(job.posted_at_raw || job.posted_date || 'Recently');
+        const employmentType = escapeHtml(job.employment_type || '');
 
         return `
             <article class="company-job-card company-job-card-external">
                 <div class="company-job-main">
-                    <div class="company-job-source">Discovered</div>
                     <h3><a href="${url}" target="_blank" rel="noopener">${title}</a></h3>
                     <div class="company-job-meta">
                         <span><i class="fas fa-map-marker-alt"></i>${location}</span>
                         <span><i class="fas fa-layer-group"></i>${source}</span>
                         <span><i class="fas fa-clock"></i>${posted}</span>
                     </div>
-                    <div class="company-jobs-pills">
-                        <span>Available</span>
-                        <span>Checked now</span>
-                    </div>
+                    ${employmentType ? `<div class="company-jobs-pills"><span class="skill-chip">${employmentType}</span></div>` : ''}
                 </div>
                 <a href="${url}" target="_blank" rel="noopener" class="company-job-action">Apply <i class="fas fa-external-link-alt"></i></a>
             </article>
@@ -298,7 +308,13 @@ $jobExcerpt = static function ($value): string {
     const renderExternalJobs = (jobs) => {
         const validJobs = Array.isArray(jobs) ? jobs.filter((job) => job && (job.apply_url || job.url)) : [];
         setCounts(validJobs.length);
-        lastCheckedEl.textContent = 'Last checked: Just now';
+        if (lastCheckedEl) {
+            lastCheckedEl.textContent = 'Last checked: Just now';
+        }
+
+        if (!externalList) {
+            return;
+        }
 
         if (validJobs.length === 0) {
             externalList.innerHTML = '<div class="company-jobs-note"><i class="fas fa-search"></i><span>No active public openings found right now.</span></div>';
@@ -314,13 +330,19 @@ $jobExcerpt = static function ($value): string {
     };
 
     const discoverJobs = (isAutomatic = false) => {
+        if (!externalList || !emptyState) {
+            return;
+        }
+
         const previousHtml = externalList.innerHTML;
-        const previousLastChecked = lastCheckedEl.textContent;
+        const previousLastChecked = lastCheckedEl ? lastCheckedEl.textContent : '';
         if (refreshBtn) {
             refreshBtn.disabled = true;
             refreshBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Checking...';
         }
-        lastCheckedEl.textContent = 'Checking public sources...';
+        if (lastCheckedEl) {
+            lastCheckedEl.textContent = 'Checking public sources...';
+        }
         emptyState.hidden = true;
         externalList.innerHTML = '<div class="company-jobs-note"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span>Finding current openings at ' + escapeHtml(companyName) + '...</span></div>';
 
@@ -347,9 +369,11 @@ $jobExcerpt = static function ($value): string {
             });
     };
 
-    refreshBtn?.addEventListener('click', () => discoverJobs(false));
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => discoverJobs(false));
+    }
 
-    if (initialExternalCount === 0) {
+    if (initialExternalCount === 0 && emptyState) {
         emptyState.hidden = initialTotalCount > 0;
         window.setTimeout(() => discoverJobs(true), 250);
     }
