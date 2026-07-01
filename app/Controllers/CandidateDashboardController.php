@@ -29,8 +29,8 @@ class CandidateDashboardController extends BaseController
             return redirect()->to('/login')->with('error', 'Please login to continue');
         }
         
-        // Get all applications for this candidate
-        $applications = $this->getApplicationsWithDetails($candidateId);
+        // Get all applications for this candidate without generating interview-prep content on the dashboard.
+        $applications = $this->getApplicationsWithDetails($candidateId, false);
         
         // Get statistics
         $stats = $this->calculateStats($candidateId);
@@ -106,7 +106,7 @@ class CandidateDashboardController extends BaseController
     /**
      * Get applications with all details including scores
      */
-    private function getApplicationsWithDetails($candidateId)
+    private function getApplicationsWithDetails($candidateId, bool $includeInterviewPrep = false)
     {
         $applicationModel = model('ApplicationModel');
         $db = \Config\Database::connect();
@@ -162,23 +162,7 @@ class CandidateDashboardController extends BaseController
         
         // Add next action for each application
         foreach ($applications as &$application) {
-            // Handle Client Company Visibility
-            if (($application['posted_for'] ?? '') === 'client') {
-                if (($application['client_disclosure'] ?? '') === 'visible' && !empty($application['client_company_name'])) {
-                    $application['company'] = $application['client_company_name'];
-                } else {
-                    $application['company'] = ($application['company'] ?? 'Recruiter') . ' (Hiring for a Client)';
-                }
-            }
-
-            // Handle Candidate Fee Disclaimer
-            if (isset($application['candidate_fee_allowed']) && (int)$application['candidate_fee_allowed'] === 0) {
-                $application['fee_disclaimer'] = 'Candidate fees are never allowed on this portal.';
-            }
-
-            $application['next_action'] = $this->getNextAction($application);
-            $application['interview_prep'] = $this->buildInterviewPrepCoach($application);
-            $application['interview_review_label'] = $this->formatInterviewReviewStatus((string) ($application['interview_review_status'] ?? ''));
+            $application = $this->enrichApplicationData($application, $includeInterviewPrep);
         }
 
         $applicationIds = array_values(array_filter(array_map(static function ($application) {
@@ -231,6 +215,29 @@ class CandidateDashboardController extends BaseController
         return $applications;
     }
 
+    protected function enrichApplicationData(array $application, bool $includeInterviewPrep = false): array
+    {
+        // Handle Client Company Visibility
+        if (($application['posted_for'] ?? '') === 'client') {
+            if (($application['client_disclosure'] ?? '') === 'visible' && !empty($application['client_company_name'])) {
+                $application['company'] = $application['client_company_name'];
+            } else {
+                $application['company'] = ($application['company'] ?? 'Recruiter') . ' (Hiring for a Client)';
+            }
+        }
+
+        // Handle Candidate Fee Disclaimer
+        if (isset($application['candidate_fee_allowed']) && (int) $application['candidate_fee_allowed'] === 0) {
+            $application['fee_disclaimer'] = 'Candidate fees are never allowed on this portal.';
+        }
+
+        $application['next_action'] = $this->getNextAction($application);
+        $application['interview_prep'] = $includeInterviewPrep ? $this->buildInterviewPrepCoach($application) : [];
+        $application['interview_review_label'] = $this->formatInterviewReviewStatus((string) ($application['interview_review_status'] ?? ''));
+
+        return $application;
+    }
+
     private function formatInterviewReviewStatus(string $status): string
     {
         return match ($status) {
@@ -245,7 +252,7 @@ class CandidateDashboardController extends BaseController
         };
     }
 
-    private function buildInterviewPrepCoach(array $application): array
+    private function buildInterviewPrepCoach(array $application, bool $useAiGeneration = true): array
     {
         if (in_array((string) ($application['status'] ?? ''), ['filtered_out', 'rejected', 'withdrawn', 'selected', 'hired'], true)) {
             return [];
@@ -312,6 +319,10 @@ class CandidateDashboardController extends BaseController
             'likely_questions' => array_slice($likelyQuestions, 0, 5),
             'source' => 'fallback',
         ];
+
+        if (!$useAiGeneration) {
+            return $fallback;
+        }
 
         return (new AiInterviewPrepCoach())->generate($application, $fallback);
     }
@@ -695,7 +706,7 @@ class CandidateDashboardController extends BaseController
     {
         $questions = [];
         if ($practiceApplication) {
-            $summaryPrep = $practiceApplication['interview_prep'] ?? $this->buildInterviewPrepCoach($practiceApplication);
+            $summaryPrep = $practiceApplication['interview_prep'] ?? $this->buildInterviewPrepCoach($practiceApplication, false);
             $questions = array_values(array_filter(array_map('trim', (array) ($summaryPrep['likely_questions'] ?? []))));
         }
 
@@ -1143,7 +1154,7 @@ class CandidateDashboardController extends BaseController
             return redirect()->to('/login')->with('error', 'Please login to continue');
         }
         
-        $applications = $this->getApplicationsWithDetails($candidateId);
+        $applications = $this->getApplicationsWithDetails($candidateId, true);
         $applications = $this->maskApplicationsList($applications);
         $calculatedExperience = model('UserModel')->calculateExperienceLevel((int) $candidateId);
 
@@ -1164,7 +1175,7 @@ class CandidateDashboardController extends BaseController
             return redirect()->to('/login')->with('error', 'Please login to continue');
         }
 
-        $applications = $this->getApplicationsWithDetails($candidateId);
+        $applications = $this->getApplicationsWithDetails($candidateId, true);
         $topSuggestedJobs = $this->getTopSuggestedJobs($candidateId, 6);
         $jobSearchStrategy = $this->buildJobSearchStrategyCoach($candidateId, $applications, $topSuggestedJobs);
         $applications = $this->maskApplicationsList($applications);
@@ -1217,7 +1228,7 @@ class CandidateDashboardController extends BaseController
 
     private function buildDetailedMockInterview(array $application): array
     {
-        $summaryPrep = $application['interview_prep'] ?? $this->buildInterviewPrepCoach($application);
+        $summaryPrep = $application['interview_prep'] ?? $this->buildInterviewPrepCoach($application, false);
         $policy = strtoupper((string) ($application['ai_interview_policy'] ?? JobModel::AI_POLICY_REQUIRED_HARD));
         $jobTitle = trim((string) ($application['job_title'] ?? 'this role'));
         $experienceLevel = trim((string) ($application['experience_level'] ?? ''));

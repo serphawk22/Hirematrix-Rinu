@@ -14,4 +14,12 @@ class CourseLessonModel extends Model
     {
         return $this->where('module_id', $moduleId)->orderBy('lesson_number', 'ASC')->findAll();
     }
+
+    public function getLessonSummariesByModule($moduleId)
+    {
+        return $this->select('id, module_id, lesson_number, title, is_completed')
+            ->where('module_id', $moduleId)
+            ->orderBy('lesson_number', 'ASC')
+            ->findAll();
+    }
 }

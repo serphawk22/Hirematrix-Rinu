@@ -132,6 +132,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* -- Nav section hover menus -- */
     const navHoverMode = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const candidateLeftnav = document.getElementById('candLeftnav');
+    const syncCandidateLeftnavShell = () => {
+        if (!candidateLeftnav || !navHoverMode.matches) {
+            document.body.classList.remove('candidate-leftnav-expanded');
+            return;
+        }
+        const hasFocusInside = candidateLeftnav.contains(document.activeElement);
+        document.body.classList.toggle(
+            'candidate-leftnav-expanded',
+            candidateLeftnav.matches(':hover') || hasFocusInside
+        );
+    };
+    if (candidateLeftnav) {
+        candidateLeftnav.addEventListener('mouseenter', syncCandidateLeftnavShell);
+        candidateLeftnav.addEventListener('mouseleave', syncCandidateLeftnavShell);
+        candidateLeftnav.addEventListener('focusin', syncCandidateLeftnavShell);
+        candidateLeftnav.addEventListener('focusout', function () {
+            window.setTimeout(syncCandidateLeftnavShell, 0);
+        });
+        if (navHoverMode.addEventListener) {
+            navHoverMode.addEventListener('change', syncCandidateLeftnavShell);
+        }
+        syncCandidateLeftnavShell();
+    }
     const leftnavSectionKeys = ['overview', 'jobs', 'companies', 'career'];
     const collapseOtherLeftnavSections = (activeKey) => {
         leftnavSectionKeys.forEach(function (otherKey) {

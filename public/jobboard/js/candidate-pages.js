@@ -741,6 +741,342 @@
                 }, 3000);
             });
         }
+
+        var escapeHtml = function (value) {
+            return String(value || '').replace(/[&<>"']/g, function (char) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[char];
+            });
+        };
+
+        var renderLessonInlineMarkdown = function (value) {
+            return escapeHtml(value)
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/__([^_]+)__/g, '<strong>$1</strong>')
+                .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+                .replace(/_([^_]+)_/g, '<em>$1</em>');
+        };
+
+        var renderLessonMarkdown = function (content) {
+            var lines = String(content || '').split(/\r?\n/);
+            var html = '';
+            var inList = false;
+            var inOrderedList = false;
+
+            lines.forEach(function (line) {
+                var trimmed = line.trim();
+                if (!trimmed) {
+                    if (inList) {
+                        html += '</ul>';
+                        inList = false;
+                    }
+                    if (inOrderedList) {
+                        html += '</ol>';
+                        inOrderedList = false;
+                    }
+                    return;
+                }
+
+                if (trimmed.indexOf('### ') === 0) {
+                    if (inList) {
+                        html += '</ul>';
+                        inList = false;
+                    }
+                    if (inOrderedList) {
+                        html += '</ol>';
+                        inOrderedList = false;
+                    }
+                    html += '<h4>' + renderLessonInlineMarkdown(trimmed.slice(4)) + '</h4>';
+                    return;
+                }
+
+                if (trimmed.indexOf('## ') === 0) {
+                    if (inList) {
+                        html += '</ul>';
+                        inList = false;
+                    }
+                    if (inOrderedList) {
+                        html += '</ol>';
+                        inOrderedList = false;
+                    }
+                    html += '<h3>' + renderLessonInlineMarkdown(trimmed.slice(3)) + '</h3>';
+                    return;
+                }
+
+                if (trimmed.indexOf('- ') === 0) {
+                    if (inOrderedList) {
+                        html += '</ol>';
+                        inOrderedList = false;
+                    }
+                    if (!inList) {
+                        html += '<ul>';
+                        inList = true;
+                    }
+                    html += '<li>' + renderLessonInlineMarkdown(trimmed.slice(2)) + '</li>';
+                    return;
+                }
+
+                var orderedMatch = trimmed.match(/^\d+[\.)]\s+(.+)$/);
+                if (orderedMatch) {
+                    if (inList) {
+                        html += '</ul>';
+                        inList = false;
+                    }
+                    if (!inOrderedList) {
+                        html += '<ol>';
+                        inOrderedList = true;
+                    }
+                    html += '<li>' + renderLessonInlineMarkdown(orderedMatch[1]) + '</li>';
+                    return;
+                }
+
+                if (
+                    trimmed.length <= 90 &&
+                    /:$/.test(trimmed) &&
+                    !/[.!?]:$/.test(trimmed)
+                ) {
+                    if (inList) {
+                        html += '</ul>';
+                        inList = false;
+                    }
+                    if (inOrderedList) {
+                        html += '</ol>';
+                        inOrderedList = false;
+                    }
+                    html += '<h4>' + renderLessonInlineMarkdown(trimmed.replace(/:$/, '')) + '</h4>';
+                    return;
+                }
+
+                if (inList) {
+                    html += '</ul>';
+                    inList = false;
+                }
+                if (inOrderedList) {
+                    html += '</ol>';
+                    inOrderedList = false;
+                }
+                html += '<p>' + renderLessonInlineMarkdown(trimmed) + '</p>';
+            });
+
+            if (inList) {
+                html += '</ul>';
+            }
+            if (inOrderedList) {
+                html += '</ol>';
+            }
+
+            return html;
+        };
+
+        var renderCourseLesson = function (lesson) {
+            var resources = Array.isArray(lesson.resources) ? lesson.resources : [];
+            var exercises = Array.isArray(lesson.exercises) ? lesson.exercises : [];
+            var resourceHtml = resources.length
+                ? resources.map(function (resource) {
+                    var safeResource = escapeHtml(resource);
+                    if (/^https?:\/\//i.test(resource)) {
+                        var host = resource;
+                        try { host = new URL(resource).host; } catch (e) {}
+                        return '<a href="' + safeResource + '" target="_blank" rel="noopener" class="course-resource-link"><i class="fas fa-link"></i> ' + escapeHtml(host) + '</a>';
+                    }
+                    return '<span class="course-resource-link muted">' + safeResource + '</span>';
+                }).join('')
+                : '<p class="text-muted mb-0">No additional resources for this lesson.</p>';
+            var exerciseHtml = exercises.length
+                ? exercises.map(function (exercise, index) {
+                    return '<div class="course-exercise-item"><strong>Exercise ' + (index + 1) + ':</strong> ' + escapeHtml(exercise) + '</div>';
+                }).join('')
+                : '<p class="text-muted mb-0">No exercises for this lesson.</p>';
+
+            return '<div class="course-lesson-content">' + renderLessonMarkdown(lesson.content || '') + '</div>' +
+                '<div class="mt-4"><h6 class="course-section-title"><i class="fas fa-book"></i> Learning Resources</h6><div>' + resourceHtml + '</div></div>' +
+                '<div class="mt-4"><h6 class="course-section-title"><i class="fas fa-pen"></i> Practice Exercises</h6>' + exerciseHtml + '</div>';
+        };
+
+        var loadCourseLesson = function (button) {
+                var lessonId = button.getAttribute('data-lesson-id');
+                var card = button.closest('[data-course-lesson-card]');
+                var detail = card ? card.querySelector('[data-course-lesson-detail]') : null;
+                if (!lessonId || !detail) {
+                    return;
+                }
+
+                var isOpen = !detail.hasAttribute('hidden');
+                if (isOpen) {
+                    detail.setAttribute('hidden', 'hidden');
+                    button.setAttribute('aria-expanded', 'false');
+                    button.innerHTML = '<i class="fas fa-book-open"></i> Open Lesson';
+                    return;
+                }
+
+                detail.removeAttribute('hidden');
+                button.setAttribute('aria-expanded', 'true');
+                button.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Lesson';
+
+                if (detail.getAttribute('data-loaded') === '1') {
+                    return;
+                }
+
+                detail.innerHTML = '<div class="course-lesson-loading"><span class="spinner-border spinner-border-sm" role="status"></span> Loading lesson content...</div>';
+                fetch(getBaseUrl() + '/career-transition/lesson/' + lessonId, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) {
+                        if (!data || !data.success || !data.lesson) {
+                            throw new Error('Lesson unavailable');
+                        }
+                        detail.innerHTML = renderCourseLesson(data.lesson);
+                        detail.setAttribute('data-loaded', '1');
+                    })
+                    .catch(function () {
+                        detail.innerHTML = '<div class="alert alert-warning mb-0">Unable to load this lesson. Please try again.</div>';
+                    });
+        };
+
+        var bindCourseLessonButtons = function (scope) {
+            (scope || document).querySelectorAll('.js-load-course-lesson').forEach(function (button) {
+                if (button.getAttribute('data-lesson-bound') === '1') {
+                    return;
+                }
+                button.setAttribute('data-lesson-bound', '1');
+                button.addEventListener('click', function () {
+                    loadCourseLesson(button);
+                });
+            });
+        };
+
+        var renderCourseGaps = function (gaps) {
+            gaps = Array.isArray(gaps) ? gaps : [];
+            if (!gaps.length) {
+                return '';
+            }
+            return gaps.map(function (gap) {
+                return '<span class="course-module-gap">' + escapeHtml(gap) + '</span>';
+            }).join('');
+        };
+
+        var renderCourseModuleHeader = function (module, completedLessons, lessonCount) {
+            var gaps = Array.isArray(module.covered_skill_gaps) ? module.covered_skill_gaps : [];
+            return '<div class="card-body d-flex justify-content-between align-items-start flex-wrap transition-header-row">' +
+                '<div>' +
+                    '<span class="badge badge-light mb-2">Module ' + escapeHtml(module.module_number || '') + '</span>' +
+                    '<h4 class="mb-1">' + escapeHtml(module.title || 'Course Module') + '</h4>' +
+                    '<p class="text-muted mb-0">' + escapeHtml(module.description || '') + '</p>' +
+                    '<small class="text-muted d-block mt-2"><i class="far fa-clock"></i> ' + escapeHtml(module.duration_weeks || 0) + ' week(s)</small>' +
+                    (gaps.length ? '<div class="course-module-gap-row mt-3"><span class="course-module-gap-label">This module covers</span>' + renderCourseGaps(gaps) + '</div>' : '') +
+                '</div>' +
+                '<div class="course-progress-summary"><strong>' + completedLessons + '/' + lessonCount + '</strong><span>lessons complete</span></div>' +
+            '</div>';
+        };
+
+        var renderCourseLessonSummary = function (lesson) {
+            var gaps = Array.isArray(lesson.covered_skill_gaps) ? lesson.covered_skill_gaps : [];
+            return '<div class="course-lesson-card mb-4 ' + (lesson.is_completed ? 'lesson-completed' : '') + '" data-course-lesson-card data-lesson-id="' + escapeHtml(lesson.id) + '">' +
+                '<div class="card-body">' +
+                    '<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">' +
+                        '<div class="d-flex align-items-center">' +
+                            '<span class="course-lesson-number">' + escapeHtml(lesson.lesson_number || '') + '</span>' +
+                            '<div>' +
+                                '<h5 class="mb-1">' + escapeHtml(lesson.title || 'Lesson') + '</h5>' +
+                                (gaps.length ? '<div class="course-module-gap-row"><span class="course-module-gap-label">Gaps</span>' + renderCourseGaps(gaps) + '</div>' : '') +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="course-lesson-actions">' +
+                            '<button type="button" class="btn btn-sm btn-outline-primary js-load-course-lesson" data-lesson-id="' + escapeHtml(lesson.id) + '" aria-expanded="false"><i class="fas fa-book-open"></i> Open Lesson</button>' +
+                            (lesson.is_completed
+                                ? '<span class="badge badge-primary"><i class="fas fa-check"></i> Complete</span>'
+                                : '<button type="button" class="btn btn-sm btn-primary" onclick="completeLesson(' + escapeHtml(lesson.id) + ')"><i class="fas fa-check"></i> Mark Complete</button>') +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="course-lesson-detail" data-course-lesson-detail hidden>' +
+                        '<div class="course-lesson-loading"><span class="spinner-border spinner-border-sm" role="status"></span> Loading lesson content...</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        };
+
+        var renderCourseModule = function (module, lessons) {
+            var content = document.getElementById('courseModuleContent');
+            var header = content ? content.querySelector('[data-course-module-header]') : null;
+            var lessonsList = content ? content.querySelector('[data-course-lessons-list]') : null;
+            if (!content || !header || !lessonsList || !module) {
+                return;
+            }
+
+            lessons = Array.isArray(lessons) ? lessons : [];
+            var completedLessons = lessons.filter(function (lesson) { return !!lesson.is_completed; }).length;
+            header.innerHTML = renderCourseModuleHeader(module, completedLessons, lessons.length);
+            lessonsList.innerHTML = lessons.length
+                ? lessons.map(renderCourseLessonSummary).join('')
+                : '<div class="alert alert-warning">No lessons available for this module.</div>';
+            content.setAttribute('data-current-module-id', module.id || '');
+
+            var title = document.querySelector('.course-content-jobboard .page-board-title');
+            if (title) {
+                title.textContent = module.title || 'Course Module';
+            }
+            bindCourseLessonButtons(lessonsList);
+        };
+
+        var setModuleLoading = function (isLoading) {
+            var content = document.getElementById('courseModuleContent');
+            if (!content) {
+                return;
+            }
+            content.classList.toggle('is-loading', !!isLoading);
+            if (isLoading) {
+                content.setAttribute('aria-busy', 'true');
+            } else {
+                content.removeAttribute('aria-busy');
+            }
+        };
+
+        bindCourseLessonButtons(document);
+
+        document.querySelectorAll('[data-course-module-tab]').forEach(function (tab) {
+            tab.addEventListener('click', function (event) {
+                var url = tab.getAttribute('href');
+                var moduleId = tab.getAttribute('data-module-id');
+                if (!url || !moduleId) {
+                    return;
+                }
+                event.preventDefault();
+
+                document.querySelectorAll('[data-course-module-tab]').forEach(function (item) {
+                    var active = item === tab;
+                    item.classList.toggle('is-active', active);
+                    item.setAttribute('aria-selected', active ? 'true' : 'false');
+                });
+
+                setModuleLoading(true);
+                fetch(url, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                })
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) {
+                        if (!data || !data.success || !data.module) {
+                            throw new Error('Module unavailable');
+                        }
+                        renderCourseModule(data.module, data.lessons || []);
+                        if (window.history && window.history.pushState) {
+                            window.history.pushState({ courseModuleId: moduleId }, '', url);
+                        }
+                    })
+                    .catch(function () {
+                        window.location.href = url;
+                    })
+                    .finally(function () {
+                        setModuleLoading(false);
+                    });
+            });
+        });
     });
 
     window.completeTask = function (taskId) {
@@ -758,6 +1094,24 @@
             })
             .catch(function () {
                 window.alert('Failed to mark task as complete. Please try again.');
+            });
+    };
+
+    window.completeLesson = function (lessonId) {
+        fetch(getBaseUrl() + '/career-transition/complete-lesson/' + lessonId, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+                if (data && data.success) {
+                    window.location.reload();
+                } else {
+                    window.alert('Failed to mark lesson as complete. Please try again.');
+                }
+            })
+            .catch(function () {
+                window.alert('Failed to mark lesson as complete. Please try again.');
             });
     };
 

@@ -7,7 +7,8 @@ $portalJobs = is_array($internal_jobs ?? null) ? $internal_jobs : [];
 $externalJobs = is_array($external_jobs ?? null) ? $external_jobs : [];
 $portalCount = count($portalJobs);
 $externalCount = count($externalJobs);
-$totalCount = (int) ($total_jobs ?? ($portalCount + $externalCount));
+$renderedJobCount = $portalCount + $externalCount;
+$totalCount = max((int) ($total_jobs ?? 0), $renderedJobCount);
 $company = is_array($company ?? null) ? $company : [];
 $companyLogo = trim((string) ($company['logo'] ?? ''));
 $companyWebsite = trim((string) ($company['website'] ?? ''));
@@ -222,6 +223,17 @@ $jobExcerpt = static function ($value): string {
         "'": '&#039;'
     }[char]));
 
+    const renderedJobCardCount = () => document.querySelectorAll('.company-jobs-list .company-job-card').length;
+
+    const syncEmptyStateVisibility = () => {
+        if (!emptyState) {
+            return;
+        }
+        if (renderedJobCardCount() > 0) {
+            emptyState.hidden = true;
+        }
+    };
+
     document.querySelectorAll('[data-company-tab]').forEach((tab) => {
         tab.addEventListener('click', () => {
             const target = tab.dataset.companyTab;
@@ -247,6 +259,25 @@ $jobExcerpt = static function ($value): string {
         }
         if (emptyState) {
             emptyState.hidden = total > 0;
+        }
+        syncEmptyStateVisibility();
+    };
+
+    const setEmptyStateContent = (title, message, iconClass = 'fas fa-search') => {
+        if (!emptyState) {
+            return;
+        }
+        emptyState.innerHTML = '<i class="' + escapeHtml(iconClass) + '"></i>' +
+            '<div><strong>' + escapeHtml(title) + '</strong><p>' + escapeHtml(message) + '</p></div>';
+    };
+
+    const showNoResultsState = () => {
+        setEmptyStateContent(
+            'No current openings found at ' + companyName,
+            'We checked public career sources and did not find active roles for this company right now.'
+        );
+        if (emptyState) {
+            emptyState.hidden = portalCount > 0;
         }
     };
 
@@ -284,13 +315,18 @@ $jobExcerpt = static function ($value): string {
 
         if (validJobs.length === 0) {
             externalList.innerHTML = '';
+            showNoResultsState();
             return;
         }
 
+        if (emptyState) {
+            emptyState.hidden = true;
+        }
         externalList.innerHTML = '';
         validJobs.forEach((job, index) => {
             window.setTimeout(() => {
                 externalList.insertAdjacentHTML('beforeend', jobCardHtml(job));
+                syncEmptyStateVisibility();
             }, index * 90);
         });
     };
@@ -302,6 +338,10 @@ $jobExcerpt = static function ($value): string {
 
         const previousHtml = externalList.innerHTML;
         emptyState.hidden = true;
+        setEmptyStateContent(
+            'Finding current openings at ' + companyName,
+            'We are checking public career sources. Results will appear here as soon as they are available.'
+        );
         externalList.innerHTML = '<div class="company-jobs-note"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span>Finding current openings at ' + escapeHtml(companyName) + '...</span></div>';
 
         fetch(discoverUrl + '?' + new URLSearchParams({ company: companyName, limit: '20' }).toString(), {
@@ -334,6 +374,9 @@ $jobExcerpt = static function ($value): string {
             .catch((error) => {
                 externalList.innerHTML = (previousHtml && !isAutomatic ? previousHtml : '') + '<div class="company-jobs-note"><i class="fas fa-exclamation-circle"></i><span>' + escapeHtml(error.message || 'Could not check public openings right now.') + '</span></div>';
                 setCounts(initialExternalCount);
+                if (emptyState) {
+                    emptyState.hidden = true;
+                }
             });
     };
 
@@ -341,6 +384,7 @@ $jobExcerpt = static function ($value): string {
         emptyState.hidden = false;
         window.setTimeout(() => discoverJobs(true), 250);
     }
+    syncEmptyStateVisibility();
 })();
 </script>
 

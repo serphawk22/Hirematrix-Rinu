@@ -413,6 +413,10 @@ class MncJobController extends BaseController
             return false;
         }
 
+        if ($this->isStaleExternalJob($job)) {
+            return false;
+        }
+
         $titleLower = strtolower($title);
         $genericTitlePatterns = [
             '/^jobs?\s+in\s+/i',
@@ -586,6 +590,87 @@ class MncJobController extends BaseController
         $value = preg_replace('/\b(limited|ltd|inc|llc|llp|plc|corp|corporation|company|co|technologies|technology|solutions|services|systems|group|holdings|private|pvt)\b/', ' ', $value) ?? '';
         $value = preg_replace('/\s+/', ' ', $value) ?? '';
         return str_replace(' ', '', trim($value));
+    }
+
+    private function isStaleExternalJob(array $job): bool
+    {
+        $postedAtRaw = trim((string) ($job['posted_at_raw'] ?? ''));
+        if ($postedAtRaw === '') {
+            return false;
+        }
+
+        $parsedDays = $this->parsePostedAtRawDays($postedAtRaw);
+        if ($parsedDays !== null && $parsedDays > 30) {
+            return true;
+        }
+
+        if (preg_match('/\b(month|year|yr|older than|more than|over)\b/i', $postedAtRaw) === 1
+            && preg_match('/\b(less than|under|<|in\s+)\b/i', $postedAtRaw) !== 1
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function parsePostedAtRawDays(string $postedAtRaw): ?int
+    {
+        $text = strtolower(trim($postedAtRaw));
+        if ($text === '' || $text === 'recently' || str_contains($text, 'just now') || str_contains($text, 'today') || str_contains($text, 'hour') || str_contains($text, 'minute') || str_contains($text, 'second')) {
+            return 0;
+        }
+
+        if (str_contains($text, 'yesterday')) {
+            return 1;
+        }
+
+        $relativePatterns = [
+            '/(\d+)\s*d(ays?)?\b/i' => 1,
+            '/(\d+)\s*day[s]?\b/i' => 1,
+            '/(\d+)\s*w(eeks?)?\b/i' => 7,
+            '/(\d+)\s*week[s]?\b/i' => 7,
+            '/(\d+)\s*mo(nths?)?\b/i' => 30,
+            '/(\d+)\s*month[s]?\b/i' => 30,
+            '/(\d+)\s*y(ears?)?\b/i' => 365,
+        ];
+
+        foreach ($relativePatterns as $pattern => $multiplier) {
+            if (preg_match($pattern, $text, $matches) === 1) {
+                return (int) $matches[1] * $multiplier;
+            }
+        }
+
+        if (preg_match('/(\d+)\s*day[s]?\s*ago/i', $text, $matches) === 1) {
+            return (int) $matches[1];
+        }
+        if (preg_match('/(\d+)\s*week[s]?\s*ago/i', $text, $matches) === 1) {
+            return (int) $matches[1] * 7;
+        }
+        if (preg_match('/(\d+)\s*month[s]?\s*ago/i', $text, $matches) === 1) {
+            return (int) $matches[1] * 30;
+        }
+        if (preg_match('/(\d+)\s*year[s]?\s*ago/i', $text, $matches) === 1) {
+            return (int) $matches[1] * 365;
+        }
+
+        if (preg_match('/\b(older than|more than|over)\s*(\d+)\s*(day|week|month|year)s?\b/i', $text, $matches) === 1) {
+            $value = (int) $matches[2];
+            $unit = strtolower($matches[3]);
+            return match ($unit) {
+                'day' => $value,
+                'week' => $value * 7,
+                'month' => $value * 30,
+                'year' => $value * 365,
+                default => null,
+            };
+        }
+
+        $timestamp = strtotime($postedAtRaw);
+        if ($timestamp !== false && $timestamp <= time()) {
+            return (int) floor((time() - $timestamp) / 86400);
+        }
+
+        return null;
     }
 
     private function looksLikeDirectJobUrl(string $url): bool

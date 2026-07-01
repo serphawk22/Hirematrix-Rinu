@@ -89,7 +89,7 @@ body.dark {
     background: var(--candidate-accent, var(--primary, #1FB7B5)) !important;
 }
 
-/* candidate progress fill uses a CSS variable for width */
+/* Candidate progress fill uses a CSS variable for width. */
 .candidate-progress-fill {
     height: 10px;
     border-radius: 999px;
@@ -348,10 +348,6 @@ body.dark {
 .career-transition-jobboard .transition-task-description {
     font-size: 0.95rem;
     line-height: 1.45;
-}
-
-.transition-btn-loading {
-    display: none;
 }
 
 .settings-jobboard .page-board-header {
@@ -2161,17 +2157,6 @@ body.dark {
     font-weight: 600;
 }
 
-.course-modules-jobboard,
-.course-content-jobboard {
-    background: #f8f9fa;
-}
-
-.course-modules-jobboard .content-wrap,
-.course-content-jobboard .content-wrap {
-    margin-top: 0;
-    padding-top: 34px !important;
-}
-
 .offline-badge {
     position: fixed;
     top: 20px;
@@ -2199,59 +2184,6 @@ body.dark {
     border: 1px solid #dce8ff;
     border-radius: 10px;
     padding: 18px;
-}
-
-.course-module-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    background: #fff;
-    border: 1px solid #e5ecfb;
-    border-left: 4px solid #3f63c8;
-    border-radius: 12px;
-    padding: 18px;
-    margin-bottom: 14px;
-    text-decoration: none;
-    color: inherit;
-    transition: all .2s ease;
-}
-
-.course-module-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(35, 54, 106, .1);
-    text-decoration: none;
-}
-
-.course-module-number {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: #3f63c8;
-    color: #fff;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.course-module-content {
-    flex: 1;
-}
-
-.course-module-duration {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: #eef4ff;
-    color: #2f57bd;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.course-module-arrow {
-    color: #2f57bd;
-    margin-top: 6px;
 }
 
 .course-lesson-card {
@@ -2826,25 +2758,6 @@ mark { background: #fef9c3; padding: 0 2px; border-radius: 3px; }
     .search-btn span { display: none; }
     .tab-pills { flex-wrap: wrap; }
     .job-card { flex-direction: column; }
-}
-
-/* ===== End Smart Jobs ===== */
-
-/* Inner page background alignment with base jobboard template */
-.dashboard-jobboard,
-.applications-jobboard,
-.profile-jobboard,
-.career-transition-jobboard,
-.career-history-jobboard,
-.my-bookings-jobboard,
-.book-slot-jobboard,
-.reschedule-slot-jobboard,
-.job-details-jobboard,
-.course-modules-jobboard,
-.course-content-jobboard,
-.jobs-page-jobboard,
-.company-profile-jobboard {
-    background-color: #f8f9fa !important;
 }
 
 /* ===== Company Profile Page ===== */
@@ -6041,7 +5954,6 @@ body.dark .radio-mark { border-color: #b8bec8; }
 .candidate-empty-icon{font-size:42px}
 .candidate-cover-letter-input{background:transparent;resize:none}
 .candidate-container-pad-y{padding:40px 0}
-.candidate-progress-fill{width:var(--candidate-progress,0%)}
 .candidate-dashed-card{border:2px dashed #007bff}
 .candidate-hidden{display:none}
 .candidate-message-list{max-height:420px;overflow-y:auto}
@@ -6766,28 +6678,6 @@ body.candidate-app{
     max-width: none;
 }
 
-/* Consistent vertical padding for all candidate page root wrappers */
-.candidate-app .applications-jobboard,
-.candidate-app .profile-jobboard,
-.candidate-app .career-transition-jobboard,
-.candidate-app .career-history-jobboard,
-.candidate-app .settings-jobboard,
-.candidate-app .notifications-jobboard,
-.candidate-app .jobs-page-jobboard,
-.candidate-app .job-details-jobboard,
-.candidate-app .saved-jobs-jobboard,
-.candidate-app .company-profile-jobboard,
-.candidate-app .mock-interview-jobboard,
-.candidate-app .book-slot-jobboard,
-.candidate-app .reschedule-slot-jobboard,
-.candidate-app .resume-studio-jobboard,
-.candidate-app .onboarding-jobboard,
-.candidate-app .strategy-jobboard,
-.candidate-app .course-modules-jobboard,
-.candidate-app .course-content-jobboard {
-    padding: 24px 0 80px !important;
-}
-
 /* Tighten on tablet/mobile */
 @media (max-width: 1099.98px) {
     .candidate-app main .container,
@@ -6797,26 +6687,6 @@ body.candidate-app{
     .candidate-app main .container-xl {
         padding-left: 16px !important;
         padding-right: 16px !important;
-    }
-
-    .candidate-app .applications-jobboard,
-    .candidate-app .profile-jobboard,
-    .candidate-app .career-transition-jobboard,
-    .candidate-app .career-history-jobboard,
-    .candidate-app .settings-jobboard,
-    .candidate-app .notifications-jobboard,
-    .candidate-app .jobs-page-jobboard,
-    .candidate-app .job-details-jobboard,
-    .candidate-app .saved-jobs-jobboard,
-    .candidate-app .mock-interview-jobboard,
-    .candidate-app .book-slot-jobboard,
-    .candidate-app .reschedule-slot-jobboard,
-    .candidate-app .resume-studio-jobboard,
-    .candidate-app .onboarding-jobboard,
-    .candidate-app .strategy-jobboard,
-    .candidate-app .course-modules-jobboard,
-    .candidate-app .course-content-jobboard {
-        padding: 16px 0 76px !important;
     }
 }
 
@@ -7804,11 +7674,6 @@ body.candidate-app{
     overflow: hidden;
 }
 
-.candidate-app .course-lesson-card,
-.candidate-app .course-module-card {
-    border-radius: var(--candidate-card-radius) !important;
-}
-
 
 /* ════════════════════════════════════════════
    CANDIDATE PAGES — SECTION-LEVEL ROUNDED PANELS
@@ -7932,12 +7797,6 @@ body.candidate-app{
 }
 
 
-.candidate-app .course-lesson-card,
-.candidate-app .course-module-card {
-    border-radius: var(--candidate-card-radius) !important;
-}
-
-
 /* Blog */
 .candidate-app .blog-sidebar-card,
 .candidate-app .blog-article-card,
@@ -8042,48 +7901,6 @@ body.candidate-app{
     padding-right: 0 !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
-}
-
-/* 5. Page header (.container wrapping page-board-header) also aligned */
-.candidate-app main > div > .container:first-child,
-.candidate-app main > .applications-jobboard > .container,
-.candidate-app main > .my-bookings-jobboard > .container,
-.candidate-app main > .profile-jobboard > .container,
-.candidate-app main > .settings-jobboard > .container,
-.candidate-app main > .career-transition-jobboard > .container,
-.candidate-app main > .career-history-jobboard > .container,
-.candidate-app main > .notifications-jobboard > .container,
-.candidate-app main > .book-slot-jobboard > .container,
-.candidate-app main > .reschedule-slot-jobboard > .container,
-.candidate-app main > .course-modules-jobboard > .container,
-.candidate-app main > .course-content-jobboard > .container {
-    max-width: none !important;
-    width: 100% !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-}
-
-/* 6. Top-level jobboard wrappers: no extra padding, fill the main column */
-.candidate-app main > div[class$="-jobboard"],
-.candidate-app main > .dashboard-jobboard,
-.candidate-app main > .applications-jobboard,
-.candidate-app main > .profile-jobboard,
-.candidate-app main > .settings-jobboard,
-.candidate-app main > .my-bookings-jobboard,
-.candidate-app main > .book-slot-jobboard,
-.candidate-app main > .reschedule-slot-jobboard,
-.candidate-app main > .career-transition-jobboard,
-.candidate-app main > .career-history-jobboard,
-.candidate-app main > .notifications-jobboard,
-.candidate-app main > .course-modules-jobboard,
-.candidate-app main > .course-content-jobboard,
-.candidate-app main > .jobs-page-jobboard,
-.candidate-app main > .strategy-jobboard,
-.candidate-app main > .mock-interview-jobboard,
-.candidate-app main > .onboarding-jobboard {
-    display: contents; /* let their children participate directly in main's flex flow */
 }
 
 /* 7. Page board header: consistent bottom spacing, no extra containers */
@@ -8225,28 +8042,6 @@ body.candidate-app{
 
 /* main fills all remaining width after the left nav offset */
 .candidate-app main {
-    width: 100%;
-    max-width: none !important;
-    box-sizing: border-box;
-}
-
-/* Every top-level jobboard wrapper fills full width */
-.candidate-app .dashboard-jobboard,
-.candidate-app .applications-jobboard,
-.candidate-app .profile-jobboard,
-.candidate-app .settings-jobboard,
-.candidate-app .my-bookings-jobboard,
-.candidate-app .book-slot-jobboard,
-.candidate-app .reschedule-slot-jobboard,
-.candidate-app .career-transition-jobboard,
-.candidate-app .career-history-jobboard,
-.candidate-app .notifications-jobboard,
-.candidate-app .jobs-page-jobboard,
-.candidate-app .strategy-jobboard,
-.candidate-app .mock-interview-jobboard,
-.candidate-app .onboarding-jobboard,
-.candidate-app .course-modules-jobboard,
-.candidate-app .course-content-jobboard {
     width: 100%;
     max-width: none !important;
     box-sizing: border-box;
@@ -13018,245 +12813,6 @@ body.candidate-app .page-board-kicker {
     gap: 0 !important;
 }
 
-/* Career transition course page theme sync. */
-body.candidate-app .course-modules-jobboard {
-    background: var(--candidate-bg, var(--background, #F8FCFB)) !important;
-}
-
-body.candidate-app .course-modules-jobboard .content-wrap {
-    padding-top: 0 !important;
-}
-
-body.candidate-app .course-modules-jobboard .page-board-header,
-body.candidate-app .course-modules-jobboard .course-header-card,
-body.candidate-app .course-modules-jobboard .course-module-card,
-body.candidate-app .course-modules-jobboard .alert-info {
-    background: var(--candidate-surface, var(--card, #ffffff)) !important;
-    border: 1px solid var(--candidate-line, var(--border, #D9ECE5)) !important;
-    border-radius: var(--candidate-card-radius) !important;
-    box-shadow: none !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-header-card {
-    margin-bottom: 14px !important;
-    overflow: hidden !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-header-card .card-body {
-    padding: 24px !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-header-card h3 {
-    margin: 0 0 4px !important;
-    color: var(--candidate-heading, var(--foreground, #16212B)) !important;
-    font-size: 1.45rem !important;
-    font-weight: 750 !important;
-    line-height: 1.25 !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-header-card h5 {
-    margin: 0 0 8px !important;
-    color: var(--candidate-heading, var(--foreground, #16212B)) !important;
-    font-size: 0.98rem !important;
-    font-weight: 800 !important;
-}
-
-body.candidate-app .course-modules-jobboard .text-muted,
-body.candidate-app .course-modules-jobboard .course-module-content p {
-    color: var(--candidate-muted, var(--muted-foreground, #64748B)) !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-download-box {
-    margin-top: 18px !important;
-    padding: 16px !important;
-    background: var(--candidate-accent-soft, var(--muted, #EDF8F5)) !important;
-    border: 1px solid rgba(31, 183, 181, 0.22) !important;
-    border-radius: 12px !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-download-box h6 {
-    margin: 0 0 8px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 7px !important;
-    color: var(--candidate-heading, var(--foreground, #16212B)) !important;
-    font-size: 1rem !important;
-    font-weight: 800 !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-download-box h6 i {
-    color: var(--primary-dark, #0D8A90) !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-download-box .btn,
-body.candidate-app .course-modules-jobboard #coursePdfBtn {
-    min-height: 40px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    border-radius: 6px !important;
-    background: transparent !important;
-    background-image: none !important;
-    border: 1.5px solid var(--primary, #1FB7B5) !important;
-    color: var(--primary, #1FB7B5) !important;
-    font-weight: 600 !important;
-    box-shadow: none !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-download-box .btn *,
-body.candidate-app .course-modules-jobboard #coursePdfBtn * {
-    color: inherit !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-module-grid {
-    display: grid !important;
-    gap: 14px !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-module-card {
-    min-height: 112px !important;
-    display: grid !important;
-    grid-template-columns: 44px minmax(0, 1fr) 24px !important;
-    align-items: center !important;
-    gap: 14px !important;
-    margin: 0 !important;
-    padding: 18px !important;
-    color: inherit !important;
-    text-decoration: none !important;
-    transition: border-color 0.18s ease, background-color 0.18s ease !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-module-card:hover,
-body.candidate-app .course-modules-jobboard .course-module-card:focus {
-    transform: none !important;
-    background: var(--candidate-accent-soft, var(--muted, #EDF8F5)) !important;
-    border-color: rgba(31, 183, 181, 0.38) !important;
-    text-decoration: none !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-module-number {
-    width: 44px !important;
-    height: 44px !important;
-    border-radius: 12px !important;
-    background: var(--candidate-accent-soft, var(--muted, #EDF8F5)) !important;
-    border: 1px solid rgba(31, 183, 181, 0.22) !important;
-    color: var(--primary-dark, #0D8A90) !important;
-    font-weight: 800 !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-module-content h5 {
-    margin: 0 0 6px !important;
-    color: var(--candidate-heading, var(--foreground, #16212B)) !important;
-    font-size: 1rem !important;
-    font-weight: 800 !important;
-    line-height: 1.35 !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-module-duration {
-    min-height: 24px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-    padding: 4px 9px !important;
-    border-radius: 999px !important;
-    background: var(--candidate-accent-soft, var(--muted, #EDF8F5)) !important;
-    border: 1px solid rgba(31, 183, 181, 0.22) !important;
-    color: var(--primary-dark, #0D8A90) !important;
-    font-size: 0.74rem !important;
-    font-weight: 800 !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-module-arrow,
-body.candidate-app .course-modules-jobboard .course-module-arrow i {
-    color: var(--primary-dark, #0D8A90) !important;
-}
-
-body.candidate-app .course-modules-jobboard .offline-badge {
-    top: 16px !important;
-    right: 16px !important;
-    box-shadow: none !important;
-    border: 1px solid rgba(31, 183, 181, 0.24) !important;
-    background: var(--candidate-accent-soft, var(--muted, #EDF8F5)) !important;
-    color: var(--primary-dark, #0D8A90) !important;
-    font-weight: 800 !important;
-}
-
-body.dark.candidate-app .course-modules-jobboard .page-board-header,
-body.dark.candidate-app .course-modules-jobboard .course-header-card,
-body.dark.candidate-app .course-modules-jobboard .course-module-card,
-body.dark.candidate-app .course-modules-jobboard .alert-info {
-    background: var(--candidate-surface, var(--card, #111111)) !important;
-    border-color: var(--candidate-line, var(--border, #272727)) !important;
-}
-
-body.dark.candidate-app .course-modules-jobboard .course-download-box,
-body.dark.candidate-app .course-modules-jobboard .course-module-number,
-body.dark.candidate-app .course-modules-jobboard .course-module-duration,
-body.dark.candidate-app .course-modules-jobboard .offline-badge {
-    background: var(--muted, #181818) !important;
-    border-color: rgba(31, 183, 181, 0.34) !important;
-}
-
-@media (max-width: 575.98px) {
-    body.candidate-app .course-modules-jobboard .course-header-card .card-body,
-    body.candidate-app .course-modules-jobboard .course-module-card {
-        padding: 14px !important;
-    }
-
-    body.candidate-app .course-modules-jobboard .course-module-card {
-        grid-template-columns: 40px minmax(0, 1fr) !important;
-    }
-
-    body.candidate-app .course-modules-jobboard .course-module-arrow {
-        display: none !important;
-    }
-}
-
-/* Course modules: keep rows flat like other candidate cards. */
-body.candidate-app .course-modules-jobboard .course-module-card,
-body.candidate-app .course-modules-jobboard .course-module-card:hover,
-body.candidate-app .course-modules-jobboard .course-module-card:focus {
-    background: var(--candidate-surface, var(--card, #ffffff)) !important;
-    border-color: var(--candidate-line, var(--border, #D9ECE5)) !important;
-    box-shadow: none !important;
-    transform: none !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-module-card:hover,
-body.candidate-app .course-modules-jobboard .course-module-card:focus {
-    border-color: rgba(31, 183, 181, 0.28) !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-module-number {
-    background: var(--candidate-accent-soft, var(--muted, #EDF8F5)) !important;
-    border: 0 !important;
-    color: var(--primary-dark, #0D8A90) !important;
-}
-
-body.candidate-app .course-modules-jobboard .course-module-duration {
-    background: transparent !important;
-    border-color: rgba(31, 183, 181, 0.22) !important;
-}
-
-body.dark.candidate-app .course-modules-jobboard .course-module-card,
-body.dark.candidate-app .course-modules-jobboard .course-module-card:hover,
-body.dark.candidate-app .course-modules-jobboard .course-module-card:focus {
-    background: var(--candidate-surface, var(--card, #111111)) !important;
-    border-color: var(--candidate-line, var(--border, #272727)) !important;
-}
-
-/* Course online status belongs to the page, not the viewport. */
-body.candidate-app .course-modules-jobboard .offline-badge {
-    position: static !important;
-    width: fit-content !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 0 var(--candidate-page-gutter, 16px) 10px auto !important;
-    padding: 7px 13px !important;
-}
-
 /* Career transition module content page theme sync. */
 body.candidate-app .course-content-jobboard {
     background: var(--candidate-bg, var(--background, #F8FCFB)) !important;
@@ -14823,30 +14379,6 @@ body.dark.candidate-app .modal-content {
     /* border-color: var(--candidate-line) !important; */
     color: var(--candidate-ink) !important;
     box-shadow: none !important;
-}
-
-body.dark.candidate-app .strategy-jobboard .strategy-sidebar,
-body.dark.candidate-app .strategy-jobboard .strategy-card,
-body.dark.candidate-app .strategy-jobboard .strategy-step-card,
-body.dark.candidate-app .strategy-jobboard .strategy-job,
-body.dark.candidate-app .career-transition-jobboard .career-transition-card,
-body.dark.candidate-app .career-transition-jobboard .career-transition-note,
-body.dark.candidate-app .career-transition-jobboard .career-transition-path,
-body.dark.candidate-app .career-transition-jobboard .transition-task-card,
-body.dark.candidate-app .career-transition-jobboard .dashboard-panel,
-body.dark.candidate-app .resume-studio-jobboard .resume-studio-main,
-body.dark.candidate-app .resume-studio-jobboard .resume-studio-side,
-body.dark.candidate-app .resume-studio-jobboard .generation-mode-card,
-body.dark.candidate-app .resume-studio-jobboard .generation-panel,
-body.dark.candidate-app .resume-studio-jobboard .template-card,
-body.dark.candidate-app .resume-studio-jobboard .resume-version-card,
-body.dark.candidate-app .profile-jobboard .profile-section,
-body.dark.candidate-app .course-modules-jobboard .course-module-card,
-body.dark.candidate-app .course-content-jobboard .course-lesson-card {
-    /* background-color: var(--candidate-surface) !important; */
-    background-image: none !important;
-    border-color: var(--candidate-line) !important;
-    color: var(--candidate-ink) !important;
 }
 
 body.dark.candidate-app .strategy-jobboard .strategy-step-card,
@@ -18128,26 +17660,6 @@ body.candidate-app .course-service-jobboard .content-wrap {
 body.candidate-app .premium-mentor-jobboard .page-board-header,
 body.candidate-app .career-transition-service-jobboard .page-board-header,
 body.candidate-app .resume-studio-jobboard .page-board-header,
-body.candidate-app .course-service-jobboard .page-board-header,
-body.candidate-app .premium-mentor-jobboard .dashboard-panel,
-body.candidate-app .career-transition-service-jobboard .dashboard-panel,
-body.candidate-app .career-transition-service-jobboard .career-transition-note,
-body.candidate-app .resume-studio-jobboard .dashboard-panel,
-body.candidate-app .resume-studio-jobboard .generation-mode-card,
-body.candidate-app .resume-studio-jobboard .generation-panel,
-body.candidate-app .resume-studio-jobboard .template-card,
-body.candidate-app .course-service-jobboard .course-header-card,
-body.candidate-app .course-service-jobboard .course-module-card,
-body.candidate-app .course-service-jobboard .course-lesson-card {
-    background: var(--candidate-surface, #ffffff) !important;
-    border: 1px solid var(--candidate-border, #D7E4EF) !important;
-    border-radius: 12px !important;
-    box-shadow: none !important;
-}
-
-body.candidate-app .premium-mentor-jobboard .page-board-header,
-body.candidate-app .career-transition-service-jobboard .page-board-header,
-body.candidate-app .resume-studio-jobboard .page-board-header,
 body.candidate-app .course-service-jobboard .page-board-header {
     margin: 0 0 16px !important;
     min-height: 0 !important;
@@ -18386,53 +17898,6 @@ body.candidate-app .career-transition-service-jobboard .section-subtitle,
 body.candidate-app .resume-studio-jobboard .section-subtitle,
 body.candidate-app .course-service-jobboard .text-muted {
     color: var(--candidate-muted, #64748B) !important;
-}
-
-body.candidate-app .course-service-jobboard .course-module-grid {
-    display: grid !important;
-    gap: 12px !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-}
-
-body.candidate-app .course-service-jobboard .course-module-card {
-    align-items: center !important;
-    display: grid !important;
-    gap: 12px !important;
-    grid-template-columns: 46px minmax(0, 1fr) 28px !important;
-    min-height: 128px !important;
-    padding: 16px !important;
-    text-decoration: none !important;
-}
-
-body.candidate-app .course-service-jobboard .course-module-number,
-body.candidate-app .course-service-jobboard .course-lesson-number,
-body.candidate-app .course-service-jobboard .course-module-arrow,
-body.candidate-app .course-service-jobboard .course-resource-link i {
-    background: var(--candidate-accent-soft, #EDF8F5) !important;
-    border: 1px solid rgba(31, 183, 181, 0.24) !important;
-    color: var(--primary-dark, #0D8A90) !important;
-}
-
-body.dark.candidate-app .premium-mentor-jobboard .service-content-canvas,
-body.dark.candidate-app .career-transition-service-jobboard .service-content-canvas,
-body.dark.candidate-app .resume-studio-jobboard .resume-studio-content-canvas,
-body.dark.candidate-app .course-service-jobboard,
-body.dark.candidate-app .premium-mentor-jobboard .page-board-header,
-body.dark.candidate-app .career-transition-service-jobboard .page-board-header,
-body.dark.candidate-app .resume-studio-jobboard .page-board-header,
-body.dark.candidate-app .course-service-jobboard .page-board-header,
-body.dark.candidate-app .premium-mentor-jobboard .dashboard-panel,
-body.dark.candidate-app .career-transition-service-jobboard .dashboard-panel,
-body.dark.candidate-app .career-transition-service-jobboard .career-transition-note,
-body.dark.candidate-app .resume-studio-jobboard .dashboard-panel,
-body.dark.candidate-app .resume-studio-jobboard .generation-mode-card,
-body.dark.candidate-app .resume-studio-jobboard .generation-panel,
-body.dark.candidate-app .resume-studio-jobboard .template-card,
-body.dark.candidate-app .course-service-jobboard .course-header-card,
-body.dark.candidate-app .course-service-jobboard .course-module-card,
-body.dark.candidate-app .course-service-jobboard .course-lesson-card {
-    background: var(--candidate-surface, #111111) !important;
-    /* border-color: var(--candidate-line, #272727) !important; */
 }
 
 body.dark.candidate-app .resume-studio-jobboard .resume-version-fade {
@@ -18777,10 +18242,6 @@ body.dark.candidate-app .blog-detail-jobboard .blog-meta-row span {
     body.candidate-app .resume-studio-jobboard .resume-studio-layout {
         grid-template-columns: 1fr !important;
     }
-
-    body.candidate-app .course-service-jobboard .course-module-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    }
 }
 
 @media (max-width: 991.98px) {
@@ -18814,10 +18275,6 @@ body.dark.candidate-app .blog-detail-jobboard .blog-meta-row span {
     body.candidate-app .career-transition-actions .btn {
         justify-content: center !important;
         width: 100% !important;
-    }
-
-    body.candidate-app .course-service-jobboard .course-module-grid {
-        grid-template-columns: 1fr !important;
     }
 }
 
@@ -18966,13 +18423,6 @@ body.candidate-app .course-service-jobboard .course-service-canvas > .container-
 
 body.candidate-app .course-service-jobboard .course-service-canvas .page-board-header {
     margin: 0 0 16px !important;
-}
-
-body.candidate-app .course-service-jobboard .course-service-canvas .course-header-card,
-body.candidate-app .course-service-jobboard .course-service-canvas .course-lesson-card,
-body.candidate-app .course-service-jobboard .course-service-canvas .course-module-card,
-body.candidate-app .course-service-jobboard .course-service-canvas .alert {
-    margin-bottom: 16px !important;
 }
 
 body.dark.candidate-app .course-service-jobboard .course-service-canvas {
@@ -23504,5 +22954,649 @@ html body.candidate-app main .company-jobs-page .company-jobs-card {
         opacity: 1 !important;
         visibility: visible !important;
         pointer-events: auto !important;
+    }
+}
+
+body.candidate-app .course-service-jobboard .course-gap-summary {
+    padding: 14px !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: 10px !important;
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+}
+
+body.candidate-app .course-service-jobboard .course-gap-summary h6,
+body.candidate-app .course-service-jobboard .course-module-gap-label {
+    color: var(--candidate-heading, #16212B) !important;
+    font-weight: 800 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-module-gap-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin: 8px 0 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-module-gap-label {
+    font-size: .76rem !important;
+}
+
+body.candidate-app .course-service-jobboard .course-module-gap {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 24px !important;
+    padding: 4px 8px !important;
+    border: 1px solid rgba(31, 183, 181, 0.24) !important;
+    border-radius: 999px !important;
+    background: rgba(31, 183, 181, 0.08) !important;
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    font-size: .74rem !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-progress-summary {
+    min-width: 136px !important;
+    padding: 12px 14px !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: 10px !important;
+    background: var(--candidate-surface-soft, #f8fbff) !important;
+    text-align: right !important;
+}
+
+body.candidate-app .course-service-jobboard .course-progress-summary strong,
+body.candidate-app .course-service-jobboard .course-progress-summary span {
+    display: block !important;
+}
+
+body.candidate-app .course-service-jobboard .course-progress-summary strong {
+    color: var(--candidate-heading, #16212B) !important;
+    font-size: 1.1rem !important;
+    line-height: 1.2 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-progress-summary span {
+    color: var(--candidate-muted, #64748B) !important;
+    font-size: .78rem !important;
+    font-weight: 700 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-module-tabs {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin: 0 0 16px !important;
+}
+
+body.candidate-app .course-service-jobboard .course-module-tab {
+    display: inline-flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    min-width: 180px !important;
+    max-width: 260px !important;
+    padding: 10px 12px !important;
+    border: 1px solid var(--candidate-line, #dfe6ee) !important;
+    border-radius: 10px !important;
+    background: var(--candidate-surface, #fff) !important;
+    color: var(--candidate-muted, #64748B) !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .course-service-jobboard .course-module-tab span {
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    font-size: .72rem !important;
+    font-weight: 800 !important;
+    letter-spacing: .03em !important;
+    text-transform: uppercase !important;
+}
+
+body.candidate-app .course-service-jobboard .course-module-tab strong {
+    color: var(--candidate-heading, #16212B) !important;
+    font-size: .9rem !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-module-tab:hover,
+body.candidate-app .course-service-jobboard .course-module-tab:focus,
+body.candidate-app .course-service-jobboard .course-module-tab.is-active {
+    border-color: rgba(31, 183, 181, 0.38) !important;
+    background: rgba(31, 183, 181, 0.08) !important;
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+}
+
+body.candidate-app .course-service-jobboard .course-module-tab:focus-visible {
+    outline: 0 !important;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, .14) !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-card.lesson-completed {
+    border-color: rgba(31, 183, 181, 0.34) !important;
+    background: linear-gradient(0deg, rgba(31, 183, 181, 0.04), rgba(31, 183, 181, 0.04)), var(--candidate-surface, #ffffff) !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-detail {
+    margin-top: 14px !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-loading {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: var(--candidate-muted, #64748B) !important;
+    font-size: .92rem !important;
+    font-weight: 700 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content h3,
+body.candidate-app .course-service-jobboard .course-lesson-content h4 {
+    margin: 18px 0 8px !important;
+    color: var(--candidate-heading, #16212B) !important;
+    font-weight: 800 !important;
+    line-height: 1.3 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content h3:first-child,
+body.candidate-app .course-service-jobboard .course-lesson-content h4:first-child {
+    margin-top: 0 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content h3 {
+    font-size: 1rem !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content h4 {
+    font-size: .92rem !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content p,
+body.candidate-app .course-service-jobboard .course-lesson-content li {
+    color: var(--candidate-muted, #64748B) !important;
+    font-size: .94rem !important;
+    line-height: 1.65 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content p {
+    margin: 0 0 10px !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content ul {
+    margin: 0 0 12px 18px !important;
+    padding: 0 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-gap-summary,
+body.dark.candidate-app .course-service-jobboard .course-progress-summary {
+    background: #181818 !important;
+    border-color: #272727 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-module-tab {
+    background: #111111 !important;
+    border-color: #272727 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-module-tab strong {
+    color: #f4f4f5 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-module-tab:hover,
+body.dark.candidate-app .course-service-jobboard .course-module-tab:focus,
+body.dark.candidate-app .course-service-jobboard .course-module-tab.is-active {
+    background: #181818 !important;
+    border-color: rgba(31, 183, 181, .45) !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-gap-summary h6,
+body.dark.candidate-app .course-service-jobboard .course-module-gap-label,
+body.dark.candidate-app .course-service-jobboard .course-progress-summary strong,
+body.dark.candidate-app .course-service-jobboard .course-lesson-content h3,
+body.dark.candidate-app .course-service-jobboard .course-lesson-content h4 {
+    color: #f4f4f5 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-progress-summary span,
+body.dark.candidate-app .course-service-jobboard .course-lesson-content p,
+body.dark.candidate-app .course-service-jobboard .course-lesson-content li {
+    color: #b8bec8 !important;
+}
+
+@media (max-width: 575.98px) {
+    body.candidate-app .course-service-jobboard .course-module-tab {
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    body.candidate-app .course-service-jobboard .course-progress-summary {
+        width: 100% !important;
+        text-align: left !important;
+    }
+}
+
+body.candidate-app .career-transition-service-jobboard .form-control:focus,
+body.candidate-app .career-transition-service-jobboard .form-control:focus-visible,
+body.candidate-app .career-transition-service-jobboard .form-control:active {
+    border-color: var(--candidate-accent, #1FB7B5) !important;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.14) !important;
+    outline: 0 !important;
+}
+
+body.dark.candidate-app .career-transition-service-jobboard .form-control:focus,
+body.dark.candidate-app .career-transition-service-jobboard .form-control:focus-visible,
+body.dark.candidate-app .career-transition-service-jobboard .form-control:active {
+    border-color: var(--candidate-accent, #1FB7B5) !important;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.18) !important;
+}
+
+/* Course lesson reading polish: make AI-style answers scan like structured guidance. */
+body.candidate-app .course-service-jobboard .course-lesson-content {
+    padding: 22px !important;
+    background: linear-gradient(180deg, rgba(31, 183, 181, 0.045), rgba(255, 255, 255, 0.96)) !important;
+    border: 1px solid rgba(31, 183, 181, 0.18) !important;
+    border-radius: 14px !important;
+    color: var(--candidate-muted, #526274) !important;
+    font-size: 1rem !important;
+    line-height: 1.78 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content h3 {
+    margin: 24px 0 12px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid rgba(31, 183, 181, 0.16) !important;
+    color: var(--candidate-heading, #16212B) !important;
+    font-size: 1.22rem !important;
+    font-weight: 850 !important;
+    line-height: 1.28 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content h4 {
+    margin: 22px 0 10px !important;
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    font-size: 1.05rem !important;
+    font-weight: 850 !important;
+    line-height: 1.35 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content h3:first-child,
+body.candidate-app .course-service-jobboard .course-lesson-content h4:first-child {
+    margin-top: 0 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content p {
+    margin: 0 0 14px !important;
+    color: var(--candidate-muted, #526274) !important;
+    font-size: 1rem !important;
+    line-height: 1.78 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content strong {
+    color: var(--candidate-heading, #16212B) !important;
+    font-weight: 850 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content em {
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    font-style: italic !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content code {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 22px !important;
+    padding: 2px 6px !important;
+    border: 1px solid rgba(31, 183, 181, 0.22) !important;
+    border-radius: 6px !important;
+    background: rgba(31, 183, 181, 0.08) !important;
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    font-family: Consolas, "Courier New", monospace !important;
+    font-size: .9em !important;
+    font-weight: 700 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content ul,
+body.candidate-app .course-service-jobboard .course-lesson-content ol {
+    display: grid !important;
+    gap: 8px !important;
+    margin: 0 0 16px 0 !important;
+    padding-left: 22px !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content li {
+    margin: 0 !important;
+    padding-left: 4px !important;
+    color: var(--candidate-muted, #526274) !important;
+    font-size: 1rem !important;
+    line-height: 1.65 !important;
+}
+
+body.candidate-app .course-service-jobboard .course-lesson-content li::marker {
+    color: var(--candidate-accent-dark, #0D8A90) !important;
+    font-weight: 850 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-lesson-content {
+    background: linear-gradient(180deg, rgba(31, 183, 181, 0.08), #181818) !important;
+    border-color: rgba(31, 183, 181, 0.28) !important;
+    color: #c9d1dc !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-lesson-content h3,
+body.dark.candidate-app .course-service-jobboard .course-lesson-content strong {
+    color: #f4f4f5 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-lesson-content h4,
+body.dark.candidate-app .course-service-jobboard .course-lesson-content em,
+body.dark.candidate-app .course-service-jobboard .course-lesson-content li::marker {
+    color: #50d4d2 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-lesson-content p,
+body.dark.candidate-app .course-service-jobboard .course-lesson-content li {
+    color: #c9d1dc !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-lesson-content code {
+    background: rgba(31, 183, 181, 0.12) !important;
+    border-color: rgba(31, 183, 181, 0.34) !important;
+    color: #50d4d2 !important;
+}
+
+/* Career transition dark theme: align with the neutral candidate pages, not the pine course tint. */
+body.dark.candidate-app .course-content-jobboard,
+body.dark.candidate-app .course-service-jobboard {
+    background: #0f0f0f !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .page-board-header,
+body.dark.candidate-app .course-service-jobboard .course-header-card,
+body.dark.candidate-app .course-service-jobboard .course-lesson-card,
+body.dark.candidate-app .course-service-jobboard .course-gap-summary,
+body.dark.candidate-app .course-service-jobboard .course-progress-summary {
+    background: #111111 !important;
+    border-color: #272727 !important;
+    box-shadow: none !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-lesson-card.lesson-completed {
+    background: #111111 !important;
+    border-color: #303030 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-module-tab {
+    background: #111111 !important;
+    border-color: #272727 !important;
+    color: #b8bec8 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-module-tab:hover,
+body.dark.candidate-app .course-service-jobboard .course-module-tab:focus,
+body.dark.candidate-app .course-service-jobboard .course-module-tab.is-active {
+    background: #181818 !important;
+    border-color: #1FB7B5 !important;
+    color: #f4f4f5 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-module-tab span,
+body.dark.candidate-app .course-service-jobboard .course-module-gap-label,
+body.dark.candidate-app .course-service-jobboard .course-section-title i {
+    color: #2dd4d1 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-module-tab strong,
+body.dark.candidate-app .course-service-jobboard h3,
+body.dark.candidate-app .course-service-jobboard h4,
+body.dark.candidate-app .course-service-jobboard h5,
+body.dark.candidate-app .course-service-jobboard .course-section-title,
+body.dark.candidate-app .course-service-jobboard .course-progress-summary strong {
+    color: #f4f4f5 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .text-muted,
+body.dark.candidate-app .course-service-jobboard .course-progress-summary span,
+body.dark.candidate-app .course-service-jobboard .course-lesson-loading {
+    color: #b8bec8 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-lesson-content {
+    background: #181818 !important;
+    background-image: none !important;
+    border: 1px solid #272727 !important;
+    color: #c9d1dc !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-lesson-content h3,
+body.dark.candidate-app .course-service-jobboard .course-lesson-content h4,
+body.dark.candidate-app .course-service-jobboard .course-lesson-content strong {
+    color: #f4f4f5 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-lesson-content p,
+body.dark.candidate-app .course-service-jobboard .course-lesson-content li {
+    color: #c9d1dc !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-lesson-content em,
+body.dark.candidate-app .course-service-jobboard .course-lesson-content li::marker {
+    color: #2dd4d1 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-resource-link,
+body.dark.candidate-app .course-service-jobboard .course-resource-link.muted,
+body.dark.candidate-app .course-service-jobboard .course-exercise-item,
+body.dark.candidate-app .course-service-jobboard .course-module-gap,
+body.dark.candidate-app .course-service-jobboard .badge-light,
+body.dark.candidate-app .course-service-jobboard .course-lesson-number {
+    background: #181818 !important;
+    border-color: #303030 !important;
+    color: #d7dde5 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-resource-link:hover,
+body.dark.candidate-app .course-service-jobboard .course-resource-link:focus {
+    border-color: #1FB7B5 !important;
+    color: #2dd4d1 !important;
+}
+
+body.dark.candidate-app .course-service-jobboard .course-lesson-content code {
+    background: #111111 !important;
+    border-color: #303030 !important;
+    color: #e5e7eb !important;
+}
+
+/* Recommended jobs: keep the card stage aligned with the full page shell. */
+body.candidate-app .jobs-page-jobboard > .container,
+body.candidate-app .jobs-page-jobboard > .site-section > .container {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: none !important;
+    padding-left: var(--candidate-page-gutter, 24px) !important;
+    padding-right: var(--candidate-page-gutter, 24px) !important;
+}
+
+body.candidate-app .jobs-page-jobboard .jobs-layout.jobs-layout-no-sidebar,
+body.candidate-app .jobs-page-jobboard .recommended-jobs-stage,
+body.candidate-app .jobs-page-jobboard .recommended-job-pane {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+body.candidate-app .jobs-page-jobboard .profile-strip,
+body.candidate-app .jobs-page-jobboard .tabs-row,
+body.candidate-app .jobs-page-jobboard .recommended-job-grid {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+body.candidate-app #courseModuleContent {
+    transition: opacity 0.18s ease !important;
+}
+
+body.candidate-app #courseModuleContent.is-loading {
+    opacity: 0.55 !important;
+    pointer-events: none !important;
+}
+
+/* Candidate shell: shrink and expand the content with the desktop left rail. */
+@media (min-width: 1100px) {
+    body.candidate-app {
+        --candidate-sb-collapsed: 72px;
+        --candidate-sb-expanded: 250px;
+        padding-left: var(--candidate-sb-collapsed) !important;
+        transition: padding-left 0.2s ease !important;
+    }
+
+    body.candidate-app.candidate-leftnav-expanded {
+        --candidate-sb-width: var(--candidate-sb-expanded);
+        --cln-w: var(--candidate-sb-expanded);
+        padding-left: var(--candidate-sb-expanded) !important;
+    }
+
+    body.candidate-app.candidate-leftnav-expanded .cand-leftnav {
+        width: var(--candidate-sb-expanded) !important;
+        box-shadow: 10px 0 28px rgba(15, 23, 42, 0.08) !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1099.98px) and (hover: hover) and (pointer: fine) {
+    html:not(.candidate-touch-device) body.candidate-app {
+        --candidate-sb-collapsed: 72px;
+        --candidate-sb-expanded: 250px;
+        --candidate-sb-width: var(--candidate-sb-collapsed);
+        --cln-w: var(--candidate-sb-collapsed);
+        padding-left: calc(var(--candidate-sb-collapsed) + 16px) !important;
+        transition: padding-left 0.2s ease !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav {
+        width: var(--candidate-sb-collapsed) !important;
+        overflow: hidden !important;
+        transition: width 0.2s ease, box-shadow 0.2s ease !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app.candidate-leftnav-expanded {
+        --candidate-sb-width: var(--candidate-sb-expanded);
+        --cln-w: var(--candidate-sb-expanded);
+        padding-left: calc(var(--candidate-sb-expanded) + 16px) !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app.candidate-leftnav-expanded .cand-leftnav {
+        width: var(--candidate-sb-expanded) !important;
+        box-shadow: 10px 0 28px rgba(15, 23, 42, 0.08) !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav__brand {
+        padding: 0 !important;
+        justify-content: center !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app.candidate-leftnav-expanded .cand-leftnav__brand {
+        padding: 0 14px !important;
+        justify-content: flex-start !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav__brand-text,
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav__user-info,
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav__user-more,
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav__group-label > span:not(.cand-leftnav__group-icon),
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav__chevron {
+        max-width: 0 !important;
+        overflow: hidden !important;
+        flex: 0 0 0 !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app.candidate-leftnav-expanded .cand-leftnav__brand-text,
+    html:not(.candidate-touch-device) body.candidate-app.candidate-leftnav-expanded .cand-leftnav__user-info,
+    html:not(.candidate-touch-device) body.candidate-app.candidate-leftnav-expanded .cand-leftnav__user-more,
+    html:not(.candidate-touch-device) body.candidate-app.candidate-leftnav-expanded .cand-leftnav__group-label > span:not(.cand-leftnav__group-icon),
+    html:not(.candidate-touch-device) body.candidate-app.candidate-leftnav-expanded .cand-leftnav__chevron {
+        max-width: 160px !important;
+        flex: 0 1 auto !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav__nav {
+        padding: 14px 10px !important;
+        gap: 10px !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav__group-label {
+        min-height: 48px !important;
+        padding: 8px 0 !important;
+        justify-content: center !important;
+        gap: 12px !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app.candidate-leftnav-expanded .cand-leftnav__group-label {
+        padding: 8px 10px !important;
+        justify-content: flex-start !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav__group-body,
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav__group-body.is-collapsed {
+        height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app.candidate-leftnav-expanded .cand-leftnav__group-body:not(.is-collapsed) {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 3px !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        padding: 0 0 6px !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav__user-btn {
+        padding: 8px 0 !important;
+        gap: 10px !important;
+        justify-content: center !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app.candidate-leftnav-expanded .cand-leftnav__user-btn {
+        padding: 8px 13px !important;
+        justify-content: flex-start !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    body.candidate-app .course-service-jobboard .course-lesson-content {
+        padding: 16px !important;
+        font-size: .96rem !important;
+    }
+
+    body.candidate-app .course-service-jobboard .course-lesson-content h3 {
+        font-size: 1.12rem !important;
+    }
+
+    body.candidate-app .course-service-jobboard .course-lesson-content h4 {
+        font-size: 1rem !important;
     }
 }
