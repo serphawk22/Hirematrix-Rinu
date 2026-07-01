@@ -130,22 +130,68 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* -- Nav section collapse -- */
+    /* -- Nav section hover menus -- */
+    const navHoverMode = window.matchMedia('(hover: hover) and (pointer: fine)');
     ['overview', 'jobs', 'discover', 'career'].forEach(function (key) {
-        const btn  = document.querySelector('[data-section="' + key + '"]');
+        const btn = document.querySelector('[data-section="' + key + '"]');
         const body = btn && btn.nextElementSibling;
-        if (!btn || !body) return;
-        try {
-            if (localStorage.getItem('navCollapsed_' + key) === '1') {
-                body.classList.add('is-collapsed');
-                btn.setAttribute('aria-expanded', 'false');
+        const section = btn && btn.closest('.cand-leftnav__section');
+        if (!btn || !body || !section) return;
+
+        const hasActiveLink = () => !!section.querySelector('.cand-leftnav__link.is-active');
+        const setCollapsed = (collapsed) => {
+            body.classList.toggle('is-collapsed', collapsed);
+            btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        };
+        const syncDesktopHoverState = () => {
+            section.classList.toggle('has-active-link', hasActiveLink());
+            if (navHoverMode.matches) {
+                setCollapsed(true);
+                return;
             }
-        } catch (e) {}
-        btn.addEventListener('click', function () {
+            try {
+                setCollapsed(localStorage.getItem('navCollapsed_' + key) === '1');
+            } catch (e) {
+                setCollapsed(false);
+            }
+        };
+
+        syncDesktopHoverState();
+
+        section.addEventListener('mouseenter', function () {
+            if (navHoverMode.matches) {
+                setCollapsed(false);
+            }
+        });
+
+        section.addEventListener('mouseleave', function () {
+            if (navHoverMode.matches) {
+                setCollapsed(true);
+            }
+        });
+
+        btn.addEventListener('click', function (event) {
+            if (navHoverMode.matches) {
+                event.preventDefault();
+                setCollapsed(body.classList.contains('is-collapsed') ? false : true);
+                return;
+            }
             const collapsed = body.classList.toggle('is-collapsed');
             btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
             try { localStorage.setItem('navCollapsed_' + key, collapsed ? '1' : '0'); } catch (e) {}
         });
+
+        btn.addEventListener('keydown', function (event) {
+            if (!navHoverMode.matches || (event.key !== 'Enter' && event.key !== ' ')) {
+                return;
+            }
+            event.preventDefault();
+            setCollapsed(body.classList.contains('is-collapsed') ? false : true);
+        });
+
+        if (navHoverMode.addEventListener) {
+            navHoverMode.addEventListener('change', syncDesktopHoverState);
+        }
     });
 
     /* -- Avatar Dropdown -- */
@@ -164,6 +210,36 @@ document.addEventListener('DOMContentLoaded', function () {
     const leftnavUserBtn  = document.getElementById('candidateLeftnavUserBtn');
     const leftnavDropdown = document.getElementById('candidateLeftnavUserDropdown');
     if (leftnavUserBtn && leftnavDropdown) {
+        const openLeftnavUserMenu = () => {
+            leftnavDropdown.classList.add('is-open');
+            leftnavUserBtn.setAttribute('aria-expanded', 'true');
+        };
+        const closeLeftnavUserMenu = () => {
+            leftnavDropdown.classList.remove('is-open');
+            leftnavUserBtn.setAttribute('aria-expanded', 'false');
+        };
+
+        if (leftnavUser) {
+            leftnavUser.addEventListener('mouseenter', function () {
+                if (navHoverMode && navHoverMode.matches) {
+                    openLeftnavUserMenu();
+                }
+            });
+
+            leftnavUser.addEventListener('mouseleave', function () {
+                if (navHoverMode && navHoverMode.matches) {
+                    closeLeftnavUserMenu();
+                }
+            });
+
+            leftnavUser.addEventListener('focusin', openLeftnavUserMenu);
+            leftnavUser.addEventListener('focusout', function (event) {
+                if (!leftnavUser.contains(event.relatedTarget)) {
+                    closeLeftnavUserMenu();
+                }
+            });
+        }
+
         leftnavUserBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const isOpen = leftnavDropdown.classList.toggle('is-open');
@@ -200,4 +276,3 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </html>
     
-

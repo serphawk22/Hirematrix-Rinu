@@ -11,7 +11,7 @@ $filters        = $filters ?? [];
             <div class="page-board-copy">
                 <span class="page-board-kicker"><i class="fas fa-building"></i> Employer directory</span>
                 <h1 class="page-board-title">Explore Companies</h1>
-                <p class="page-board-subtitle">Search employers, compare company profiles, and discover open roles.</p>
+                <p class="page-board-subtitle">Search employers, compare company profiles, and load available jobs.</p>
             </div>
         </div>
     </div>
@@ -238,7 +238,7 @@ document.addEventListener("DOMContentLoaded", function(){
                         $companyIndustry = trim((string) ($company['industry'] ?? ''));
                         $companyHq      = trim((string) ($company['hq'] ?? ''));
                         $companySize    = trim((string) ($company['size'] ?? ''));
-                        $openJobsCount  = (int) ($company['open_jobs_count'] ?? 0);
+                        $companyJobsUrl = base_url('candidate/company-jobs/' . rawurlencode($companyName));
                         ?>
                         <article class="job-card company-directory-card" data-company-id="<?= (int) $company['id'] ?>" data-company-name="<?= esc($companyName) ?>">
                             <div class="job-card-icon company-directory-logo">
@@ -254,19 +254,14 @@ document.addEventListener("DOMContentLoaded", function(){
                             <p class="job-card-company"><?= esc($companyIndustry ?: 'Industry not specified') ?></p>
                             <div class="job-card-meta company-directory-meta">
                                 <span><i class="fas fa-map-pin"></i> <?= esc($companyHq ?: 'HQ not specified') ?></span>
-                                <span class="company-job-count">
-                                    <i class="fas fa-briefcase"></i>
-                                    <span class="company-job-count-number"><?= $openJobsCount ?></span>
-                                    <span class="company-job-count-label">open jobs</span>
-                                </span>
                             </div>
                             <div class="job-card-tags company-directory-tags">
                                 <span class="badge badge-primary"><?= esc($companySize ?: 'Size not specified') ?></span>
                             </div>
                             <div class="company-directory-actions">
-                                <a href="<?= base_url('jobs?company=' . urlencode($companyName)) ?>"
+                                <a href="<?= esc($companyJobsUrl) ?>"
                                    class="company-directory-jobs-link">
-                                    <i class="fas fa-briefcase mr-1"></i> <span class="jobs-link-text">See live jobs</span>
+                                    <i class="fas fa-briefcase mr-1"></i> <span class="jobs-link-text">Load jobs</span>
                                 </a>
                             </div>
                         </article>
@@ -305,17 +300,15 @@ document.addEventListener("DOMContentLoaded", function(){
             return $('<div>').text(value || '').html();
         }
 
-        // Update the job count and "See live jobs" link on the company card
+        // Keep the company card action pointed at the company jobs loader.
         function updateCompanyCardLiveJobs(result) {
-            if (!result || !result.saved_company_id || !result.count || result.count <= 0) return;
+            if (!result || !result.saved_company_id) return;
             var $card = $('[data-company-id="' + result.saved_company_id + '"]');
             if (!$card.length) return;
-            $card.find('.company-job-count-number').text(result.count);
-            $card.find('.company-job-count-label').text('live jobs');
             var companyName = $card.data('company-name') || '';
             $card.find('.company-directory-jobs-link')
-                .attr('href', '<?= base_url("jobs?company=") ?>' + encodeURIComponent(companyName))
-                .find('span.jobs-link-text').text('See ' + result.count + ' live jobs').end()
+                .attr('href', '<?= base_url("candidate/company-jobs/") ?>' + encodeURIComponent(companyName))
+                .find('span.jobs-link-text').text('Load jobs').end()
                 .removeClass('d-none');
         }
 
@@ -324,7 +317,7 @@ document.addEventListener("DOMContentLoaded", function(){
             if (!info || !info.name) return '';
             var initial = (info.name.charAt(0) || 'C').toUpperCase();
             var companyName = info.name;
-            var jobsUrl = '<?= base_url('jobs?company=') ?>' + encodeURIComponent(companyName);
+            var jobsUrl = '<?= base_url('candidate/company-jobs/') ?>' + encodeURIComponent(companyName);
 
             var html = '<article class="job-card company-directory-card mb-4" data-company-id="' + (savedCompanyId || 0) + '" data-company-name="' + escHtml(companyName) + '">';
             html += '<div class="job-card-icon company-directory-logo">';
@@ -347,9 +340,9 @@ document.addEventListener("DOMContentLoaded", function(){
             html += '<span class="badge badge-primary">' + escHtml(info.size || 'Size not specified') + '</span>';
             html += '</div>';
             html += '<div class="company-directory-actions">';
-            // "See live jobs" — shown after job count is fetched
+            // Link to the jobs loader.
             html += '<a href="' + jobsUrl + '" class="company-directory-jobs-link">';
-            html += '<i class="fas fa-briefcase mr-1"></i> <span class="jobs-link-text">See live jobs</span></a>';
+            html += '<i class="fas fa-briefcase mr-1"></i> <span class="jobs-link-text">Load jobs</span></a>';
             html += '</div>';
             html += '</article>';
             return html;
@@ -375,7 +368,7 @@ document.addEventListener("DOMContentLoaded", function(){
                     var savedId = result.saved_company_id || 0;
                     var html = renderCompanyCard(result.company_info || { name: companyName }, savedId);
                     $('#companySearchResults').html(html);
-                    // Fetch job count in background to update the card's "See live jobs" button
+                    // Keep the generated company card linked to the jobs loader.
                     fetchCompanyJobCount(companyName, fallbackJobLimit);
                 })
                 .fail(function (xhr) {

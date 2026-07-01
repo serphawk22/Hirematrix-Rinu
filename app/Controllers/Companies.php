@@ -298,7 +298,7 @@ class Companies extends Controller
                 'industry'    => 'Hiring lead',
                 'description' => trim((string) ($result['content'] ?? 'Found from Tavily search results. Verify openings on the company careers page.')),
                 'open_jobs'   => 0,
-                'jobs_url'    => base_url('jobs?' . http_build_query(['company' => $name, 'location' => $city])),
+                'jobs_url'    => base_url('candidate/company-jobs/' . rawurlencode($name)),
                 'source'      => 'web',
             ];
 
@@ -408,7 +408,7 @@ class Companies extends Controller
             'industry'    => trim((string) ($row['industry'] ?? 'Technology')),
             'description' => trim((string) ($row['short_description'] ?? 'Explore this company profile and current job openings on HireMatrix.')),
             'open_jobs'   => $openJobs,
-            'jobs_url'    => base_url('jobs?' . http_build_query(['company' => $name])),
+            'jobs_url'    => base_url('candidate/company-jobs/' . rawurlencode($name)),
             'source'      => 'portal',
         ];
     }

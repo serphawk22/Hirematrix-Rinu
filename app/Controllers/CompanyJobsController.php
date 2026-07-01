@@ -2,23 +2,21 @@
 
 namespace App\Controllers;
 
-use App\Libraries\JobAggregator;
+use App\Models\MncJobModel;
 
 class CompanyJobsController extends BaseController
 {
-    private $jobAggregator;
     private $jobModel;
     private $companyModel;
 
     public function __construct()
     {
-        $this->jobAggregator = new JobAggregator();
         $this->jobModel = model('JobModel');
         $this->companyModel = model('CompanyModel');
     }
 
     /**
-     * Search jobs by company
+     * Search portal-posted jobs by company.
      */
     public function searchByCompany(string $companyName = '')
     {
@@ -30,52 +28,97 @@ class CompanyJobsController extends BaseController
         }
 
         $companyName = urldecode($companyName);
-        $page = (int) $this->request->getGet('page') ?? 1;
-        $limit = (int) $this->request->getGet('limit') ?? 25;
-
-        // Get internal jobs first
         $internalJobs = $this->getInternalJobsByCompany($companyName);
-
-        // Get external jobs from Indeed
-        $externalJobs = $this->jobAggregator->fetchJobsByCompany($companyName, $limit);
-
-        // Merge and deduplicate
-        $allJobs = array_merge($internalJobs, $externalJobs);
+        $externalJobs = $this->getCachedDiscoveredJobsByCompany($companyName);
 
         return $this->response->setJSON([
             'status' => 'success',
             'company' => $companyName,
             'internal_count' => count($internalJobs),
             'external_count' => count($externalJobs),
-            'total_count' => count($allJobs),
-            'jobs' => $allJobs
+            'total_count' => count($internalJobs) + count($externalJobs),
+            'jobs' => $internalJobs,
+            'discovered_jobs' => $externalJobs
         ]);
     }
 
     /**
-     * Get internal jobs by company
+     * Get open jobs that belong to a company profile or match its name.
      */
     private function getInternalJobsByCompany(string $companyName): array
     {
-        // Find company
         $company = $this->companyModel
-            ->where('LOWER(name)', 'LIKE', '%' . strtolower($companyName) . '%')
+            ->like('name', $companyName, 'both')
             ->first();
 
-        if (!$company) {
-            return [];
+        $builder = $this->jobModel
+            ->where('status', 'open')
+            ->orderBy('created_at', 'DESC');
+
+        if ($company) {
+            $builder->groupStart()
+                ->where('company_id', (int) $company['id'])
+                ->orLike('company', (string) ($company['name'] ?? $companyName), 'both')
+                ->groupEnd();
+        } else {
+            $builder->like('company', $companyName, 'both');
         }
 
-        // Get jobs for this company
-        return $this->jobModel
-            ->where('company_id', $company['id'])
-            ->where('status', 'active')
-            ->orderBy('posted_at', 'DESC')
-            ->findAll();
+        return $builder->findAll(50);
     }
 
     /**
-     * View company jobs page
+     * Get discovered jobs already stored by the MNC ingestor.
+     *
+     * These are not scraped during page load. A job is treated as live enough
+     * for quick display only when it is active, has a valid apply URL, and was
+     * checked recently.
+     */
+    private function getCachedDiscoveredJobsByCompany(string $companyName, int $limit = 50): array
+    {
+        $limit = max(1, min(100, $limit));
+        $freshAfter = date('Y-m-d H:i:s', strtotime('-30 days'));
+
+        try {
+            $model = new MncJobModel();
+            $jobs = $model->where('company_name', $companyName)
+                ->where('is_active', 1)
+                ->where('last_sync_at >=', $freshAfter)
+                ->where('apply_url IS NOT NULL', null, false)
+                ->where('apply_url !=', '')
+                ->orderBy('last_sync_at', 'DESC')
+                ->limit($limit)
+                ->findAll();
+
+            if (empty($jobs)) {
+                $jobs = $model->like('company_name', $companyName, 'both')
+                    ->where('is_active', 1)
+                    ->where('last_sync_at >=', $freshAfter)
+                    ->where('apply_url IS NOT NULL', null, false)
+                    ->where('apply_url !=', '')
+                    ->orderBy('last_sync_at', 'DESC')
+                    ->limit($limit)
+                    ->findAll();
+            }
+
+            return array_values(array_filter(array_map(static function (array $job): array {
+                $url = trim((string) ($job['apply_url'] ?? ''));
+                if ($url === '' || !filter_var($url, FILTER_VALIDATE_URL)) {
+                    return [];
+                }
+
+                $lastSyncAt = (string) ($job['last_sync_at'] ?? '');
+                $job['is_stale'] = $lastSyncAt !== '' && strtotime($lastSyncAt) < strtotime('-7 days');
+                return $job;
+            }, $jobs), static fn (array $job): bool => !empty($job)));
+        } catch (\Throwable $e) {
+            log_message('error', 'CompanyJobsController cached discovered jobs failed: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * View a company-specific open jobs page.
      */
     public function viewCompanyJobs(string $companyName = '')
     {
@@ -84,38 +127,31 @@ class CompanyJobsController extends BaseController
         }
 
         $companyName = urldecode($companyName);
-
-        // Get internal jobs
         $internalJobs = $this->getInternalJobsByCompany($companyName);
+        $externalJobs = $this->getCachedDiscoveredJobsByCompany($companyName);
 
-        // Get external jobs from Indeed
-        $externalJobs = $this->jobAggregator->fetchJobsByCompany($companyName, 50);
-
-        // Get company info
         $company = $this->companyModel
-            ->where('LOWER(name)', 'LIKE', '%' . strtolower($companyName) . '%')
+            ->like('name', $companyName, 'both')
             ->first();
 
-        $data = [
+        return view('candidate/company_jobs', [
             'title' => "Jobs at {$companyName}",
             'company_name' => $companyName,
             'company' => $company,
             'internal_jobs' => $internalJobs,
             'external_jobs' => $externalJobs,
             'total_jobs' => count($internalJobs) + count($externalJobs)
-        ];
-
-        return view('candidate/company_jobs', $data);
+        ]);
     }
 
     /**
-     * Search jobs by keyword and company
+     * Search portal-posted open jobs.
      */
     public function search()
     {
         $keyword = $this->request->getGet('q') ?? '';
         $company = $this->request->getGet('company') ?? '';
-        $limit = (int) $this->request->getGet('limit') ?? 25;
+        $limit = (int) ($this->request->getGet('limit') ?? 25);
 
         if (empty($keyword) && empty($company)) {
             return $this->response->setJSON([
@@ -124,7 +160,19 @@ class CompanyJobsController extends BaseController
             ]);
         }
 
-        $jobs = $this->jobAggregator->searchJobs($keyword, $company, $limit);
+        $builder = $this->jobModel->where('status', 'open');
+        if ($keyword !== '') {
+            $builder->groupStart()
+                ->like('title', $keyword, 'both')
+                ->orLike('required_skills', $keyword, 'both')
+                ->orLike('category', $keyword, 'both')
+                ->groupEnd();
+        }
+        if ($company !== '') {
+            $builder->like('company', $company, 'both');
+        }
+
+        $jobs = $builder->orderBy('created_at', 'DESC')->findAll($limit);
 
         return $this->response->setJSON([
             'status' => 'success',
@@ -136,8 +184,7 @@ class CompanyJobsController extends BaseController
     }
 
     /**
-     * Clear cache for a specific company
-     * Usage: /candidate/company-jobs/clear-cache/McDonald's
+     * Legacy endpoint kept for old UI calls.
      */
     public function clearCache(string $companyName = '')
     {
@@ -148,35 +195,26 @@ class CompanyJobsController extends BaseController
             ]);
         }
 
-        $companyName = urldecode($companyName);
-        $cleared = $this->jobAggregator->clearCompanyCache($companyName);
-
         return $this->response->setJSON([
             'status' => 'success',
-            'message' => "Cache cleared for {$companyName}",
-            'cleared' => $cleared
+            'message' => 'Company job list loads portal-posted and discovered jobs.',
+            'cleared' => true
         ]);
     }
 
     /**
-     * Clear all job caches
-     * Usage: /candidate/company-jobs/clear-all-cache
+     * Legacy endpoint kept for old UI calls.
      */
     public function clearAllCache()
     {
-        $cache = service('cache');
-        $cache->clean();
-
         return $this->response->setJSON([
             'status' => 'success',
-            'message' => 'All job caches cleared successfully'
+            'message' => 'Company job list loads portal-posted and discovered jobs.'
         ]);
     }
 
     /**
-     * Get company suggestions for autocomplete
-     * Merges internal DB + Clearbit Autocomplete API (free, no key needed)
-     * Usage: /candidate/company-jobs/suggestions?q=goo
+     * Get company suggestions from the portal directory.
      */
     public function suggestions()
     {
@@ -186,81 +224,22 @@ class CompanyJobsController extends BaseController
             return $this->response->setJSON(['status' => 'success', 'suggestions' => []]);
         }
 
-        $cacheKey = 'company_suggestions_' . md5(strtolower($query));
-        $cache    = service('cache');
-
-        if ($cached = $cache->get($cacheKey)) {
-            return $this->response->setJSON(['status' => 'success', 'suggestions' => $cached]);
-        }
-
-        $seen        = [];
-        $suggestions = [];
-
-        // 1. Internal DB companies (highest priority)
         $dbCompanies = $this->companyModel
-            ->select('name, industry, hq')
+            ->select('name, industry, hq, logo, website')
             ->like('name', $query, 'both')
             ->orderBy('name', 'ASC')
-            ->limit(5)
+            ->limit(10)
             ->findAll();
 
-        foreach ($dbCompanies as $c) {
-            $key = strtolower($c['name']);
-            if (!isset($seen[$key])) {
-                $suggestions[] = [
-                    'name'   => $c['name'],
-                    'domain' => '',
-                    'logo'   => '',
-                    'source' => 'internal',
-                ];
-                $seen[$key] = true;
-            }
+        $suggestions = [];
+        foreach ($dbCompanies as $company) {
+            $suggestions[] = [
+                'name' => (string) ($company['name'] ?? ''),
+                'domain' => parse_url((string) ($company['website'] ?? ''), PHP_URL_HOST) ?: '',
+                'logo' => (string) ($company['logo'] ?? ''),
+                'source' => 'directory',
+            ];
         }
-
-        // 2. Clearbit Autocomplete API — free, no key, returns real companies with logos
-        try {
-            $client   = new \GuzzleHttp\Client();
-            $response = $client->get('https://autocomplete.clearbit.com/v1/companies/suggest', [
-                'query'   => ['query' => $query],
-                'headers' => ['Accept' => 'application/json'],
-                'timeout'         => 3, // Reduced to ensure snappy UI responsiveness
-                'connect_timeout' => 2, // Fail fast if DNS resolution hangs
-                'http_errors' => false,
-            ]);
-
-            if ($response->getStatusCode() === 200) {
-                $results = json_decode((string) $response->getBody(), true) ?? [];
-
-                foreach ($results as $item) {
-                    $name = trim((string) ($item['name'] ?? ''));
-                    $key  = strtolower($name);
-
-                    if (empty($name) || isset($seen[$key])) {
-                        continue;
-                    }
-
-                    $suggestions[] = [
-                        'name'   => $name,
-                        'domain' => $item['domain'] ?? '',
-                        'logo'   => !empty($item['logo']) ? $item['logo'] : '',
-                        'source' => 'clearbit',
-                    ];
-                    $seen[$key] = true;
-
-                    if (count($suggestions) >= 10) {
-                        break;
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            // Log as warning since external service dependencies can be flaky
-            log_message('warning', 'Clearbit suggestions service error: ' . $e->getMessage());
-        }
-
-        $suggestions = array_slice($suggestions, 0, 10);
-
-        // Cache for 24 hours — company names rarely change
-        $cache->save($cacheKey, $suggestions, 86400);
 
         return $this->response->setJSON(['status' => 'success', 'suggestions' => $suggestions]);
     }
