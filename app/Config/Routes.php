@@ -290,8 +290,7 @@ $routes->group('career-chatbot', ['filter' => 'candidate'], function($routes) {
 
 // Premium Career Mentor Routes
 $routes->get('premium/plans', 'Premium::plans', ['filter' => 'candidate']);
-$routes->group('premium-mentor', ['filter' => 'candidate'], function($routes) {
-    $routes->get('/', 'PremiumCareerMentorController::index');
+$routes->group('premium-mentor', ['filter' => 'candidate'], function($routes) { 
     $routes->get('plans', 'PremiumCareerMentorController::plans');
     $routes->post('chat', 'PremiumCareerMentorController::chat');
     $routes->post('start-trial', 'PremiumCareerMentorController::startTrial');

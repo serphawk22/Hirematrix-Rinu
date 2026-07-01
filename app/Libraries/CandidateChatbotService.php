@@ -141,8 +141,8 @@ class CandidateChatbotService
 
         $lines[] = '';
         $lines[] = $forSaveRequest
-            ? 'To save one, ask: save job #ID. I will not save multiple jobs automatically without the exact IDs.'
-            : 'You can ask: "save job #ID", "apply to job #ID", "compare job #ID and job #ID", or "explain why job #ID matches me".';
+            ? 'To save one, ask: save job #ID or #Name. I will not save multiple jobs automatically without the exact IDs.'
+            : 'You can ask: "save job #ID or #Name", "apply to job #ID or #Name", "compare job #ID or #Name and job #ID or #Name", or "explain why job #ID or #Name matches me".';
 
         return implode("\n", $lines);
     }
