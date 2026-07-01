@@ -231,62 +231,73 @@ $renderRecommendedPane = static function (
                     $requiredSkillBadges = $pickRequiredSkillBadges($job);
                     $showRemoteBadge = $isRemoteJob($job);
                 ?>
-                <article class="job-card recommended-job-card <?= $appliedStatus !== null ? 'is-applied' : '' ?>">
-                    
-                    <div class="job-card-icon">
-                        <?php
-                            $displayLogo = "";
-                            $useFavicon = false;
-                            if (!empty($companyLogo)) {
-                                $displayLogo = $resolveAssetUrl($companyLogo);
-                            } elseif (!empty($job['company_website'])) {
-                                $domain = parse_url($job['company_website'], PHP_URL_HOST) ?? $job['company_website'];
-                                $displayLogo = "https://www.google.com/s2/favicons?domain=" . urlencode($domain) . "&sz=96";
-                                $useFavicon = true;
-                            }
-                        ?>
-                        <?php if ($displayLogo !== ''): ?>
-                            <img src="<?= esc($displayLogo) ?>" alt="<?= esc($company) ?>" class="job-card-logo <?= $useFavicon ? 'is-favicon' : '' ?>" onerror="this.onerror=null; this.parentElement.innerHTML='<span><?= esc($companyInitial) ?></span>';">
-                        <?php else: ?>
-                            <span><?= esc($companyInitial) ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="job-card-body">
-                        <h3 class="job-card-title"><?= esc($title) ?></h3>
-                        <p class="job-card-company"><?= esc($company) ?></p>
-                        <div class="job-card-meta">
-                            <span><i class="fas fa-map-pin"></i> <?= esc($location) ?></span>
-                            <?php if ($postedMeta !== null): ?>
-                                <span><i class="fas fa-clock"></i> <?= esc($postedMeta) ?></span>
-                            <?php endif; ?>
-                        </div>
-                        <div class="job-card-tags">
-                            <span class="badge <?= $typeBadge ?>"><?= esc($job['employment_type'] ?: 'Full Time') ?></span>
-                            <?php if ($showRemoteBadge): ?>
-                                <span class="badge badge-warning">Remote</span>
-                            <?php endif; ?>
-                            <?php foreach ($requiredSkillBadges as $requiredSkillBadge): ?>
-                                <span class="badge badge-secondary"><?= esc($requiredSkillBadge) ?></span>
-                            <?php endforeach; ?>
-                            <?php if ($appliedStatus !== null): ?>
-                                <span class="badge job-card-applied-badge"><i class="fas fa-check-circle"></i> Applied</span>
-                            <?php endif; ?>
-                        </div>
-                        <?php if (!empty($job['match_reason'])): ?>
-                            <div class="small text-muted mb-2"><?= esc($job['match_reason']) ?></div>
-                        <?php endif; ?>
+                
+           <?php
+    $jobLink = $isExternalJob && !empty($job['external_apply_url'])
+        ? esc($job['external_apply_url'])
+        : base_url('job/' . $job['id']);
+?>
+<article class="job-card recommended-job-card js-clickable-card <?= $appliedStatus !== null ? 'is-applied' : '' ?>"
+          data-href="<?= $jobLink ?>"
+          data-job-id="<?= (int) $job['id'] ?>"
+          <?= $isExternalJob ? 'data-external="1"' : '' ?>
+          role="link"
+          tabindex="0" style="cursor:pointer;">
 
-                        <div class="progress-container">
-                            <div class="progress-track">
-                                <div class="progress-bar-custom candidate-progress-fill" style="--candidate-progress: <?= $matchPct ?>%;"></div>
-                            </div>
-                            <span class="progress-label"><?= $matchPct ?>% match</span>
-                        </div>
-                        <div class="job-card-tools-wrapper">
-                            <button type="button" class="btn btn-sm btn-outline-secondary job-card-tools-toggle" title="Tools">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <div class="job-card-tools-dropdown">
+    <div class="job-card-icon">
+        <?php
+            $displayLogo = "";
+            $useFavicon = false;
+            if (!empty($companyLogo)) {
+                $displayLogo = $resolveAssetUrl($companyLogo);
+            } elseif (!empty($job['company_website'])) {
+                $domain = parse_url($job['company_website'], PHP_URL_HOST) ?? $job['company_website'];
+                $displayLogo = "https://www.google.com/s2/favicons?domain=" . urlencode($domain) . "&sz=96";
+                $useFavicon = true;
+            }
+        ?>
+        <?php if ($displayLogo !== ''): ?>
+            <img src="<?= esc($displayLogo) ?>" alt="<?= esc($company) ?>" class="job-card-logo <?= $useFavicon ? 'is-favicon' : '' ?>" onerror="this.onerror=null; this.parentElement.innerHTML='<span><?= esc($companyInitial) ?></span>';">
+        <?php else: ?>
+            <span><?= esc($companyInitial) ?></span>
+        <?php endif; ?>
+    </div>
+    <div class="job-card-body">
+        <h3 class="job-card-title"><?= esc($title) ?></h3>
+        <p class="job-card-company"><?= esc($company) ?></p>
+        <div class="job-card-meta">
+            <span><i class="fas fa-map-pin"></i> <?= esc($location) ?></span>
+            <?php if ($postedMeta !== null): ?>
+                <span><i class="fas fa-clock"></i> <?= esc($postedMeta) ?></span>
+            <?php endif; ?>
+        </div>
+        <div class="job-card-tags">
+            <span class="badge <?= $typeBadge ?>"><?= esc($job['employment_type'] ?: 'Full Time') ?></span>
+            <?php if ($showRemoteBadge): ?>
+                <span class="badge badge-warning">Remote</span>
+            <?php endif; ?>
+            <?php foreach ($requiredSkillBadges as $requiredSkillBadge): ?>
+                <span class="badge badge-secondary"><?= esc($requiredSkillBadge) ?></span>
+            <?php endforeach; ?>
+            <?php if ($appliedStatus !== null): ?>
+                <span class="badge job-card-applied-badge"><i class="fas fa-check-circle"></i> Applied</span>
+            <?php endif; ?>
+        </div>
+        <?php if (!empty($job['match_reason'])): ?>
+            <div class="small text-muted mb-2"><?= esc($job['match_reason']) ?></div>
+        <?php endif; ?>
+
+        <div class="progress-container">
+            <div class="progress-track">
+                <div class="progress-bar-custom candidate-progress-fill" style="--candidate-progress: <?= $matchPct ?>%;"></div>
+            </div>
+            <span class="progress-label"><?= $matchPct ?>% match</span>
+        </div>
+        <div class="job-card-tools-wrapper">
+            <button type="button" class="btn btn-sm btn-outline-secondary job-card-tools-toggle" title="Tools" onclick="event.stopPropagation();">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+             <div class="job-card-tools-dropdown">
                                 <?php if ($primaryResumeId > 0 || ($hasBaseResume ?? false)): ?>
                                     <button type="button" class="job-card-tools-item js-analyze-ats" data-job-id="<?= (int) $job['id'] ?>" data-resume-id="<?= $primaryResumeId ?>">
                                         Analyze ATS Match
@@ -299,21 +310,21 @@ $renderRecommendedPane = static function (
                                 Share Job
                             </button>
                             </div>
-                        </div>
-                        <a href="<?= $isExternalJob && !empty($job['external_apply_url']) 
+        </div>
+       <a href="<?= $isExternalJob && !empty($job['external_apply_url']) 
         ? esc($job['external_apply_url']) 
         : base_url('job/' . $job['id']) ?>" 
    class="view-details js-mark-visited <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>"
    data-job-id="<?= (int) $job['id'] ?>"
-   <?= $isExternalJob ? 'target="_blank"' : '' ?>>
-   <span class="viewed-action-mark <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>">
+   <?= $isExternalJob ? 'target="_blank"' : '' ?> style="text-decoration:none;">
+   <span class="viewed-action-mark <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>" style="text-decoration:none;">
        <i class="<?= $isVisited ? 'fas fa-eye' : 'far fa-eye' ?>"></i>
        <?= $isVisited ? 'Viewed' : 'Not viewed' ?>
    </span>
-   <span>View Details &rarr;</span>
+   <span> </span>
 </a>
-                    </div>
-                    <button
+    </div>
+    <button
                         type="button"
                         class="btn btn-sm btn-outline-secondary py-0 px-2 job-card-save js-save-job-toggle <?= $isSaved ? 'is-saved' : '' ?>"
                         aria-label="<?= $isSaved ? 'Saved job' : 'Save job' ?>"
@@ -326,7 +337,7 @@ $renderRecommendedPane = static function (
                     >
                         <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark"></i>
                     </button>
-                </article>
+</article>
             <?php endforeach; ?>
             </div>
         <?php else: ?>
@@ -760,95 +771,104 @@ $activeFilterCount = count($activeFilterChips);
                             $requiredSkillBadges = $pickRequiredSkillBadges($job);
                             $showRemoteBadge = $isRemoteJob($job);
                         ?>
-                        <div class="col-12">
-                            <div class="job-card <?= $appliedStatus !== null ? 'is-applied' : '' ?>">
-                                
-                                <div class="job-card-icon">
-                                    <?php
-                                        $displayLogo = "";
-                                        $useFavicon = false;
-                                        if (!empty($companyLogo)) {
-                                            $displayLogo = $resolveAssetUrl($companyLogo);
-                                        } elseif (!empty($job['company_website'])) {
-                                            $domain = parse_url($job['company_website'], PHP_URL_HOST) ?? $job['company_website'];
-                                            $displayLogo = "https://www.google.com/s2/favicons?domain=" . urlencode($domain) . "&sz=96";
-                                            $useFavicon = true;
-                                        }
-                                    ?>
-                                    <?php if ($displayLogo !== ''): ?>
-                                        <img src="<?= esc($displayLogo) ?>" alt="<?= esc($company) ?>" class="job-card-logo <?= $useFavicon ? 'is-favicon' : '' ?>" onerror="this.onerror=null; this.parentElement.innerHTML='<span><?= esc($companyInitial) ?></span>';">
-                                    <?php else: ?>
-                                        <span><?= esc($companyInitial) ?></span>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="job-card-body">
-                                    <h3 class="job-card-title"><?= esc($title) ?></h3>
-                                    <p class="job-card-company"><?= esc($company) ?></p>
-                                    <div class="job-card-meta">
-                                        <span><i class="fas fa-map-pin"></i> <?= esc($location) ?></span>
-                                        <?php if ($postedMeta !== null): ?>
-                                            <span><i class="fas fa-clock"></i> <?= esc($postedMeta) ?></span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="job-card-tags">
-                                        <span class="badge <?= $typeBadge ?>"><?= esc($job['employment_type'] ?: 'Full Time') ?></span>
-                                        <?php if ($showRemoteBadge): ?>
-                                            <span class="badge badge-warning">Remote</span>
-                                        <?php endif; ?>
-                                        <?php foreach ($requiredSkillBadges as $requiredSkillBadge): ?>
-                                            <span class="badge badge-secondary"><?= esc($requiredSkillBadge) ?></span>
-                                        <?php endforeach; ?>
-                                        <?php if ($appliedStatus !== null): ?>
-                                            <span class="badge job-card-applied-badge"><i class="fas fa-check-circle"></i> Applied</span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="job-card-tools-wrapper">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary job-card-tools-toggle" title="Tools">
-                                            <i class="fas fa-ellipsis-v"></i>
-                                        </button>
-                                        <div class="job-card-tools-dropdown">
-                                            <?php if ($primaryResumeId > 0 || ($hasBaseResume ?? false)): ?>
-                                                <button type="button" class="job-card-tools-item js-analyze-ats" data-job-id="<?= (int) $job['id'] ?>" data-resume-id="<?= $primaryResumeId ?>">
-                                                    Analyze ATS Match
-                                                </button>
-                                            <?php endif; ?>
-                                            <button type="button" class="job-card-tools-item" onclick="event.stopPropagation(); generateCoverLetter(<?= (int) $job['id'] ?>)">
-                                                AI Cover Letter
-                                            </button>
-                                            <button type="button" class="job-card-tools-item" onclick="event.stopPropagation(); shareJob(<?= (int) $job['id'] ?>)">
-                                                Share Job
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <a href="<?= $isExternalJob && !empty($job['external_apply_url']) 
+                    <div class="col-12">
+    <?php
+        $jobLink = $isExternalJob && !empty($job['external_apply_url'])
+            ? esc($job['external_apply_url'])
+            : base_url('job/' . $job['id']);
+    ?>
+    <div class="job-card js-clickable-card <?= $appliedStatus !== null ? 'is-applied' : '' ?>"
+         data-href="<?= $jobLink ?>"
+         data-job-id="<?= (int) $job['id'] ?>"
+         <?= $isExternalJob ? 'data-external="1"' : '' ?>
+         role="link"
+         tabindex="0">
+
+        <div class="job-card-icon">
+            <?php
+                $displayLogo = "";
+                $useFavicon = false;
+                if (!empty($companyLogo)) {
+                    $displayLogo = $resolveAssetUrl($companyLogo);
+                } elseif (!empty($job['company_website'])) {
+                    $domain = parse_url($job['company_website'], PHP_URL_HOST) ?? $job['company_website'];
+                    $displayLogo = "https://www.google.com/s2/favicons?domain=" . urlencode($domain) . "&sz=96";
+                    $useFavicon = true;
+                }
+            ?>
+            <?php if ($displayLogo !== ''): ?>
+                <img src="<?= esc($displayLogo) ?>" alt="<?= esc($company) ?>" class="job-card-logo <?= $useFavicon ? 'is-favicon' : '' ?>" onerror="this.onerror=null; this.parentElement.innerHTML='<span><?= esc($companyInitial) ?></span>';">
+            <?php else: ?>
+                <span><?= esc($companyInitial) ?></span>
+            <?php endif; ?>
+        </div>
+        <div class="job-card-body">
+            <h3 class="job-card-title"><?= esc($title) ?></h3>
+            <p class="job-card-company"><?= esc($company) ?></p>
+            <div class="job-card-meta">
+                <span><i class="fas fa-map-pin"></i> <?= esc($location) ?></span>
+                <?php if ($postedMeta !== null): ?>
+                    <span><i class="fas fa-clock"></i> <?= esc($postedMeta) ?></span>
+                <?php endif; ?>
+            </div>
+            <div class="job-card-tags">
+                <span class="badge <?= $typeBadge ?>"><?= esc($job['employment_type'] ?: 'Full Time') ?></span>
+                <?php if ($showRemoteBadge): ?>
+                    <span class="badge badge-warning">Remote</span>
+                <?php endif; ?>
+                <?php foreach ($requiredSkillBadges as $requiredSkillBadge): ?>
+                    <span class="badge badge-secondary"><?= esc($requiredSkillBadge) ?></span>
+                <?php endforeach; ?>
+                <?php if ($appliedStatus !== null): ?>
+                    <span class="badge job-card-applied-badge"><i class="fas fa-check-circle"></i> Applied</span>
+                <?php endif; ?>
+            </div>
+            <div class="job-card-tools-wrapper">
+                <button type="button" class="btn btn-sm btn-outline-secondary job-card-tools-toggle" title="Tools" onclick="event.stopPropagation();">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                 <div class="job-card-tools-dropdown">
+                                <?php if ($primaryResumeId > 0 || ($hasBaseResume ?? false)): ?>
+                                    <button type="button" class="job-card-tools-item js-analyze-ats" data-job-id="<?= (int) $job['id'] ?>" data-resume-id="<?= $primaryResumeId ?>">
+                                        Analyze ATS Match
+                                    </button>
+                                <?php endif; ?>
+                            <button type="button" class="job-card-tools-item" onclick="event.stopPropagation(); generateCoverLetter(<?= (int) $job['id'] ?>)">
+                                AI Cover Letter
+                            </button>
+                            <button type="button" class="job-card-tools-item" onclick="event.stopPropagation(); shareJob(<?= (int) $job['id'] ?>)">
+                                Share Job
+                            </button>
+                            </div>
+            </div>
+ <a href="<?= $isExternalJob && !empty($job['external_apply_url']) 
         ? esc($job['external_apply_url']) 
         : base_url('job/' . $job['id']) ?>" 
    class="view-details js-mark-visited <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>"
    data-job-id="<?= (int) $job['id'] ?>"
-   <?= $isExternalJob ? 'target="_blank"' : '' ?>>
-   <span class="viewed-action-mark <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>">
+   <?= $isExternalJob ? 'target="_blank"' : '' ?> style="text-decoration:none;">
+   <span class="viewed-action-mark <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>" style="text-decoration:none;">
        <i class="<?= $isVisited ? 'fas fa-eye' : 'far fa-eye' ?>"></i>
        <?= $isVisited ? 'Viewed' : 'Not viewed' ?>
    </span>
-   <span>View Details &rarr;</span>
+   <span> </span>
 </a>
-                                </div>
-                                <button
-                                    type="button"
-                                    class="btn btn-sm btn-outline-secondary py-0 px-2 job-card-save js-save-job-toggle <?= $isSaved ? 'is-saved' : '' ?>"
-                                    aria-label="<?= $isSaved ? 'Saved job' : 'Save job' ?>"
-                                    title="<?= $isSaved ? 'Saved' : 'Save Job' ?>"
-                                    data-save-url="<?= base_url($isSaved ? 'job/unsave/' . $job['id'] : 'job/save/' . $job['id']) ?>"
-                                    data-job-id="<?= (int) $job['id'] ?>"
-                                    data-saved="<?= $isSaved ? '1' : '0' ?>"
-                                    data-save-label-save="Save Job"
-                                    data-save-label-saved="Saved"
-                                >
-                                    <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark"></i>
-                                </button>
-                            </div>
-                        </div>
+        </div>
+         <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary py-0 px-2 job-card-save js-save-job-toggle <?= $isSaved ? 'is-saved' : '' ?>"
+                        aria-label="<?= $isSaved ? 'Saved job' : 'Save job' ?>"
+                        title="<?= $isSaved ? 'Saved' : 'Save Job' ?>"
+                        data-save-url="<?= base_url($isSaved ? 'job/unsave/' . $job['id'] : 'job/save/' . $job['id']) ?>"
+                        data-job-id="<?= (int) $job['id'] ?>"
+                        data-saved="<?= $isSaved ? '1' : '0' ?>"
+                        data-save-label-save="Save Job"
+                        data-save-label-saved="Saved"
+                    >
+                        <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark"></i>
+                    </button>
+    </div>
+</div>
                     <?php endforeach; ?>
                     </div>
 
@@ -932,7 +952,7 @@ $activeFilterCount = count($activeFilterChips);
 <div class="modal fade" id="coverLetterModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content border-0">
-            <div class="modal-header bg-primary text-white">
+             <div class="modal-header text-white" style="background:#1FB7B5 !important;">
                 <h5 class="modal-title font-weight-bold"><i class="fas fa-magic mr-2"></i>AI Cover Letter Draft</h5>
                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -1171,6 +1191,37 @@ document.addEventListener('click', function (e) {
             window.location.href = url;
         }
     });
+});
+</script>
+<script>
+document.addEventListener('click', function (e) {
+    const card = e.target.closest('.js-clickable-card');
+    if (!card) return;
+    // ignore clicks on buttons, dropdowns, or anything that already stopped propagation
+    if (e.target.closest('button') || e.target.closest('.job-card-tools-dropdown')) return;
+
+    const href = card.dataset.href;
+    if (!href) return;
+
+    if (card.dataset.external === '1') {
+        window.open(href, '_blank');
+    } else {
+        window.location.href = href;
+    }
+});
+
+// keyboard accessibility (Enter key) since article has role="link" tabindex="0"
+document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    const card = e.target.closest('.js-clickable-card');
+    if (!card) return;
+    const href = card.dataset.href;
+    if (!href) return;
+    if (card.dataset.external === '1') {
+        window.open(href, '_blank');
+    } else {
+        window.location.href = href;
+    }
 });
 </script>
 <?= view('Layouts/candidate_footer') ?>

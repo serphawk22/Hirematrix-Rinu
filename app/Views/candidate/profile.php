@@ -1246,7 +1246,318 @@ $formatExperienceDisplay = static function (int $months): string {
         </div>
     </div>
 </div>
+<!-- ═══ CONTEXTUAL RESUME STUDIO NUDGE (fires on download resume click) ═══ -->
+<style>
+/* ── Resume Studio Nudge – HireMatrix theme ─────────────────────── */
+#rsNudge-backdrop{
+  position:fixed;inset:0;z-index:9998;
+  background:rgba(22,33,43,0.55);
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+#rsNudge-backdrop.visible{display:flex;animation:rsNudgeFadeIn .22s ease;}
+@keyframes rsNudgeFadeIn{from{opacity:0}to{opacity:1}}
 
+#rsNudge-modal{
+  background:var(--card,#fff);
+  border:1px solid var(--border,#D9ECE5);
+  border-radius:10px;
+  width:100%;max-width:480px;
+  overflow:hidden;
+  animation:rsNudgePop .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 24px 60px rgba(0,0,0,.12);
+}
+@keyframes rsNudgePop{from{opacity:0;transform:scale(.93) translateY(18px)}to{opacity:1;transform:none}}
+
+/* ── Header (mirrors hm-header style) ── */
+.rsn-header{
+  padding:18px 20px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+}
+.rsn-header-left{display:flex;flex-direction:column;gap:4px;}
+.rsn-eyebrow{
+  font-size:18px !important;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--primary,#1FB7B5);
+}
+.rsn-counter{
+  font-size:10px;font-weight:600;
+  color:var(--text-light,#94A3B8);letter-spacing:.04em;
+}
+.rsn-close-x{
+  width:26px;height:26px;border-radius:5px;flex-shrink:0;
+  border:1px solid var(--border,#D9ECE5);background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-light,#94A3B8);font-size:13px;margin-top:1px;
+  transition:background .15s,color .15s,border-color .15s;
+}
+.rsn-close-x:hover{
+  background:var(--muted,#EDF8F5);
+  color:var(--foreground,#16212B);
+  border-color:var(--primary,#1FB7B5);
+}
+
+/* ── Progress bar (single active pip) ── */
+.rsn-progress{padding:14px 20px 0;display:flex;gap:4px;}
+.rsn-pip{height:2px;flex:1;border-radius:2px;background:var(--border,#D9ECE5);}
+.rsn-pip.active{background:var(--primary,#1FB7B5);}
+
+/* ── Body ── */
+.rsn-body{padding:16px 20px 0;}
+.rsn-slide-title{
+  font-size:19px;font-weight:700;
+  color:var(--foreground,#16212B);
+  line-height:1.3;margin-bottom:8px;
+}
+.rsn-slide-title em{
+  font-style:normal;
+  background:var(--gradient-primary,linear-gradient(135deg,#1FB7B5 0%,#53B86C 55%,#B5D84E 100%));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.rsn-slide-desc{
+  font-size:13px;color:var(--muted-foreground,#64748B);
+  line-height:1.65;margin-bottom:14px;
+}
+
+/* ── rill tags (mirrors hm-rills2 / hm-rill2) ── */
+.rsn-rills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
+.rsn-rill{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:999px;
+  background:var(--muted,#EDF8F5);
+  border:1px solid var(--border,#D9ECE5);
+  font-size:12px;font-weight:600;
+  color:var(--primary-dark,#0D8A90);
+  white-space:nowrap;
+}
+
+/* ── Compare grid ── */
+.rsn-compare{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;margin-bottom:18px;
+}
+.rsn-col{border-radius:8px;padding:12px;}
+.rsn-col-before{
+  background:#FEF2F2;border:1px solid #FECACA;
+}
+.rsn-col-after{
+  background:var(--muted,#EDF8F5);border:1px solid var(--border,#D9ECE5);
+}
+.rsn-col-label{
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:8px;
+}
+.rsn-col-before .rsn-col-label{color:#EF4444;}
+.rsn-col-after  .rsn-col-label{color:var(--primary,#1FB7B5);}
+.rsn-col-row{
+  display:flex;align-items:flex-start;gap:6px;
+  font-size:12px;color:var(--foreground,#16212B);
+  margin-bottom:5px;line-height:1.4;
+}
+.rsn-col-row:last-child{margin-bottom:0;}
+.rsn-col-row i{margin-top:2px;font-size:11px;flex-shrink:0;}
+.rsn-col-before .rsn-col-row i{color:#EF4444;}
+.rsn-col-after  .rsn-col-row i{color:var(--secondary,#53B86C);}
+
+/* ── Divider ── */
+.rsn-divider{height:1px;background:var(--border,#D9ECE5);}
+
+/* ── Footer (mirrors hm-footer) ── */
+.rsn-footer{
+  padding:14px 20px;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.rsn-btn-primary{
+  padding:8px 18px;border-radius:6px;
+  background:var(--gradient-primary,linear-gradient(135deg,#1FB7B5,#53B86C,#B5D84E));
+  color:#fff !important;font-size:13px;font-weight:600;
+  border:none;cursor:pointer;
+  text-decoration:none !important;display:inline-block;white-space:nowrap;
+  transition:opacity .15s,transform .15s;
+}
+.rsn-btn-primary:hover{opacity:.88;transform:translateY(-1px);}
+.rsn-btn-maybe{
+  padding:8px 16px;border-radius:6px;background:transparent;
+  border:1px solid var(--border,#D9ECE5);
+  color:var(--muted-foreground,#64748B);
+  font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;
+  transition:border-color .15s,color .15s,background .15s;
+}
+.rsn-btn-maybe:hover{
+  border-color:var(--primary,#1FB7B5);
+  color:var(--primary,#1FB7B5);
+  background:var(--muted,#EDF8F5);
+}
+
+/* ── Dark theme ── */
+body.dark #rsNudge-modal{
+  background:var(--card,#162327) !important;
+  border-color:var(--border,#23343A);
+}
+body.dark .rsn-close-x{
+  border-color:var(--border,#23343A);
+  color:var(--text-light,#7A8B96);
+}
+body.dark .rsn-close-x:hover{
+  background:var(--muted,#1B2A2F);
+  color:var(--foreground,#F8FAFC);
+  border-color:var(--primary,#1FB7B5);
+}
+body.dark .rsn-pip{background:var(--border,#23343A);}
+body.dark .rsn-pip.active{background:var(--primary,#1FB7B5);}
+body.dark .rsn-slide-title{color:var(--foreground,#F8FAFC);}
+body.dark .rsn-slide-desc{color:var(--muted-foreground,#94A3B8);}
+body.dark .rsn-rill{
+  background:var(--card,#162327)  !important;
+  border-color:var(--border,#23343A);
+  color:var(--primary,#1FB7B5);
+}
+body.dark .rsn-rills{
+  background:var(--card,#162327)  !important;
+  border-color:var(--border,#23343A); 
+}
+body.dark .rsn-divider{background:var(--border,#23343A);}
+body.dark .rsn-col-before{background:var(--muted,#1B2A2F); border-color:var(--border,#23343A);}
+body.dark .rsn-col-after{
+  background:var(--muted,#1B2A2F);
+  border-color:var(--border,#23343A);
+}
+body.dark .rsn-col-row{color:var(--foreground,#F8FAFC);}
+body.dark .rsn-btn-maybe{
+  border-color:var(--border,#23343A);
+  color:var(--muted-foreground,#94A3B8);
+}
+body.dark .rsn-btn-maybe:hover{
+  border-color:var(--primary,#1FB7B5);
+  color:var(--primary,#1FB7B5);
+  background:var(--muted,#1B2A2F);
+}
+.rsn-close-x{
+  width:26px;height:26px;border-radius:5px;flex-shrink:0;
+  border:1px solid var(--border,#D9ECE5);background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-light,#94A3B8);font-size:13px;margin-top:1px;
+  transition:background .15s,color .15s,border-color .15s;
+  outline:none;                              /* ← add this */
+  -webkit-tap-highlight-color:transparent;   /* ← add this (kills mobile tap flash too) */
+}
+.rsn-close-x:hover{
+  background:var(--muted,#EDF8F5);
+  color:var(--foreground,#16212B);
+  border-color:var(--primary,#1FB7B5);
+}
+.rsn-close-x:focus{
+  outline:none;                              /* ← add this */
+}
+.rsn-close-x:focus-visible{
+  outline:2px solid var(--primary,#1FB7B5);  /* keeps keyboard-nav accessibility */
+  outline-offset:2px;
+}
+</style>
+
+<div id="rsNudge-backdrop" role="dialog" aria-modal="true" aria-label="Resume Studio suggestion">
+  <div id="rsNudge-modal">
+
+    <div class="rsn-header">
+      <div class="rsn-header-left">
+        <span class="rsn-eyebrow">HireMatrix AI Features</span>
+        <span class="rsn-counter">Resume Studio — downloaded just now</span>
+      </div>
+      <button class="rsn-close-x" id="rsNudgeCloseX" aria-label="Close">✕</button>
+    </div>
+
+    <div class="rsn-progress">
+      <div class="rsn-pip active"></div> 
+    </div>
+
+    <div class="rsn-body">
+      <h2 class="rsn-slide-title">Make this resume work <em>harder for you</em></h2>
+      <p class="rsn-slide-desc">
+        You just downloaded a generic CV. Resume Studio tailors it per role,
+        highlights what recruiters want, and gets it past ATS filters automatically.
+      </p>
+
+      <div class="rsn-compare">
+        <div class="rsn-col rsn-col-before">
+          <div class="rsn-col-label">Generic resume</div>
+          <div class="rsn-col-row"><i class="fas fa-times-circle"></i> Same CV for every job</div>
+          <div class="rsn-col-row"><i class="fas fa-times-circle"></i> Often rejected by ATS</div>
+          <div class="rsn-col-row"><i class="fas fa-times-circle"></i> Misses role keywords</div>
+        </div>
+        <div class="rsn-col rsn-col-after">
+          <div class="rsn-col-label">With Resume Studio</div>
+          <div class="rsn-col-row"><i class="fas fa-check-circle"></i> Role-targeted version</div>
+          <div class="rsn-col-row"><i class="fas fa-check-circle"></i> ATS-optimised layout</div>
+          <div class="rsn-col-row"><i class="fas fa-check-circle"></i> AI rewrite suggestions</div>
+        </div>
+      </div>
+
+      <div class="rsn-rills">
+        <span class="rsn-rill">Job-specific CVs</span>
+        <span class="rsn-rill">ATS optimisation</span>
+        <span class="rsn-rill">AI improvement tips</span>
+        <span class="rsn-rill">Job fit scoring</span>
+      </div>
+    </div>
+
+    <div class="rsn-divider"></div>
+
+    <div class="rsn-footer">
+      <a href="<?= base_url('candidate/resume-studio') ?>" class="btn btn-primary">
+        <i class="fas fa-magic"></i> Open Resume Studio
+      </a>
+      <button class="rsn-btn-maybe" id="rsNudgeClose">Maybe later</button>
+    </div>
+
+  </div>
+</div>
+
+<iframe id="rsDownloadFrame" style="display:none;" aria-hidden="true"></iframe>
+
+<script>
+(function () {
+  var backdrop = document.getElementById('rsNudge-backdrop');
+  var frame    = document.getElementById('rsDownloadFrame');
+
+  function openNudge() { backdrop.classList.add('visible'); }
+
+  function closeNudge() {
+    backdrop.style.transition = 'opacity .18s';
+    backdrop.style.opacity = '0';
+    setTimeout(function () {
+      backdrop.classList.remove('visible');
+      backdrop.style.opacity = '';
+      backdrop.style.transition = '';
+    }, 200);
+  }
+
+  var rsStorageKey = 'rsNudgeShown';
+  var rsAlreadyShown = false;
+  try {
+    rsAlreadyShown = localStorage.getItem(rsStorageKey) === '1';
+  } catch (e) {
+    rsAlreadyShown = false; // storage unavailable — fail open, show it
+  }
+
+  document.querySelectorAll('a[href*="download-resume"]').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      if (rsAlreadyShown) {
+        return; // already shown before — let the link download normally, no popup
+      }
+      e.preventDefault();
+      rsAlreadyShown = true; // lock immediately so a second click/link can't slip through
+      try { localStorage.setItem(rsStorageKey, '1'); } catch (err) {}
+      frame.src = link.href;
+      setTimeout(openNudge, 400);
+    });
+  });
+
+  document.getElementById('rsNudgeClose').addEventListener('click', closeNudge);
+  document.getElementById('rsNudgeCloseX').addEventListener('click', closeNudge);
+  backdrop.addEventListener('click', function (e) { if (e.target === backdrop) closeNudge(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeNudge(); });
+})();
+</script>
 <?= view('Layouts/candidate_footer') ?>
     
 
