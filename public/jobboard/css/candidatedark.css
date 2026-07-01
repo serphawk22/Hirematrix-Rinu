@@ -1210,36 +1210,15 @@ body.dark .modal-header .close,
 body.dark .modal-header .btn-close { color: #e6edf3 !important; opacity: 0.8; }
 body.dark #coverLetterTextArea { background-color: #0d1117 !important; color: #e6edf3 !important; border: 1px solid #30363d !important; }
 
-body.dark .local-company-card {
-    background: #161b22;
-    border: 1px solid #30363d;
-    color: #e6edf3;
-}
 
-body.dark .local-company-field input {
-    background: #0d1117;
-    border: 1px solid #30363d;
-    color: #e6edf3;
-}
 
-body.dark .local-company-field input:focus {
-    border-color: #1FB7B5;
-    box-shadow: 0 0 0 3px rgba(31,183,181,0.15);
-}
 
-body.dark .local-company-submit  { background: #1FB7B5; }
-body.dark .local-company-suggestions { background: #161b22; border: 1px solid #30363d; }
-body.dark .local-company-suggestion  { background: transparent; color: #e6edf3; }
-body.dark .local-company-suggestion:hover { background: #21262d; }
 
-body.dark .local-company-chip {
-    background: rgba(31,183,181,0.1);
-    border: 1px solid rgba(31,183,181,0.2);
-    color: #e6edf3;
-}
 
-body.dark .local-company-chip:hover { background: rgba(31,183,181,0.15); }
-body.dark .local-company-logo       { background: #21262d; color: #1FB7B5; }
+
+
+
+
 
 body.dark .company-autocomplete-dropdown {
     background: #161b22 !important;

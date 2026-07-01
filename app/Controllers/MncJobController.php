@@ -52,6 +52,8 @@ class MncJobController extends BaseController
 
     private function runDiscover(string $companyName, int $limit): \CodeIgniter\HTTP\ResponseInterface
     {
+        @set_time_limit(180);
+
         $model        = new MncJobModel();
         $ingestor     = new MncJobIngestor();
         $companyModel = model('CompanyModel');
@@ -474,7 +476,6 @@ class MncJobController extends BaseController
         $host = strtolower((string) (parse_url($applyUrl, PHP_URL_HOST) ?: ''));
         $hostKey = $this->normalizeCompanyKey($host);
         $discoveredEmployerKey = $this->normalizeCompanyKey((string) ($job['discovered_employer'] ?? ''));
-        $applyUrlLower = strtolower($applyUrl);
 
         if ($discoveredEmployerKey !== '') {
             return $this->companyKeysMatch($companyKey, $discoveredEmployerKey);
@@ -489,7 +490,7 @@ class MncJobController extends BaseController
             if ($employerKey !== '' && $this->companyKeysMatch($companyKey, $employerKey)) {
                 return true;
             }
-            return str_contains(str_replace('-', '', $applyUrlLower), $companyKey);
+            return false;
         }
 
         $trustedAtsHosts = [
@@ -504,11 +505,11 @@ class MncJobController extends BaseController
 
         foreach ($trustedAtsHosts as $atsHost) {
             if (str_contains($host, $atsHost)) {
-                return $this->companyKeysMatch($companyKey, $hostKey) || str_contains($hostKey, $companyKey) || str_contains(str_replace('-', '', $applyUrlLower), $companyKey);
+                return $this->companyKeysMatch($companyKey, $hostKey) || $this->urlPathContainsCompanyKey($applyUrl, $companyKey);
             }
         }
 
-        return $this->companyKeysMatch($companyKey, $hostKey) || str_contains($hostKey, $companyKey) || str_contains(str_replace('-', '', $applyUrlLower), $companyKey);
+        return $this->companyKeysMatch($companyKey, $hostKey);
     }
 
     private function extractLinkedInEmployerKey(string $url): string
@@ -549,7 +550,33 @@ class MncJobController extends BaseController
             return false;
         }
 
-        return $left === $right || str_contains($left, $right) || str_contains($right, $left);
+        if ($left === $right) {
+            return true;
+        }
+
+        if (min(strlen($left), strlen($right)) <= 4) {
+            return false;
+        }
+
+        return str_contains($left, $right) || str_contains($right, $left);
+    }
+
+    private function urlPathContainsCompanyKey(string $url, string $companyKey): bool
+    {
+        if ($companyKey === '') {
+            return false;
+        }
+
+        $path = strtolower(rawurldecode((string) (parse_url($url, PHP_URL_PATH) ?: '')));
+        $segments = preg_split('/[^a-z0-9]+/', $path) ?: [];
+
+        foreach ($segments as $segment) {
+            if ($this->companyKeysMatch($companyKey, $this->normalizeCompanyKey($segment))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function normalizeCompanyKey(string $value): string

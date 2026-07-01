@@ -19,7 +19,14 @@ $companySize = trim((string) ($company['size'] ?? ''));
 $companyFounded = trim((string) ($company['founded_year'] ?? ''));
 $companyDescription = trim((string) ($company['short_description'] ?? 'Explore company details, hiring locations, and available jobs in one place.'));
 $companyWhatWeDo = trim((string) ($company['what_we_do'] ?? ''));
-$logoUrl = $companyLogo !== '' ? base_url($companyLogo) : '';
+$websiteHost = $companyWebsite !== '' ? (parse_url($companyWebsite, PHP_URL_HOST) ?: $companyWebsite) : '';
+$websiteHost = preg_replace('/^www\./i', '', (string) $websiteHost) ?? '';
+$logoUrl = '';
+if ($companyLogo !== '') {
+    $logoUrl = preg_match('/^https?:\/\//i', $companyLogo) ? $companyLogo : base_url($companyLogo);
+} elseif ($websiteHost !== '') {
+    $logoUrl = 'https://www.google.com/s2/favicons?domain=' . rawurlencode($websiteHost) . '&sz=96';
+}
 $discoverUrl = base_url('mnc/discover');
 $profileUrl = !empty($company['id']) ? base_url('company/' . (int) $company['id']) : '';
 $discoveryUrl = base_url('candidate/company-job-discovery');
@@ -32,15 +39,6 @@ foreach (preg_split('/[,|;\n]+/', (string) ($company['company_tags'] ?? '')) ?: 
     }
 }
 $companyTags = array_slice(array_values(array_unique(array_filter(array_merge([$companyType, $companyIndustry], $companyTags)))), 0, 7);
-
-$lastCheckedTimes = [];
-foreach ($externalJobs as $job) {
-    $timestamp = strtotime((string) ($job['last_sync_at'] ?? ''));
-    if ($timestamp) {
-        $lastCheckedTimes[] = $timestamp;
-    }
-}
-$lastCheckedLabel = !empty($lastCheckedTimes) ? date('M d, Y h:i A', max($lastCheckedTimes)) : 'Not checked yet';
 
 $formatDate = static function ($value): string {
     $timestamp = strtotime((string) $value);
@@ -62,7 +60,7 @@ $jobExcerpt = static function ($value): string {
             <div class="company-jobs-identity">
                 <div class="company-jobs-logo" aria-hidden="true">
                     <?php if ($logoUrl !== ''): ?>
-                        <img src="<?= esc($logoUrl) ?>" alt="">
+                        <img src="<?= esc($logoUrl) ?>" alt="" onerror="this.parentNode.innerHTML='<span><?= esc($companyInitial) ?></span>';">
                     <?php else: ?>
                         <span><?= esc($companyInitial) ?></span>
                     <?php endif; ?>
@@ -86,8 +84,12 @@ $jobExcerpt = static function ($value): string {
         </div>
 
         <div class="company-jobs-tabs tab-pills" role="tablist" aria-label="Company sections">
-            <button type="button" class="tab-pill" data-company-tab="overview" role="tab" aria-selected="false">Overview</button>
-            <button type="button" class="tab-pill active" data-company-tab="jobs" role="tab" aria-selected="true">Jobs <span id="companyJobsTabCount" class="pill-count"><?= (int) $totalCount ?></span></button>
+            <button type="button" class="tab-pill" data-company-tab="overview" role="tab" aria-selected="false">
+                <i class="fas fa-building"></i> Overview
+            </button>
+            <button type="button" class="tab-pill active" data-company-tab="jobs" role="tab" aria-selected="true">
+                <i class="fas fa-briefcase"></i> Jobs <span id="companyJobsTabCount" class="pill-count"><?= (int) $totalCount ?></span>
+            </button>
         </div>
 
         <section class="company-jobs-panel" data-company-panel="overview" hidden>
@@ -195,33 +197,6 @@ $jobExcerpt = static function ($value): string {
                         </div>
                     </div>
                 </div>
-
-                <aside class="company-jobs-side">
-                    <article class="company-jobs-card">
-                        <h2>Job Sources</h2>
-                        <dl class="company-jobs-snapshot">
-                            <dt>Portal</dt><dd><?= (int) $portalCount ?> roles</dd>
-                            <dt>Discovered</dt><dd id="companyJobsCachedCount"><?= (int) $externalCount ?> roles</dd>
-                            <dt>Status</dt><dd>Active links only</dd>
-                            <dt>Window</dt><dd>Last 30 days</dd>
-                            <dt>Last Checked</dt><dd id="companyJobsLastChecked"><?= esc($lastCheckedLabel) ?></dd>
-                        </dl>
-                    </article>
-                    <article class="company-jobs-card">
-                        <div class="company-jobs-card-header">
-                            <h2>Before You Apply</h2>
-                            <button id="refreshDiscoveredJobsBtn" type="button" class="btn btn-outline-secondary btn-sm">Refresh openings</button>
-                        </div>
-                        <p><?= esc($companyDescription) ?></p>
-                        <?php if (!empty($companyTags)): ?>
-                            <div class="company-jobs-pills">
-                                <?php foreach (array_slice($companyTags, 0, 5) as $tag): ?>
-                                    <span class="skill-chip"><?= esc($tag) ?></span>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php endif; ?>
-                    </article>
-                </aside>
             </div>
         </section>
     </div>
@@ -232,13 +207,10 @@ $jobExcerpt = static function ($value): string {
     const companyName = <?= json_encode($companyName) ?>;
     const discoverUrl = <?= json_encode($discoverUrl) ?>;
     const portalCount = <?= (int) $portalCount ?>;
-    const refreshBtn = document.getElementById('refreshDiscoveredJobsBtn');
     const externalList = document.getElementById('cachedExternalJobsList');
     const emptyState = document.getElementById('companyJobsEmptyState');
     const totalCountEl = document.getElementById('companyJobsTotalCount');
     const tabCountEl = document.getElementById('companyJobsTabCount');
-    const cachedCountEl = document.getElementById('companyJobsCachedCount');
-    const lastCheckedEl = document.getElementById('companyJobsLastChecked');
     const initialExternalCount = <?= (int) $externalCount ?>;
     const initialTotalCount = <?= (int) $totalCount ?>;
 
@@ -254,7 +226,7 @@ $jobExcerpt = static function ($value): string {
         tab.addEventListener('click', () => {
             const target = tab.dataset.companyTab;
             document.querySelectorAll('[data-company-tab]').forEach((item) => {
-                item.classList.toggle('is-active', item === tab);
+                item.classList.toggle('active', item === tab);
                 item.setAttribute('aria-selected', item === tab ? 'true' : 'false');
             });
             document.querySelectorAll('[data-company-panel]').forEach((panel) => {
@@ -272,9 +244,6 @@ $jobExcerpt = static function ($value): string {
         }
         if (tabCountEl) {
             tabCountEl.textContent = String(total);
-        }
-        if (cachedCountEl) {
-            cachedCountEl.textContent = externalCount + (externalCount === 1 ? ' role' : ' roles');
         }
         if (emptyState) {
             emptyState.hidden = total > 0;
@@ -308,16 +277,13 @@ $jobExcerpt = static function ($value): string {
     const renderExternalJobs = (jobs) => {
         const validJobs = Array.isArray(jobs) ? jobs.filter((job) => job && (job.apply_url || job.url)) : [];
         setCounts(validJobs.length);
-        if (lastCheckedEl) {
-            lastCheckedEl.textContent = 'Last checked: Just now';
-        }
 
         if (!externalList) {
             return;
         }
 
         if (validJobs.length === 0) {
-            externalList.innerHTML = '<div class="company-jobs-note"><i class="fas fa-search"></i><span>No active public openings found right now.</span></div>';
+            externalList.innerHTML = '';
             return;
         }
 
@@ -335,21 +301,30 @@ $jobExcerpt = static function ($value): string {
         }
 
         const previousHtml = externalList.innerHTML;
-        const previousLastChecked = lastCheckedEl ? lastCheckedEl.textContent : '';
-        if (refreshBtn) {
-            refreshBtn.disabled = true;
-            refreshBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Checking...';
-        }
-        if (lastCheckedEl) {
-            lastCheckedEl.textContent = 'Checking public sources...';
-        }
         emptyState.hidden = true;
         externalList.innerHTML = '<div class="company-jobs-note"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span>Finding current openings at ' + escapeHtml(companyName) + '...</span></div>';
 
         fetch(discoverUrl + '?' + new URLSearchParams({ company: companyName, limit: '20' }).toString(), {
             headers: { 'Accept': 'application/json' }
         })
-            .then((response) => response.json())
+            .then((response) => response.text().then((text) => {
+                if (!text.trim()) {
+                    throw new Error('Could not check public openings right now.');
+                }
+
+                let payload = null;
+                try {
+                    payload = JSON.parse(text);
+                } catch (error) {
+                    throw new Error('Could not check public openings right now.');
+                }
+
+                if (!response.ok) {
+                    throw new Error(payload && payload.error ? payload.error : 'Could not check latest jobs.');
+                }
+
+                return payload;
+            }))
             .then((payload) => {
                 if (!payload || payload.success === false || payload.error) {
                     throw new Error(payload && payload.error ? payload.error : 'Could not check latest jobs.');
@@ -358,23 +333,12 @@ $jobExcerpt = static function ($value): string {
             })
             .catch((error) => {
                 externalList.innerHTML = (previousHtml && !isAutomatic ? previousHtml : '') + '<div class="company-jobs-note"><i class="fas fa-exclamation-circle"></i><span>' + escapeHtml(error.message || 'Could not check public openings right now.') + '</span></div>';
-                lastCheckedEl.textContent = previousLastChecked;
                 setCounts(initialExternalCount);
-            })
-            .finally(() => {
-                if (refreshBtn) {
-                    refreshBtn.disabled = false;
-                    refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh openings';
-                }
             });
     };
 
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', () => discoverJobs(false));
-    }
-
-    if (initialExternalCount === 0 && emptyState) {
-        emptyState.hidden = initialTotalCount > 0;
+    if (initialTotalCount === 0 && emptyState) {
+        emptyState.hidden = false;
         window.setTimeout(() => discoverJobs(true), 250);
     }
 })();

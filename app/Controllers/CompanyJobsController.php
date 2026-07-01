@@ -47,21 +47,29 @@ class CompanyJobsController extends BaseController
      */
     private function getInternalJobsByCompany(string $companyName): array
     {
-        $company = $this->companyModel
-            ->like('name', $companyName, 'both')
-            ->first();
+        $company = $this->companyModel->where('name', $companyName)->first();
+        if (!$company && strlen($this->normalizeCompanyKey($companyName)) > 4) {
+            $company = $this->companyModel
+                ->like('name', $companyName, 'both')
+                ->first();
+        }
 
         $builder = $this->jobModel
             ->where('status', 'open')
             ->orderBy('created_at', 'DESC');
 
         if ($company) {
-            $builder->groupStart()
-                ->where('company_id', (int) $company['id'])
-                ->orLike('company', (string) ($company['name'] ?? $companyName), 'both')
-                ->groupEnd();
-        } else {
+            $builder->groupStart()->where('company_id', (int) $company['id']);
+            if (strlen($this->normalizeCompanyKey($companyName)) > 4) {
+                $builder->orLike('company', (string) ($company['name'] ?? $companyName), 'both');
+            } else {
+                $builder->orWhere('company', (string) ($company['name'] ?? $companyName));
+            }
+            $builder->groupEnd();
+        } elseif (strlen($this->normalizeCompanyKey($companyName)) > 4) {
             $builder->like('company', $companyName, 'both');
+        } else {
+            $builder->where('company', $companyName);
         }
 
         return $builder->findAll(50);
@@ -90,20 +98,13 @@ class CompanyJobsController extends BaseController
                 ->limit($limit)
                 ->findAll();
 
-            if (empty($jobs)) {
-                $jobs = $model->like('company_name', $companyName, 'both')
-                    ->where('is_active', 1)
-                    ->where('last_sync_at >=', $freshAfter)
-                    ->where('apply_url IS NOT NULL', null, false)
-                    ->where('apply_url !=', '')
-                    ->orderBy('last_sync_at', 'DESC')
-                    ->limit($limit)
-                    ->findAll();
-            }
-
-            return array_values(array_filter(array_map(static function (array $job): array {
+            return array_values(array_filter(array_map(function (array $job) use ($companyName): array {
                 $url = trim((string) ($job['apply_url'] ?? ''));
                 if ($url === '' || !filter_var($url, FILTER_VALIDATE_URL)) {
+                    return [];
+                }
+
+                if (!$this->cachedDiscoveredJobBelongsToCompany($job, $companyName)) {
                     return [];
                 }
 
@@ -115,6 +116,98 @@ class CompanyJobsController extends BaseController
             log_message('error', 'CompanyJobsController cached discovered jobs failed: ' . $e->getMessage());
             return [];
         }
+    }
+
+    /**
+     * Cached discovery rows may predate stricter matching, so validate again
+     * before showing them on a company page.
+     *
+     * @param array<string, mixed> $job
+     */
+    private function cachedDiscoveredJobBelongsToCompany(array $job, string $companyName): bool
+    {
+        $companyKey = $this->normalizeCompanyKey($companyName);
+        $applyUrl = (string) ($job['apply_url'] ?? '');
+        $host = strtolower((string) (parse_url($applyUrl, PHP_URL_HOST) ?: ''));
+        $source = strtolower((string) ($job['source_platform'] ?? ''));
+
+        if ($companyKey === '') {
+            return false;
+        }
+
+        if (strlen($companyKey) > 4) {
+            return true;
+        }
+
+        foreach (explode('.', preg_replace('/^www\./', '', $host) ?? $host) as $part) {
+            if ($this->companyKeysMatch($companyKey, $this->normalizeCompanyKey($part))) {
+                return true;
+            }
+        }
+
+        $thirdPartySources = ['linkedin', 'indeed', 'glassdoor', 'remotive', 'aggregator', 'search discovery'];
+        foreach ($thirdPartySources as $thirdPartySource) {
+            if (str_contains($source, $thirdPartySource) || str_contains($host, $thirdPartySource)) {
+                return $this->textMentionsCompany((string) ($job['title'] ?? ''), $companyName)
+                    || $this->urlPathMentionsCompany($applyUrl, $companyName);
+            }
+        }
+
+        return $this->urlPathMentionsCompany($applyUrl, $companyName);
+    }
+
+    private function textMentionsCompany(string $text, string $companyName): bool
+    {
+        $pattern = $this->companyRegexPattern($companyName);
+        return $pattern !== '' && preg_match('/' . $pattern . '/i', strtolower($text)) === 1;
+    }
+
+    private function urlPathMentionsCompany(string $url, string $companyName): bool
+    {
+        $path = strtolower(rawurldecode((string) (parse_url($url, PHP_URL_PATH) ?: '')));
+        return $this->textMentionsCompany($path, $companyName);
+    }
+
+    private function companyRegexPattern(string $companyName): string
+    {
+        $companyName = strtolower(trim($companyName));
+        $companyName = preg_replace('/[^a-z0-9]+/', ' ', $companyName) ?? '';
+        $companyName = trim($companyName);
+
+        if ($companyName === '') {
+            return '';
+        }
+
+        $parts = preg_split('/\s+/', $companyName) ?: [];
+        $escaped = implode('[\s\-_\.]+', array_map(static fn (string $part): string => preg_quote($part, '/'), $parts));
+
+        return '(?<![a-z0-9])' . $escaped . '(?![a-z0-9])';
+    }
+
+    private function companyKeysMatch(string $left, string $right): bool
+    {
+        if ($left === '' || $right === '') {
+            return false;
+        }
+
+        if ($left === $right) {
+            return true;
+        }
+
+        if (min(strlen($left), strlen($right)) <= 4) {
+            return false;
+        }
+
+        return str_contains($left, $right) || str_contains($right, $left);
+    }
+
+    private function normalizeCompanyKey(string $value): string
+    {
+        $value = strtolower(trim($value));
+        $value = preg_replace('/[^a-z0-9]+/', ' ', $value) ?? '';
+        $value = preg_replace('/\b(limited|ltd|inc|llc|llp|plc|corp|corporation|company|co|technologies|technology|solutions|services|systems|group|holdings|private|pvt)\b/', ' ', $value) ?? '';
+        $value = preg_replace('/\s+/', ' ', $value) ?? '';
+        return str_replace(' ', '', trim($value));
     }
 
     /**
