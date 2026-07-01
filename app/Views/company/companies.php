@@ -141,7 +141,7 @@ function companyCard(company) {
         : "";
 
     return `
-        <article class="local-company-card">
+        <a href="${escapeHtml(website)}" class="local-company-card"  target="_blank" rel="noopener" style="text-decoration:none;">
             <div class="local-company-card-top">
                 <div class="local-company-logo">${logoHtml}</div>
                 <div class="local-company-name">
@@ -153,9 +153,8 @@ function companyCard(company) {
                 <span class="local-company-pill"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(location)}</span>
                 <span class="local-company-pill"><i class="fas fa-briefcase"></i> ${openJobs > 0 ? openJobs + " open" : "Verify openings"}</span>
             </div>
-            <p class="local-company-description">${escapeHtml(description)}</p>
-            ${actionsHtml}
-        </article>
+            <p class="local-company-description">${escapeHtml(description)}</p> 
+        </a>
     `;
 }
 

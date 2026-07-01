@@ -1,5 +1,12 @@
 <?= view('Layouts/candidate_header', ['title' => 'Company & Job Discovery']) ?>
-
+<style>
+    .company-directory-card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+</style>
 <div class="companies-directory-jobboard">
     <div class="container">
         <div class="page-board-header page-board-header-tight">
@@ -103,48 +110,44 @@
                                 $fallbackHtml   = '<span>' . esc($companyInitial) . '</span>';
                                 $logoErrorJs    = "if(this.dataset.googleLogo&&this.src!==this.dataset.googleLogo){this.src=this.dataset.googleLogo;}else{this.parentNode.innerHTML='" . $fallbackHtml . "';}";
                                 ?>
-                                <article class="job-card company-directory-card" data-company-id="<?= (int) $company['id'] ?>" data-company-name="<?= esc($companyName) ?>">
-                                    <div class="company-directory-card-head">
-                                        <div class="job-card-icon company-directory-logo">
-                                            <?php if ($logoUrl !== ''): ?>
-                                                <img src="<?= esc($logoUrl) ?>"
-                                                     alt="<?= esc($companyName) ?>"
-                                                     data-google-logo="<?= esc($googleLogoUrl) ?>"
-                                                     onerror="<?= esc($logoErrorJs, 'attr') ?>">
-                                            <?php else: ?>
-                                                <span><?= esc($companyInitial) ?></span>
-                                            <?php endif; ?>
-                                        </div>
-                                        <div class="company-directory-title-wrap">
-                                            <h3 class="job-card-title">
-                                                <a href="<?= esc($profileUrl) ?>"><?= esc($companyName) ?></a>
-                                            </h3>
-                                        </div>
-                                        <a href="<?= esc($profileUrl) ?>" class="company-directory-card-arrow" aria-label="View <?= esc($companyName) ?>">
-                                            <i class="fas fa-chevron-right"></i>
-                                        </a>
-                                    </div>
+                              <a href="<?= esc($profileUrl) ?>" class="job-card company-directory-card" data-company-id="<?= (int) $company['id'] ?>" data-company-name="<?= esc($companyName) ?>" style="text-decoration:none;">
+    <div class="company-directory-card-head">
+        <div class="job-card-icon company-directory-logo">
+            <?php if ($logoUrl !== ''): ?>
+                <img src="<?= esc($logoUrl) ?>"
+                     alt="<?= esc($companyName) ?>"
+                     data-google-logo="<?= esc($googleLogoUrl) ?>"
+                     onerror="<?= esc($logoErrorJs, 'attr') ?>">
+            <?php else: ?>
+                <span><?= esc($companyInitial) ?></span>
+            <?php endif; ?>
+        </div>
+        <div class="company-directory-title-wrap">
+            <h3 class="job-card-title"><?= esc($companyName) ?></h3>
+        </div>
+         
+    </div>
 
-                                    <?php if ($openJobsCount > 0 || $companyIndustry !== '' || $companyHq !== '' || $companySize !== '' || $companyFounded !== ''): ?>
-                                        <div class="company-directory-meta">
-                                        <?php if ($openJobsCount > 0): ?>
-                                            <span><i class="fas fa-briefcase"></i> <?= esc((string) $openJobsCount) ?> open <?= $openJobsCount === 1 ? 'role' : 'roles' ?></span>
-                                        <?php endif; ?>
-                                        <?php if ($companyIndustry !== ''): ?>
-                                            <span><?= esc($companyIndustry) ?></span>
-                                        <?php endif; ?>
-                                        <?php if ($companyHq !== ''): ?>
-                                            <span><i class="fas fa-map-pin"></i> <?= esc($companyHq) ?></span>
-                                        <?php endif; ?>
-                                        <?php if ($companySize !== ''): ?>
-                                            <span><i class="fas fa-users"></i> <?= esc($companySize) ?></span>
-                                        <?php endif; ?>
-                                        <?php if ($companyFounded !== ''): ?>
-                                            <span><i class="far fa-calendar"></i> Since <?= esc($companyFounded) ?></span>
-                                        <?php endif; ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </article>
+    <?php if ($openJobsCount > 0 || $companyIndustry !== '' || $companyHq !== '' || $companySize !== '' || $companyFounded !== ''): ?>
+        <div class="company-directory-meta">
+        <?php if ($openJobsCount > 0): ?>
+            <span><i class="fas fa-briefcase"></i> <?= esc((string) $openJobsCount) ?> open <?= $openJobsCount === 1 ? 'role' : 'roles' ?></span>
+        <?php endif; ?>
+        <?php if ($companyIndustry !== ''): ?>
+            <span><?= esc($companyIndustry) ?></span>
+        <?php endif; ?>
+        <?php if ($companyHq !== ''): ?>
+            <span><i class="fas fa-map-pin"></i> <?= esc($companyHq) ?></span>
+        <?php endif; ?>
+        <?php if ($companySize !== ''): ?>
+            <span><i class="fas fa-users"></i> <?= esc($companySize) ?></span>
+        <?php endif; ?>
+        <?php if ($companyFounded !== ''): ?>
+            <span><i class="far fa-calendar"></i> Since <?= esc($companyFounded) ?></span>
+        <?php endif; ?>
+        </div>
+    <?php endif; ?>
+</a>
                             <?php endforeach; ?>
                         </div>
 

@@ -761,6 +761,49 @@ body.dark .recruiter-dashboard-subtitle {
         </div>
     </div>
 
+    <!-- ════════════════════ ACTION CENTER ════════════════════ -->
+    <?php if (empty($noJobs)): ?>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card" style="border-radius:16px;">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold" style="font-weight:600;"><i class="fas fa-bolt"></i> Action Center</h6>
+                </div>
+                <div class="card-body p-0">
+                    <?php $hasActions = ((int)($pendingActions['pending_screening'] ?? 0) > 0) || ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0); ?>
+                    <?php if ($hasActions): ?>
+                        <?php if ((int)($pendingActions['pending_screening'] ?? 0) > 0): ?>
+                        <a href="<?= $jobsUrl ?>" class="d-flex align-items-center justify-content-between p-3" style="border-bottom:1px solid #D9ECE5;text-decoration:none;color:#16212B;transition:background.12s;" onmouseover="this.style.background='#E8F9F8'" onmouseout="this.style.background='transparent'">
+                            <div>
+                                <strong><i class="fas fa-file-signature" style="color:#0D8A90;"></i> Screen New Applications</strong>
+                                <small class="d-block text-muted">Review and shortlist incoming candidates.</small>
+                            </div>
+                            <span class="badge" style="background:#FFE45C;color:#6B5300;border-radius:20px;font-weight:700;padding:5px 12px;"><?= (int)$pendingActions['pending_screening'] ?></span>
+                        </a>
+                        <?php endif; ?>
+                        <?php if ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0): ?>
+                        <a href="<?= $bookingsUrl ?>" class="d-flex align-items-center justify-content-between p-3" style="border-bottom:1px solid #D9ECE5;text-decoration:none;color:#16212B;transition:background.12s;" onmouseover="this.style.background='#e8f9f817'" onmouseout="this.style.background='transparent'">
+                            <div>
+                                <strong><i class="fas fa-calendar-check" style="color:#0D8A90;"></i> Interviews Today</strong>
+                                <small class="d-block text-muted">Track today's booked interviews and update status.</small>
+                            </div>
+                            <span class="status-pill"><?= (int)$pendingActions['hr_interviews_today'] ?></span>
+                        </a>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <div class="text-center py-5">
+                            <div style="width:56px;height:56px;border-radius:50%;background:#E8F9F8;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:#0D8A90;font-size:22px;"><i class="fas fa-check"></i></div>
+                            <h6 style="font-weight:600;">All caught up!</h6>
+                            <p class="text-muted small">No pending screenings or interviews right now.</p>
+                            <a href="<?= $jobsUrl ?>" class="btn btn-outline-primary btn-sm">Review Jobs</a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
 </div><!-- /.recruiter-dashboard-main -->
 
 <script>
