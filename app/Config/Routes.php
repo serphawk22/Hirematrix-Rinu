@@ -119,6 +119,7 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->get('chatbot/suggestions', 'ApiDashboardController::getChatbotSuggestions');
     $routes->get('dashboard/(:num)', 'ApiDashboardController::getDashboard/$1');
     $routes->get('job-search-strategy/(:num)', 'ApiDashboardController::getJobSearchStrategy/$1');
+    $routes->get('company-discovery', 'ApiDashboardController::getCompanyDiscovery');
     $routes->get('jobs/featured', 'ApiJobsController::getFeaturedJobs');
     $routes->get('local-companies/init', 'Companies::initLocalCompanies');
     $routes->get('jobs/detail/(:num)', 'ApiJobsController::getJobDetails/$1');
