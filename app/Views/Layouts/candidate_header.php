@@ -482,10 +482,7 @@
                         <span>Resume Studio</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
-                    <a href="<?= esc($mentorUrl) ?>" class="cand-leftnav__link <?= $isPremiumMentorActive ? 'is-active' : '' ?>" title="AI Mentor">
-                        <span>AI Mentor</span>
-                        <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
-                    </a>
+                    
                 </div>
             </div>
 

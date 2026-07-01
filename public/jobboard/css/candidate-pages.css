@@ -17755,6 +17755,86 @@ body.candidate-app .resume-studio-jobboard .resume-version-content {
     box-shadow: none !important;
 }
 
+body.candidate-app .resume-studio-jobboard .template-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+    align-items: stretch !important;
+}
+
+body.candidate-app .resume-studio-jobboard .template-option {
+    display: block !important;
+    height: 100% !important;
+    margin: 0 !important;
+}
+
+body.candidate-app .resume-studio-jobboard .template-option input {
+    position: absolute !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+body.candidate-app .resume-studio-jobboard .template-card {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 230px !important;
+    padding: 16px !important;
+    gap: 12px !important;
+    overflow: hidden !important;
+}
+
+body.candidate-app .resume-studio-jobboard .template-preview {
+    display: block !important;
+    width: 100% !important;
+    height: 116px !important;
+    flex: 0 0 116px !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+    background-size: 100% 100% !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+body.candidate-app .resume-studio-jobboard .template-card strong {
+    display: block !important;
+    min-height: 2.4em !important;
+    margin: 0 !important;
+    color: var(--candidate-heading, #16212B) !important;
+    font-size: .95rem !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+}
+
+body.candidate-app .resume-studio-jobboard .template-card small.text-muted {
+    display: block !important;
+    margin: 0 !important;
+    color: var(--candidate-muted, #64748B) !important;
+    font-size: .78rem !important;
+    line-height: 1.55 !important;
+}
+
+body.candidate-app .resume-studio-jobboard .template-option input:checked + .template-card {
+    border-color: var(--primary, #1FB7B5) !important;
+    box-shadow: 0 0 0 1px rgba(31, 183, 181, .22) !important;
+}
+
+body.candidate-app .resume-studio-jobboard .template-option.is-disabled .template-card {
+    opacity: .6 !important;
+}
+
+@media (max-width: 1199.98px) {
+    body.candidate-app .resume-studio-jobboard .template-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    body.candidate-app .resume-studio-jobboard .template-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
 /* Career Transition: flatten wrapper boxes and keep only content surfaces. */
 body.candidate-app .career-transition-service-jobboard .service-content-canvas,
 body.candidate-app .career-transition-service-jobboard .career-transition-content,
@@ -23411,6 +23491,24 @@ body.dark.candidate-app .course-service-jobboard .course-lesson-content code {
     background: #111111 !important;
     border-color: #303030 !important;
     color: #e5e7eb !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .template-card {
+    background: #111111 !important;
+    border-color: #272727 !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .template-card strong {
+    color: #f4f4f5 !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .template-card small.text-muted {
+    color: #b8bec8 !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .template-option input:checked + .template-card {
+    border-color: #1FB7B5 !important;
+    box-shadow: 0 0 0 1px rgba(31, 183, 181, .28) !important;
 }
 
 /* Recommended jobs: keep the card stage aligned with the full page shell. */
