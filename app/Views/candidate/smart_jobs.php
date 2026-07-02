@@ -1,9 +1,210 @@
         <?= view('Layouts/candidate_header', ['title' => 'Find Jobs']) ?>
+<style> 
+/* ============================================
+   SHARED CARD LAYOUT — tight spacing, logo pinned
+   top-right near title, footer: viewed left / tools+save right
+   ============================================ */
+.candidate-app .jobs-page-jobboard .job-card .viewed-action-mark {
+    display: inline-flex !important;
+    align-items: left !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    gap: 5px !important;
+}
+.candidate-app .jobs-page-jobboard .recommended-job-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+}
+.candidate-app .jobs-page-jobboard #tab-all .row.g-4 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    margin: 0 !important;
+}
+.candidate-app .jobs-page-jobboard #tab-all .col-12 {
+    padding: 0 !important;
+    width: 100% !important;
+}
 
-<style>
-   body.dark .job-card.recommended-job-card.js-clickable-card {
-       background: var(--card) !important;
-   }
+/* Card shell — plain block, not row-reverse anymore.
+   Logo is absolutely positioned top-right instead of taking flex space. */
+.candidate-app .jobs-page-jobboard .recommended-job-card,
+.candidate-app .jobs-page-jobboard #tab-all .job-card {
+    display: block !important;
+    position: relative !important;
+    background: #fff !important;
+    border: 1px solid #e8edf3 !important;
+    border-radius: var(--candidate-card-radius) !important;
+    box-shadow: none !important;
+    padding: 12px 16px 36px 16px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    text-align: left !important;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease !important;
+}
+.candidate-app .jobs-page-jobboard .recommended-job-card:hover,
+.candidate-app .jobs-page-jobboard #tab-all .job-card:hover {
+    border-color: rgba(47, 111, 221, 0.32) !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08) !important;
+    transform: translateY(-2px) !important;
+}
+body.dark .candidate-app .jobs-page-jobboard .recommended-job-card,
+body.dark .candidate-app .jobs-page-jobboard #tab-all .job-card {
+    background: var(--card) !important;
+}
+
+/* Logo — small, pinned top-right, level with title/company */
+.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-icon,
+.candidate-app .jobs-page-jobboard #tab-all .job-card .job-card-icon {
+    position: absolute !important;
+    top: 12px !important;
+    right: 14px !important;
+    width: 30px !important;
+    height: 30px !important;
+    flex: none !important;
+    margin: 0 !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.candidate-app .jobs-page-jobboard .job-card-icon img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+/* Body — no flex gap, everything hugs together, right padding clears the logo */
+.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-body,
+.candidate-app .jobs-page-jobboard #tab-all .job-card .job-card-body {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    padding-right: 40px !important;
+    padding-bottom: 28px !important; /* room for absolutely positioned footer */
+    text-align: left !important;
+}
+
+.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-title,
+.candidate-app .jobs-page-jobboard #tab-all .job-card .job-card-title {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    margin: 0 !important;
+    text-align: left !important;
+    width: 100% !important;
+}
+
+.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-company,
+.candidate-app .jobs-page-jobboard #tab-all .job-card .job-card-company {
+    font-size: 13px !important;
+    line-height: 1.15 !important;
+    margin: 1px 0 0 !important;
+    text-align: left !important;
+    width: 100% !important;
+    opacity: 0.75 !important;
+}
+
+/* Meta row: location + posted date, tight under company name */
+.candidate-app .jobs-page-jobboard .job-card .job-card-meta {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    gap: 14px !important;
+    width: 100% !important;
+    margin: 4px 0 0 !important;
+    font-size: 12.5px !important;
+    line-height: 1.15 !important;
+    overflow-x: auto !important;
+}
+.candidate-app .jobs-page-jobboard .job-card .job-card-meta span {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+}
+
+/* Tags row */
+.candidate-app .jobs-page-jobboard .job-card .job-card-tags {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    width: 100% !important;
+    margin: 4px 0 0 !important;
+}
+.candidate-app .jobs-page-jobboard .job-card .job-card-tags .badge {
+    padding: 3px 8px !important;
+    font-size: 11.5px !important;
+    line-height: 1.2 !important;
+}
+
+/* Description line (tab-all only) */
+.candidate-app .jobs-page-jobboard #tab-all .job-card .job-card-desc,
+.candidate-app .jobs-page-jobboard .job-card .small.text-muted {
+    font-size: 12.5px !important;
+    line-height: 1.25 !important;
+    margin: 4px 0 0 !important;
+    color: #1FB7B5 !important;
+    text-align: left !important;
+    width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Progress bar row (recommended cards) */
+.candidate-app .jobs-page-jobboard .recommended-job-card .progress-container {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 4px 0 0 !important;
+}
+
+/* ============================================
+   FOOTER ROW — viewed pill bottom-left,
+   3-dot tools + save bottom-right
+   ============================================ */
+
+/* Viewed / Not viewed pill — bottom-left */
+.candidate-app .jobs-page-jobboard .job-card .view-details {
+    display: inline-flex !important;
+    position: absolute !important;
+    left: 16px !important;
+    bottom: 10px !important;
+    margin: 0 !important;
+}
+
+/* 3-dot tools menu — bottom-right, left of save */
+.candidate-app .jobs-page-jobboard .job-card .job-card-tools-wrapper {
+    position: absolute !important;
+    right: 52px !important;
+    bottom: 8px !important;
+    top: auto !important;
+    margin: 0 !important;
+}
+
+/* Save/bookmark button — bottom-right corner */
+.candidate-app .jobs-page-jobboard .job-card .job-card-save {
+    position: absolute !important;
+    right: 14px !important;
+    bottom: 8px !important;
+    top: auto !important;
+    margin: 0 !important;
+}
+body.dark .job-card.recommended-job-card.js-clickable-card {
+    background-color:var(--card) !important;
+ }
 </style>
 <?php
 $allJobsAreExternal = $allJobsAreExternal ?? false;
@@ -217,7 +418,13 @@ $renderRecommendedPane = static function (
             <?php foreach ($jobs as $job): ?>
                 <?php
                     $score = (float) ($job['match_score'] ?? 0);
-                    $title = (string) ($job['title'] ?? 'Untitled Role');
+                    $stripBadChars = static function (string $text): string {
+    // Collapse runs of 2+ literal '?' (typical artifact of lost emoji/unicode chars)
+    $text = preg_replace('/\?{2,}\s*/u', '', $text);
+    return trim($text);
+};
+             
+$title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role')); 
                     $company = (string) ($job['company'] ?? 'Company');
                     $location = (string) ($job['location'] ?? 'N/A');
                     $postedMeta = $formatPostedMeta($job['created_at'] ?? null);
@@ -295,7 +502,7 @@ $renderRecommendedPane = static function (
             <div class="progress-track">
                 <div class="progress-bar-custom candidate-progress-fill" style="--candidate-progress: <?= $matchPct ?>%;"></div>
             </div>
-            <span class="progress-label"><?= $matchPct ?>% match</span>
+            <span class="progress-label"><?= $matchPct ?>% ATS match</span>
         </div>
         <div class="job-card-tools-wrapper">
             <button type="button" class="btn btn-sm btn-outline-secondary job-card-tools-toggle" title="Tools" onclick="event.stopPropagation();">
@@ -321,10 +528,10 @@ $renderRecommendedPane = static function (
    class="view-details js-mark-visited <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>"
    data-job-id="<?= (int) $job['id'] ?>"
    <?= $isExternalJob ? 'target="_blank"' : '' ?> style="text-decoration:none;">
-   <span class="viewed-action-mark <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>" style="text-decoration:none;">
-       <i class="<?= $isVisited ? 'fas fa-eye' : 'far fa-eye' ?>"></i>
-       <?= $isVisited ? 'Viewed' : 'Not viewed' ?>
-   </span>
+  <span class="viewed-action-mark <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>">
+    <i class="<?= $isVisited ? 'fas fa-eye' : 'far fa-eye' ?>"></i>
+    <?= $isVisited ? 'Viewed' : 'Not viewed' ?>
+</span>
    <span> </span>
 </a>
     </div>
@@ -756,7 +963,13 @@ $activeFilterCount = count($activeFilterChips);
                     <div class="row g-4 mb-4">
                     <?php foreach ($jobs as $job): ?>
                         <?php
-                            $title = (string) ($job['title'] ?? 'Untitled Role');
+                               $stripBadChars = static function (string $text): string {
+    // Collapse runs of 2+ literal '?' (typical artifact of lost emoji/unicode chars)
+    $text = preg_replace('/\?{2,}\s*/u', '', $text);
+    return trim($text);
+};
+             
+$title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role')); 
                             $company = (string) ($job['company'] ?? 'Company');
                             $location = (string) ($job['location'] ?? 'N/A');
                             $postedMeta = $formatPostedMeta($job['created_at'] ?? null);
@@ -851,10 +1064,10 @@ $activeFilterCount = count($activeFilterChips);
    class="view-details js-mark-visited <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>"
    data-job-id="<?= (int) $job['id'] ?>"
    <?= $isExternalJob ? 'target="_blank"' : '' ?> style="text-decoration:none;">
-   <span class="viewed-action-mark <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>" style="text-decoration:none;">
-       <i class="<?= $isVisited ? 'fas fa-eye' : 'far fa-eye' ?>"></i>
-       <?= $isVisited ? 'Viewed' : 'Not viewed' ?>
-   </span>
+  <span class="viewed-action-mark <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>">
+    <i class="<?= $isVisited ? 'fas fa-eye' : 'far fa-eye' ?>"></i>
+    <?= $isVisited ? 'Viewed' : 'Not viewed' ?>
+</span>
    <span> </span>
 </a>
         </div>
