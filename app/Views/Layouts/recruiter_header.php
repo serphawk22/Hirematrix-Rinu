@@ -950,7 +950,10 @@
     /* ═══════════════════════════════════════════
        SIDEBAR FOOTER — PROFILE CARD
     ═══════════════════════════════════════════ */
-    .hm-sb-foot { flex-shrink: 0; }
+    .hm-sb-foot {
+        flex-shrink: 0;
+        position: relative;
+    }
 
     /* profile submenu — sits above the card */
     .hm-sb-profile-sub {
@@ -986,6 +989,7 @@
         color: var(--hm-text) !important;
     }
     body.recruiter-jobboard .hm-sidebar .hm-sb-profile-sub a.active {
+        background: var(--hm-active-bg) !important;
         color: var(--hm-primary-dark) !important;
         font-weight: 600 !important;
     }
@@ -1569,7 +1573,9 @@ body.dark .hm-sidebar .hm-sb-profile-sub a:hover {
     color: #F8FAFC !important;
 }
 body.dark .hm-sidebar .hm-sb-profile-sub a.active {
+    background: rgba(13, 138, 144, 0.2) !important;
     color: #1FB7B5 !important;
+    font-weight: 600 !important;
 }
 body.dark .hm-sidebar .hm-sb-profile-sub a i {
     color: #7A8B96 !important;
@@ -1754,6 +1760,16 @@ body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-profile:hover .sb-
 body.recruiter-jobboard .hm-sidebar .sb-tooltip,
 body.recruiter-jobboard .hm-sidebar .sb-tooltip::before {
     display: none !important;
+}
+
+body.recruiter-jobboard .hm-sidebar .hm-sb-foot:hover .hm-sb-profile-sub,
+body.recruiter-jobboard .hm-sidebar .hm-sb-foot:focus-within .hm-sb-profile-sub {
+    display: block !important;
+    max-height: 240px !important;
+}
+
+body.recruiter-jobboard .hm-sidebar .hm-sb-profile-sub.prof-open {
+    display: block !important;
 }
 
 body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle:hover + .hm-sb-sub,
@@ -2086,11 +2102,39 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleArea.click(); }
     });
  
-    profileCard && profileCard.addEventListener('click', function () {
-        if (sidebar.classList.contains('sb-collapsed')) return;
-        var open = profileSub.classList.toggle('prof-open');
+    function setProfileOpen(open) {
+        if (!profileCard || !profileSub) return;
+        profileSub.classList.toggle('prof-open', open);
         profileCard.classList.toggle('prof-open', open);
-        profileCard.setAttribute('aria-expanded', open);
+        profileCard.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    profileCard && profileCard.addEventListener('click', function () {
+        setProfileOpen(!profileSub.classList.contains('prof-open'));
+    });
+    profileCard && profileCard.addEventListener('mouseenter', function () {
+        if (window.innerWidth <= 991) return;
+        setProfileOpen(true);
+    });
+    profileCard && profileCard.addEventListener('focus', function () {
+        if (window.innerWidth <= 991) return;
+        setProfileOpen(true);
+    });
+    profileSub && profileSub.addEventListener('mouseenter', function () {
+        if (window.innerWidth <= 991) return;
+        setProfileOpen(true);
+    });
+    profileSub && profileSub.addEventListener('mouseleave', function () {
+        if (window.innerWidth <= 991) return;
+        setProfileOpen(false);
+    });
+    profileCard && profileCard.addEventListener('mouseleave', function () {
+        if (window.innerWidth <= 991) return;
+        window.setTimeout(function () {
+            if (!profileSub.matches(':hover') && !profileCard.matches(':hover')) {
+                setProfileOpen(false);
+            }
+        }, 80);
     });
     profileCard && profileCard.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); profileCard.click(); }
