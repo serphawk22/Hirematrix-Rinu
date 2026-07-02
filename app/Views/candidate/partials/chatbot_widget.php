@@ -154,7 +154,7 @@ body.dark .hm-candidate-chat-suggestions {
     background: var(--card) !important;
 }
 body.dark .hm-candidate-chat-suggestions button {
-    background: #162327 !important;
+    background: var(--card) !important;
     border-color: rgba(31, 183, 181, 0.42);
     color: #D8FFFF;
 }
@@ -180,6 +180,9 @@ body.dark .hm-candidate-chat-input:focus {
     border-color: var(--candidate-accent, var(--primary, #1FB7B5));
     box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.16);
 }
+body.dark .hm-candidate-chat-bubble.user{
+    background-color:#0D8A90 !important;
+}
 @media (max-width: 480px) {
     .hm-candidate-chat-widget { right: 12px; left: 12px; width: auto; height: 70vh; bottom: 80px; }
     .hm-candidate-chat-fab { right: 16px; bottom: 16px; }
@@ -192,6 +195,23 @@ body.dark .hm-candidate-chat-input:focus {
     0%   { transform: scale(1.1); box-shadow:none !important; }
     50%  { transform: scale(1.4); box-shadow: none !important; }
     100% { transform: scale(1.1); box-shadow: none !important; }
+}
+.hm-theme-chip {
+    font-size: 11px;
+    border-radius: 999px;
+    padding: 3px 8px;
+    display: inline-block;
+    color: var(--primary) !important;
+    background: #ffffff !important;
+    border: 1px solid var(--primary) !important;
+}
+
+/* Dark theme override */
+body.dark.candidate-app .hm-theme-chip,
+html.hm-dark-preload .hm-theme-chip {
+    background: #162327 !important;
+    color: #fff !important;
+    border: 1px solid var(--primary) !important;
 }
 </style>
 
@@ -363,7 +383,7 @@ body.dark .hm-candidate-chat-input:focus {
             premiumFeatures.forEach(f => {
                 const chip = document.createElement('span');
                 chip.textContent = formatFeatureLabel(f);
-                chip.style.cssText = 'font-size:11px;background:#eef6ff;color:#0b5ed7;border:1px solid #bfd8ff;border-radius:999px;padding:3px 8px;display:inline-block;';
+                chip.className = 'hm-theme-chip';
                 wrap.appendChild(chip);
             });
             bubble.appendChild(document.createElement('br'));
