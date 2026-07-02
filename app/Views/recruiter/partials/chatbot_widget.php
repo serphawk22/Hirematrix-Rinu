@@ -245,7 +245,7 @@ body.dark .hm-chat-widget {
     border-color: #23343A;
 }
 body.dark .hm-chat-messages {
-    background: #0A0D0F;
+    background: #000 !important;
 }
 body.dark .hm-msg.bot .hm-msg-bubble {
     background: #162327;

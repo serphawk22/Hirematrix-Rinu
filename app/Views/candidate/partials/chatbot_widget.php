@@ -39,7 +39,7 @@
     height: 580px;
     background: #fff;
     border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.14);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
     z-index: 10000;
     display: none;
     flex-direction: column;
@@ -48,7 +48,7 @@
 .hm-candidate-chat-widget.open { display: flex; }
 .hm-candidate-chat-header {
     padding: 14px 16px;
-    background: var(--candidate-accent, var(--primary, #1FB7B5));
+    background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 100%);
     color: #fff;
     display: flex;
     align-items: center;
@@ -133,24 +133,28 @@
 body.dark .hm-candidate-chat-widget {
     background: #050505;
     border: 1px solid #23343A;
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+    box-shadow: none !important;
 }
+
 body.dark .hm-candidate-chat-header small {
-    color: rgba(255, 255, 255, 0.86);
+    color: #fff !important;
     opacity: 1;
 }
 body.dark .hm-candidate-chat-messages {
-    background: #071012;
+    background: var(--card) !important;
 }
 body.dark .hm-candidate-chat-bubble.bot {
-    background: #142033;
+    background: #162327 !important;
     color: #F4F8FF;
 }
+body.dark .hm-candidate-chat-quick-actions,body.dark .hm-candidate-chat-input-wrap{
+     background: var(--card) !important;
+}
 body.dark .hm-candidate-chat-suggestions {
-    background: #030707;
+    background: var(--card) !important;
 }
 body.dark .hm-candidate-chat-suggestions button {
-    background: #082124;
+    background: #162327 !important;
     border-color: rgba(31, 183, 181, 0.42);
     color: #D8FFFF;
 }
@@ -185,9 +189,9 @@ body.dark .hm-candidate-chat-input:focus {
     animation: hmFabAttention 1.2s ease-in-out 2;
 }
 @keyframes hmFabAttention {
-    0%   { transform: scale(1.1); box-shadow: 0 6px 24px rgba(31, 183, 181, 0.25); }
-    50%  { transform: scale(1.4); box-shadow: 0 10px 34px rgba(31, 183, 181, 0.45); }
-    100% { transform: scale(1.1); box-shadow: 0 6px 24px rgba(31, 183, 181, 0.25); }
+    0%   { transform: scale(1.1); box-shadow:none !important; }
+    50%  { transform: scale(1.4); box-shadow: none !important; }
+    100% { transform: scale(1.1); box-shadow: none !important; }
 }
 </style>
 
