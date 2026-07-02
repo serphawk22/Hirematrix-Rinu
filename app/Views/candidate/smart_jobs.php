@@ -952,7 +952,7 @@ $activeFilterCount = count($activeFilterChips);
 <div class="modal fade" id="coverLetterModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content border-0">
-            <div class="modal-header bg-primary text-white">
+             <div class="modal-header text-white" style="background:#1FB7B5 !important;">
                 <h5 class="modal-title font-weight-bold"><i class="fas fa-magic mr-2"></i>AI Cover Letter Draft</h5>
                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>

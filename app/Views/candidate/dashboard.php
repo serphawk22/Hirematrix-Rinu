@@ -153,220 +153,351 @@ $proFeatureSlides = [
     <!-- CENTER: main content -->
     <div class="dash-grid__main">
           <!-- ═══════════════ PRO FEATURE PROMO (top of page) ═══════════════ -->
-    <?php if (empty($premiumSubscription ?? null)): ?>
-    <style>
-    .dash-pro-promo{ margin: 8px 0 32px; }
-    .dash-pro-promo-head{
-      display:flex;justify-content:space-between;align-items:flex-end;
-      gap:16px;margin-bottom:18px;flex-wrap:wrap;
-    }
-    .dash-pro-promo-head h2{
-      font-size:22px;font-weight:800;color:var(--foreground);margin:0 0 4px;
-    }
-    .dash-pro-promo-head p{margin:0;color:var(--muted-foreground);font-size:14px;}
-    .dash-pro-promo-cta{
-      background:var(--gradient-primary);color:#fff !important;border:none;
-      border-radius:99px !important;padding:10px 24px;font-size:13px;font-weight:700;
-      text-decoration:none !important;white-space:nowrap;
-      box-shadow:0 4px 14px rgba(31,183,181,.25);
-      transition:transform .15s,box-shadow .15s;
-    }
-    .dash-pro-promo-cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(31,183,181,.35);color:#fff !important;}
+  <!-- ═══════════════ PRO FEATURE PROMO (top of page) ═══════════════ -->
+<?php if (empty($premiumSubscription ?? null)): ?>
+<style>
+/* Reset any inherited white "card" styling on the ancestor section/container
+   so the gradient panel below is the ONLY visible box — no white halo. */
+.dash-pro-wrap{
+  background:transparent !important;
+  box-shadow:none !important;
+  border:none !important;
+  padding-top:0 !important;
+  padding-bottom:0 !important;
+}
+.dash-pro-wrap .container-fluid{
+  background:transparent !important;
+  box-shadow:none !important;
+  border:none !important;
+}
 
-    .dash-pro-grid{
-      display:grid;
-      grid-template-columns:repeat(4, 1fr);
-      gap:18px;
-    }
-    @media (max-width: 1199px){ .dash-pro-grid{grid-template-columns:repeat(2, 1fr);} }
-    @media (max-width: 575px){ .dash-pro-grid{grid-template-columns:1fr;} }
+.dash-pro-promo{ margin: 8px 0 32px; }
 
-    .dash-pro-card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:10px !important;
-      padding:22px;
-      display:flex;flex-direction:column;
-      position:relative;
-      overflow:hidden;
-      transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-      cursor:pointer;
-    }
-    .dash-pro-card:hover{
-      transform:translateY(-1px) !important;
-      box-shadow:0 4px 10px rgba(31, 183, 181, 0.07) !important;
-      border-color:var(--primary);
-    }
-    .dash-pro-card::before{
-      display:none;
-    }
-    .dash-pro-card-icon{
-      width:44px;height:44px;border-radius:12px;
-      background:var(--gradient-soft);
-      display:flex;align-items:center;justify-content:center;
-      margin-bottom:14px;
-      position:relative;
-    }
-    .dash-pro-card-icon i{
-      font-size:18px;
-      background:var(--gradient-primary);
-      -webkit-background-clip:text;background-clip:text;color:transparent;
-    }
-    .dash-pro-card-play-badge{
-      position:absolute;top:-6px;right:-6px;
-      width:20px;height:20px;border-radius:50%;
-      background:var(--gradient-primary);
-      display:flex;align-items:center;justify-content:center;
-      box-shadow:0 2px 6px rgba(31,183,181,.4);
-      border:2px solid var(--card);
-    }
-    .dash-pro-card-play-badge i{
-      font-size:8px;color:#fff;background:none;-webkit-text-fill-color:#fff;margin-left:1px;
-    }
-    .dash-pro-card-eyebrow{
-      display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;
-      text-transform:uppercase;color:var(--primary-dark);
-      background:var(--muted);border:1px solid var(--border);
-      padding:3px 10px;border-radius:999px;margin-bottom:10px;align-self:flex-start;
-    }
-    .dash-pro-card-title{
-      font-size:15px;font-weight:700;color:var(--foreground);margin:0 0 12px;line-height:1.35;
-    }
-    .dash-pro-card-rows{list-style:none;margin:0 0 16px;padding:0;flex:1;}
-    .dash-pro-card-rows li{
-      display:flex;align-items:flex-start;gap:8px;font-size:12.5px;
-      color:var(--muted-foreground);margin-bottom:8px;line-height:1.4;
-    }
-    .dash-pro-card-rows li i{
-      color:var(--secondary);margin-top:2px;font-size:12px;flex-shrink:0;
-    }
-    .dash-pro-card-watch{
-      display:inline-flex;align-items:center;gap:6px;
-      font-size:12.5px;font-weight:700;color:var(--primary-dark);
-      margin-top:auto;
-    }
-    .dash-pro-card-watch i{font-size:11px;}
+/* ── Spotlight panel (single box, no nested white card) ───────── */
+.dash-pro-panel{
+  position:relative;
+  overflow:hidden;
+  border-radius:24px;
+  padding:36px 32px;
+  background:
+    linear-gradient( rgba(31, 183, 181, 0.19), transparent 135%), 
+    var(--gradient-soft);
+  border:1px solid var(--border);
+}
 
-    /* Video modal */
-    .dash-pro-video-modal{
-      display:none;position:fixed;inset:0;z-index:1080;
-      align-items:center;justify-content:center;
-      background:rgba(15, 23, 28, 0.72);
-      padding:20px;
-    }
-    .dash-pro-video-modal.is-open{display:flex;}
-    .dash-pro-video-modal-box{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:16px;
-      width:100%;max-width:920px !important;
-      overflow:hidden;
-      box-shadow:0 20px 60px rgba(0,0,0,.35);
-    }
-    .dash-pro-video-modal-head{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:16px 20px;border-bottom:1px solid var(--border);
-      gap:12px;
-    }
-    .dash-pro-video-modal-head h4{
-      margin:0;font-size:15px;font-weight:700;color:var(--foreground);
-    }
-    .dash-pro-video-modal-close{
-      background:var(--muted);border:none !important;
-      color:var(--foreground);width:30px;height:30px;border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
-      cursor:pointer;flex-shrink:0;font-size:13px;line-height:1;
-      transition:background .15s,color .15s,transform .15s;
-      outline:none !important;
-      box-shadow:none !important;
-      -webkit-tap-highlight-color:transparent;
-    }
-     .dash-pro-video-modal-close:focus,
-    .dash-pro-video-modal-close:active,
-    .dash-pro-video-modal-close:focus-visible{
-      outline:none !important;
-      box-shadow:none !important;
-      border:none !important;
-    }
-    .dash-pro-video-modal-close:hover{
-         transform:translateY(-1px) !important;
-    }
-    .dash-pro-video-modal-body{ background:#000; }
-    .dash-pro-video-modal-body video{
-      display:block;width:100%;max-height:70vh;background:#000;
-    }
-    </style>
+.dash-pro-panel-head{
+  position:relative;z-index:1;
+  display:flex;justify-content:space-between;align-items:flex-end;
+  gap:16px;margin-bottom:26px;flex-wrap:wrap;
+}
+.dash-pro-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  color:#fff;background:var(--gradient-primary);
+  padding:5px 12px;border-radius:999px;margin-bottom:10px;
+}
+.dash-pro-panel-head h2{
+  font-size:22px;font-weight:800;color:var(--foreground);margin:0 0 4px;
+}
+.dash-pro-panel-head p{margin:0;color:var(--muted-foreground);font-size:14px;}
+.dash-pro-promo-cta{
+  background:var(--gradient-primary);color:#fff !important;border:none;
+  border-radius:99px !important;padding:10px 24px;font-size:13px;font-weight:700;
+  text-decoration:none !important;white-space:nowrap;
+  box-shadow:0 4px 14px rgba(31,183,181,.25);
+  transition:transform .15s,box-shadow .15s;
+}
+.dash-pro-promo-cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(31,183,181,.35);color:#fff !important;}
 
-    <section class="dashboard-section pt-0">
-        <div class="container-fluid px-lg-5">
-            <div class="dash-pro-promo">
-                <div class="dash-pro-promo-head">
-                    <div>
-                        <h2>Unlock more with PRO</h2>
-                        <p>AI-powered tools to help you land your next role faster.</p>
-                    </div>
-                    <a href="<?= base_url('premium/plans') ?>" class="btn btn-primary">
-                        Become a Pro
-                    </a>
-                </div>
+/* ── Card grid ───────────────────────────────────────────────── */
+.dash-pro-grid{
+  position:relative;z-index:1;
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:18px;
+}
+@media (max-width: 1199px){ .dash-pro-grid{grid-template-columns:repeat(2, 1fr);} }
+@media (max-width: 575px){ .dash-pro-grid{grid-template-columns:1fr;} }
 
-                <div class="dash-pro-grid">
-                    <?php foreach ($proFeatureSlides as $slide):
-                        $hasVideo = !empty($slide['video_url']);
-                        $cardTag = $hasVideo ? 'div' : 'a';
-                        ?>
-                        <<?= $cardTag ?>
-                            <?php if ($hasVideo): ?>
-                                role="button" tabindex="0"
-                                data-video-src="<?= esc($slide['video_url'], 'attr') ?>"
-                                data-video-title="<?= esc($slide['video_title'] ?? ($slide['title'] ?? ''), 'attr') ?>"
-                                onclick="dashProOpenVideo(this)"
-                                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();dashProOpenVideo(this);}"
-                            <?php else: ?>
-                                href="<?= esc($slide['cta_url'] ?? base_url('premium/plans')) ?>" style="text-decoration:none;"
-                            <?php endif; ?>
-                            class="dash-pro-card"
-                        >
-                            <div class="dash-pro-card-icon">
-                                <i class="<?= esc($pickJobIcon($slide['eyebrow'] ?? '')) ?>" aria-hidden="true"></i>
-                                <?php if ($hasVideo): ?>
-                                    <span class="dash-pro-card-play-badge"><i class="fas fa-play"></i></span>
-                                <?php endif; ?>
-                            </div>
-                            <span class="dash-pro-card-eyebrow"><?= esc($slide['eyebrow'] ?? '') ?></span>
-                            <h3 class="dash-pro-card-title"><?= esc($slide['title'] ?? ($slide['eyebrow'] ?? '')) ?></h3>
-                            <ul class="dash-pro-card-rows">
-                                <?php foreach (array_slice((array) ($slide['rows'] ?? []), 0, 3) as $row): ?>
-                                    <li><i class="fas fa-check-circle"></i> <?= esc($row) ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                            <?php if ($hasVideo): ?>
-                                <span class="dash-pro-card-watch"><i class="fas fa-circle-play"></i> Watch the guide</span>
-                            <?php endif; ?>
-                        </<?= $cardTag ?>>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+/* Gradient-ring wrapper: thin rainbow border via padding trick */
+.dash-pro-ring{
+  border-radius:16px;
+  padding:1.5px;
+  background: linear-gradient(
+      135deg,
+      #1FB7B5 0%,
+      #53B86C 55%,
+      #B5D84E 100%
+    ) !important;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.dash-pro-ring:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 24px rgba(31,183,181,.18);
+}
+
+.dash-pro-card{
+   background: linear-gradient(
+      135deg,
+      #F4FBFA 0%,
+      #EEF9F2 100%
+    );
+  border-radius:14.5px;
+  padding:22px;
+  display:flex;flex-direction:column;
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+  height:100%;
+}
+
+.dash-pro-card-lock{
+  position:absolute;top:16px;right:16px;
+  font-size:12px;color:var(--text-light);
+}
+
+.dash-pro-card-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:var(--gradient-soft);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:14px;
+  position:relative;
+}
+.dash-pro-card-icon i{
+  font-size:18px;
+  background:var(--gradient-primary);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.dash-pro-card-play-badge{
+  position:absolute;top:-6px;right:-6px;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--gradient-primary);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 4px rgba(31,183,181,.04) !important;
+  border:2px solid var(--card);
+}
+.dash-pro-card-play-badge i{
+  font-size:8px;color:#fff;background:none;-webkit-text-fill-color:#fff;margin-left:1px;
+}
+
+.dash-pro-card-eyebrow{
+  display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--primary-dark);
+  background:var(--muted);border:1px solid var(--border);
+  padding:3px 10px;border-radius:999px;margin-bottom:10px;align-self:flex-start;
+}
+.dash-pro-card-title{
+  font-size:15px;font-weight:700;color:var(--foreground);margin:0 0 12px;line-height:1.35;
+}
+.dash-pro-card-rows{list-style:none;margin:0 0 16px;padding:0;flex:1;}
+.dash-pro-card-rows li{
+  display:flex;align-items:flex-start;gap:8px;font-size:12.5px;
+  color:var(--muted-foreground);margin-bottom:8px;line-height:1.4;
+}
+.dash-pro-card-rows li i{
+  color:var(--secondary);margin-top:2px;font-size:12px;flex-shrink:0;
+}
+.dash-pro-card-watch,
+.dash-pro-card-cta{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12.5px;font-weight:700;
+  margin-top:auto;
+  background:var(--gradient-primary);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.dash-pro-card-watch i,
+.dash-pro-card-cta i{font-size:11px;color:var(--primary-dark);-webkit-text-fill-color:var(--primary-dark);}
+
+/* Video modal */
+.dash-pro-video-modal{
+  display:none;position:fixed;inset:0;z-index:1080;
+  align-items:center;justify-content:center;
+  background:rgba(15, 23, 28, 0.72);
+  padding:20px;
+}
+.dash-pro-video-modal.is-open{display:flex;}
+.dash-pro-video-modal-box{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  width:100%;max-width:1020px !important;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+.dash-pro-video-modal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  gap:12px;
+}
+.dash-pro-video-modal-head h4{
+  margin:0;font-size:15px;font-weight:700;color:var(--foreground);
+}
+.dash-pro-video-modal-close{
+  background:var(--muted);border:none !important;
+  color:var(--foreground);width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;font-size:13px;line-height:1;
+  transition:background .15s,color .15s,transform .15s;
+  outline:none !important;
+  box-shadow:none !important;
+  -webkit-tap-highlight-color:transparent;
+}
+.dash-pro-video-modal-close:focus,
+.dash-pro-video-modal-close:active,
+.dash-pro-video-modal-close:focus-visible{
+  outline:none !important;
+  box-shadow:none !important;
+  border:none !important;
+}
+.dash-pro-video-modal-close:hover{
+  transform:translateY(-1px) !important;
+}
+.dash-pro-video-modal-body{ background:#000; }
+.dash-pro-video-modal-body video{
+  display:block;width:100%;max-height:70vh;background:#000;
+} 
+/* ── Dark theme boost ───────────────────────────────────────────
+   Tokens already flip via var(--foreground)/var(--card)/etc, but the
+   glow + shadows below are tuned for a light backdrop and go flat
+   against a near-black page — brighten/re-tune them here. */
+body.dark .dash-pro-panel{
+  border-color:rgba(31,183,181,.35);
+  background:
+    radial-gradient(circle at top right, rgba(31,183,181,.24), transparent 50%),
+    radial-gradient(circle at bottom left, rgba(181,216,78,.18), transparent 50%),
+    var(--gradient-soft);
+  box-shadow:0 0 0 1px rgba(31,183,181,.10), 0 28px 64px rgba(31,183,181,.12);
+}
+ 
+body.dark .dash-pro-badge{
+  box-shadow:0 2px 6px rgba(31,183,181,.20) !important;
+}
+ 
+body.dark .dash-pro-promo-cta{
+  box-shadow:0 2px 9px rgba(31,183,181,.04) !important;
+}
+body.dark .dash-pro-promo-cta:hover{
+  box-shadow:0 6px 22px rgba(31,183,181,.55);
+}
+ 
+body.dark .dash-pro-ring{
+  background:linear-gradient(135deg, #24D9D6, #6BD886, #C7EB6B);
+}
+body.dark .dash-pro-ring:hover{
+  box-shadow:0 4px 12px rgba(31,183,181,.04) !important;
+}
+ 
+body.dark .dash-pro-card{
+  background:var(--card);
+}
+ 
+body.dark .dash-pro-card-icon{
+  background:linear-gradient(135deg, rgba(31,183,181,.22), rgba(181,216,78,.20));
+}
+body.dark .dash-pro-card-icon i{
+  background:linear-gradient(135deg, #24D9D6, #6BD886, #C7EB6B);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+ 
+body.dark .dash-pro-card-play-badge{
+  box-shadow:0 2px 10px rgba(31,183,181,.55);
+}
+ 
+body.dark .dash-pro-card-eyebrow{
+  background:var(--muted);
+  border-color:rgba(31,183,181,.30);
+}
+ 
+body.dark .dash-pro-card-watch,
+body.dark .dash-pro-card-cta{
+  background:linear-gradient(135deg, #24D9D6, #6BD886, #C7EB6B);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+</style>
+
+ 
+      <div class="dash-pro-panel">
+
+        <div class="dash-pro-panel-head">
+          <div>
+            <div class="dash-pro-badge"><i class="fas fa-crown"></i> Pro tools</div>
+          <h2 style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">
+  Unlock more with PRO
+</h2>
+            <p>AI-powered tools to help you land your next role faster.</p>
+          </div>
+          <a href="<?= base_url('premium/plans') ?>" class="btn btn-primary dash-pro-promo-cta">
+            Become a Pro
+          </a>
         </div>
-    </section>
 
-    <!-- Video guide modal (shared by any PRO card with a video) -->
-    <div class="dash-pro-video-modal" id="dashProVideoModal" aria-hidden="true">
-        <div class="dash-pro-video-modal-box" role="dialog" aria-modal="true" aria-labelledby="dashProVideoModalTitle">
-            <div class="dash-pro-video-modal-head">
-                <h4 id="dashProVideoModalTitle">Your Guide to Acing the AI Interview</h4>
-                <button type="button" class="dash-pro-video-modal-close" onclick="dashProCloseVideo()" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
+        <div class="dash-pro-grid">
+          <?php foreach ($proFeatureSlides as $slide):
+              $hasVideo = !empty($slide['video_url']);
+              $cardTag  = $hasVideo ? 'div' : 'a';
+          ?>
+            <div class="dash-pro-ring">
+              <<?= $cardTag ?>
+                  <?php if ($hasVideo): ?>
+                      role="button" tabindex="0"
+                      data-video-src="<?= esc($slide['video_url'], 'attr') ?>"
+                      data-video-title="<?= esc($slide['video_title'] ?? ($slide['title'] ?? ''), 'attr') ?>"
+                      onclick="dashProOpenVideo(this)"
+                      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();dashProOpenVideo(this);}"
+                  <?php else: ?>
+                      href="<?= esc($slide['cta_url'] ?? base_url('premium/plans')) ?>" style="text-decoration:none;"
+                  <?php endif; ?>
+                  class="dash-pro-card"
+              >
+                 <?php if (!$hasVideo && ($slide['eyebrow'] ?? '') !== 'Job Search Strategy Coach'): ?>
+    <i class="fas fa-lock dash-pro-card-lock" aria-hidden="true"></i>
+<?php endif; ?>
+
+                  <div class="dash-pro-card-icon">
+                      <i class="<?= esc($pickJobIcon($slide['eyebrow'] ?? '')) ?>" aria-hidden="true"></i>
+                      <?php if ($hasVideo): ?>
+                          <span class="dash-pro-card-play-badge"><i class="fas fa-play"></i></span>
+                      <?php endif; ?>
+                  </div>
+
+                  <span class="dash-pro-card-eyebrow"><?= esc($slide['eyebrow'] ?? '') ?></span>
+                  <h3 class="dash-pro-card-title"><?= esc($slide['title'] ?? ($slide['eyebrow'] ?? '')) ?></h3>
+
+                  <ul class="dash-pro-card-rows">
+                      <?php foreach (array_slice((array) ($slide['rows'] ?? []), 0, 3) as $row): ?>
+                          <li><i class="fas fa-check-circle"></i> <?= esc($row) ?></li>
+                      <?php endforeach; ?>
+                  </ul>
+
+                  <?php if ($hasVideo): ?>
+                      <span class="dash-pro-card-watch"><i class="fas fa-circle-play"></i> Watch the guide</span>
+                  <?php else: ?>
+                      <span class="dash-pro-card-cta"><?= esc($slide['cta_label'] ?? 'Learn more') ?> <i class="fas fa-arrow-right"></i></span>
+                  <?php endif; ?>
+              </<?= $cardTag ?>>
             </div>
-            <div class="dash-pro-video-modal-body">
-                <video id="dashProVideoModalPlayer" controls controlsList="nofullscreen noremoteplayback" preload="none"></video>
-            </div>
+          <?php endforeach; ?>
+        </div>
+
+      </div> 
+
+<!-- Video guide modal (shared by any PRO card with a video) -->
+<div class="dash-pro-video-modal" id="dashProVideoModal" aria-hidden="true">
+    <div class="dash-pro-video-modal-box" role="dialog" aria-modal="true" aria-labelledby="dashProVideoModalTitle">
+        <div class="dash-pro-video-modal-head">
+            <h4 id="dashProVideoModalTitle">Your Guide to Acing the AI Interview</h4>
+            <button type="button" class="dash-pro-video-modal-close" onclick="dashProCloseVideo()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="dash-pro-video-modal-body">
+            <video id="dashProVideoModalPlayer" controls controlsList="nofullscreen noremoteplayback" preload="none"></video>
         </div>
     </div>
+</div>
 
-    <script>
-  function dashProOpenVideo(el){
+<script>
+function dashProOpenVideo(el){
     var modal = document.getElementById('dashProVideoModal');
     var player = document.getElementById('dashProVideoModalPlayer');
     var titleEl = document.getElementById('dashProVideoModalTitle');
@@ -387,28 +518,28 @@ $proFeatureSlides = [
     player.play().catch(function(){ /* autoplay blocked, user can press play */ });
 }
 
-    function dashProCloseVideo(){
-        var modal = document.getElementById('dashProVideoModal');
-        var player = document.getElementById('dashProVideoModalPlayer');
+function dashProCloseVideo(){
+    var modal = document.getElementById('dashProVideoModal');
+    var player = document.getElementById('dashProVideoModalPlayer');
 
-        player.pause();
-        player.removeAttribute('src');
-        player.load();
-        modal.classList.remove('is-open');
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-    }
+    player.pause();
+    player.removeAttribute('src');
+    player.load();
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+}
 
-    document.addEventListener('keydown', function(e){
-        if (e.key === 'Escape') { dashProCloseVideo(); }
-    });
+document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') { dashProCloseVideo(); }
+});
 
-    document.getElementById('dashProVideoModal').addEventListener('click', function(e){
-        if (e.target === this) { dashProCloseVideo(); }
-    });
-    </script>
-    <?php endif; ?>
-    <!-- ═══════════════ END PRO FEATURE PROMO ═══════════════ -->
+document.getElementById('dashProVideoModal').addEventListener('click', function(e){
+    if (e.target === this) { dashProCloseVideo(); }
+});
+</script>
+<?php endif; ?>
+<!-- ═══════════════ END PRO FEATURE PROMO ═══════════════ -->
 
     <section class="dashboard-section pt-0">
         <div class="container-fluid px-lg-5">

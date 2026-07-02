@@ -19,6 +19,7 @@
             } catch (error) {}
         })();
     </script>
+    <head>
     <!-- Inside the <head> tag -->
     <link rel="icon" type="image/png" href="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>">
 
@@ -77,6 +78,7 @@
         body.dark.candidate-app .loader .spinner-border {
             color: #1FB7B5 !important;
         }
+ 
     </style>
 </head>
 <body id="top" class="hirematrix-app candidate-app">
@@ -311,13 +313,13 @@
                         <span>Job Search Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="hm-drawer-link <?= $isCareerTransitionActive ? 'is-active' : '' ?>">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-rocket"></i></span>
-                        <span>Career Transition AI</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-rocket" style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;"></i></span>
+                        <span style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">Career Transition AI</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($resumeStudioUrl) ?>" class="hm-drawer-link <?= $isResumeStudioActive ? 'is-active' : '' ?>">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-file-alt"></i></span>
-                        <span>Resume Studio</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-file-alt" style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;"></i></span>
+                        <span style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">Resume Studio</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($mentorUrl) ?>" class="hm-drawer-link <?= $isPremiumMentorActive ? 'is-active' : '' ?>">
@@ -463,20 +465,15 @@
                         <span>Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="cand-leftnav__link <?= $isCareerTransitionActive ? 'is-active' : '' ?>" title="Career Transition">
-                        <span class="cand-leftnav__icon"><i class="fas fa-rocket"></i></span>
-                        <span>Career Transition</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-rocket" style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;"></i></span>
+                        <span style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">Career Transition</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($resumeStudioUrl) ?>" class="cand-leftnav__link <?= $isResumeStudioActive ? 'is-active' : '' ?>" title="Resume Studio">
-                        <span class="cand-leftnav__icon"><i class="fas fa-file-alt"></i></span>
-                        <span>Resume Studio</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-file-alt" style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;"></i></span>
+                        <span style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">Resume Studio</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
-                    </a>
-                    <a href="<?= esc($mentorUrl) ?>" class="cand-leftnav__link <?= $isPremiumMentorActive ? 'is-active' : '' ?>" title="AI Mentor">
-                        <span class="cand-leftnav__icon"><i class="fas fa-comments"></i></span>
-                        <span>AI Mentor</span>
-                        <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
-                    </a>
+                    </a> 
                 </div>
             </div>
 
