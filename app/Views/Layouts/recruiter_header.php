@@ -39,7 +39,7 @@
     ═══════════════════════════════════════════ */
     :root {
         --sb-width:          250px;
-        --sb-width-mini:      66px;
+        --sb-width-mini:      72px;
         --topbar-h:           60px;
         --recruiter-page-gutter: 32px;
 
@@ -950,7 +950,10 @@
     /* ═══════════════════════════════════════════
        SIDEBAR FOOTER — PROFILE CARD
     ═══════════════════════════════════════════ */
-    .hm-sb-foot { flex-shrink: 0; }
+    .hm-sb-foot {
+        flex-shrink: 0;
+        position: relative;
+    }
 
     /* profile submenu — sits above the card */
     .hm-sb-profile-sub {
@@ -986,6 +989,7 @@
         color: var(--hm-text) !important;
     }
     body.recruiter-jobboard .hm-sidebar .hm-sb-profile-sub a.active {
+        background: var(--hm-active-bg) !important;
         color: var(--hm-primary-dark) !important;
         font-weight: 600 !important;
     }
@@ -1140,6 +1144,177 @@
     }
     .hm-sidebar.sb-collapsed .hm-sb-profile:hover .sb-tooltip { display: block; }
 
+    /* Collapsed recruiter rail: match the candidate icon-only alignment. */
+    @media (min-width: 992px) {
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-head,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-profile {
+            position: relative !important;
+            width: var(--sb-width-mini) !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            justify-content: center !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-logo,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-profile-avatar {
+            position: absolute !important;
+            left: 50% !important;
+            top: 50% !important;
+            margin: 0 !important;
+            transform: translate(-50%, -50%) !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-body {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+            padding: 14px 0 !important;
+            overflow: visible !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-item {
+            position: relative !important;
+            width: var(--sb-width-mini) !important;
+            min-height: 48px !important;
+            margin: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            justify-content: center !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-group-toggle .sb-icon,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-item .sb-icon {
+            position: absolute !important;
+            left: 50% !important;
+            top: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            margin: 0 !important;
+            transform: translate(-50%, -50%) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex: 0 0 40px !important;
+            border-radius: 10px !important;
+            background: rgba(31, 183, 181, 0.11) !important;
+            color: var(--hm-primary-dark) !important;
+            font-size: 17px !important;
+            line-height: 1 !important;
+            text-align: center !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-item.active .sb-icon,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-item:hover .sb-icon {
+            background: rgba(31, 183, 181, 0.16) !important;
+            color: var(--hm-primary-dark) !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within {
+            width: var(--sb-width) !important;
+            box-shadow: 10px 0 28px rgba(15, 23, 42, 0.08) !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-head,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-head,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-profile,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-profile {
+            width: 100% !important;
+            padding: 0 12px 0 10px !important;
+            justify-content: flex-start !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-profile,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-profile {
+            padding: 11px 13px !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-logo,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-logo,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-profile-avatar,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-profile-avatar {
+            position: static !important;
+            transform: none !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-brand,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-brand,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-profile-info,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-profile-info {
+            opacity: 1 !important;
+            max-width: 160px !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-profile-info,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-profile-info {
+            max-width: 155px !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-profile-chevron,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-profile-chevron,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-item .sb-arrow,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-item .sb-arrow {
+            opacity: 1 !important;
+            max-width: 20px !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-body,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-body {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+            padding: 14px 0 !important;
+            overflow: visible !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-item,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-item {
+            width: calc(100% - 16px) !important;
+            min-height: 0 !important;
+            margin: 2px 8px !important;
+            padding: 10px 13px !important;
+            justify-content: flex-start !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-group-toggle,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-group-toggle {
+            padding: 12px 16px 4px !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-item .sb-icon,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-item .sb-icon {
+            position: static !important;
+            width: 21px !important;
+            height: auto !important;
+            flex: 0 0 21px !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            color: inherit !important;
+            transform: none !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-group-toggle .sb-icon,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-group-toggle .sb-icon {
+            display: none !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-item .sb-label,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-item .sb-label {
+            opacity: 1 !important;
+            max-width: 160px !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-sub.sb-open,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-sub.sb-open {
+            display: block !important;
+        }
+
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .sb-badge,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .sb-badge {
+            opacity: 1 !important;
+        }
+    }
+
     /* ═══════════════════════════════════════════
        MAIN CONTENT AREA
     ═══════════════════════════════════════════ */
@@ -1152,6 +1327,13 @@
     }
     body.recruiter-jobboard.sb-collapsed-body .hm-main {
         margin-left: var(--sb-width-mini);
+    }
+
+    @media (min-width: 992px) {
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover ~ .hm-main,
+        body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within ~ .hm-main {
+            margin-left: var(--sb-width) !important;
+        }
     }
 
     /* ── TOPBAR ── */
@@ -1391,7 +1573,9 @@ body.dark .hm-sidebar .hm-sb-profile-sub a:hover {
     color: #F8FAFC !important;
 }
 body.dark .hm-sidebar .hm-sb-profile-sub a.active {
+    background: rgba(13, 138, 144, 0.2) !important;
     color: #1FB7B5 !important;
+    font-weight: 600 !important;
 }
 body.dark .hm-sidebar .hm-sb-profile-sub a i {
     color: #7A8B96 !important;
@@ -1466,6 +1650,159 @@ body.dark .hm-sb-body {
 body.dark .hm-sb-body::-webkit-scrollbar-thumb {
     background: #23343A;
 }
+@media (min-width: 992px) {
+    body.dark.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-group-toggle .sb-icon,
+    body.dark.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-item .sb-icon {
+        display: inline-flex !important;
+        background: rgba(31, 183, 181, 0.14) !important;
+        color: #2dd4d1 !important;
+    }
+}
+
+/* Recruiter left navigation: match candidate expanded group rows. */
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-body {
+    padding: 8px 0 4px !important;
+}
+
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle,
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle:hover,
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle.active {
+    display: flex !important;
+    align-items: center !important;
+    gap: 11px !important;
+    width: calc(100% - 16px) !important;
+    min-height: 48px !important;
+    margin: 2px 8px !important;
+    padding: 10px 13px !important;
+    border: 0 !important;
+    border-radius: 10px !important;
+    background: transparent !important;
+    color: var(--hm-text) !important;
+    font-family: inherit !important;
+    font-size: 14.5px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+}
+
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle:hover,
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle.sb-open,
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle.active {
+    background: var(--hm-hover-bg) !important;
+    color: var(--hm-text) !important;
+}
+
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle .sb-icon,
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle.active .sb-icon {
+    width: 32px !important;
+    height: 32px !important;
+    flex: 0 0 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    background: rgba(31, 183, 181, 0.11) !important;
+    color: var(--hm-primary-dark) !important;
+    font-size: 14px !important;
+    line-height: 1 !important;
+    text-align: center !important;
+}
+
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle .sb-label {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    opacity: 1 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    color: inherit !important;
+    font-family: inherit !important;
+    font-size: 14.5px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle .sb-arrow {
+    margin-left: auto !important;
+    color: var(--hm-light) !important;
+    font-size: 11px !important;
+    max-width: 20px !important;
+    opacity: 0.65 !important;
+    transform: rotate(-90deg) !important;
+    transition: transform 0.22s ease, opacity 0.2s ease !important;
+}
+
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle.sb-open .sb-arrow {
+    transform: rotate(0deg) !important;
+    opacity: 1 !important;
+}
+
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-sub.sb-open {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 0 6px !important;
+}
+
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-item:hover .sb-tooltip,
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-profile:hover .sb-tooltip {
+    display: none !important;
+}
+
+body.recruiter-jobboard .hm-sidebar .sb-tooltip,
+body.recruiter-jobboard .hm-sidebar .sb-tooltip::before {
+    display: none !important;
+}
+
+body.recruiter-jobboard .hm-sidebar .hm-sb-foot:hover .hm-sb-profile-sub,
+body.recruiter-jobboard .hm-sidebar .hm-sb-foot:focus-within .hm-sb-profile-sub {
+    display: block !important;
+    max-height: 240px !important;
+}
+
+body.recruiter-jobboard .hm-sidebar .hm-sb-profile-sub.prof-open {
+    display: block !important;
+}
+
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle:hover + .hm-sb-sub,
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle:focus + .hm-sb-sub,
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-sub:hover,
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-sub:focus-within {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 0 6px !important;
+}
+
+body.dark.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle,
+body.dark.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle:hover,
+body.dark.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle.active {
+    color: #f4f4f5 !important;
+}
+
+body.dark.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle .sb-icon,
+body.dark.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle.active .sb-icon {
+    display: inline-flex !important;
+    background: rgba(31, 183, 181, 0.14) !important;
+    color: #2dd4d1 !important;
+}
+
+body.dark.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle:hover,
+body.dark.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle.sb-open,
+body.dark.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle.active {
+    background: #181818 !important;
+}
+
 .hm-sb-theme-row {
     display: flex;
     align-items: center;
@@ -1746,8 +2083,8 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     var profileCard = document.getElementById('hmProfileCard');
     var profileSub  = document.getElementById('hmProfileSub');
  
-    var KEY       = 'hm_sb_collapsed';
-    var collapsed = localStorage.getItem(KEY) === '1';
+    var KEY       = 'hm_sb_icon_rail';
+    var collapsed = localStorage.getItem(KEY) !== '0';
  
     function applyCollapsed() {
         sidebar.classList.toggle('sb-collapsed', collapsed);
@@ -1765,11 +2102,39 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleArea.click(); }
     });
  
-    profileCard && profileCard.addEventListener('click', function () {
-        if (sidebar.classList.contains('sb-collapsed')) return;
-        var open = profileSub.classList.toggle('prof-open');
+    function setProfileOpen(open) {
+        if (!profileCard || !profileSub) return;
+        profileSub.classList.toggle('prof-open', open);
         profileCard.classList.toggle('prof-open', open);
-        profileCard.setAttribute('aria-expanded', open);
+        profileCard.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    profileCard && profileCard.addEventListener('click', function () {
+        setProfileOpen(!profileSub.classList.contains('prof-open'));
+    });
+    profileCard && profileCard.addEventListener('mouseenter', function () {
+        if (window.innerWidth <= 991) return;
+        setProfileOpen(true);
+    });
+    profileCard && profileCard.addEventListener('focus', function () {
+        if (window.innerWidth <= 991) return;
+        setProfileOpen(true);
+    });
+    profileSub && profileSub.addEventListener('mouseenter', function () {
+        if (window.innerWidth <= 991) return;
+        setProfileOpen(true);
+    });
+    profileSub && profileSub.addEventListener('mouseleave', function () {
+        if (window.innerWidth <= 991) return;
+        setProfileOpen(false);
+    });
+    profileCard && profileCard.addEventListener('mouseleave', function () {
+        if (window.innerWidth <= 991) return;
+        window.setTimeout(function () {
+            if (!profileSub.matches(':hover') && !profileCard.matches(':hover')) {
+                setProfileOpen(false);
+            }
+        }, 80);
     });
     profileCard && profileCard.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); profileCard.click(); }
@@ -1788,23 +2153,55 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     mobileBtn && mobileBtn.addEventListener('click', openMobile);
     overlay.addEventListener('click', closeMobile);
  
-    function keepRecruiterSubnavOpen(button, submenu) {
-        if (!button || !submenu) return;
-        button.classList.add('sb-open');
-        submenu.classList.add('sb-open');
-        button.setAttribute('aria-expanded', 'true');
-        button.addEventListener('click', function (e) {
-            e.preventDefault();
-            button.classList.add('sb-open');
-            submenu.classList.add('sb-open');
-            button.setAttribute('aria-expanded', 'true');
+    var navGroups = [
+        { button: overviewBtn, submenu: overviewSub },
+        { button: jobsBtn, submenu: jobsSub },
+        { button: slotsBtn, submenu: slotsSub },
+        { button: toolsBtn, submenu: toolsSub }
+    ].filter(function (group) {
+        return group.button && group.submenu;
+    });
+
+    function setRecruiterSubnavOpen(activeGroup) {
+        navGroups.forEach(function (group) {
+            var isOpen = group === activeGroup;
+            group.button.classList.toggle('sb-open', isOpen);
+            group.submenu.classList.toggle('sb-open', isOpen);
+            group.button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         });
     }
 
-    keepRecruiterSubnavOpen(overviewBtn, overviewSub);
-    keepRecruiterSubnavOpen(jobsBtn, jobsSub);
-    keepRecruiterSubnavOpen(slotsBtn, slotsSub);
-    keepRecruiterSubnavOpen(toolsBtn, toolsSub);
+    function findInitialSubnavGroup() {
+        for (var i = 0; i < navGroups.length; i++) {
+            if (
+                navGroups[i].button.classList.contains('active') ||
+                navGroups[i].submenu.querySelector('.active')
+            ) {
+                return navGroups[i];
+            }
+        }
+        return navGroups[0] || null;
+    }
+
+    navGroups.forEach(function (group) {
+        group.button.addEventListener('click', function (e) {
+            e.preventDefault();
+            setRecruiterSubnavOpen(group);
+        });
+        group.button.addEventListener('mouseenter', function () {
+            if (window.innerWidth <= 991) return;
+            setRecruiterSubnavOpen(group);
+        });
+        group.button.addEventListener('focus', function () {
+            if (window.innerWidth <= 991) return;
+            setRecruiterSubnavOpen(group);
+        });
+    });
+
+    var initialSubnavGroup = findInitialSubnavGroup();
+    if (initialSubnavGroup) {
+        setRecruiterSubnavOpen(initialSubnavGroup);
+    }
  
 })();
 </script><script>
