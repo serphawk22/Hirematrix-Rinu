@@ -21,6 +21,8 @@
 .hm-candidate-chat-fab:hover { transform: scale(1.05); }
 .hm-candidate-chat-send:focus,
 .hm-candidate-chat-send:focus-visible,
+.hm-candidate-chat-voice:focus,
+.hm-candidate-chat-voice:focus-visible,
 .hm-candidate-chat-header-close:focus,
 .hm-candidate-chat-header-close:focus-visible {
     outline: none;
@@ -129,7 +131,39 @@
 .hm-candidate-chat-input-wrap { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid #dbeafe; background: #fff; }
 .hm-candidate-chat-input { flex: 1; border: 1px solid #dbeafe; border-radius: 999px; padding: 10px 14px; font-size: 14px; color: #0f172a; }
 .hm-candidate-chat-input:focus { outline: none; border-color: var(--candidate-accent, var(--primary, #1FB7B5)); box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.12); }
-.hm-candidate-chat-send { border: none; background: var(--candidate-accent, var(--primary, #1FB7B5)); color: #fff; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; }
+.hm-candidate-chat-send,
+.hm-candidate-chat-voice {
+    border: none;
+    background: var(--candidate-accent, var(--primary, #1FB7B5));
+    color: #fff;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 38px;
+}
+.hm-candidate-chat-voice {
+    background: rgba(31, 183, 181, 0.12);
+    color: var(--candidate-accent-dark, var(--primary-dark, #0D8A90));
+    border: 1px solid rgba(31, 183, 181, 0.25);
+}
+.hm-candidate-chat-voice.is-listening {
+    background: #ef4444;
+    color: #fff;
+    border-color: #ef4444;
+    animation: hmVoicePulse 1s ease-in-out infinite;
+}
+.hm-candidate-chat-voice[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+@keyframes hmVoicePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
 body.dark .hm-candidate-chat-widget {
     background: #050505;
     border: 1px solid #23343A;
@@ -180,8 +214,20 @@ body.dark .hm-candidate-chat-input:focus {
     border-color: var(--candidate-accent, var(--primary, #1FB7B5));
     box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.16);
 }
+<<<<<<< HEAD
 body.dark .hm-candidate-chat-bubble.user{
     background-color:#0D8A90 !important;
+=======
+body.dark .hm-candidate-chat-voice {
+    background: #082124;
+    border-color: rgba(31, 183, 181, 0.42);
+    color: #D8FFFF;
+}
+body.dark .hm-candidate-chat-voice.is-listening {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #fff;
+>>>>>>> origin/Rinu
 }
 @media (max-width: 480px) {
     .hm-candidate-chat-widget { right: 12px; left: 12px; width: auto; height: 70vh; bottom: 80px; }
@@ -273,6 +319,9 @@ html.hm-dark-preload .hm-theme-chip {
 
     <div class="hm-candidate-chat-input-wrap">
         <input type="text" class="hm-candidate-chat-input" id="hmCandidateChatInput" placeholder="Ask about your job portal data..." autocomplete="off">
+        <button type="button" class="hm-candidate-chat-voice" id="hmCandidateChatVoice" aria-label="Start voice chat" title="Start voice chat">
+            <i class="fas fa-microphone"></i>
+        </button>
         <button type="button" class="hm-candidate-chat-send" id="hmCandidateChatSend">➤</button>
     </div>
 </div>
@@ -284,6 +333,7 @@ html.hm-dark-preload .hm-theme-chip {
     const closeBtn      = document.getElementById('hmCandidateChatClose');
     const messages      = document.getElementById('hmCandidateChatMessages');
     const input          = document.getElementById('hmCandidateChatInput');
+    const voice          = document.getElementById('hmCandidateChatVoice');
     const send            = document.getElementById('hmCandidateChatSend');
     const suggestions   = document.getElementById('hmCandidateChatSuggestions');
     const quickActionsWrap = document.getElementById('hmCandidateQuickActions');
@@ -298,6 +348,10 @@ html.hm-dark-preload .hm-theme-chip {
     const mentorUrl  = baseUrl + '/premium-mentor/chat';           // career-mentor topics
 
     let chatSessionId = '';
+    let recognition = null;
+    let isListening = false;
+    let shouldSpeakNextReply = false;
+    let voiceTurnSubmitted = false;
 
     // ── Target role state ────────────────────────────────────────────
     // Read whatever role the backend already knows about (may be empty).
@@ -368,6 +422,19 @@ html.hm-dark-preload .hm-theme-chip {
         return String(feature).replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
 
+    function speakCandidateReply(text) {
+        if (!shouldSpeakNextReply) return;
+        shouldSpeakNextReply = false;
+        if (!('speechSynthesis' in window) || !text) return;
+
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(String(text).replace(/\s+/g, ' ').trim());
+        utterance.lang = 'en-US';
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        window.speechSynthesis.speak(utterance);
+    }
+
     // ── Message rendering ───────────────────────────────────────────
     function addMessage(text, type, premiumFeatures) {
         const row = document.createElement('div');
@@ -418,6 +485,7 @@ html.hm-dark-preload .hm-theme-chip {
     function setLoading(isLoading) {
         send.disabled = isLoading;
         input.disabled = isLoading;
+        if (voice && recognition) voice.disabled = isLoading;
         send.textContent = isLoading ? '…' : '➤';
     }
 
@@ -471,11 +539,15 @@ html.hm-dark-preload .hm-theme-chip {
             .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
             .then(data => {
                 typing.row.remove();
-                addMessage(data && data.answer ? data.answer : 'I could not answer that right now.', 'bot');
+                const reply = data && data.answer ? data.answer : 'I could not answer that right now.';
+                addMessage(reply, 'bot');
+                speakCandidateReply(reply);
             })
             .catch(() => {
                 typing.row.remove();
-                addMessage('The assistant is temporarily unavailable.', 'bot');
+                const reply = 'The assistant is temporarily unavailable.';
+                addMessage(reply, 'bot');
+                speakCandidateReply(reply);
             })
             .finally(() => {
                 setLoading(false);
@@ -501,18 +573,24 @@ html.hm-dark-preload .hm-theme-chip {
                 if (res && res.message) {
                     chatSessionId = res.session_id || chatSessionId;
                     addMessage(res.message, 'bot', res.premium_features || []);
+                    speakCandidateReply(res.message);
                     if (res.progress_tracking && res.progress_tracking.last_nudge) {
                         addMessage('💡 ' + res.progress_tracking.last_nudge, 'bot');
                     }
                 } else if (res && res.error) {
                     addMessage(res.error, 'bot');
+                    speakCandidateReply(res.error);
                 } else {
-                    addMessage('No response received. Please try again.', 'bot');
+                    const reply = 'No response received. Please try again.';
+                    addMessage(reply, 'bot');
+                    speakCandidateReply(reply);
                 }
             })
             .catch(() => {
                 typing.row.remove();
-                addMessage('The assistant is temporarily unavailable.', 'bot');
+                const reply = 'The assistant is temporarily unavailable.';
+                addMessage(reply, 'bot');
+                speakCandidateReply(reply);
             })
             .finally(() => {
                 setLoading(false);
@@ -565,6 +643,96 @@ html.hm-dark-preload .hm-theme-chip {
     }
 
     // ── Widget open/close ────────────────────────────────────────────
+    function setVoiceListening(listening) {
+        isListening = listening;
+        if (!voice) return;
+        voice.classList.toggle('is-listening', listening);
+        voice.setAttribute('aria-label', listening ? 'Stop voice chat' : 'Start voice chat');
+        voice.setAttribute('title', listening ? 'Stop voice chat' : 'Start voice chat');
+        const icon = voice.querySelector('i');
+        if (icon) {
+            icon.className = listening ? 'fas fa-stop' : 'fas fa-microphone';
+        }
+    }
+
+    function initVoiceChat() {
+        if (!voice) return;
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            voice.disabled = true;
+            voice.setAttribute('title', 'Voice chat is not supported in this browser');
+            voice.setAttribute('aria-label', 'Voice chat is not supported in this browser');
+            return;
+        }
+
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+        recognition.continuous = false;
+
+        recognition.addEventListener('start', function () {
+            setVoiceListening(true);
+            input.placeholder = 'Listening...';
+        });
+
+        recognition.addEventListener('result', function (event) {
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
+            input.value = transcript.trim();
+
+            const latest = event.results[event.results.length - 1];
+            if (latest && latest.isFinal && input.value.trim()) {
+                voiceTurnSubmitted = true;
+                shouldSpeakNextReply = true;
+                recognition.stop();
+                sendMessage(false);
+            }
+        });
+
+        recognition.addEventListener('end', function () {
+            setVoiceListening(false);
+            input.placeholder = 'Ask about your job portal data...';
+            if (!voiceTurnSubmitted) {
+                shouldSpeakNextReply = false;
+            }
+        });
+
+        recognition.addEventListener('error', function () {
+            setVoiceListening(false);
+            input.placeholder = 'Ask about your job portal data...';
+            shouldSpeakNextReply = false;
+        });
+
+        voice.addEventListener('click', function () {
+            widget.classList.add('open');
+            fab.style.display = 'none';
+
+            if (isListening) {
+                recognition.stop();
+                return;
+            }
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+
+            input.value = '';
+            voiceTurnSubmitted = false;
+            shouldSpeakNextReply = true;
+            try {
+                recognition.start();
+            } catch (e) {
+                setVoiceListening(false);
+                shouldSpeakNextReply = false;
+            }
+        });
+    }
+
+    initVoiceChat();
+
     fab.addEventListener('click', function () {
         widget.classList.add('open');
         fab.style.display = 'none';
@@ -577,6 +745,12 @@ html.hm-dark-preload .hm-theme-chip {
     closeBtn.addEventListener('click', function () {
         widget.classList.remove('open');
         fab.style.display = 'flex';
+        if (recognition && isListening) {
+            recognition.stop();
+        }
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
     });
     send.addEventListener('click', () => sendMessage(false));
     input.addEventListener('keydown', function (e) {
