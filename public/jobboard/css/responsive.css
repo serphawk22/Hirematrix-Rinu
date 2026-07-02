@@ -659,7 +659,7 @@ body.mobile-search-open { overflow: hidden; }
 
 /* ── 37. COURSE PAGES ── */
 @media (max-width: 767.98px) {
-    .course-modules-jobboard .course-module-card { flex-direction: column; gap: 10px; }
+    
     .course-content-jobboard .course-lesson-card .card-body { padding: 1rem; }
 }
 

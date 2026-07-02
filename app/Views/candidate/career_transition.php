@@ -54,23 +54,7 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Target Role</label>
-                                    <input list="role-suggestions" type="text" name="target_role" class="form-control" value="<?= esc($targetRole ?? '') ?>" placeholder="e.g., Next.js Developer" required>
-                                    <datalist id="role-suggestions">
-                                        <option value="Next.js Developer">
-                                        <option value="React Developer">
-                                        <option value="DevOps Engineer">
-                                        <option value="DevOps Developer">
-                                        <option value="Data Scientist">
-                                        <option value="Data Analyst">
-                                        <option value="Full Stack Developer">
-                                        <option value="Frontend Developer">
-                                        <option value="Backend Developer">
-                                        <option value="Python Developer">
-                                        <option value="Java Developer">
-                                        <option value="Node.js Developer">
-                                        <option value="Cloud Engineer">
-                                        <option value="Machine Learning Engineer">
-                                    </datalist>
+                                    <input type="text" name="target_role" class="form-control" value="<?= esc($targetRole ?? '') ?>" placeholder="e.g., Next.js Developer" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary career-transition-submit-btn" id="submitBtn">
                                     <span id="btnText"><i class="fas fa-rocket"></i> Generate Roadmap</span>
@@ -85,7 +69,7 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
 
                     <div class="career-transition-note">
                         <h3>How it works</h3>
-                        <p>We keep the flow lightweight: define a target role, generate a plan, and follow daily tasks.</p>
+                        <p>We keep the flow lightweight: define a target role, generate a plan, and complete lessons inside each course module.</p>
                         <ul>
                             <li>Start from your current role</li>
                             <li>Pick one target role</li>
@@ -113,7 +97,7 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
                                     <div class="career-transition-stats">
                                         <span>
                                             <strong><?= (int) $taskCount ?></strong>
-                                            tasks
+                                            lessons
                                         </span>
                                         <span>
                                             <strong><?= count($skillGaps) ?></strong>
@@ -160,23 +144,7 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label fw-semibold">Target Role</label>
-                                        <input list="role-suggestions-active" type="text" name="target_role" class="form-control" value="<?= esc($transition['target_role'] ?? '') ?>" placeholder="e.g., Frontend Developer" required>
-                                        <datalist id="role-suggestions-active">
-                                            <option value="Next.js Developer">
-                                            <option value="React Developer">
-                                            <option value="DevOps Engineer">
-                                            <option value="DevOps Developer">
-                                            <option value="Data Scientist">
-                                            <option value="Data Analyst">
-                                            <option value="Full Stack Developer">
-                                            <option value="Frontend Developer">
-                                            <option value="Backend Developer">
-                                            <option value="Python Developer">
-                                            <option value="Java Developer">
-                                            <option value="Node.js Developer">
-                                            <option value="Cloud Engineer">
-                                            <option value="Machine Learning Engineer">
-                                        </datalist>
+                                        <input type="text" name="target_role" class="form-control" value="<?= esc($transition['target_role'] ?? '') ?>" placeholder="e.g., Frontend Developer" required>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary career-transition-submit-btn">
@@ -196,50 +164,6 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
                         </div>
                     </div>
                     <?php endif; ?>
-
-                    <div class="career-transition-task-list">
-                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                            <div>
-                                <h2 class="section-title mb-1">Daily Tasks</h2>
-                                <p class="section-subtitle mb-0">Complete one task at a time to progress toward your target role.</p>
-                            </div>
-                            <span class="badge badge-primary"><?= $taskCount ?> tasks</span>
-                        </div>
-
-                        <?php if (!empty($tasks)): ?>
-                            <div class="d-grid gap-3">
-                                <?php foreach ($tasks as $task): ?>
-                                    <div class="dashboard-panel transition-task-card <?= !empty($task['is_completed']) ? 'task-completed' : '' ?>">
-                                        <div class="panel-body">
-                                            <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
-                                                <div class="flex-grow-1">
-                                                    <h4 class="mb-1">Day <?= (int) $task['day_number'] ?>: <?= esc($task['task_title']) ?></h4>
-                                                    <p class="mb-0 text-muted transition-task-description"><?= esc($task['task_description']) ?></p>
-                                                </div>
-                                                <div>
-                                                    <?php if (empty($task['is_completed'])): ?>
-                                                        <button class="btn btn-sm btn-primary" onclick="completeTask(<?= (int) $task['id'] ?>)">
-                                                            <i class="fas fa-check"></i> Complete
-                                                        </button>
-                                                    <?php else: ?>
-                                                        <span class="badge badge-primary"><i class="fas fa-check"></i> Done</span>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php else: ?>
-                            <div class="dashboard-panel">
-                                <div class="panel-body text-center py-4">
-                                    <p class="text-muted mb-0" data-auto-refresh="1" data-refresh-delay="5000">
-                                        Tasks are being generated. This page will refresh shortly.
-                                    </p>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-                    </div>
 
                 </div>
             <?php endif; ?>

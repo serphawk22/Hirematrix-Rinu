@@ -47,21 +47,29 @@ class CompanyJobsController extends BaseController
      */
     private function getInternalJobsByCompany(string $companyName): array
     {
-        $company = $this->companyModel
-            ->like('name', $companyName, 'both')
-            ->first();
+        $company = $this->companyModel->where('name', $companyName)->first();
+        if (!$company && strlen($this->normalizeCompanyKey($companyName)) > 4) {
+            $company = $this->companyModel
+                ->like('name', $companyName, 'both')
+                ->first();
+        }
 
         $builder = $this->jobModel
             ->where('status', 'open')
             ->orderBy('created_at', 'DESC');
 
         if ($company) {
-            $builder->groupStart()
-                ->where('company_id', (int) $company['id'])
-                ->orLike('company', (string) ($company['name'] ?? $companyName), 'both')
-                ->groupEnd();
-        } else {
+            $builder->groupStart()->where('company_id', (int) $company['id']);
+            if (strlen($this->normalizeCompanyKey($companyName)) > 4) {
+                $builder->orLike('company', (string) ($company['name'] ?? $companyName), 'both');
+            } else {
+                $builder->orWhere('company', (string) ($company['name'] ?? $companyName));
+            }
+            $builder->groupEnd();
+        } elseif (strlen($this->normalizeCompanyKey($companyName)) > 4) {
             $builder->like('company', $companyName, 'both');
+        } else {
+            $builder->where('company', $companyName);
         }
 
         return $builder->findAll(50);
@@ -90,31 +98,200 @@ class CompanyJobsController extends BaseController
                 ->limit($limit)
                 ->findAll();
 
-            if (empty($jobs)) {
-                $jobs = $model->like('company_name', $companyName, 'both')
-                    ->where('is_active', 1)
-                    ->where('last_sync_at >=', $freshAfter)
-                    ->where('apply_url IS NOT NULL', null, false)
-                    ->where('apply_url !=', '')
-                    ->orderBy('last_sync_at', 'DESC')
-                    ->limit($limit)
-                    ->findAll();
-            }
-
-            return array_values(array_filter(array_map(static function (array $job): array {
+            return array_values(array_filter(array_map(function (array $job) use ($companyName): array {
                 $url = trim((string) ($job['apply_url'] ?? ''));
                 if ($url === '' || !filter_var($url, FILTER_VALIDATE_URL)) {
                     return [];
                 }
 
-                $lastSyncAt = (string) ($job['last_sync_at'] ?? '');
-                $job['is_stale'] = $lastSyncAt !== '' && strtotime($lastSyncAt) < strtotime('-7 days');
+                if (!$this->cachedDiscoveredJobBelongsToCompany($job, $companyName)) {
+                    return [];
+                }
+
+                if ($this->isStaleExternalJob($job)) {
+                    return [];
+                }
+
+                $job['is_stale'] = false;
                 return $job;
             }, $jobs), static fn (array $job): bool => !empty($job)));
         } catch (\Throwable $e) {
             log_message('error', 'CompanyJobsController cached discovered jobs failed: ' . $e->getMessage());
             return [];
         }
+    }
+
+    /**
+     * Cached discovery rows may predate stricter matching, so validate again
+     * before showing them on a company page.
+     *
+     * @param array<string, mixed> $job
+     */
+    private function cachedDiscoveredJobBelongsToCompany(array $job, string $companyName): bool
+    {
+        $companyKey = $this->normalizeCompanyKey($companyName);
+        $applyUrl = (string) ($job['apply_url'] ?? '');
+        $host = strtolower((string) (parse_url($applyUrl, PHP_URL_HOST) ?: ''));
+        $source = strtolower((string) ($job['source_platform'] ?? ''));
+
+        if ($companyKey === '') {
+            return false;
+        }
+
+        if (strlen($companyKey) > 4) {
+            return true;
+        }
+
+        foreach (explode('.', preg_replace('/^www\./', '', $host) ?? $host) as $part) {
+            if ($this->companyKeysMatch($companyKey, $this->normalizeCompanyKey($part))) {
+                return true;
+            }
+        }
+
+        $thirdPartySources = ['linkedin', 'indeed', 'glassdoor', 'remotive', 'aggregator', 'search discovery'];
+        foreach ($thirdPartySources as $thirdPartySource) {
+            if (str_contains($source, $thirdPartySource) || str_contains($host, $thirdPartySource)) {
+                return $this->textMentionsCompany((string) ($job['title'] ?? ''), $companyName)
+                    || $this->urlPathMentionsCompany($applyUrl, $companyName);
+            }
+        }
+
+        return $this->urlPathMentionsCompany($applyUrl, $companyName);
+    }
+
+    private function isStaleExternalJob(array $job): bool
+    {
+        $postedAtRaw = trim((string) ($job['posted_at_raw'] ?? ''));
+        if ($postedAtRaw === '') {
+            return false;
+        }
+
+        $parsedDays = $this->parsePostedAtRawDays($postedAtRaw);
+        if ($parsedDays !== null && $parsedDays > 30) {
+            return true;
+        }
+
+        if (preg_match('/\b(month|year|yr|older than|more than|over)\b/i', $postedAtRaw) === 1
+            && preg_match('/\b(less than|under|<)\b/i', $postedAtRaw) !== 1
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function parsePostedAtRawDays(string $postedAtRaw): ?int
+    {
+        $text = strtolower(trim($postedAtRaw));
+        if ($text === '' || $text === 'recently' || str_contains($text, 'just now') || str_contains($text, 'today') || str_contains($text, 'hour') || str_contains($text, 'minute') || str_contains($text, 'second')) {
+            return 0;
+        }
+
+        if (str_contains($text, 'yesterday')) {
+            return 1;
+        }
+
+        $relativePatterns = [
+            '/(\d+)\s*d(ays?)?\b/i' => 1,
+            '/(\d+)\s*day[s]?\b/i' => 1,
+            '/(\d+)\s*w(eeks?)?\b/i' => 7,
+            '/(\d+)\s*week[s]?\b/i' => 7,
+            '/(\d+)\s*mo(nths?)?\b/i' => 30,
+            '/(\d+)\s*month[s]?\b/i' => 30,
+            '/(\d+)\s*y(ears?)?\b/i' => 365,
+        ];
+
+        foreach ($relativePatterns as $pattern => $multiplier) {
+            if (preg_match($pattern, $text, $matches) === 1) {
+                return (int) $matches[1] * $multiplier;
+            }
+        }
+
+        if (preg_match('/(\d+)\s*day[s]?\s*ago/i', $text, $matches) === 1) {
+            return (int) $matches[1];
+        }
+        if (preg_match('/(\d+)\s*week[s]?\s*ago/i', $text, $matches) === 1) {
+            return (int) $matches[1] * 7;
+        }
+        if (preg_match('/(\d+)\s*month[s]?\s*ago/i', $text, $matches) === 1) {
+            return (int) $matches[1] * 30;
+        }
+        if (preg_match('/(\d+)\s*year[s]?\s*ago/i', $text, $matches) === 1) {
+            return (int) $matches[1] * 365;
+        }
+
+        if (preg_match('/\b(older than|more than|over)\s*(\d+)\s*(day|week|month|year)s?\b/i', $text, $matches) === 1) {
+            $value = (int) $matches[2];
+            $unit = strtolower($matches[3]);
+            return match ($unit) {
+                'day' => $value,
+                'week' => $value * 7,
+                'month' => $value * 30,
+                'year' => $value * 365,
+                default => null,
+            };
+        }
+
+        $timestamp = strtotime($postedAtRaw);
+        if ($timestamp !== false && $timestamp <= time()) {
+            return (int) floor((time() - $timestamp) / 86400);
+        }
+
+        return null;
+    }
+
+    private function textMentionsCompany(string $text, string $companyName): bool
+    {
+        $pattern = $this->companyRegexPattern($companyName);
+        return $pattern !== '' && preg_match('/' . $pattern . '/i', strtolower($text)) === 1;
+    }
+
+    private function urlPathMentionsCompany(string $url, string $companyName): bool
+    {
+        $path = strtolower(rawurldecode((string) (parse_url($url, PHP_URL_PATH) ?: '')));
+        return $this->textMentionsCompany($path, $companyName);
+    }
+
+    private function companyRegexPattern(string $companyName): string
+    {
+        $companyName = strtolower(trim($companyName));
+        $companyName = preg_replace('/[^a-z0-9]+/', ' ', $companyName) ?? '';
+        $companyName = trim($companyName);
+
+        if ($companyName === '') {
+            return '';
+        }
+
+        $parts = preg_split('/\s+/', $companyName) ?: [];
+        $escaped = implode('[\s\-_\.]+', array_map(static fn (string $part): string => preg_quote($part, '/'), $parts));
+
+        return '(?<![a-z0-9])' . $escaped . '(?![a-z0-9])';
+    }
+
+    private function companyKeysMatch(string $left, string $right): bool
+    {
+        if ($left === '' || $right === '') {
+            return false;
+        }
+
+        if ($left === $right) {
+            return true;
+        }
+
+        if (min(strlen($left), strlen($right)) <= 4) {
+            return false;
+        }
+
+        return str_contains($left, $right) || str_contains($right, $left);
+    }
+
+    private function normalizeCompanyKey(string $value): string
+    {
+        $value = strtolower(trim($value));
+        $value = preg_replace('/[^a-z0-9]+/', ' ', $value) ?? '';
+        $value = preg_replace('/\b(limited|ltd|inc|llc|llp|plc|corp|corporation|company|co|technologies|technology|solutions|services|systems|group|holdings|private|pvt)\b/', ' ', $value) ?? '';
+        $value = preg_replace('/\s+/', ' ', $value) ?? '';
+        return str_replace(' ', '', trim($value));
     }
 
     /**

@@ -319,14 +319,6 @@ body.dark input::placeholder { color: #6e7681 !important; }
    BUTTONS
 ===================================================== */
 
-body.dark .btn-primary {
-    background: #1FB7B5 !important;
-    color: #fff !important;
-    border: none !important;
-}
-
-body.dark .btn-primary:hover { background: #0D8A90 !important; }
-
 body.dark .btn-light {
     background: #21262d !important;
     color: #e6edf3 !important;
@@ -1017,14 +1009,6 @@ body.dark .btn-outline-primary:hover {
     color: #fff !important;
 }
 
-body.dark .btn-outline-secondary {
-    background: #21262d;
-    color: #e6edf3;
-    border: 1px solid #30363d;
-}
-
-body.dark .btn-outline-secondary:hover { background: #30363d; }
-
 body.dark .job-details-applied-btn {
     background: #21262d;
     border: 1px solid #30363d;
@@ -1210,36 +1194,15 @@ body.dark .modal-header .close,
 body.dark .modal-header .btn-close { color: #e6edf3 !important; opacity: 0.8; }
 body.dark #coverLetterTextArea { background-color: #0d1117 !important; color: #e6edf3 !important; border: 1px solid #30363d !important; }
 
-body.dark .local-company-card {
-    background: #161b22;
-    border: 1px solid #30363d;
-    color: #e6edf3;
-}
 
-body.dark .local-company-field input {
-    background: #0d1117;
-    border: 1px solid #30363d;
-    color: #e6edf3;
-}
 
-body.dark .local-company-field input:focus {
-    border-color: #1FB7B5;
-    box-shadow: 0 0 0 3px rgba(31,183,181,0.15);
-}
 
-body.dark .local-company-submit  { background: #1FB7B5; }
-body.dark .local-company-suggestions { background: #161b22; border: 1px solid #30363d; }
-body.dark .local-company-suggestion  { background: transparent; color: #e6edf3; }
-body.dark .local-company-suggestion:hover { background: #21262d; }
 
-body.dark .local-company-chip {
-    background: rgba(31,183,181,0.1);
-    border: 1px solid rgba(31,183,181,0.2);
-    color: #e6edf3;
-}
 
-body.dark .local-company-chip:hover { background: rgba(31,183,181,0.15); }
-body.dark .local-company-logo       { background: #21262d; color: #1FB7B5; }
+
+
+
+
 
 body.dark .company-autocomplete-dropdown {
     background: #161b22 !important;
@@ -1319,8 +1282,8 @@ body.dark .btn-info    { background: #0ea5e9 !important; color: #fff !important;
 body.dark .badge-success { background: rgba(34,197,94,0.1) !important; color: #4ade80 !important; border: 1px solid rgba(34,197,94,0.2); }
 body.dark .badge-info    { background: rgba(31,183,181,0.1) !important; color: #1FB7B5 !important; border: 1px solid rgba(31,183,181,0.2); }
 
-body.dark .course-module-card     { color: #e6edf3; background-color: #161b22; }
-body.dark .course-module-duration { color: #e6edf3; background-color: #161b22; border: 1px solid #30363d; }
+
+
 body.dark .course-resource-link   { background-color: #21262d !important; color: #1FB7B5 !important; border: 1px solid #30363d !important; }
 
 body.dark .pill-count {

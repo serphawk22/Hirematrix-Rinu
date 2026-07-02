@@ -204,6 +204,15 @@ class MncJobIngestor
 
         $textBlock = '';
         foreach ($results as $job) {
+            $haystack = implode(' ', [
+                (string) ($job['title'] ?? ''),
+                (string) ($job['content'] ?? ''),
+                $this->urlHostAndPath((string) ($job['url'] ?? '')),
+            ]);
+            if ($this->requiresExactCompanyMention($company) && !$this->textMentionsCompany($haystack, $company)) {
+                continue;
+            }
+
             $textBlock .= "Tavily Search Result (Job Context): Title: " . ($job['title'] ?? '') .
                 ". Employer: " . $company .
                 ". Apply Link: " . ($job['url'] ?? '') .
@@ -353,7 +362,7 @@ class MncJobIngestor
         $sourcePlatform = $host;
 
         // Domain searches benefit from advanced depth to find deep job links
-        return $this->performTavilySearchAndFormat($query, $numResults, $sourcePlatform, true, 'advanced');
+        return $this->performTavilySearchAndFormat($query, $numResults, $sourcePlatform, true, 'advanced', $company);
     }
 
     private function fetchPublicSearchSnippetsForLinkedIn(string $company, int $limit = 10): string
@@ -371,7 +380,7 @@ class MncJobIngestor
         $sourcePlatform = 'LinkedIn';
 
         // LinkedIn fallback works fine with 'basic' depth
-        return $this->performTavilySearchAndFormat($query, $numResults, $sourcePlatform, true, 'basic');
+        return $this->performTavilySearchAndFormat($query, $numResults, $sourcePlatform, true, 'basic', $company);
     }
 
     private function fetchPublicSearchSnippetsForAggregators(string $company, int $limit = 10): string
@@ -389,7 +398,7 @@ class MncJobIngestor
         $sourcePlatform = 'Aggregators';
 
         // Aggregator fallback works fine with 'basic' depth
-        return $this->performTavilySearchAndFormat($query, $numResults, $sourcePlatform, false, 'basic');
+        return $this->performTavilySearchAndFormat($query, $numResults, $sourcePlatform, false, 'basic', $company);
     }
 
     private function parseResultsWithAi(string $company, string $rawText, int $limit, ?string $officialSourceUrl = null, bool $allowAggregators = false): array
@@ -431,7 +440,7 @@ class MncJobIngestor
     private function extractDirectJobsFromSearchText(string $company, string $rawText, int $limit): array
     {
         $jobs = [];
-        $companyPattern = preg_quote($company, '/');
+        $companyPattern = $this->companyRegexPattern($company);
         $lines = preg_split('/\r\n|\r|\n/', $rawText) ?: [];
 
         foreach ($lines as $line) {
@@ -525,7 +534,7 @@ class MncJobIngestor
         if ($limit <= 0 || !$this->apiKey) return [];
 
         $sourceRule = $allowLinkedIn
-            ? "LinkedIn, Indeed, and Glassdoor public job pages are allowed because official sources did not return jobs. For these results, assume the employer is '$company' unless explicitly stated otherwise in the snippet."
+            ? "LinkedIn, Indeed, and Glassdoor public job pages are allowed only when the snippet explicitly identifies '$company' as the employer. Do not infer the employer from the search keyword."
             : "Only extract jobs from the official company career site or its official ATS source. Do not use LinkedIn, Indeed, Glassdoor, or other third-party aggregator links.";
 
         $prompt = "Act as a high-precision recruitment data extractor for MNC career portals.
@@ -802,7 +811,35 @@ class MncJobIngestor
         return json_decode($content, true) ?: [];
     }
 
-    private function performTavilySearchAndFormat(string $query, int $numResults, string $sourcePlatform, bool $filterJobsView, string $depth = 'advanced'): string
+    private function textMentionsCompany(string $text, string $company): bool
+    {
+        $text = strtolower(rawurldecode($text));
+        $pattern = $this->companyRegexPattern($company);
+
+        if ($pattern === '') {
+            return false;
+        }
+
+        return preg_match('/' . $pattern . '/i', $text) === 1;
+    }
+
+    private function companyRegexPattern(string $company): string
+    {
+        $company = strtolower(trim($company));
+        $company = preg_replace('/[^a-z0-9]+/', ' ', $company) ?? '';
+        $company = trim($company);
+
+        if ($company === '') {
+            return '';
+        }
+
+        $parts = preg_split('/\s+/', $company) ?: [];
+        $escaped = implode('[\s\-_\.]+', array_map(static fn (string $part): string => preg_quote($part, '/'), $parts));
+
+        return '(?<![a-z0-9])' . $escaped . '(?![a-z0-9])';
+    }
+
+    private function performTavilySearchAndFormat(string $query, int $numResults, string $sourcePlatform, bool $filterJobsView, string $depth = 'advanced', ?string $company = null): string
     {
         $textBlock = "";
         $results = $this->tavilySearch($query, $numResults, $depth); // Line 800
@@ -811,10 +848,34 @@ class MncJobIngestor
             if ($filterJobsView && !str_contains(strtolower($link), '/jobs/')) {
                 continue;
             }
+            if ($company !== null) {
+                $haystack = implode(' ', [
+                    (string) ($result['title'] ?? ''),
+                    (string) ($result['content'] ?? ''),
+                    $this->urlHostAndPath($link),
+                ]);
+                if ($this->requiresExactCompanyMention($company) && !$this->textMentionsCompany($haystack, $company)) {
+                    continue;
+                }
+            }
             // The format here matches the regex used in extractDirectJobsFromSearchText
             $textBlock .= "Tavily Search Result (Source: " . $sourcePlatform . "): Title: " . ($result['title'] ?? '') . ". Link: " . $link . ". Snippet: " . ($result['content'] ?? '') . "\n";
         }
         return $textBlock;
+    }
+
+    private function urlHostAndPath(string $url): string
+    {
+        return implode(' ', [
+            (string) (parse_url($url, PHP_URL_HOST) ?: ''),
+            rawurldecode((string) (parse_url($url, PHP_URL_PATH) ?: '')),
+        ]);
+    }
+
+    private function requiresExactCompanyMention(string $company): bool
+    {
+        $key = preg_replace('/[^a-z0-9]+/', '', strtolower($company)) ?? '';
+        return strlen($key) <= 4;
     }
 
     private function tavilySearch(string $query, int $maxResults = 10, string $depth = 'advanced'): array
@@ -835,16 +896,16 @@ class MncJobIngestor
                 'search_depth' => $depth
             ]),
             CURLOPT_SSL_VERIFYPEER => (ENVIRONMENT !== 'development'), 
-            CURLOPT_TIMEOUT => 60 // Increased timeout to 60 seconds
+            CURLOPT_TIMEOUT => 20
         ]);
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $errorMsg = curl_error($ch);
+        $errorNo = curl_errno($ch);
         curl_close($ch);
 
         if ($httpCode !== 200 || !$response) {
-            $errorMsg = curl_error($ch);
-            $errorNo = curl_errno($ch);
             log_message('error', "MncJobIngestor: Tavily API Error (HTTP $httpCode, cURL Error $errorNo: $errorMsg). Response: " . ($response ?: 'No response'));
 
             return [];

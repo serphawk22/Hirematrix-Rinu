@@ -14,19 +14,6 @@ $activeFilters = array_filter([
     'location' => $filters['location'] ?? '',
     'jobs' => $filters['jobs'] ?? '',
 ], static fn ($value): bool => trim((string) $value) !== '');
-$activeFilterLabels = [];
-if (trim((string) ($filters['q'] ?? '')) !== '') {
-    $activeFilterLabels[] = 'Search: ' . trim((string) $filters['q']);
-}
-if (trim((string) ($filters['industry'] ?? '')) !== '') {
-    $activeFilterLabels[] = 'Industry: ' . trim((string) $filters['industry']);
-}
-if (trim((string) ($filters['location'] ?? '')) !== '') {
-    $activeFilterLabels[] = 'Location: ' . trim((string) $filters['location']);
-}
-if (($filters['jobs'] ?? '') === 'active') {
-    $activeFilterLabels[] = 'Actively hiring';
-}
 ?>
 
 <div class="companies-directory-jobboard company-discovery-hub">
@@ -36,10 +23,6 @@ if (($filters['jobs'] ?? '') === 'active') {
                 <span class="page-board-kicker"><i class="fas fa-building"></i> Company Intelligence</span>
                 <h1 class="page-board-title">Discover companies before you apply</h1>
                 <p class="page-board-subtitle">Explore Indian MNCs, corporate employers, global Indian companies, startups, and their portal-posted jobs.</p>
-            </div>
-            <div class="company-discovery-trust">
-                <strong>Safe job model</strong>
-                <span>Company profiles can be pre-seeded. Jobs appear only when posted or linked inside HireMatrix.</span>
             </div>
         </div>
 
@@ -81,7 +64,6 @@ if (($filters['jobs'] ?? '') === 'active') {
 
         <div class="company-discovery-segments">
             <a href="<?= esc($baseDiscoveryUrl) ?>" class="company-segment-card <?= $activeSegmentKey === '' ? 'is-active' : '' ?>">
-                <span class="company-segment-icon"><i class="fas fa-layer-group"></i></span>
                 <strong>All Companies</strong>
                 <small><?= $allCompanyCount ?> profiles</small>
             </a>
@@ -91,26 +73,10 @@ if (($filters['jobs'] ?? '') === 'active') {
                 $segmentUrl = $baseDiscoveryUrl . '?' . http_build_query(['segment' => $segmentKey]);
                 ?>
                 <a href="<?= esc($segmentUrl) ?>" class="company-segment-card <?= $activeSegmentKey === $segmentKey ? 'is-active' : '' ?>">
-                    <span class="company-segment-icon"><i class="fas <?= esc($segment['icon'] ?? 'fa-building') ?>"></i></span>
                     <strong><?= esc($segment['label'] ?? 'Companies') ?></strong>
                     <small><?= (int) ($segment['count'] ?? 0) ?> profiles</small>
                 </a>
             <?php endforeach; ?>
-        </div>
-
-        <div class="company-discovery-section-head results-bar">
-            <div>
-                <h2 class="section-title mb-1"><?= $activeSegmentKey !== '' ? 'Filtered Companies' : 'Company Directory' ?></h2>
-                <p class="section-subtitle mb-0">Click any company card to load portal-posted and discovered jobs.</p>
-                <?php if (!empty($activeFilterLabels)): ?>
-                    <div class="company-discovery-active-filters" aria-label="Active filters">
-                        <?php foreach ($activeFilterLabels as $activeFilterLabel): ?>
-                            <span><?= esc($activeFilterLabel) ?></span>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-            <a href="<?= esc($baseDiscoveryUrl) ?>" class="btn btn-outline-primary btn-sm">Reset</a>
         </div>
 
         <?php if (empty($companies)): ?>

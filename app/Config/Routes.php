@@ -21,11 +21,6 @@ $routes->post('job/mark-visited/(:num)', 'JobController::markVisited/$1');
 // Login
 $routes->get('feedback', 'CandidateFeedbackController::index');
 $routes->post('feedback/save', 'CandidateFeedbackController::save');
-$routes->get('/localcompany', 'Companies::index');
-$routes->get('/fetch-companies', 'Companies::fetchCompanies');
-$routes->get('/suggest', 'Companies::suggest');
-$routes->get('/resolve-current-location', 'Companies::resolveLocation');
-
 $routes->get('login', 'Auth::login');
 $routes->post('login', 'Auth::authenticate');
 $routes->get('logout', 'Auth::logout');
@@ -299,8 +294,10 @@ $routes->group('career-transition', ['filter' => 'candidate'], function($routes)
     $routes->get('/', 'CareerTransition::index');
     $routes->post('create', 'CareerTransition::create');
     $routes->post('complete/(:num)', 'CareerTransition::completeTask/$1');
+    $routes->post('complete-lesson/(:num)', 'CareerTransition::completeLesson/$1');
     $routes->get('course', 'CareerTransition::course');
     $routes->get('module/(:num)', 'CareerTransition::module/$1');
+    $routes->get('lesson/(:num)', 'CareerTransition::lesson/$1');
     $routes->post('dismiss-suggestion', 'CareerTransition::dismissSuggestion');
     $routes->get('reset', 'CareerTransition::reset');
 });

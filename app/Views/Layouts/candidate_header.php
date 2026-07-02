@@ -146,7 +146,7 @@
     $isApplicationStatusActive = $pathEndsWith('/candidate/applications');
     $isSavedJobsActive = $pathEndsWith('/candidate/saved-jobs');
     $isJobAlertsActive = false;
-    $isCompaniesActive = str_contains($currentPath, '/company/') || str_contains($currentPath, '/candidate/company-job-discovery') || str_contains($currentPath, '/localcompany');
+    $isCompaniesActive = str_contains($currentPath, '/company/') || str_contains($currentPath, '/candidate/company-job-discovery');
     $isJobsRoot = $isJobsListActive || $isSavedJobsActive || $isJobDetailsActive;
     $isJobsActive = $isJobsRoot || $isApplicationStatusActive || $isJobAlertsActive;
     $isCareerTransitionActive = str_contains($currentPath, '/career-transition');
@@ -154,6 +154,23 @@
     $isPremiumMentorActive = str_contains($currentPath, '/premium-mentor');
     $isJobStrategyActive = str_contains($currentPath, '/job-strategy');
     $isServicesActive = $isCareerTransitionActive || $isResumeStudioActive || $isPremiumMentorActive || $isJobStrategyActive ;
+    $activeCompanySegment = trim((string) service('request')->getGet('segment'));
+    $companyNavSegments = [
+        '' => ['label' => 'All Companies', 'icon' => 'fas fa-building'],
+        'indian-mnc' => ['label' => 'Indian MNCs', 'icon' => 'fas fa-building-flag'],
+        'global-indian' => ['label' => 'Global Indian', 'icon' => 'fas fa-globe-asia'],
+        'corporate' => ['label' => 'Corporate', 'icon' => 'fas fa-city'],
+        'startups' => ['label' => 'Startups', 'icon' => 'fas fa-rocket'],
+        'product' => ['label' => 'Product Companies', 'icon' => 'fas fa-cube'],
+        'service' => ['label' => 'Service Companies', 'icon' => 'fas fa-people-carry-box'],
+        'remote-friendly' => ['label' => 'Remote Friendly', 'icon' => 'fas fa-laptop-house'],
+        'freshers' => ['label' => 'Freshers Hiring', 'icon' => 'fas fa-user-graduate'],
+    ];
+    $companySegmentUrl = static function (string $segment): string {
+        return $segment === ''
+            ? base_url('candidate/company-job-discovery')
+            : base_url('candidate/company-job-discovery') . '?' . http_build_query(['segment' => $segment]);
+    };
 
     $homeNavClass = $isHomeActive ? 'nav-link active' : 'nav-link';
     $jobsNavClass = $isJobsActive ? 'nav-link active' : 'nav-link';
@@ -165,7 +182,6 @@
     $careerTransitionClass = $isCareerTransitionActive ? 'active' : '';
     $resumeStudioClass = $isResumeStudioActive ? 'active' : '';
     $jobStrategyClass = $isJobStrategyActive ? 'active' : '';
-    $localCompanyClass = str_contains($currentPath, '/localcompany') ? 'active' : '';
     $companyJobDiscoveryClass = str_contains($currentPath, '/candidate/company-job-discovery') ? 'active' : '';
     $premiumMentorClass = $isPremiumMentorActive ? 'active' : '';
     
@@ -294,15 +310,18 @@
                         <span>Recommended Jobs</span>
                         <span class="hm-drawer-pill hm-drawer-pill-accent">For You</span>
                     </a>
-                    <a href="<?= base_url('localcompany') ?>" class="hm-drawer-link <?= str_contains($currentPath, '/localcompany') ? 'is-active' : '' ?>">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-building"></i></span>
-                        <span>Local Companies</span>
-                    </a>
-                    <a href="<?= base_url('candidate/company-job-discovery') ?>" class="hm-drawer-link <?= str_contains($currentPath, '/candidate/company-job-discovery') ? 'is-active' : '' ?>">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-search-plus"></i></span>
-                        <span>Company & Job Discovery</span>
-                    </a>
-                    
+                </div>
+
+                <!-- Section: Companies -->
+                <div class="hm-drawer-section">
+                    <div class="hm-drawer-section-title">Companies</div>
+                    <?php foreach ($companyNavSegments as $segmentKey => $segmentItem): ?>
+                        <?php $isSegmentActive = str_contains($currentPath, '/candidate/company-job-discovery') && $activeCompanySegment === (string) $segmentKey; ?>
+                        <a href="<?= esc($companySegmentUrl((string) $segmentKey)) ?>" class="hm-drawer-link <?= $isSegmentActive ? 'is-active' : '' ?>">
+                            <span class="hm-drawer-link-icon"><i class="<?= esc($segmentItem['icon']) ?>"></i></span>
+                            <span><?= esc($segmentItem['label']) ?></span>
+                        </a>
+                    <?php endforeach; ?>
                 </div>
 
                 <!-- Section: Career Tools & Interview Prep -->
@@ -389,11 +408,9 @@
                 </button>
                 <div class="cand-leftnav__group-body">
                     <a href="<?= base_url('candidate/dashboard') ?>" class="cand-leftnav__link <?= $isHomeActive ? 'is-active' : '' ?>" title="Dashboard">
-                        <span class="cand-leftnav__icon"><i class="fas fa-home"></i></span>
                         <span>Dashboard</span>
                     </a>
                     <a href="<?= base_url('notifications') ?>" class="cand-leftnav__link" title="Notifications">
-                        <span class="cand-leftnav__icon"><i class="fas fa-bell"></i></span>
                         <span>Notifications</span>
                         <?php if ($unreadNotificationCount > 0): ?>
                             <span class="cand-leftnav__badge"><?= $unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount ?></span>
@@ -410,46 +427,40 @@
                 </button>
                 <div class="cand-leftnav__group-body">
                     <a href="<?= base_url('jobs?tab=suggested') ?>" class="cand-leftnav__link <?= $isRecommendedActive ? 'is-active' : '' ?>" title="Recommended">
-                        <span class="cand-leftnav__icon"><i class="fas fa-fire"></i></span>
                         <span>Recommended</span>
                         <span class="cand-leftnav__pill cand-leftnav__pill--accent">For You</span>
                     </a>
                     <a href="<?= base_url('candidate/applications') ?>" class="cand-leftnav__link <?= $isApplicationStatusActive ? 'is-active' : '' ?>" title="Applications">
-                        <span class="cand-leftnav__icon"><i class="fas fa-briefcase"></i></span>
                         <span>Applications</span>
                         <?php if ($applicationCount > 0): ?>
                             <span class="cand-leftnav__pill"><?= $formatCompactCount($applicationCount) ?></span>
                         <?php endif; ?>
                     </a>
                     <a href="<?= base_url('candidate/saved-jobs') ?>" class="cand-leftnav__link <?= $isSavedJobsActive ? 'is-active' : '' ?>" title="Saved Jobs">
-                        <span class="cand-leftnav__icon"><i class="fas fa-bookmark"></i></span>
                         <span>Saved Jobs</span>
                         <?php if ($savedJobsCount > 0): ?>
                             <span class="cand-leftnav__pill"><?= $formatCompactCount($savedJobsCount) ?></span>
                         <?php endif; ?>
                     </a>
                     <a href="<?= base_url('candidate/my-bookings') ?>" class="cand-leftnav__link" title="Interviews">
-                        <span class="cand-leftnav__icon"><i class="fas fa-calendar-check"></i></span>
                         <span>Interviews</span>
                     </a>
                 </div>
             </div>
 
-            <div class="cand-leftnav__section" id="navSection-discover">
-                <button class="cand-leftnav__group-label" data-section="discover" aria-expanded="true">
-                    <span class="cand-leftnav__group-icon"><i class="fas fa-search"></i></span>
-                    <span>Discover</span>
+            <div class="cand-leftnav__section" id="navSection-companies">
+                <button class="cand-leftnav__group-label" data-section="companies" aria-expanded="true">
+                    <span class="cand-leftnav__group-icon"><i class="fas fa-building"></i></span>
+                    <span>Companies</span>
                     <i class="fas fa-chevron-down cand-leftnav__chevron"></i>
                 </button>
                 <div class="cand-leftnav__group-body">
-                    <a href="<?= base_url('localcompany') ?>" class="cand-leftnav__link <?= str_contains($currentPath, '/localcompany') ? 'is-active' : '' ?>" title="Local Companies">
-                        <span class="cand-leftnav__icon"><i class="fas fa-building"></i></span>
-                        <span>Local Companies</span>
-                    </a>
-                    <a href="<?= base_url('candidate/company-job-discovery') ?>" class="cand-leftnav__link <?= str_contains($currentPath, '/candidate/company-job-discovery') ? 'is-active' : '' ?>" title="Job Discovery">
-                        <span class="cand-leftnav__icon"><i class="fas fa-search-plus"></i></span>
-                        <span>Job Discovery</span>
-                    </a>
+                    <?php foreach ($companyNavSegments as $segmentKey => $segmentItem): ?>
+                        <?php $isSegmentActive = str_contains($currentPath, '/candidate/company-job-discovery') && $activeCompanySegment === (string) $segmentKey; ?>
+                        <a href="<?= esc($companySegmentUrl((string) $segmentKey)) ?>" class="cand-leftnav__link <?= $isSegmentActive ? 'is-active' : '' ?>" title="<?= esc($segmentItem['label']) ?>">
+                            <span><?= esc($segmentItem['label']) ?></span>
+                        </a>
+                    <?php endforeach; ?>
                 </div>
             </div>
 
@@ -461,19 +472,17 @@
                 </button>
                 <div class="cand-leftnav__group-body">
                     <a href="<?= base_url('candidate/job-search-strategy') ?>" class="cand-leftnav__link <?= $isJobStrategyActive ? 'is-active' : '' ?>" title="Strategy Coach">
-                        <span class="cand-leftnav__icon"><i class="fas fa-chart-line"></i></span>
                         <span>Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="cand-leftnav__link <?= $isCareerTransitionActive ? 'is-active' : '' ?>" title="Career Transition">
-                        <span class="cand-leftnav__icon"><i class="fas fa-rocket" style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;"></i></span>
-                        <span style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">Career Transition</span>
+                        <span>Career Transition</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($resumeStudioUrl) ?>" class="cand-leftnav__link <?= $isResumeStudioActive ? 'is-active' : '' ?>" title="Resume Studio">
-                        <span class="cand-leftnav__icon"><i class="fas fa-file-alt" style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;"></i></span>
-                        <span style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">Resume Studio</span>
+                        <span>Resume Studio</span>
                         <?php if ($premiumLocked): ?><span class="cand-leftnav__pro">Pro</span><?php endif; ?>
-                    </a> 
+                    </a>
+                    
                 </div>
             </div>
 
@@ -630,7 +639,7 @@
         $currentPath2 = '/' . trim((string) parse_url(current_url(), PHP_URL_PATH), '/');
         $tabActive = [
             'home'     => $currentPath2 === '/candidate' || $currentPath2 === '/candidate/dashboard',
-            'jobs'     => str_contains($currentPath2, '/jobs') || str_contains($currentPath2, '/job/') || str_contains($currentPath2, '/candidate/company-job-discovery') || str_contains($currentPath2, '/localcompany'),
+            'jobs'     => str_contains($currentPath2, '/jobs') || str_contains($currentPath2, '/job/') || str_contains($currentPath2, '/candidate/company-job-discovery'),
             'applied'  => str_contains($currentPath2, '/candidate/applications'),
             'saved'    => str_contains($currentPath2, '/candidate/saved-jobs'),
             'profile'  => str_contains($currentPath2, '/candidate/profile') || str_contains($currentPath2, '/candidate/settings'),

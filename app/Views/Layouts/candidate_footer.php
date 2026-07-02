@@ -132,7 +132,44 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* -- Nav section hover menus -- */
     const navHoverMode = window.matchMedia('(hover: hover) and (pointer: fine)');
-    ['overview', 'jobs', 'discover', 'career'].forEach(function (key) {
+    const candidateLeftnav = document.getElementById('candLeftnav');
+    const syncCandidateLeftnavShell = () => {
+        if (!candidateLeftnav || !navHoverMode.matches) {
+            document.body.classList.remove('candidate-leftnav-expanded');
+            return;
+        }
+        const hasFocusInside = candidateLeftnav.contains(document.activeElement);
+        document.body.classList.toggle(
+            'candidate-leftnav-expanded',
+            candidateLeftnav.matches(':hover') || hasFocusInside
+        );
+    };
+    if (candidateLeftnav) {
+        candidateLeftnav.addEventListener('mouseenter', syncCandidateLeftnavShell);
+        candidateLeftnav.addEventListener('mouseleave', syncCandidateLeftnavShell);
+        candidateLeftnav.addEventListener('focusin', syncCandidateLeftnavShell);
+        candidateLeftnav.addEventListener('focusout', function () {
+            window.setTimeout(syncCandidateLeftnavShell, 0);
+        });
+        if (navHoverMode.addEventListener) {
+            navHoverMode.addEventListener('change', syncCandidateLeftnavShell);
+        }
+        syncCandidateLeftnavShell();
+    }
+    const leftnavSectionKeys = ['overview', 'jobs', 'companies', 'career'];
+    const collapseOtherLeftnavSections = (activeKey) => {
+        leftnavSectionKeys.forEach(function (otherKey) {
+            if (otherKey === activeKey) return;
+            const otherBtn = document.querySelector('[data-section="' + otherKey + '"]');
+            const otherBody = otherBtn && otherBtn.nextElementSibling;
+            if (!otherBtn || !otherBody) return;
+            otherBody.classList.add('is-collapsed');
+            otherBtn.setAttribute('aria-expanded', 'false');
+            try { localStorage.setItem('navCollapsed_' + otherKey, '1'); } catch (e) {}
+        });
+    };
+
+    leftnavSectionKeys.forEach(function (key) {
         const btn = document.querySelector('[data-section="' + key + '"]');
         const body = btn && btn.nextElementSibling;
         const section = btn && btn.closest('.cand-leftnav__section');
@@ -160,6 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         section.addEventListener('mouseenter', function () {
             if (navHoverMode.matches) {
+                collapseOtherLeftnavSections(key);
                 setCollapsed(false);
             }
         });
@@ -173,11 +211,18 @@ document.addEventListener('DOMContentLoaded', function () {
         btn.addEventListener('click', function (event) {
             if (navHoverMode.matches) {
                 event.preventDefault();
-                setCollapsed(body.classList.contains('is-collapsed') ? false : true);
+                const willCollapse = !body.classList.contains('is-collapsed');
+                if (!willCollapse) {
+                    collapseOtherLeftnavSections(key);
+                }
+                setCollapsed(willCollapse);
                 return;
             }
-            const collapsed = body.classList.toggle('is-collapsed');
-            btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+            const collapsed = body.classList.contains('is-collapsed') ? false : true;
+            if (!collapsed) {
+                collapseOtherLeftnavSections(key);
+            }
+            setCollapsed(collapsed);
             try { localStorage.setItem('navCollapsed_' + key, collapsed ? '1' : '0'); } catch (e) {}
         });
 
@@ -186,7 +231,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
             event.preventDefault();
-            setCollapsed(body.classList.contains('is-collapsed') ? false : true);
+            const willCollapse = !body.classList.contains('is-collapsed');
+            if (!willCollapse) {
+                collapseOtherLeftnavSections(key);
+            }
+            setCollapsed(willCollapse);
         });
 
         if (navHoverMode.addEventListener) {

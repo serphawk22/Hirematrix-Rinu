@@ -39,11 +39,24 @@ class CareerTransitionAI
     {
         set_time_limit(300);
         
-        $skills = is_array($skillGaps) ? implode(', ', array_slice($skillGaps, 0, 3)) : $skillGaps;
+        $skillList = is_array($skillGaps)
+            ? array_values(array_filter(array_map('trim', $skillGaps)))
+            : array_values(array_filter(array_map('trim', explode(',', (string) $skillGaps))));
+        $skills = implode(', ', array_slice($skillList, 0, 8));
         
-        $prompt = "Create a professional career transition course: {$currentRole} → {$targetRole}. Skill gaps: {$skills}.
+        $prompt = "Create a professional career transition course from {$currentRole} to {$targetRole}. Skill gaps to close: {$skills}.
 
-Generate 3 modules, 2 lessons each. Each lesson: 400+ words with practical steps and examples.
+Generate 4 broad modules, 2 lessons each. Each module should be a major capability area, not a tiny topic. A single module may cover several related skills, tools, workflows, and interview expectations. Make each lesson read like an excellent ChatGPT-style coaching response, but more complete: detailed explanation, concrete workflow, realistic examples, mistakes, practice, and interview/portfolio proof. Make it structured and reliable like a senior mentor-designed course:
+- Modules must progress from foundations to applied role workflows, production/job readiness, and portfolio/interview proof.
+- Each module must list the exact skill gaps it covers in covered_skill_gaps, usually 2-4 gaps per module when available.
+- Module descriptions must explain the broader capability area and the practical outcome, not just a one-line topic.
+- Each lesson must list covered_skill_gaps.
+- Lesson content must be 1000-1400 words and use clear sections: Outcome, Why This Matters, Concepts, Step-by-Step Work, {$targetRole} Example, Mini Project, Common Mistakes, Interview Readiness, Completion Checklist.
+- Each section must contain practical detail, not one-line summaries. Step-by-Step Work must include at least 6 detailed steps. Completion Checklist must include at least 7 observable checks.
+- Explain concepts like a mentor teaching a real learner: define terms, explain why they matter, connect them to the target role, show how to apply them, and describe what good output looks like.
+- Avoid generic filler. Use tools, workflows, deliverables, and examples relevant to {$targetRole}.
+- Exercises must create portfolio evidence or interview-ready proof of skill.
+- Resources must be stable learning destinations such as official docs, roadmap pages, or trusted educational sources.
 
 JSON format:
 {
@@ -51,23 +64,25 @@ JSON format:
     {
       \"number\": 1,
       \"title\": \"[Specific topic for {$targetRole}]\",
-      \"description\": \"[What you'll learn]\",
+      \"description\": \"[Concrete outcome and why it matters]\",
       \"weeks\": 2,
+      \"covered_skill_gaps\": [\"skill gap 1\", \"skill gap 2\"],
       \"lessons\": [
         {
           \"number\": 1,
           \"title\": \"[Specific skill]\",
-          \"content\": \"## Overview\n[What and why]\n\n## Step-by-Step Guide\n### Step 1\n[Instructions with examples]\n### Step 2\n[More steps]\n\n## Real-World Application\n[How it's used]\n\n## Common Challenges\n[Issues and solutions]\n\n## Key Takeaways\n[Summary]\",
+          \"covered_skill_gaps\": [\"skill gap 1\"],
+          \"content\": \"## Outcome\n[What the learner can do after this lesson]\n\n## Why This Matters\n[Why this skill matters for {$targetRole}]\n\n## Concepts\n[Core concepts explained deeply]\n\n## Step-by-Step Work\n### Step 1\n[Instructions with examples]\n### Step 2\n[More steps]\n\n## {$targetRole} Example\n[Realistic role-specific example]\n\n## Mini Project\n[Portfolio-ready task]\n\n## Common Mistakes\n[Issues and fixes]\n\n## Interview Readiness\n[How to explain this in interviews]\n\n## Completion Checklist\n[Observable proof the learner completed it]\",
           \"resources\": [\"[URL1]\", \"[URL2]\"],
           \"exercises\": [\"[Task1]\", \"[Task2]\"]
         }
       ]
     }
   ],
-  \"daily_tasks\": [{\"day\": 1, \"title\": \"Module 1 - Lesson 1\", \"description\": \"Complete lesson\", \"duration\": 10, \"module\": 1, \"lesson\": 1}]
+  \"daily_tasks\": [{\"day\": 1, \"title\": \"Module 1 - Lesson 1\", \"description\": \"Complete the lesson and checklist\", \"duration\": 45, \"module\": 1, \"lesson\": 1}]
 }
 
-Make content practical and specific to {$targetRole}. Assume learner has {$currentRole} experience.";
+Return ONLY valid JSON. Do not summarize. Do not give brief bullet-only lessons. Make content practical and specific to {$targetRole}. Assume learner has {$currentRole} experience and must close these gaps: {$skills}.";
 
         $response = $this->callOpenAI($prompt);
         $data = json_decode($response, true);
@@ -77,93 +92,78 @@ Make content practical and specific to {$targetRole}. Assume learner has {$curre
             log_message('error', 'JSON decode error: ' . json_last_error_msg());
             return $this->getFallbackCourse($currentRole, $targetRole, $skillGaps);
         }
+
+        if ($this->isCourseTooBrief($data)) {
+            log_message('warning', 'AI course content was too brief; requesting expanded course content.');
+            $expandedData = $this->expandBriefCourseContent($currentRole, $targetRole, $skills, $data);
+            if (!empty($expandedData['modules']) && !$this->isCourseTooBrief($expandedData)) {
+                $data = $expandedData;
+            } else {
+                log_message('warning', 'Expanded course content was still brief; using detailed fallback course.');
+                return $this->getFallbackCourse($currentRole, $targetRole, $skillGaps);
+            }
+        }
         
         log_message('info', 'AI course generated successfully');
         return $data;
     }
 
-<<<<<<< Updated upstream
-=======
-    public function generateSupportResponse(string $message, array $context = []): string
+    private function isCourseTooBrief(array $courseData): bool
     {
-        $recruiterName = trim((string) ($context['recruiter_name'] ?? 'Recruiter'));
-        $companyName = trim((string) ($context['company_name'] ?? 'HireMatrix'));
+        $lessonCount = 0;
+        $totalWords = 0;
 
-        $prompt = "You are the HireMatrix recruiter support assistant. Respond helpfully, clearly, and professionally to recruiter questions. " .
-            "Use the company context when available, but do not disclose internal system details. " .
-            "If the user asks about processes, account settings, or support, answer directly and keep the reply concise.";
-        if ($recruiterName !== '') {
-            $prompt .= "\n\nRecruiter: {$recruiterName}";
+        foreach (($courseData['modules'] ?? []) as $module) {
+            foreach (($module['lessons'] ?? []) as $lesson) {
+                $lessonCount++;
+                $wordCount = str_word_count(strip_tags((string) ($lesson['content'] ?? '')));
+                $totalWords += $wordCount;
+                if ($wordCount < 800) {
+                    return true;
+                }
+            }
         }
-        if ($companyName !== '') {
-            $prompt .= "\nCompany: {$companyName}";
-        }
-        $prompt .= "\n\nUser: {$message}\n\nSupport Response:";
 
-        return $this->callOpenAIText($prompt);
+        if ($lessonCount === 0) {
+            return true;
+        }
+
+        return ($totalWords / $lessonCount) < 950;
     }
 
-    private function callOpenAIText(string $prompt): string
+    private function expandBriefCourseContent(string $currentRole, string $targetRole, string $skills, array $courseData): array
     {
-        $apiKey = getenv('OPENAI_API_KEY');
-        if (empty($apiKey)) {
-            log_message('error', 'OpenAI API key missing from .env');
-            return 'Support chat is temporarily unavailable.';
+        $compactCourse = json_encode($courseData, JSON_UNESCAPED_SLASHES);
+        if (!$compactCourse) {
+            return [];
         }
 
-        $data = [
-            'model' => 'gpt-4o-mini',
-            'messages' => [[
-                'role' => 'system',
-                'content' => 'You are a helpful customer support assistant for a recruiter platform.'
-            ], [
-                'role' => 'user',
-                'content' => $prompt
-            ]],
-            'temperature' => 0.7,
-            'max_tokens' => 800,
-            'stream' => false
-        ];
+        $prompt = "Expand this career transition course from {$currentRole} to {$targetRole}. Skill gaps: {$skills}.
 
-        $ch = curl_init('https://api.openai.com/v1/chat/completions');
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . trim($apiKey),
-            ],
-            CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_TIMEOUT => 90,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
-        ]);
+Return ONLY valid JSON in the same schema. Keep the same module and lesson numbers/titles, but rewrite every lesson content field to be 1000-1400 words.
 
-        $response = curl_exec($ch);
-        $curlError = curl_error($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+Each lesson content must include:
+## Outcome
+## Why This Matters
+## Concepts
+## Step-by-Step Work with at least 6 detailed steps
+## {$targetRole} Example with a realistic workplace or portfolio scenario
+## Mini Project with a portfolio-ready deliverable
+## Common Mistakes with fixes
+## Interview Readiness with talking points and likely questions
+## Completion Checklist with at least 7 checks
 
-        if ($response === false || !empty($curlError)) {
-            log_message('error', 'OpenAI cURL error: ' . $curlError);
-            return 'Support chat is temporarily unavailable.';
-        }
+Make every lesson practical, role-specific, and detailed enough that a learner can execute it without another source. Do not compress the content into short bullets.
 
-        if ($httpCode !== 200) {
-            log_message('error', 'OpenAI API Error: HTTP ' . $httpCode . ' - ' . substr($response, 0, 500));
-            return 'Support chat is temporarily unavailable.';
-        }
+Course JSON to expand:
+{$compactCourse}";
 
-        $data = json_decode($response, true);
-        if (!isset($data['choices'][0]['message']['content'])) {
-            log_message('error', 'OpenAI response missing content. Response: ' . substr($response, 0, 500));
-            return 'Support chat is temporarily unavailable.';
-        }
+        $response = $this->callOpenAI($prompt);
+        $expanded = json_decode($response, true);
 
-        return trim($data['choices'][0]['message']['content']);
+        return is_array($expanded) ? $expanded : [];
     }
 
->>>>>>> Stashed changes
     private function getFallbackCourse($currentRole, $targetRole, $skillGaps)
     {
         $skills = is_array($skillGaps) ? implode(', ', $skillGaps) : $skillGaps;

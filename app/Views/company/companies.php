@@ -7,6 +7,7 @@ $popularCities = is_array($popularCities ?? null) ? $popularCities : [];
 $defaultRole = trim((string) ($defaultRole ?? ''));
 $defaultCity = trim((string) ($defaultCity ?? ''));
 $companyCount = count($featuredCompanies);
+$openJobCount = array_sum(array_map(static fn ($company): int => (int) ($company['open_jobs'] ?? 0), $featuredCompanies));
 ?>
 
 
@@ -17,7 +18,7 @@ $companyCount = count($featuredCompanies);
                 <div class="page-board-copy">
                     <span class="page-board-kicker"><i class="fas fa-building"></i> Local company finder</span>
                     <h1 class="page-board-title">Local Hiring Companies</h1>
-                    <p class="page-board-subtitle">Find companies hiring for your role in your city, then load available jobs quickly.</p>
+                    <p class="page-board-subtitle">Find companies hiring for your role in your city, then move from discovery to open roles quickly.</p>
                 </div>
                 <div class="page-board-actions">
                     <a href="<?= base_url('candidate/company-job-discovery') ?>" class="btn btn-primary">
@@ -71,6 +72,11 @@ $companyCount = count($featuredCompanies);
                         <strong><?= esc((string) $companyCount) ?></strong>
                         <span id="companyListTitle"><?= $defaultCity !== '' ? 'Companies near ' . esc($defaultCity) : 'Featured Local Companies' ?></span>
                     </span>
+                    <span class="results-count local-company-open-count">
+                        <i class="fas fa-briefcase"></i>
+                        <strong><?= esc((string) $openJobCount) ?></strong>
+                        <span id="companyListSubtitle">open jobs represented</span>
+                    </span>
                 </div>
 
                 <div class="local-company-grid" id="companyList">
@@ -122,16 +128,15 @@ function companyCard(company) {
     const location = company.location || "India";
     const industry = company.industry || "Hiring company";
     const description = company.description || "Explore this company and review current opportunities.";
+    const openJobs = Number(company.open_jobs || 0);
     const website = company.website || "";
-    const jobsUrl = company.jobs_url || "";
     const logo = company.logo || "";
     const logoHtml = logo
         ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(name)}" onerror="this.parentElement.textContent='${companyInitial(name)}';">`
         : companyInitial(name);
-    const actionsHtml = (jobsUrl || website)
+    const actionsHtml = website
         ? `<div class="local-company-actions">
-                ${jobsUrl ? `<a href="${escapeHtml(jobsUrl)}" class="local-company-primary"><i class="fas fa-briefcase"></i> Load Jobs</a>` : ""}
-                ${website ? `<a href="${escapeHtml(website)}" target="_blank" rel="noopener" class="local-company-secondary"><i class="fas fa-external-link-alt"></i> Website</a>` : ""}
+                <a href="${escapeHtml(website)}" target="_blank" rel="noopener" class="local-company-secondary"><i class="fas fa-external-link-alt"></i> Website</a>
            </div>`
         : "";
 
@@ -146,6 +151,7 @@ function companyCard(company) {
             </div>
             <div class="local-company-meta">
                 <span class="local-company-pill"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(location)}</span>
+                <span class="local-company-pill"><i class="fas fa-briefcase"></i> ${openJobs > 0 ? openJobs + " open" : "Verify openings"}</span>
             </div>
             <p class="local-company-description">${escapeHtml(description)}</p> 
         </a>
@@ -335,3 +341,4 @@ if (shouldAutoSearch) {
 </script>
 
 <?= view('Layouts/candidate_footer') ?>
+    

@@ -3801,7 +3801,7 @@ body.recruiter-jobboard .site-wrap {
 }
 
 .book-slot-jobboard,
-.course-modules-jobboard,
+
 .course-content-jobboard,
 .job-search-strategy-jobboard,
 .career-history-jobboard,
@@ -3816,19 +3816,7 @@ body.recruiter-jobboard .site-wrap {
 }
 
 .book-slot-jobboard .page-board-header,
-.course-modules-jobboard .page-board-header,
-.course-content-jobboard .page-board-header,
-.job-search-strategy-jobboard .page-board-header,
-.career-history-jobboard .page-board-header,
-.job-alerts-jobboard .page-board-header,
-.messages-jobboard .page-board-header,
-.notifications-jobboard .page-board-header,
-.mock-interview-jobboard .page-board-header,
-.reschedule-slot-jobboard .page-board-header,
-.my-bookings-jobboard .page-board-header,
-.onboarding-jobboard .page-board-header {
-  align-items: flex-start;
-}
+
 
 .onboarding-jobboard .onboarding-content {
   border: 1px solid var(--border);
@@ -3923,20 +3911,10 @@ body.recruiter-jobboard .site-wrap {
 
 .book-slot-jobboard .booking-summary-card,
 .book-slot-jobboard .slot-form-card,
-.course-modules-jobboard .course-header-card,
-.course-content-jobboard .course-header-card,
-.course-content-jobboard .course-lesson-card {
-  border: 1px solid var(--border);
-  border-radius: 1.25rem;
-  background: #fff;
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.05);
-}
+
 
 .book-slot-jobboard .booking-summary-card,
-.course-modules-jobboard .course-header-card,
-.course-content-jobboard .course-header-card {
-  padding: 1.2rem;
-}
+
 
 .book-slot-jobboard .slot-form-card {
   padding: 1.2rem;
@@ -4006,76 +3984,23 @@ body.recruiter-jobboard .site-wrap {
   font-size: 0.85rem;
 }
 
-.course-modules-jobboard .course-download-box {
-  padding: 1rem;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(255, 123, 42, 0.06));
-}
 
-.course-modules-jobboard .btn.btn-outline-primary,
-.course-content-jobboard .btn.btn-outline-primary {
-  border-color: rgba(59, 130, 246, 0.35) !important;
-  color: var(--primary) !important;
-  background: #fff !important;
-}
 
-.course-modules-jobboard .btn.btn-outline-primary:hover,
-.course-modules-jobboard .btn.btn-outline-primary:focus,
-.course-content-jobboard .btn.btn-outline-primary:hover,
-.course-content-jobboard .btn.btn-outline-primary:focus {
-  background: var(--primary) !important;
-  border-color: var(--primary) !important;
-  color: #fff !important;
-}
 
-.course-modules-jobboard .course-module-grid {
-  display: grid;
-  gap: 0.95rem;
-}
 
-.course-modules-jobboard .course-module-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.05rem;
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  background: #fff;
-  color: inherit;
-  text-decoration: none;
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.04);
-  transition: all 0.2s ease;
-}
 
-.course-modules-jobboard .course-module-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(59, 130, 246, 0.25);
-  box-shadow: 0 16px 28px rgba(15, 23, 42, 0.08);
-}
 
-.course-modules-jobboard .course-module-number,
-.course-content-jobboard .course-lesson-number {
-  width: 2.6rem;
-  height: 2.6rem;
-  border-radius: 0.9rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(255, 123, 42, 0.12));
-  color: var(--primary);
-  font-weight: 800;
-  flex: 0 0 2.6rem;
-}
 
-.course-modules-jobboard .course-module-content,
-.course-content-jobboard .course-lesson-content {
-  color: var(--muted-foreground);
-}
 
-.course-modules-jobboard .course-module-arrow {
-  margin-left: auto;
-  color: var(--primary);
-}
+
+
+
+
+
+
+
+
+
 
 .course-content-jobboard .course-lesson-card {
   margin-bottom: 1rem;
