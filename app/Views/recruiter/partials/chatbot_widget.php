@@ -200,7 +200,8 @@
 }
 .hm-chat-input::placeholder { color: #94A3B8; }
 
-.hm-chat-send {
+.hm-chat-send,
+.hm-chat-voice {
     width: 38px;
     height: 38px;
     border-radius: 50%;
@@ -216,7 +217,24 @@
     transition: transform 0.15s;
 }
 .hm-chat-send:hover { transform: scale(1.06); }
-.hm-chat-send:disabled { opacity: 0.4; cursor: default; transform: none; }
+.hm-chat-voice {
+    background: #E8F9F8;
+    color: #0D8A90;
+    border: 1px solid #D9ECE5;
+}
+.hm-chat-voice:hover { transform: scale(1.06); }
+.hm-chat-voice.is-listening {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #fff;
+    animation: hmRecruiterVoicePulse 1s ease-in-out infinite;
+}
+.hm-chat-send:disabled,
+.hm-chat-voice:disabled { opacity: 0.4; cursor: default; transform: none; }
+@keyframes hmRecruiterVoicePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
 
 /* Typing indicator */
 .hm-typing {
@@ -271,6 +289,16 @@ body.dark .hm-chat-suggestions button:hover {
     background: #1FB7B5;
     color: #fff;
 }
+body.dark .hm-chat-voice {
+    background: #162327;
+    border-color: #23343A;
+    color: #1FB7B5;
+}
+body.dark .hm-chat-voice.is-listening {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #fff;
+}
 
 @media (max-width: 480px) {
     .hm-chat-widget {
@@ -288,7 +316,7 @@ body.dark .hm-chat-suggestions button:hover {
 }
 </style>
 
-<button class="hm-chat-fab" id="hmChatFab" aria-label="Open AI assistant" title="AI Recruitment Assistant">
+<button class="hm-chat-fab" id="hmChatFab" aria-label="Open AI assistant">
     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="3" width="18" height="14" rx="2"/>
         <line x1="9" y1="10" x2="15" y2="10"/>
@@ -324,6 +352,16 @@ body.dark .hm-chat-suggestions button:hover {
     <div class="hm-chat-input-wrap">
         <input type="text" class="hm-chat-input" id="hmChatInput"
                placeholder="Ask about your hiring data..." autocomplete="off">
+        <button class="hm-chat-voice" id="hmChatVoice" aria-label="Start voice chat" title="Start voice chat" type="button">
+            <svg class="hm-chat-voice-mic" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+            </svg>
+            <svg class="hm-chat-voice-stop" style="display:none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="6" width="12" height="12" rx="2"/>
+            </svg>
+        </button>
         <button class="hm-chat-send" id="hmChatSend" aria-label="Send">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"/>
@@ -342,6 +380,7 @@ body.dark .hm-chat-suggestions button:hover {
     var close   = document.getElementById('hmChatClose');
     var msgBox  = document.getElementById('hmChatMessages');
     var input   = document.getElementById('hmChatInput');
+    var voiceBtn = document.getElementById('hmChatVoice');
     var sendBtn = document.getElementById('hmChatSend');
     var suggBox = document.getElementById('hmChatSuggestions');
 
@@ -359,6 +398,10 @@ body.dark .hm-chat-suggestions button:hover {
 
     var isLoading  = false;
     var hasLoadedSuggestions = false;
+    var recognition = null;
+    var isListening = false;
+    var shouldSpeakNextReply = false;
+    var voiceTurnSubmitted = false;
 
     // ── FIX: Prevent background scroll when hovering over widget ──
     // Trap wheel events inside the messages container so the page never scrolls
@@ -395,6 +438,12 @@ body.dark .hm-chat-suggestions button:hover {
     function closeWidget() {
         widget.classList.remove('open');
         fab.style.display = 'flex';
+        if (recognition && isListening) {
+            recognition.stop();
+        }
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
     }
 
     fab.addEventListener('click', openWidget);
@@ -450,6 +499,7 @@ body.dark .hm-chat-suggestions button:hover {
         input.value = '';
         isLoading = true;
         sendBtn.disabled = true;
+        if (voiceBtn && recognition) voiceBtn.disabled = true;
 
         // Append user message
         appendMessage('user', text);
@@ -481,20 +531,39 @@ body.dark .hm-chat-suggestions button:hover {
 
                 if (data.success && data.answer) {
                     appendMessage('bot', data.answer);
+                    speakRecruiterReply(data.answer);
                 } else {
-                    appendMessage('bot', data.answer || 'Sorry, I couldn\'t process that. Please try asking differently.');
+                    var reply = data.answer || 'Sorry, I couldn\'t process that. Please try asking differently.';
+                    appendMessage('bot', reply);
+                    speakRecruiterReply(reply);
                 }
             })
             .catch(function (err) {
                 var typing = document.getElementById('hmTypingIndicator');
                 if (typing) typing.remove();
-                appendMessage('bot', 'Connection error: ' + err.message + '. Make sure you are logged in as a recruiter.');
+                var reply = 'Connection error: ' + err.message + '. Make sure you are logged in as a recruiter.';
+                appendMessage('bot', reply);
+                speakRecruiterReply(reply);
             })
             .finally(function () {
                 isLoading = false;
                 sendBtn.disabled = false;
+                if (voiceBtn && recognition) voiceBtn.disabled = false;
                 scrollBottom();
             });
+    }
+
+    function speakRecruiterReply(text) {
+        if (!shouldSpeakNextReply) return;
+        shouldSpeakNextReply = false;
+        if (!('speechSynthesis' in window) || !text) return;
+
+        window.speechSynthesis.cancel();
+        var utterance = new SpeechSynthesisUtterance(String(text).replace(/\s+/g, ' ').trim());
+        utterance.lang = 'en-US';
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        window.speechSynthesis.speak(utterance);
     }
 
     function appendMessage(role, text) {
@@ -520,6 +589,95 @@ body.dark .hm-chat-suggestions button:hover {
     }
 
     // ── Events ──
+    function setVoiceListening(listening) {
+        isListening = listening;
+        if (!voiceBtn) return;
+        voiceBtn.classList.toggle('is-listening', listening);
+        voiceBtn.setAttribute('aria-label', listening ? 'Stop voice chat' : 'Start voice chat');
+        voiceBtn.setAttribute('title', listening ? 'Stop voice chat' : 'Start voice chat');
+        var mic = voiceBtn.querySelector('.hm-chat-voice-mic');
+        var stop = voiceBtn.querySelector('.hm-chat-voice-stop');
+        if (mic) mic.style.display = listening ? 'none' : 'block';
+        if (stop) stop.style.display = listening ? 'block' : 'none';
+    }
+
+    function initVoiceChat() {
+        if (!voiceBtn) return;
+
+        var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            voiceBtn.disabled = true;
+            voiceBtn.setAttribute('title', 'Voice chat is not supported in this browser');
+            voiceBtn.setAttribute('aria-label', 'Voice chat is not supported in this browser');
+            return;
+        }
+
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+        recognition.continuous = false;
+
+        recognition.addEventListener('start', function () {
+            setVoiceListening(true);
+            input.placeholder = 'Listening...';
+        });
+
+        recognition.addEventListener('result', function (event) {
+            var transcript = '';
+            for (var i = event.resultIndex; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
+            input.value = transcript.trim();
+
+            var latest = event.results[event.results.length - 1];
+            if (latest && latest.isFinal && input.value.trim()) {
+                voiceTurnSubmitted = true;
+                shouldSpeakNextReply = true;
+                recognition.stop();
+                sendMessage();
+            }
+        });
+
+        recognition.addEventListener('end', function () {
+            setVoiceListening(false);
+            input.placeholder = 'Ask about your hiring data...';
+            if (!voiceTurnSubmitted) {
+                shouldSpeakNextReply = false;
+            }
+        });
+
+        recognition.addEventListener('error', function () {
+            setVoiceListening(false);
+            input.placeholder = 'Ask about your hiring data...';
+            shouldSpeakNextReply = false;
+        });
+
+        voiceBtn.addEventListener('click', function () {
+            openWidget();
+
+            if (isListening) {
+                recognition.stop();
+                return;
+            }
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+
+            input.value = '';
+            voiceTurnSubmitted = false;
+            shouldSpeakNextReply = true;
+            try {
+                recognition.start();
+            } catch (e) {
+                setVoiceListening(false);
+                shouldSpeakNextReply = false;
+            }
+        });
+    }
+
+    initVoiceChat();
+
     sendBtn.addEventListener('click', sendMessage);
     input.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
