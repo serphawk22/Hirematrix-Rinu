@@ -23802,3 +23802,29 @@ body.candidate-app #courseModuleContent.is-loading {
         transform: translate(-50%, -50%) !important;
     }
 }
+
+/* Tablet/narrow desktop: use the topbar layout, not the desktop left rail. */
+@media (max-width: 1099.98px) {
+    html:not(.candidate-touch-device) body.candidate-app,
+    body.candidate-app {
+        --candidate-sb-width: 0px !important;
+        --candidate-sb-collapsed: 0px !important;
+        --candidate-sb-expanded: 0px !important;
+        --cln-w: 0px !important;
+        padding-left: 0 !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav,
+    body.candidate-app .cand-leftnav {
+        display: none !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app .site-wrap,
+    body.candidate-app .site-wrap,
+    html:not(.candidate-touch-device) body.candidate-app .hm-main,
+    body.candidate-app .hm-main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
