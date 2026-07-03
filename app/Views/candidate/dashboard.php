@@ -144,6 +144,17 @@ $proFeatureSlides = [
         'cta_label' => 'Open Full Strategy',
         'cta_url' => base_url('candidate/job-search-strategy'),
     ],
+     [
+        'eyebrow' => 'AI Career Mentor',
+        'title' => 'Get Guidance, Anytime You Need It',
+        'rows' => [
+            'Unlimited mentor chat sessions',
+            'Personalised career guidance',
+            'Interview & negotiation tips',
+        ],
+        'cta_label' => 'Chat with mentor',
+        'cta_url' => base_url('candidate/ai-mentor'),
+    ],
 ];
 ?>
 
@@ -210,17 +221,27 @@ $proFeatureSlides = [
 .dash-pro-promo-cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(31,183,181,.35);color:#fff !important;}
 
 /* ── Card grid ───────────────────────────────────────────────── */
+/* ── Carousel wrapper ───────────────────────────────────────── */
+.dash-pro-carousel{ position:relative; }
+
 .dash-pro-grid{
   position:relative;z-index:1;
-  display:grid;
-  grid-template-columns:repeat(4, 1fr);
+  display:flex;
   gap:18px;
+  overflow-x:auto;
+  overflow-y:visible;
+  scroll-snap-type:x proximity;   /* was: mandatory — was fighting JS scroll */
+  -webkit-overflow-scrolling:touch;
+  padding:8px 2px 10px;
+  margin:-8px -2px -10px;
 }
-@media (max-width: 1199px){ .dash-pro-grid{grid-template-columns:repeat(2, 1fr);} }
-@media (max-width: 575px){ .dash-pro-grid{grid-template-columns:1fr;} }
+.dash-pro-grid::-webkit-scrollbar{ display:none; }
+.dash-pro-grid{ scrollbar-width:none; -ms-overflow-style:none; }
 
 /* Gradient-ring wrapper: thin rainbow border via padding trick */
 .dash-pro-ring{
+  flex:0 0 calc(25% - 13.5px);
+  scroll-snap-align:start;
   border-radius:16px;
   padding:1.5px;
   background: linear-gradient(
@@ -232,10 +253,39 @@ $proFeatureSlides = [
   transition:transform .2s ease, box-shadow .2s ease;
 }
 .dash-pro-ring:hover{
-  transform:translateY(-3px);
+  transform:translateY(-1px) !important;
   box-shadow:0 10px 24px rgba(31,183,181,.18);
 }
+@media (max-width: 1199px){ .dash-pro-ring{ flex:0 0 calc(50% - 9px); } }
+@media (max-width: 575px){ .dash-pro-ring{ flex:0 0 85%; } }
 
+.dash-pro-carousel-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:38px;height:38px;border-radius:50%;
+  background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:5;
+  box-shadow:0 4px 12px rgba(0,0,0,.10);
+  color:var(--foreground);
+  transition:transform .15s,box-shadow .15s;
+  pointer-events:auto;
+  outline:none !important;
+  -webkit-tap-highlight-color:transparent;
+}
+.dash-pro-carousel-nav:hover{ transform:translateY(-50%) scale(1.07); }
+.dash-pro-carousel-prev{ left:-16px; }
+.dash-pro-carousel-next{ right:-16px; }
+@media (max-width: 575px){ .dash-pro-carousel-nav{ display:none; } }
+
+body.dark .dash-pro-carousel-nav{
+  box-shadow:0 4px 14px rgba(0,0,0,.4);
+}
+.dash-pro-carousel-nav:focus,
+.dash-pro-carousel-nav:focus-visible,
+.dash-pro-carousel-nav:active{
+  outline:none !important;
+  box-shadow:0 4px 12px rgba(0,0,0,.10);
+}
 .dash-pro-card{
    background: linear-gradient(
       135deg,
@@ -470,7 +520,15 @@ body.dark .job-card.dashboard-card{
           </a>
         </div>
 
-        <div class="dash-pro-grid">
+        <div class="dash-pro-carousel" id="dashProCarousel">
+          <button type="button" class="dash-pro-carousel-nav dash-pro-carousel-prev" id="dashProPrev" aria-label="Previous features">
+              <i class="fas fa-chevron-left"></i>
+          </button>
+          <button type="button" class="dash-pro-carousel-nav dash-pro-carousel-next" id="dashProNext" aria-label="Next features">
+              <i class="fas fa-chevron-right"></i>
+          </button>
+
+          <div class="dash-pro-grid" id="dashProGrid">
           <?php foreach ($proFeatureSlides as $slide):
               $hasVideo = !empty($slide['video_url']);
               $cardTag  = $hasVideo ? 'div' : 'a';
@@ -516,7 +574,7 @@ body.dark .job-card.dashboard-card{
               </<?= $cardTag ?>>
             </div>
           <?php endforeach; ?>
-        </div>
+        </div></div>
 
       </div> 
 
@@ -568,13 +626,88 @@ function dashProCloseVideo(){
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
 }
-
+ 
 document.addEventListener('keydown', function(e){
     if (e.key === 'Escape') { dashProCloseVideo(); }
 });
 
 document.getElementById('dashProVideoModal').addEventListener('click', function(e){
     if (e.target === this) { dashProCloseVideo(); }
+});
+
+window.addEventListener('load', function(){
+    var track = document.getElementById('dashProGrid');
+    var prev  = document.getElementById('dashProPrev');
+    var next  = document.getElementById('dashProNext');
+    var wrap  = document.getElementById('dashProCarousel');
+    if (!track || !prev || !next || !wrap) return;
+
+    function cardStep(){
+        var card = track.querySelector('.dash-pro-ring');
+        var gap = 18;
+        return card ? (card.getBoundingClientRect().width + gap) : 300;
+    }
+
+    function maxScroll(){
+        return Math.max(0, track.scrollWidth - track.clientWidth);
+    }
+
+    var animId = null;
+    function animateTo(target){
+        if (animId) cancelAnimationFrame(animId);
+        var start = track.scrollLeft;
+        var change = target - start;
+        var duration = 650;
+        var startTime = null;
+
+        function step(ts){
+            if (!startTime) startTime = ts;
+            var progress = Math.min(1, (ts - startTime) / duration);
+            var eased = 1 - Math.pow(1 - progress, 3); // ease-out
+            track.scrollLeft = start + change * eased;
+            if (progress < 1) {
+                animId = requestAnimationFrame(step);
+            } else {
+                animId = null;
+            }
+        }
+        animId = requestAnimationFrame(step);
+    }
+
+    function goNext(){
+        var max = maxScroll();
+        if (max <= 0) return;
+        var target = track.scrollLeft >= max - 4 ? 0 : Math.min(max, track.scrollLeft + cardStep());
+        animateTo(target);
+    }
+
+    function goPrev(){
+        var max = maxScroll();
+        if (max <= 0) return;
+        var target = track.scrollLeft <= 4 ? max : Math.max(0, track.scrollLeft - cardStep());
+        animateTo(target);
+    }
+
+    next.addEventListener('click', function(e){ e.preventDefault(); stopAuto(); goNext(); startAuto(); });
+    prev.addEventListener('click', function(e){ e.preventDefault(); stopAuto(); goPrev(); startAuto(); });
+
+    var autoTimer = null;
+    var AUTO_DELAY = 4000;
+
+    function startAuto(){
+        stopAuto();
+        autoTimer = setInterval(goNext, AUTO_DELAY);
+    }
+    function stopAuto(){
+        if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+    }
+
+    wrap.addEventListener('mouseenter', stopAuto);
+    wrap.addEventListener('mouseleave', startAuto);
+    wrap.addEventListener('touchstart', stopAuto, { passive: true });
+    wrap.addEventListener('touchend', function(){ setTimeout(startAuto, AUTO_DELAY); }, { passive: true });
+
+    startAuto();
 });
 </script>
 <?php endif; ?>
