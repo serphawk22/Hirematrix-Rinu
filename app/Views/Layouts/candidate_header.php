@@ -59,7 +59,6 @@
     <link rel="stylesheet" href="<?= base_url('jobboard/css/candidate-bundle.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-bundle.min.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.min.css')) ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/candidate-pages.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-pages.css')) ?>">
     <?php if ($candidateNeedsAtsCircle): ?>
         <!-- CSS Circle Progress (Required for visual ATS Score) -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/css-percentage-circle/0.0.3/css/circle.min.css">
@@ -151,9 +150,8 @@
     $isJobsActive = $isJobsRoot || $isApplicationStatusActive || $isJobAlertsActive;
     $isCareerTransitionActive = str_contains($currentPath, '/career-transition');
     $isResumeStudioActive = $pathEndsWith('/candidate/resume-studio');
-    $isPremiumMentorActive = str_contains($currentPath, '/premium-mentor');
     $isJobStrategyActive = str_contains($currentPath, '/job-strategy');
-    $isServicesActive = $isCareerTransitionActive || $isResumeStudioActive || $isPremiumMentorActive || $isJobStrategyActive ;
+    $isServicesActive = $isCareerTransitionActive || $isResumeStudioActive || $isJobStrategyActive ;
     $activeCompanySegment = trim((string) service('request')->getGet('segment'));
     $companyNavSegments = [
         '' => ['label' => 'All Companies', 'icon' => 'fas fa-building'],
@@ -183,7 +181,6 @@
     $resumeStudioClass = $isResumeStudioActive ? 'active' : '';
     $jobStrategyClass = $isJobStrategyActive ? 'active' : '';
     $companyJobDiscoveryClass = str_contains($currentPath, '/candidate/company-job-discovery') ? 'active' : '';
-    $premiumMentorClass = $isPremiumMentorActive ? 'active' : '';
     
     if ($candidatePhoto === '' && $candidateId > 0) {
         $candidateRecord = model('UserModel')->findCandidateWithProfile($candidateId);
@@ -211,7 +208,6 @@
     $premiumLocked = !$premiumSubscription;
     $careerTransitionUrl = $premiumLocked ? base_url('premium/plans?service=career-transition') : base_url('career-transition');
     $resumeStudioUrl = $premiumLocked ? base_url('premium/plans?service=resume-studio') : base_url('candidate/resume-studio');
-    $mentorUrl = $premiumLocked ? base_url('premium/plans?service=mentor') : base_url('premium-mentor');
     ?>
     <div class="site-mobile-menu site-navbar-target">
         <div class="site-mobile-menu-header">
@@ -339,11 +335,6 @@
                     <a href="<?= esc($resumeStudioUrl) ?>" class="hm-drawer-link <?= $isResumeStudioActive ? 'is-active' : '' ?>">
                         <span class="cand-leftnav__icon"><i class="fas fa-file-alt" style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;"></i></span>
                         <span style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">Resume Studio</span>
-                        <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
-                    </a>
-                    <a href="<?= esc($mentorUrl) ?>" class="hm-drawer-link <?= $isPremiumMentorActive ? 'is-active' : '' ?>">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-comments"></i></span>
-                        <span>AI Career Mentor</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
                 </div>

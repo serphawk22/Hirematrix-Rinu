@@ -1,6 +1,10 @@
         <?= view('Layouts/candidate_header', ['title' => 'Find Jobs']) ?>
 
-
+<style>
+   body.dark .job-card.recommended-job-card.js-clickable-card {
+       background: var(--card) !important;
+   }
+</style>
 <?php
 $allJobsAreExternal = $allJobsAreExternal ?? false;
 

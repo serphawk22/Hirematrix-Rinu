@@ -150,7 +150,7 @@ class PaymentController extends BaseController
         return $this->response->setJSON([
             'success'  => true,
             'message'  => 'Payment successful! Your subscription is now active.',
-            'redirect' => base_url('premium-mentor'),
+            'redirect' => base_url('candidate/dashboard'),
         ]);
     }
 

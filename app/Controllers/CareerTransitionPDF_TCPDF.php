@@ -14,7 +14,14 @@ class CareerTransitionPDF_TCPDF extends BaseController
      */
     public function downloadCoursePDF()
     {
-        $candidateId = session()->get('user_id');
+        if (session()->get('role') !== 'candidate') {
+            return redirect()->to(base_url('recruiter/dashboard'))->with('error', 'Access denied.');
+        }
+
+        $candidateId = (int) session()->get('user_id');
+        helper('premium');
+        requirePremiumForFeature($candidateId, 'career transition');
+
         $transitionModel = new CareerTransitionModel();
         $moduleModel = new CourseModuleModel();
         $lessonModel = new CourseLessonModel();

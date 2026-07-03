@@ -413,6 +413,9 @@ body.dark .dash-pro-card-cta{
   background:linear-gradient(135deg, #24D9D6, #6BD886, #C7EB6B);
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
+body.dark .job-card.dashboard-card {
+    background: var(--card) !important;
+}
 </style>
 
  
