@@ -56,7 +56,9 @@ Skill gaps to close: {$skills}
 DO write actual teaching content with definitions, examples, code, workflows, and exercises.
 DO NOT write "study X", "research", or "understand best practices".
 
-Generate 4 modules with 1 lesson each. Each lesson should be 600-800 words of teaching content.
+Generate 4 modules. Each module must contain 2-4 focused lessons, depending on topic complexity and covered skill gaps.
+Use 2 lessons only for narrow modules, 3 lessons for normal modules, and 4 lessons for broad modules that combine multiple tools or concepts.
+Each lesson content can be a short preview because the full lesson is generated when the learner opens it.
 
 Use this structure in each lesson:
 ## Outcome
@@ -77,9 +79,9 @@ Return ONLY valid JSON with:
     "covered_skill_gaps": ["gap1", "gap2"],
     "lessons": [{
       "number": 1,
-      "title": "Specific Skill",
+      "title": "Specific focused lesson",
       "covered_skill_gaps": ["gap1"],
-      "content": "[Detailed lesson content]",
+      "content": "Short preview of the lesson outcome and practical work",
       "resources": ["https://docs.example.com"],
       "exercises": ["Specific task"]
     }]
@@ -90,6 +92,7 @@ Return ONLY valid JSON with:
 Rules:
 - Use real tools/frameworks for {$targetRole}
 - Include concrete examples and code where relevant
+- Split broad skill gaps across multiple lessons instead of compressing a whole module into one lesson
 - Sound like a senior {$targetRole} engineer teaching a junior learner
 - Specific to {$targetRole}, not generic career advice
 - Learner is coming from {$currentRole}
@@ -102,8 +105,8 @@ PROMPT;
 Create a compact course from {$currentRole} to {$targetRole}.
 Skill gaps: {$skills}
 
-Write practical teaching content only. Return valid JSON with 4 modules and 1 lesson per module.
-Each lesson should be 400-600 words and include: outcome, concepts, example, steps, exercise, checklist, resources.
+Write practical teaching content only. Return valid JSON with 4 modules and 2-4 lessons per module.
+Each lesson should include a short preview with outcome, concepts, example, exercise, checklist, resources.
 Use real examples and tools for {$targetRole}.
 PROMPT;
     }
@@ -123,7 +126,8 @@ Skill gaps to close: {$skills}
 Covered gaps: {$coveredGaps}{$contextText}
 {$moduleContext}
 
-Return ONLY valid JSON with one module and one lesson.
+Return ONLY valid JSON with one module containing 2-4 focused lessons.
+Use 2 lessons for narrow modules, 3 lessons for normal modules, and 4 lessons for broad modules or modules covering multiple skill gaps.
 {
   "number": {$moduleNumber},
   "title": "Specific module title",
@@ -134,11 +138,16 @@ Return ONLY valid JSON with one module and one lesson.
     "number": 1,
     "title": "Specific lesson title",
     "covered_skill_gaps": ["gap1"],
-    "content": "Detailed lesson content with outcome, concepts, example, steps, exercise, checklist, resources",
+    "content": "Short lesson preview with outcome, concepts, example, exercise, checklist, resources",
     "resources": ["https://docs.example.com"],
     "exercises": ["Specific task"]
   }]
 }
+
+Rules:
+- Do not return only one lesson unless the module is extremely narrow.
+- Every covered skill gap must appear in at least one lesson.
+- For database, backend, frontend, cloud, AI, analytics, security, or framework modules, prefer 3-4 lessons.
 PROMPT;
         }
 
@@ -243,6 +252,125 @@ PROMPT;
         
         log_message('info', 'AI course generated successfully');
         return $data;
+    }
+
+    public function generateLessonContent(
+        string $currentRole,
+        string $targetRole,
+        array $skillGaps,
+        array $module,
+        array $lesson,
+        array $context = []
+    ): array {
+        set_time_limit(180);
+
+        $skills = implode(', ', array_slice(array_values(array_filter(array_map('trim', $skillGaps))), 0, 8));
+        $moduleTitle = trim((string) ($module['title'] ?? 'Course module'));
+        $moduleDescription = trim((string) ($module['description'] ?? ''));
+        $lessonTitle = trim((string) ($lesson['title'] ?? 'Lesson'));
+        $lessonNumber = (int) ($lesson['lesson_number'] ?? $lesson['number'] ?? 1);
+        $contextSummary = $this->buildContextSummary($context);
+
+        $prompt = "Create ONE full Udemy-style lesson for a career transition course.
+
+Current role: {$currentRole}
+Target role: {$targetRole}
+Skill gaps to cover: {$skills}
+Module: {$moduleTitle}
+Module description: {$moduleDescription}
+Lesson {$lessonNumber}: {$lessonTitle}
+Learner context: {$contextSummary}
+
+Return ONLY valid JSON with this exact schema:
+{
+  \"content\": \"markdown lesson text\",
+  \"resources\": [\"https://...\"],
+  \"exercises\": [\"exercise text\"]
+}
+
+The content must be 1200-1800 words and must read like an actual course lesson, not an outline or advice checklist.
+Teach the topic directly with explanations, examples, and guided work.
+Use these markdown sections exactly:
+## What You Will Build
+## Lesson
+## Guided Walkthrough
+## Worked Example
+## Practice Lab
+## Common Mistakes
+## Career Application
+## Knowledge Check
+## Completion Checklist
+
+Requirements:
+- Include concrete code, workflow, commands, formulas, scripts, or artifacts where relevant to the lesson.
+- The Guided Walkthrough must have at least 7 detailed steps with enough detail to follow inside the platform.
+- The Worked Example must be realistic for {$targetRole}, not generic.
+- The Practice Lab must produce a portfolio-ready artifact.
+- The Knowledge Check must include at least 5 questions with short expected answers.
+- Avoid phrases like \"review provided resources\", \"research this topic\", or \"read documentation\" as the main teaching.
+- Resources must be real high-quality URLs from official documentation or trusted learning references.
+- Exercises must be hands-on and specific.";
+
+        $response = $this->callOpenAI($prompt, 6000, 120);
+        $data = json_decode($response, true);
+
+        if (!is_array($data) || trim((string) ($data['content'] ?? '')) === '') {
+            return [];
+        }
+
+        return [
+            'content' => trim((string) ($data['content'] ?? '')),
+            'resources' => array_values(array_filter(array_map('trim', (array) ($data['resources'] ?? [])))),
+            'exercises' => array_values(array_filter(array_map('trim', (array) ($data['exercises'] ?? [])))),
+        ];
+    }
+
+    public function generateModuleLessons(
+        string $currentRole,
+        string $targetRole,
+        array $skillGaps,
+        array $module,
+        array $context = []
+    ): array {
+        set_time_limit(120);
+
+        $skills = implode(', ', array_slice(array_values(array_filter(array_map('trim', $skillGaps))), 0, 8));
+        $moduleNumber = (int) ($module['module_number'] ?? $module['number'] ?? 1);
+        $moduleTitle = trim((string) ($module['title'] ?? 'Course module'));
+        $moduleDescription = trim((string) ($module['description'] ?? ''));
+        $coveredSkillGaps = array_values(array_filter(array_map('trim', (array) ($module['covered_skill_gaps'] ?? $skillGaps))));
+        $contextSummary = $this->buildContextSummary($context);
+
+        $prompt = $this->buildStagedCoursePrompt(
+            $currentRole,
+            $targetRole,
+            $skills,
+            'module',
+            $moduleNumber,
+            $moduleTitle,
+            $moduleDescription,
+            $coveredSkillGaps,
+            $contextSummary
+        );
+        $response = $this->callOpenAI($prompt, 3600, 90);
+        $data = json_decode($response, true);
+        $lessons = is_array($data) ? (array) ($data['lessons'] ?? []) : [];
+
+        return array_values(array_filter(array_map(static function (array $lesson): array {
+            $title = trim((string) ($lesson['title'] ?? ''));
+            if ($title === '') {
+                return [];
+            }
+
+            return [
+                'number' => (int) ($lesson['number'] ?? 1),
+                'title' => $title,
+                'covered_skill_gaps' => array_values(array_filter(array_map('trim', (array) ($lesson['covered_skill_gaps'] ?? [])))),
+                'content' => trim((string) ($lesson['content'] ?? '')),
+                'resources' => array_values(array_filter(array_map('trim', (array) ($lesson['resources'] ?? [])))),
+                'exercises' => array_values(array_filter(array_map('trim', (array) ($lesson['exercises'] ?? [])))),
+            ];
+        }, $lessons)));
     }
 
     private function generateCourseContentInStages(string $currentRole, string $targetRole, string $skills, array $context = []): array

@@ -46,7 +46,7 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
                 <div class="career-transition-simple-layout">
                     <div class="career-transition-card dashboard-panel">
                         <div class="panel-body">
-                            <form action="<?= base_url('career-transition/create') ?>" method="post" id="transitionForm">
+                            <form action="<?= base_url('career-transition/create') ?>" method="post" id="transitionForm" data-career-transition-form>
                                 <?= csrf_field() ?>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Current Role</label>
@@ -57,8 +57,8 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
                                     <input type="text" name="target_role" class="form-control" value="<?= esc($targetRole ?? '') ?>" placeholder="e.g., Next.js Developer" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary career-transition-submit-btn" id="submitBtn">
-                                    <span id="btnText"><i class="fas fa-rocket"></i> Generate Roadmap</span>
-                                    <span id="btnLoading" class="transition-btn-loading">
+                                    <span id="btnText" data-submit-label><i class="fas fa-rocket"></i> Generate Roadmap</span>
+                                    <span id="btnLoading" class="transition-btn-loading" data-submit-loading>
                                         <span class="spinner-border spinner-border-sm" role="status"></span>
                                         Generating AI course...
                                     </span>
@@ -135,7 +135,7 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
                                 <span class="badge badge-light">Current path is saved to history</span>
                             </div>
 
-                            <form action="<?= base_url('career-transition/create') ?>" method="post" id="changeTransitionForm">
+                            <form action="<?= base_url('career-transition/create') ?>" method="post" id="changeTransitionForm" data-career-transition-form>
                                 <?= csrf_field() ?>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
@@ -148,7 +148,11 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary career-transition-submit-btn">
-                                    <span><i class="fas fa-rocket"></i> Update Roadmap</span>
+                                    <span data-submit-label><i class="fas fa-rocket"></i> Update Roadmap</span>
+                                    <span class="transition-btn-loading" data-submit-loading>
+                                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                                        Generating AI course...
+                                    </span>
                                 </button>
                             </form>
                         </div>

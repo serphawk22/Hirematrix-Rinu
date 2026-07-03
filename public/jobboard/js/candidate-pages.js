@@ -670,17 +670,16 @@
             });
         }
 
-        var transitionForm = document.getElementById('transitionForm');
-        if (transitionForm) {
+        document.querySelectorAll('[data-career-transition-form]').forEach(function (transitionForm) {
             transitionForm.addEventListener('submit', function () {
-                var btnText = document.getElementById('btnText');
-                var btnLoading = document.getElementById('btnLoading');
-                var submitBtn = document.getElementById('submitBtn');
+                var submitBtn = transitionForm.querySelector('.career-transition-submit-btn');
+                var btnText = submitBtn ? submitBtn.querySelector('[data-submit-label]') : null;
+                var btnLoading = submitBtn ? submitBtn.querySelector('[data-submit-loading]') : null;
                 if (btnText) {
                     btnText.style.display = 'none';
                 }
                 if (btnLoading) {
-                    btnLoading.style.display = 'inline-block';
+                    btnLoading.style.display = 'inline-flex';
                 }
                 if (submitBtn) {
                     submitBtn.disabled = true;
@@ -688,7 +687,7 @@
                     submitBtn.setAttribute('aria-busy', 'true');
                 }
             });
-        }
+        });
 
         var autoRefreshBlock = document.querySelector('[data-auto-refresh="1"]');
         if (autoRefreshBlock) {
@@ -877,6 +876,10 @@
         var renderCourseLesson = function (lesson) {
             var resources = Array.isArray(lesson.resources) ? lesson.resources : [];
             var exercises = Array.isArray(lesson.exercises) ? lesson.exercises : [];
+            var lessonContent = String(lesson.content || '').trim();
+            var lessonHtml = lessonContent
+                ? '<div class="course-lesson-content">' + renderLessonMarkdown(lessonContent) + '</div>'
+                : '<div class="alert alert-warning mb-0">The full lesson text is not available yet.</div>';
             var resourceHtml = resources.length
                 ? resources.map(function (resource) {
                     var safeResource = escapeHtml(resource);
@@ -894,7 +897,7 @@
                 }).join('')
                 : '<p class="text-muted mb-0">No exercises for this lesson.</p>';
 
-            return '<div class="course-lesson-summary-details mb-3"><strong>Lesson details</strong><p class="text-muted mb-0">This view shows the lesson details only, with the full lesson text hidden.</p></div>' +
+            return lessonHtml +
                 '<div class="mt-4"><h6 class="course-section-title"><i class="fas fa-book"></i> Learning Resources</h6><div>' + resourceHtml + '</div></div>' +
                 '<div class="mt-4"><h6 class="course-section-title"><i class="fas fa-pen"></i> Practice Exercises</h6>' + exerciseHtml + '</div>';
         };
@@ -923,7 +926,7 @@
                     return;
                 }
 
-                detail.innerHTML = '<div class="course-lesson-loading"><span class="spinner-border spinner-border-sm" role="status"></span> Loading lesson content...</div>';
+                detail.innerHTML = '<div class="course-lesson-loading"><span class="spinner-border spinner-border-sm" role="status"></span> Preparing full lesson...</div>';
                 fetch(getBaseUrl() + '/career-transition/lesson/' + lessonId, {
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
@@ -996,7 +999,7 @@
                         '</div>' +
                     '</div>' +
                     '<div class="course-lesson-detail" data-course-lesson-detail hidden>' +
-                        '<div class="course-lesson-loading"><span class="spinner-border spinner-border-sm" role="status"></span> Loading lesson content...</div>' +
+                        '<div class="course-lesson-loading"><span class="spinner-border spinner-border-sm" role="status"></span> Preparing full lesson...</div>' +
                     '</div>' +
                 '</div>' +
             '</div>';
