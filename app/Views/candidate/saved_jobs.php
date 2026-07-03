@@ -329,7 +329,13 @@ $pickRequiredSkillBadges = static function (array $job, int $limit = 3) use ($fo
                 <div class="recommended-job-grid saved-job-grid mb-4">
                     <?php foreach ($jobs as $job): ?>
                         <?php
-                            $title = (string) ($job['title'] ?? 'Untitled Role');
+                             $stripBadChars = static function (string $text): string {
+    // Collapse runs of 2+ literal '?' (typical artifact of lost emoji/unicode chars)
+    $text = preg_replace('/\?{2,}\s*/u', '', $text);
+    return trim($text);
+};
+             
+$title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role')); 
                             $company = (string) ($job['company'] ?? 'Company');
                             $location = (string) ($job['location'] ?? 'N/A');
                             $experience = trim((string) ($job['experience_level'] ?? ''));
