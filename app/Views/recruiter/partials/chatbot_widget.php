@@ -328,6 +328,15 @@ body.dark .hm-chat-voice.is-speaking {
         bottom: 16px;
     }
 }
+.hm-candidate-chat-fab.hm-fab-attention {
+    background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
+    animation: hmFabAttention 1.2s ease-in-out 2;
+}
+@keyframes hmFabAttention {
+    0%   { transform: scale(1.1); box-shadow:none !important; }
+    50%  { transform: scale(1.4); box-shadow: none !important; }
+    100% { transform: scale(1.1); box-shadow: none !important; }
+}
 </style>
 
 <button class="hm-chat-fab" id="hmChatFab" aria-label="Open AI assistant">
@@ -743,6 +752,16 @@ body.dark .hm-chat-voice.is-speaking {
         if (e.key === 'Escape' && widget.classList.contains('open')) {
             closeWidget();
         }
-    });
+    }); 
+  // ── FAB attention pulse ──────────────────────────────────────────
+    function pulseFabAttention() {
+        if (widget.classList.contains('open')) return;
+        fab.classList.add('hm-fab-attention');
+        setTimeout(function () {
+            fab.classList.remove('hm-fab-attention');
+        }, 2400);
+    }
+    setTimeout(pulseFabAttention, 800);
+    setInterval(pulseFabAttention, 5 * 60 * 1000);
 })();
 </script>
