@@ -144,6 +144,17 @@ $proFeatureSlides = [
         'cta_label' => 'Open Full Strategy',
         'cta_url' => base_url('candidate/job-search-strategy'),
     ],
+     [
+        'eyebrow' => 'AI Career Mentor',
+        'title' => 'Get Guidance, Anytime You Need It',
+        'rows' => [
+            'Unlimited mentor chat sessions',
+            'Personalised career guidance',
+            'Interview & negotiation tips',
+        ],
+        'cta_label' => 'Chat with mentor',
+        'cta_url' => base_url('candidate/ai-mentor'),
+    ],
 ];
 ?>
 
@@ -210,17 +221,27 @@ $proFeatureSlides = [
 .dash-pro-promo-cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(31,183,181,.35);color:#fff !important;}
 
 /* ── Card grid ───────────────────────────────────────────────── */
+/* ── Carousel wrapper ───────────────────────────────────────── */
+.dash-pro-carousel{ position:relative; }
+
 .dash-pro-grid{
   position:relative;z-index:1;
-  display:grid;
-  grid-template-columns:repeat(4, 1fr);
+  display:flex;
   gap:18px;
+  overflow-x:auto;
+  overflow-y:visible;
+  scroll-snap-type:x proximity;   /* was: mandatory — was fighting JS scroll */
+  -webkit-overflow-scrolling:touch;
+  padding:8px 2px 10px;
+  margin:-8px -2px -10px;
 }
-@media (max-width: 1199px){ .dash-pro-grid{grid-template-columns:repeat(2, 1fr);} }
-@media (max-width: 575px){ .dash-pro-grid{grid-template-columns:1fr;} }
+.dash-pro-grid::-webkit-scrollbar{ display:none; }
+.dash-pro-grid{ scrollbar-width:none; -ms-overflow-style:none; }
 
 /* Gradient-ring wrapper: thin rainbow border via padding trick */
 .dash-pro-ring{
+  flex:0 0 calc(25% - 13.5px);
+  scroll-snap-align:start;
   border-radius:16px;
   padding:1.5px;
   background: linear-gradient(
@@ -232,10 +253,39 @@ $proFeatureSlides = [
   transition:transform .2s ease, box-shadow .2s ease;
 }
 .dash-pro-ring:hover{
-  transform:translateY(-3px);
+  transform:translateY(-1px) !important;
   box-shadow:0 10px 24px rgba(31,183,181,.18);
 }
+@media (max-width: 1199px){ .dash-pro-ring{ flex:0 0 calc(50% - 9px); } }
+@media (max-width: 575px){ .dash-pro-ring{ flex:0 0 85%; } }
 
+.dash-pro-carousel-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:38px;height:38px;border-radius:50%;
+  background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:5;
+  box-shadow:0 4px 12px rgba(0,0,0,.10);
+  color:var(--foreground);
+  transition:transform .15s,box-shadow .15s;
+  pointer-events:auto;
+  outline:none !important;
+  -webkit-tap-highlight-color:transparent;
+}
+.dash-pro-carousel-nav:hover{ transform:translateY(-50%) scale(1.07); }
+.dash-pro-carousel-prev{ left:-16px; }
+.dash-pro-carousel-next{ right:-16px; }
+@media (max-width: 575px){ .dash-pro-carousel-nav{ display:none; } }
+
+body.dark .dash-pro-carousel-nav{
+  box-shadow:0 4px 14px rgba(0,0,0,.4);
+}
+.dash-pro-carousel-nav:focus,
+.dash-pro-carousel-nav:focus-visible,
+.dash-pro-carousel-nav:active{
+  outline:none !important;
+  box-shadow:0 4px 12px rgba(0,0,0,.10);
+}
 .dash-pro-card{
    background: linear-gradient(
       135deg,
@@ -413,6 +463,45 @@ body.dark .dash-pro-card-cta{
   background:linear-gradient(135deg, #24D9D6, #6BD886, #C7EB6B);
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
+/* Jobs Matching Your Profile: vertical stacked cards */
+ .candidate-app .job-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border, #f0f1f3);
+}
+.candidate-app .job-card-posted {
+    font-size: 12.5px;
+    color: var(--muted-foreground, #8a94a0);
+}
+.candidate-app .job-card-save {
+    background: none;
+    border: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--foreground, #12181f);
+    cursor: pointer;
+    padding: 0;
+    outline: none !important;
+    box-shadow: none !important;
+}
+.candidate-app .job-card-save i { font-size: 14px; }
+.candidate-app .job-card-save i.fas { color: var(--primary, #1FB7B5); }
+.candidate-app .job-card-save.is-saving { opacity: .6; pointer-events: none; }
+
+@media (max-width: 575.98px) {
+    .candidate-app .dashboard-jobs-grid .job-card.dashboard-card {
+        padding: 16px 18px;
+    }
+}
+body.dark .job-card.dashboard-card{
+    background-color:var(--card) !important;
+ }
 </style>
 
  
@@ -431,7 +520,15 @@ body.dark .dash-pro-card-cta{
           </a>
         </div>
 
-        <div class="dash-pro-grid">
+        <div class="dash-pro-carousel" id="dashProCarousel">
+          <button type="button" class="dash-pro-carousel-nav dash-pro-carousel-prev" id="dashProPrev" aria-label="Previous features">
+              <i class="fas fa-chevron-left"></i>
+          </button>
+          <button type="button" class="dash-pro-carousel-nav dash-pro-carousel-next" id="dashProNext" aria-label="Next features">
+              <i class="fas fa-chevron-right"></i>
+          </button>
+
+          <div class="dash-pro-grid" id="dashProGrid">
           <?php foreach ($proFeatureSlides as $slide):
               $hasVideo = !empty($slide['video_url']);
               $cardTag  = $hasVideo ? 'div' : 'a';
@@ -477,7 +574,7 @@ body.dark .dash-pro-card-cta{
               </<?= $cardTag ?>>
             </div>
           <?php endforeach; ?>
-        </div>
+        </div></div>
 
       </div> 
 
@@ -529,13 +626,88 @@ function dashProCloseVideo(){
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
 }
-
+ 
 document.addEventListener('keydown', function(e){
     if (e.key === 'Escape') { dashProCloseVideo(); }
 });
 
 document.getElementById('dashProVideoModal').addEventListener('click', function(e){
     if (e.target === this) { dashProCloseVideo(); }
+});
+
+window.addEventListener('load', function(){
+    var track = document.getElementById('dashProGrid');
+    var prev  = document.getElementById('dashProPrev');
+    var next  = document.getElementById('dashProNext');
+    var wrap  = document.getElementById('dashProCarousel');
+    if (!track || !prev || !next || !wrap) return;
+
+    function cardStep(){
+        var card = track.querySelector('.dash-pro-ring');
+        var gap = 18;
+        return card ? (card.getBoundingClientRect().width + gap) : 300;
+    }
+
+    function maxScroll(){
+        return Math.max(0, track.scrollWidth - track.clientWidth);
+    }
+
+    var animId = null;
+    function animateTo(target){
+        if (animId) cancelAnimationFrame(animId);
+        var start = track.scrollLeft;
+        var change = target - start;
+        var duration = 650;
+        var startTime = null;
+
+        function step(ts){
+            if (!startTime) startTime = ts;
+            var progress = Math.min(1, (ts - startTime) / duration);
+            var eased = 1 - Math.pow(1 - progress, 3); // ease-out
+            track.scrollLeft = start + change * eased;
+            if (progress < 1) {
+                animId = requestAnimationFrame(step);
+            } else {
+                animId = null;
+            }
+        }
+        animId = requestAnimationFrame(step);
+    }
+
+    function goNext(){
+        var max = maxScroll();
+        if (max <= 0) return;
+        var target = track.scrollLeft >= max - 4 ? 0 : Math.min(max, track.scrollLeft + cardStep());
+        animateTo(target);
+    }
+
+    function goPrev(){
+        var max = maxScroll();
+        if (max <= 0) return;
+        var target = track.scrollLeft <= 4 ? max : Math.max(0, track.scrollLeft - cardStep());
+        animateTo(target);
+    }
+
+    next.addEventListener('click', function(e){ e.preventDefault(); stopAuto(); goNext(); startAuto(); });
+    prev.addEventListener('click', function(e){ e.preventDefault(); stopAuto(); goPrev(); startAuto(); });
+
+    var autoTimer = null;
+    var AUTO_DELAY = 4000;
+
+    function startAuto(){
+        stopAuto();
+        autoTimer = setInterval(goNext, AUTO_DELAY);
+    }
+    function stopAuto(){
+        if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+    }
+
+    wrap.addEventListener('mouseenter', stopAuto);
+    wrap.addEventListener('mouseleave', startAuto);
+    wrap.addEventListener('touchstart', stopAuto, { passive: true });
+    wrap.addEventListener('touchend', function(){ setTimeout(startAuto, AUTO_DELAY); }, { passive: true });
+
+    startAuto();
 });
 </script>
 <?php endif; ?>
@@ -552,68 +724,140 @@ document.getElementById('dashProVideoModal').addEventListener('click', function(
             </div>
 
             <div class="dashboard-jobs-grid">
-                <?php if (!empty($topSuggestedJobs)): ?>
-                    <?php foreach (array_slice($topSuggestedJobs, 0, 4) as $job): ?>
-                        <?php
-                        $score = (int) round((float) ($job['match_score'] ?? 0));
-                        $title = (string) ($job['title'] ?? 'Untitled Role');
-                        $company = (string) ($job['company'] ?? 'Company');
-                        $location = (string) ($job['location'] ?? 'N/A');
-                        $experience = trim((string) ($job['experience_level'] ?? ''));
-                        $salary = trim((string) ($job['salary_range'] ?? ''));
-                        $postedAt = isset($job['posted_at']) ? $formatDate($job['posted_at']) : 'Recently';
-                        $companyInitial = strtoupper(substr($company, 0, 1) ?: 'C');
-                        $companyLogo = trim((string) ($job['company_logo'] ?? ''));
-                        $website = trim((string) ($job['company_website'] ?? ''));
-                        $websiteHost = $website !== '' ? (parse_url($website, PHP_URL_HOST) ?: $website) : '';
-                        $websiteHost = preg_replace('/^www\./i', '', (string) $websiteHost) ?? '';
-                        $googleLogoUrl = $websiteHost !== '' ? 'https://www.google.com/s2/favicons?domain=' . rawurlencode($websiteHost) . '&sz=96' : '';
-                        $companyLogoResolved = $companyLogo !== '' ? $resolveAssetUrl($companyLogo) : $googleLogoUrl;
+    <?php if (!empty($topSuggestedJobs)): ?>
+        <?php foreach (array_slice($topSuggestedJobs, 0, 4) as $job): ?>
+            <?php
+            $score = (int) round((float) ($job['match_score'] ?? 0));
+            $title = (string) ($job['title'] ?? 'Untitled Role');
+            $company = (string) ($job['company'] ?? 'Company');
+            $location = (string) ($job['location'] ?? 'N/A');
+            $experience = trim((string) ($job['experience_level'] ?? ''));
+            $salary = trim((string) ($job['salary_range'] ?? ''));
+            $postedAgo = isset($job['posted_at']) ? $formatTimeAgo($job['posted_at']) : 'Recently';
+            $companyInitial = strtoupper(substr($company, 0, 1) ?: 'C');
+            $companyLogo = trim((string) ($job['company_logo'] ?? ''));
+            $website = trim((string) ($job['company_website'] ?? ''));
+            $websiteHost = $website !== '' ? (parse_url($website, PHP_URL_HOST) ?: $website) : '';
+            $websiteHost = preg_replace('/^www\./i', '', (string) $websiteHost) ?? '';
+            $googleLogoUrl = $websiteHost !== '' ? 'https://www.google.com/s2/favicons?domain=' . rawurlencode($websiteHost) . '&sz=96' : '';
+            $companyLogoResolved = $companyLogo !== '' ? $resolveAssetUrl($companyLogo) : $googleLogoUrl;
 
-                        $fallbackHtml = '<span>' . esc($companyInitial) . '</span>';
-                        $logoErrorJs = "if(this.dataset.googleLogo&&this.src!==this.dataset.googleLogo){this.src=this.dataset.googleLogo;}else{this.parentNode.innerHTML='" . $fallbackHtml . "';}";
+            $fallbackHtml = '<span>' . esc($companyInitial) . '</span>';
+            $logoErrorJs = "if(this.dataset.googleLogo&&this.src!==this.dataset.googleLogo){this.src=this.dataset.googleLogo;}else{this.parentNode.innerHTML='" . $fallbackHtml . "';}";
 
-                        $matchPct = max(10, min(100, $score));
-                        $matchLabel = $score > 0 ? $matchPct . '% match' : 'Open role';
-                        $isExternalJob = (int) ($job['is_external'] ?? 0) === 1;
-                        $externalSource = trim((string) ($job['external_source'] ?? ''));
-                        ?>
-                       <a href="<?= base_url('job/' . (int) $job['id']) ?>" class="job-card dashboard-card" style="text-decoration:none;">
-    <div class="job-card-icon">
-        <?php if ($companyLogoResolved !== ''): ?>
-            <img src="<?= esc($companyLogoResolved) ?>" alt="<?= esc($company) ?>" data-google-logo="<?= esc($googleLogoUrl) ?>" onerror="<?= esc($logoErrorJs, 'attr') ?>">
-        <?php else: ?>
-            <span><?= esc($companyInitial) ?></span>
-        <?php endif; ?>
-    </div>
-    <h3 class="job-card-title"><?= esc($title) ?></h3>
-    <p class="job-card-company"><?= esc($company) ?></p>
-    <div class="job-card-meta">
-        <span><i class="fas fa-map-pin"></i> <?= esc($location) ?></span>
-        <?php if ($experience !== ''): ?>
-            <span><i class="fas fa-briefcase"></i> <?= esc($experience) ?></span>
-        <?php endif; ?>
-        <?php if ($salary !== ''): ?>
-            <span><i class="fas fa-rupee-sign"></i> <?= esc($salary) ?></span>
-        <?php endif; ?>
-        <span><i class="fas fa-clock"></i> <?= esc($postedAt) ?></span>
-    </div>
-    <div class="job-card-tags">
-        <span class="badge badge-primary"><?= esc($job['employment_type'] ?: 'Full-time') ?></span>
-        <span class="badge badge-secondary"><?= esc(substr($title, 0, 15) ?: 'Role') ?></span>
-    </div>
-</a>
-                        <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="dashboard-panel" style="grid-column:1/-1">
-                        <div class="panel-body text-center py-5">
-                            <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
-                            <h4 class="mb-2">No recommended jobs yet</h4>
-                            <p class="text-muted mb-0">Once your profile matches live openings, they will appear here automatically.</p>
+            $matchPct = max(10, min(100, $score));
+            $matchLabel = $score > 0 ? $matchPct . '% match' : 'Open role';
+            $isExternalJob = (int) ($job['is_external'] ?? 0) === 1;
+            $externalSource = trim((string) ($job['external_source'] ?? ''));
+
+            // Rating / reviews
+            $rating = isset($job['rating']) && $job['rating'] !== null ? round((float) $job['rating'], 1) : null;
+            $reviewCount = (int) ($job['review_count'] ?? 0);
+$stripBadChars = static function (string $text): string {
+    // Collapse runs of 2+ literal '?' (typical artifact of lost emoji/unicode chars)
+    $text = preg_replace('/\?{2,}\s*/u', '', $text);
+    return trim($text);
+};
+            // Short description snippet
+            $description = trim(strip_tags((string) ($job['description'] ?? '')));
+            if ($description !== '' && mb_strlen($description) > 100) {
+                $description = mb_substr($description, 0, 100) . '…';
+            }
+         
+$description = $stripBadChars($description); 
+
+$title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
+
+            // Tags: prefer explicit tags field, fall back to skills/category
+            $rawTags = (string) ($job['tags'] ?? $job['skills'] ?? '');
+            $tags = array_values(array_filter(array_map('trim', explode(',', $rawTags))));
+
+            $isSaved = !empty($job['is_saved']);
+            $jobId = (int) ($job['id'] ?? 0);
+
+            // Truncate location to keep the top row tidy (e.g. "Pune, Mumbai, Nag...")
+            $locationDisplay = $location;
+            if (mb_strlen($locationDisplay) > 24) {
+                $locationDisplay = mb_substr($locationDisplay, 0, 24) . '…';
+            }
+            ?>
+            <div class="job-card dashboard-card">
+                <a href="<?= base_url('job/' . $jobId) ?>" class="job-card-link" style="text-decoration:none;color:inherit;display:block;">
+                    <div class="job-card-top">
+                        <div class="job-card-heading">
+                            <h3 class="job-card-title"><?= esc($title) ?></h3>
+                            <div class="job-card-company-row">
+                                <span class="job-card-company"><?= esc($company) ?></span>
+                                <?php if ($rating !== null): ?>
+                                    <span class="job-card-rating"><i class="fas fa-star"></i> <?= esc((string) $rating) ?></span>
+                                    <?php if ($reviewCount > 0): ?>
+                                        <span class="job-card-reviews">| <?= (int) $reviewCount ?> Review<?= $reviewCount === 1 ? '' : 's' ?></span>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="job-card-icon">
+                            <?php if ($companyLogoResolved !== ''): ?>
+                                <img src="<?= esc($companyLogoResolved) ?>" alt="<?= esc($company) ?>" data-google-logo="<?= esc($googleLogoUrl) ?>" onerror="<?= esc($logoErrorJs, 'attr') ?>">
+                            <?php else: ?>
+                                <span><?= esc($companyInitial) ?></span>
+                            <?php endif; ?>
                         </div>
                     </div>
-                <?php endif; ?>
+
+                    <div class="job-card-meta">
+                        <?php if ($experience !== ''): ?>
+                            <span><i class="fas fa-briefcase"></i> <?= esc($experience) ?></span>
+                        <?php endif; ?>
+                        <span><i class="fas fa-map-marker-alt"></i> <?= esc($locationDisplay) ?></span>
+                        <?php if ($salary !== ''): ?>
+                            <span><i class="fas fa-rupee-sign"></i> <?= esc($salary) ?></span>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($description !== ''): ?>
+                        <div class="job-card-desc">
+                            <i class="fas fa-align-left"></i> <span><?= esc($description) ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($tags)): ?>
+                        <div class="job-card-tags">
+                            <?php foreach (array_slice($tags, 0, 6) as $i => $tag): ?>
+                                <span class="job-card-tag"><?= esc($tag) ?></span><?php if ($i < min(count($tags), 6) - 1): ?><span class="job-card-tag-dot">·</span><?php endif; ?>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </a>
+ <div class="job-card-footer">
+                    <span class="job-card-posted"><?= esc($postedAgo) ?></span>
+                <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary py-0 px-2 job-card-save js-save-job-toggle <?= $isSaved ? 'is-saved' : '' ?>"
+                        aria-label="<?= $isSaved ? 'Saved job' : 'Save job' ?>"
+                        title="<?= $isSaved ? 'Saved' : 'Save Job' ?>"
+                        data-save-url="<?= base_url($isSaved ? 'job/unsave/' . $job['id'] : 'job/save/' . $job['id']) ?>"
+                        data-job-id="<?= (int) $job['id'] ?>"
+                        data-saved="<?= $isSaved ? '1' : '0' ?>"
+                        data-save-label-save="Save Job"
+                        data-save-label-saved="Saved"
+                    >
+                        <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark"></i>
+                    </button>
+                </div>
+
             </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <div class="dashboard-panel" style="grid-column:1/-1">
+            <div class="panel-body text-center py-5">
+                <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
+                <h4 class="mb-2">No recommended jobs yet</h4>
+                <p class="text-muted mb-0">Once your profile matches live openings, they will appear here automatically.</p>
+            </div>
+        </div>
+    <?php endif; ?>
+</div>
         </div>
     </section>
 
@@ -832,10 +1076,7 @@ document.getElementById('dashProVideoModal').addEventListener('click', function(
     </div><!-- /.dash-grid__main -->
 
 </div><!-- /.dash-grid -->
-</div><!-- /.dashboard-jobboard -->
-
-
-
+</div><!-- /.dashboard-jobboard --> 
  
 
 <?= view('Layouts/candidate_footer') ?>

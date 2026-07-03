@@ -1,4 +1,14 @@
         <?= view('Layouts/candidate_header', ['title' => 'My Profile']) ?>
+        <style>
+            .body.dark .profile-edit-toggle {
+    background-color: var(--card) !important;
+    /* or a softer near-black: #1a1a1a / #121212 */
+}
+
+.body.dark .profile-edit-toggle .profile-edit-toggle-text {
+    color: #ffffff; /* ensure text stays readable */
+}
+        </style>
 <?php
 $profilePhotoPath = trim((string) ($user['profile_photo'] ?? ''));
 $profilePhotoUrl = $profilePhotoPath !== ''
@@ -1534,7 +1544,7 @@ body.dark .rsn-btn-maybe:hover{
   var rsStorageKey = 'rsNudgeShown';
   var rsAlreadyShown = false;
   try {
-    rsAlreadyShown = localStorage.getItem(rsStorageKey) === '1';
+    rsAlreadyShown = sessionStorage.getItem(rsStorageKey) === '1';
   } catch (e) {
     rsAlreadyShown = false; // storage unavailable — fail open, show it
   }
@@ -1542,11 +1552,11 @@ body.dark .rsn-btn-maybe:hover{
   document.querySelectorAll('a[href*="download-resume"]').forEach(function (link) {
     link.addEventListener('click', function (e) {
       if (rsAlreadyShown) {
-        return; // already shown before — let the link download normally, no popup
+        return; // already shown this session — let the link download normally, no popup
       }
       e.preventDefault();
       rsAlreadyShown = true; // lock immediately so a second click/link can't slip through
-      try { localStorage.setItem(rsStorageKey, '1'); } catch (err) {}
+      try { sessionStorage.setItem(rsStorageKey, '1'); } catch (err) {}
       frame.src = link.href;
       setTimeout(openNudge, 400);
     });

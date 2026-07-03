@@ -1,4 +1,173 @@
 <?= view('Layouts/candidate_header', ['title' => 'Saved Jobs']) ?> 
+<style id="saved-jobs-vertical-override">
+/* ============================================
+   SAVED JOBS — vertical stacked layout, tight spacing
+   ============================================ */
+
+div.jobs-page-jobboard.saved-jobs-jobboard div.recommended-job-grid.saved-job-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    grid-template-columns: none !important;
+    gap: 10px !important;
+}
+
+/* Card shell */
+div.jobs-page-jobboard.saved-jobs-jobboard article.job-card.saved-job-card {
+    display: block !important;
+    position: relative !important;
+    background: #fff !important;
+    border: 1px solid #e8edf3 !important;
+    border-radius: var(--candidate-card-radius) !important;
+    box-shadow: none !important;
+    padding: 12px 16px 12px 16px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
+    text-align: left !important;
+}
+body.dark div.jobs-page-jobboard.saved-jobs-jobboard article.job-card.saved-job-card {
+    background: var(--card) !important;
+}
+
+/* Logo — top-right */
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-icon.saved-job-logo {
+    position: absolute !important;
+    top: 12px !important;
+    right: 14px !important;
+    left: auto !important;
+    width: 30px !important;
+    height: 30px !important;
+    margin: 0 !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-icon.saved-job-logo img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+/* Body */
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card.saved-job-card .job-card-body {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    padding-right: 40px !important;
+    padding-bottom: 0 !important;
+    margin: 0 !important;
+    text-align: left !important;
+}
+
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-title {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    margin: 0 !important;
+}
+
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-company {
+    font-size: 13px !important;
+    line-height: 1.15 !important;
+    margin: 1px 0 0 !important;
+    opacity: 0.75 !important;
+}
+
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-meta {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 14px !important;
+    margin: 4px 0 0 !important;
+    font-size: 12.5px !important;
+    overflow-x: auto !important;
+}
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-meta span {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+}
+
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-tags {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    margin: 4px 0 0 !important;
+}
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-tags .badge {
+    padding: 3px 8px !important;
+    font-size: 11.5px !important;
+}
+
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card .small.text-muted {
+    font-size: 12.5px !important;
+    margin: 4px 0 0 !important;
+}
+
+div.jobs-page-jobboard.saved-jobs-jobboard .progress-container.saved-job-status {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    max-width: 320px !important;
+    margin: 4px 0 0 !important;
+}
+
+/* Viewed pill — flows inline before footer */
+div.jobs-page-jobboard.saved-jobs-jobboard .saved-job-visited-note {
+    display: inline-flex !important;
+    align-items: center !important;
+    position: static !important;
+    margin: 8px 0 0 !important;
+    padding: 4px 10px !important;
+    gap: 5px !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    color: #1FB7B5 !important;
+    background: rgba(31,183,181,0.10) !important;
+    border: 1px solid rgba(31,183,181,0.35) !important;
+    border-radius: 999px !important;
+    white-space: nowrap !important;
+}
+
+/* Footer row — posted date left, save button right */
+.candidate-app .job-card-footer,
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-top: 10px !important;
+    padding-top: 10px !important;
+    border-top: 1px solid var(--border, #f0f1f3) !important;
+}
+.candidate-app .job-card-posted {
+    font-size: 12.5px !important;
+    color: var(--muted-foreground, #8a94a0) !important;
+}
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer .job-card-save {
+    position: static !important;
+    background: none !important;
+    border: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: var(--foreground, #12181f) !important;
+    cursor: pointer !important;
+    padding: 4px 8px !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer .job-card-save i { font-size: 14px !important; }
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer .job-card-save i.fas { color: var(--primary, #1FB7B5) !important; }
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer .job-card-save.is-saving { opacity: .6 !important; pointer-events: none !important; }
+</style>
 <?php $jobs = $jobs ?? []; ?>
 <?php
 $resolveAssetUrl = static function (string $path): string {
@@ -152,13 +321,6 @@ $pickRequiredSkillBadges = static function (array $job, int $limit = 3) use ($fo
                 </a>
             </div>
         </div>
-        <div class="results-bar saved-jobs-summary-bar">
-            <span class="results-count">
-                <i class="fas fa-bookmark"></i>
-                <strong><?= count($jobs) ?></strong>
-                saved job<?= count($jobs) !== 1 ? 's' : '' ?>
-            </span>
-        </div>
     </div>
 
     <section class="site-section pt-0">
@@ -167,7 +329,13 @@ $pickRequiredSkillBadges = static function (array $job, int $limit = 3) use ($fo
                 <div class="recommended-job-grid saved-job-grid mb-4">
                     <?php foreach ($jobs as $job): ?>
                         <?php
-                            $title = (string) ($job['title'] ?? 'Untitled Role');
+                             $stripBadChars = static function (string $text): string {
+    // Collapse runs of 2+ literal '?' (typical artifact of lost emoji/unicode chars)
+    $text = preg_replace('/\?{2,}\s*/u', '', $text);
+    return trim($text);
+};
+             
+$title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role')); 
                             $company = (string) ($job['company'] ?? 'Company');
                             $location = (string) ($job['location'] ?? 'N/A');
                             $experience = trim((string) ($job['experience_level'] ?? ''));
@@ -198,6 +366,10 @@ $pickRequiredSkillBadges = static function (array $job, int $limit = 3) use ($fo
                             if ($unsaveUrl === '') {
                                 $unsaveUrl = base_url('job/unsave/' . (int) ($job['id'] ?? 0));
                             }
+                            // Build a footer date label from whatever we already computed
+                            $postedFooterLabel = $postedAt !== null
+                                ? ('Posted on ' . $postedAt . ($postedAge !== null ? ' - ' . $postedAge : ''))
+                                : '';
                         ?>
                <?php
     $isExternalAttr = $isExternal ? 'data-external="1"' : '';
@@ -256,23 +428,26 @@ $pickRequiredSkillBadges = static function (array $job, int $limit = 3) use ($fo
         <?php if ($isVisited): ?>
             <span class="saved-job-visited-note"><i class="fas fa-eye"></i> Viewed</span>
         <?php endif; ?>
-        
+
+        <div class="job-card-footer">
+            <span class="job-card-posted"><?= esc($postedFooterLabel) ?></span>
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary py-0 px-2 job-card-save js-save-job-toggle is-saved"
+                aria-label="Remove saved job"
+                title="Remove"
+                data-save-url="<?= esc($unsaveUrl) ?>"
+                <?php if (!$isExternal): ?>
+                    data-job-id="<?= (int) $job['id'] ?>"
+                <?php endif; ?>
+                data-saved="1"
+                data-save-label-save="Save Job"
+                data-save-label-saved="Saved"
+            >
+                <i class="js-save-icon fas fa-bookmark"></i>
+            </button>
+        </div>
     </div>
-     <button
-                                type="button"
-                                class="btn btn-sm btn-outline-secondary py-0 px-2 job-card-save js-save-job-toggle is-saved"
-                                aria-label="Remove saved job"
-                                title="Remove"
-                                data-save-url="<?= esc($unsaveUrl) ?>"
-                                <?php if (!$isExternal): ?>
-                                    data-job-id="<?= (int) $job['id'] ?>"
-                                <?php endif; ?>
-                                data-saved="1"
-                                data-save-label-save="Save Job"
-                                data-save-label-saved="Saved"
-                            >
-                                <i class="js-save-icon fas fa-bookmark"></i>
-                            </button>
 </article>
                     <?php endforeach; ?>
                 </div>
@@ -324,7 +499,6 @@ document.addEventListener('click', function (e) {
 document.addEventListener('click', function (e) {
     const card = e.target.closest('.js-clickable-card');
     if (!card) return;
-    // ignore clicks on buttons, dropdowns, or anything that already stopped propagation
     if (e.target.closest('button') || e.target.closest('.job-card-tools-dropdown')) return;
 
     const href = card.dataset.href;
@@ -337,7 +511,6 @@ document.addEventListener('click', function (e) {
     }
 });
 
-// keyboard accessibility (Enter key) since article has role="link" tabindex="0"
 document.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter') return;
     const card = e.target.closest('.js-clickable-card');
@@ -354,54 +527,38 @@ document.addEventListener('keydown', function (e) {
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    // Toggle dropdown
     document.addEventListener("click", function(e){
 
         const toggle = e.target.closest(".job-card-tools-toggle");
 
-        // Close all dropdowns except current
         document.querySelectorAll(".job-card-tools-dropdown").forEach(function(menu){
-
             if(!toggle || menu !== toggle.nextElementSibling){
                 menu.classList.remove("show");
             }
-
         });
 
         if(toggle){
-
             e.preventDefault();
             e.stopPropagation();
-
             const menu = toggle.nextElementSibling;
-
             if(menu){
                 menu.classList.toggle("show");
             }
-
         }
-
     });
 
-    // Prevent card click when clicking dropdown
     document.querySelectorAll(".job-card-tools-dropdown").forEach(function(menu){
-
         menu.addEventListener("click", function(e){
             e.stopPropagation();
         });
-
     });
 
-    // Prevent button click bubbling
     document.querySelectorAll(".job-card-tools-toggle").forEach(function(btn){
-
         btn.addEventListener("click", function(e){
             e.stopPropagation();
         });
-
     });
 
 });
 </script>
 <?= view('Layouts/candidate_footer') ?>
-

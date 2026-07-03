@@ -6911,22 +6911,28 @@ body.candidate-app{
 .candidate-app .dashboard-jobboard .job-card.dashboard-card .job-card-company {
     margin: 0 0 12px;
 }
-
 .candidate-app .dashboard-jobboard .job-card.dashboard-card .job-card-meta {
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    margin: 0 0 12px;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 18px;
+    width: 100%;
+    overflow-x: auto;
+    text-align: left;
 }
 
 .candidate-app .dashboard-jobboard .job-card.dashboard-card .job-card-meta span {
-    display: inline-flex;
+    display: inline-flex !important;
+    flex-direction: row !important;
     align-items: center;
+    justify-content: flex-start;
     gap: 6px;
     line-height: 1.35;
     text-align: left;
+    flex: 0 0 auto;
+    white-space: nowrap;
 }
 
 .candidate-app .dashboard-jobboard .job-card.dashboard-card .job-card-meta i {
@@ -7361,9 +7367,10 @@ body.candidate-app{
 }
 
 /* Jobs Matching Your Profile: auto-height grid, no forced stretch */
+/* Jobs Matching Your Profile: vertical stacked list (one card per row) */
 .candidate-app .dashboard-jobs-grid {
     display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-template-columns: 1fr !important;
     gap: 14px;
     width: 100%;
 }
@@ -7371,28 +7378,61 @@ body.candidate-app{
 .candidate-app .dashboard-jobs-grid .job-card.dashboard-card {
     height: auto !important;
     min-height: 0 !important;
+    width: 100%;
     display: flex;
     flex-direction: column;
+    padding: 20px 24px;
 }
 
+/* Top row: title/company on the left, logo pinned top-right */
+.candidate-app .dashboard-jobs-grid .job-card.dashboard-card .job-card-icon {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    margin: 0;
+}
+
+.candidate-app .dashboard-jobs-grid .job-card.dashboard-card {
+    position: relative;
+    padding-right: 90px; /* keep text clear of the logo */
+}
+
+.candidate-app .dashboard-jobs-grid .job-card.dashboard-card .job-card-title {
+    margin-bottom: 2px;
+}
+
+.candidate-app .dashboard-jobs-grid .job-card.dashboard-card .job-card-company {
+    margin-bottom: 12px;
+}
+
+/* Meta row: icons inline, wrap on narrow screens */
 .candidate-app .dashboard-jobs-grid .job-card.dashboard-card .job-card-meta {
     flex: 0 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.candidate-app .dashboard-jobs-grid .job-card.dashboard-card .job-card-tags {
+    margin-bottom: 0;
 }
 
 .candidate-app .dashboard-jobs-grid .job-card.dashboard-card .view-details {
-    margin-top: auto;
+    margin-top: 14px;
     align-self: flex-start;
 }
 
-@media (max-width: 991.98px) {
-    .candidate-app .dashboard-jobs-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    }
-}
-
+/* No breakpoints needed for column count anymore — always 1 column,
+   but keep padding a bit tighter on small screens */
 @media (max-width: 575.98px) {
-    .candidate-app .dashboard-jobs-grid {
-        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+    .candidate-app .dashboard-jobs-grid .job-card.dashboard-card {
+        padding: 16px 18px;
+        padding-right: 70px;
+    }
+    .candidate-app .dashboard-jobs-grid .job-card.dashboard-card .job-card-icon {
+        top: 16px;
+        right: 18px;
     }
 }
 
@@ -8370,7 +8410,7 @@ body.candidate-app{
     grid-auto-rows: 1fr !important;
 }
 
-/* 8. Each recommended job card: white, rounded, full height, vertical layout */
+/* 8. Each recommended job card: white, rounded, full height, horizontal layout */
 .candidate-app .jobs-page-jobboard .recommended-job-card,
 .candidate-app .jobs-page-jobboard .job-card {
     background: #fff !important;
@@ -8380,8 +8420,9 @@ body.candidate-app{
     padding: 18px !important;
     margin: 0 !important;
     display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
     height: 100% !important;
     min-height: 0 !important;
     width: 100% !important;
@@ -8395,13 +8436,13 @@ body.candidate-app{
     transform: translateY(-2px) !important;
 }
 
-/* Override the horizontal flex layout from bundle for recommended cards */
+/* Row layout for recommended cards: icon on the left, content on the right */
 .candidate-app .jobs-page-jobboard .recommended-job-pane .recommended-job-card {
-    flex-direction: column !important;
+    flex-direction: row !important;
     align-items: flex-start !important;
 }
 .candidate-app .jobs-page-jobboard .recommended-job-pane .recommended-job-card .job-card-icon {
-    margin-bottom: 10px !important;
+    margin-bottom: 0 !important;
     flex: none !important;
     width: 42px !important;
     height: 42px !important;
@@ -8412,9 +8453,8 @@ body.candidate-app{
     display: flex !important;
     flex-direction: column !important;
     gap: 6px !important;
-    width: 100% !important;
+    width: auto !important;
 }
-
 /* 9. All intermediate wrapper divs: transparent, no borders */
 .candidate-app .jobs-page-jobboard .recommended-jobs-stage,
 .candidate-app .jobs-page-jobboard .recommended-job-pane,
@@ -23698,3 +23738,134 @@ body.candidate-app #courseModuleContent.is-loading {
         font-size: 1rem !important;
     }
 }
+
+/* Candidate desktop rail: keep collapsed icons centered and readable. */
+@media (min-width: 1100px) {
+    body.candidate-app .cand-leftnav__group-icon {
+        width: 40px !important;
+        height: 40px !important;
+        flex: 0 0 40px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 17px !important;
+        line-height: 1 !important;
+    }
+
+    body.candidate-app .cand-leftnav__group-icon i {
+        display: block !important;
+        width: 1em !important;
+        height: 1em !important;
+        line-height: 1 !important;
+        text-align: center !important;
+    }
+
+    body.candidate-app .cand-leftnav:not(:hover):not(:focus-within) .cand-leftnav__nav {
+        align-items: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    body.candidate-app .cand-leftnav:not(:hover):not(:focus-within) .cand-leftnav__section {
+        width: var(--candidate-sb-collapsed, 72px) !important;
+    }
+
+    body.candidate-app .cand-leftnav:not(:hover):not(:focus-within) .cand-leftnav__group-label {
+        position: relative !important;
+        width: var(--candidate-sb-collapsed, 72px) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    body.candidate-app .cand-leftnav:not(:hover):not(:focus-within) .cand-leftnav__group-icon {
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        margin: 0 !important;
+        transform: translate(-50%, -50%) !important;
+    }
+
+    body.candidate-app .cand-leftnav:not(:hover):not(:focus-within) .cand-leftnav__brand,
+    body.candidate-app .cand-leftnav:not(:hover):not(:focus-within) .cand-leftnav__user-btn {
+        position: relative !important;
+        width: var(--candidate-sb-collapsed, 72px) !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        justify-content: center !important;
+    }
+
+    body.candidate-app .cand-leftnav:not(:hover):not(:focus-within) .cand-leftnav__logo,
+    body.candidate-app .cand-leftnav:not(:hover):not(:focus-within) .cand-leftnav__avatar {
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        margin: 0 !important;
+        transform: translate(-50%, -50%) !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1099.98px) and (hover: hover) and (pointer: fine) {
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav__group-icon {
+        width: 40px !important;
+        height: 40px !important;
+        flex: 0 0 40px !important;
+        font-size: 17px !important;
+        line-height: 1 !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app:not(.candidate-leftnav-expanded) .cand-leftnav__group-icon {
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        margin: 0 !important;
+        transform: translate(-50%, -50%) !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app:not(.candidate-leftnav-expanded) .cand-leftnav__brand,
+    html:not(.candidate-touch-device) body.candidate-app:not(.candidate-leftnav-expanded) .cand-leftnav__user-btn {
+        position: relative !important;
+        width: var(--candidate-sb-collapsed, 72px) !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        justify-content: center !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app:not(.candidate-leftnav-expanded) .cand-leftnav__logo,
+    html:not(.candidate-touch-device) body.candidate-app:not(.candidate-leftnav-expanded) .cand-leftnav__avatar {
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        margin: 0 !important;
+        transform: translate(-50%, -50%) !important;
+    }
+}
+
+/* Tablet/narrow desktop: use the topbar layout, not the desktop left rail. */
+@media (max-width: 1099.98px) {
+    html:not(.candidate-touch-device) body.candidate-app,
+    body.candidate-app {
+        --candidate-sb-width: 0px !important;
+        --candidate-sb-collapsed: 0px !important;
+        --candidate-sb-expanded: 0px !important;
+        --cln-w: 0px !important;
+        padding-left: 0 !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app .cand-leftnav,
+    body.candidate-app .cand-leftnav {
+        display: none !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app .site-wrap,
+    body.candidate-app .site-wrap,
+    html:not(.candidate-touch-device) body.candidate-app .hm-main,
+    body.candidate-app .hm-main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+  
+} 
