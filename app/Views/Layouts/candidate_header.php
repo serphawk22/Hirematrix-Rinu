@@ -1,12 +1,13 @@
                 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="google-adsense-account" content="ca-pub-5380525657635231">
     <meta name="base-url" content="<?= base_url() ?>">
     <meta name="csrf-token" content="<?= csrf_hash() ?>">
     <meta name="csrf-name" content="<?= csrf_token() ?>">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title><?= esc($title ?? 'Candidate Portal') ?></title>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5380525657635231"
      crossorigin="anonymous"></script>

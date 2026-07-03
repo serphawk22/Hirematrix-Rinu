@@ -26,27 +26,54 @@ div.jobs-page-jobboard.saved-jobs-jobboard article.job-card.saved-job-card {
     max-width: 100% !important;
     flex: none !important;
     text-align: left !important;
+        min-height: 128px !important;
 }
 body.dark div.jobs-page-jobboard.saved-jobs-jobboard article.job-card.saved-job-card {
     background: var(--card) !important;
 }
-
-/* Logo — top-right */
-div.jobs-page-jobboard.saved-jobs-jobboard .job-card-icon.saved-job-logo {
-    position: absolute !important;
-    top: 12px !important;
-    right: 14px !important;
-    left: auto !important;
-    width: 30px !important;
-    height: 30px !important;
-    margin: 0 !important;
-    border-radius: 50% !important;
-    overflow: hidden !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+div.jobs-page-jobboard.saved-jobs-jobboard article.job-card.saved-job-card:hover {
+  border-color:none !important;
+    box-shadow:none !important;
+    transform: translateY(-2px) !important;
 }
-div.jobs-page-jobboard.saved-jobs-jobboard .job-card-icon.saved-job-logo img {
+/* Top row: title/company on the left, logo on the right */
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-top {
+   display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+/* Title + company heading block */
+ 
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-title {
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+        font-size: 0.98rem !important;
+    line-height: 1.15 !important;
+    font-weight: 700 !important;
+        font-family: var(--portal-font-family) !important;
+            min-height: 1.65em !important;
+}
+
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-company {
+    font-size: 13px !important;
+    line-height: 1.0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    opacity: 0.75 !important;
+    min-height: 1.65em !important;
+}
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-icon {
+      width: 3rem;
+    height: 3rem; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem; 
+} 
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-icon img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
@@ -57,48 +84,43 @@ div.jobs-page-jobboard.saved-jobs-jobboard .job-card.saved-job-card .job-card-bo
     display: block !important;
     width: 100% !important;
     max-width: none !important;
-    padding-right: 40px !important;
+    padding-right: 0 !important;
     padding-bottom: 0 !important;
     margin: 0 !important;
     text-align: left !important;
 }
 
-div.jobs-page-jobboard.saved-jobs-jobboard .job-card-title {
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    line-height: 1.25 !important;
-    margin: 0 !important;
-}
-
-div.jobs-page-jobboard.saved-jobs-jobboard .job-card-company {
-    font-size: 13px !important;
-    line-height: 1.15 !important;
-    margin: 1px 0 0 !important;
-    opacity: 0.75 !important;
-}
-
-div.jobs-page-jobboard.saved-jobs-jobboard .job-card-meta {
+/* Meta row — location + posted date on one line */
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-meta {
     display: flex !important;
+    flex-direction: row !important;
     flex-wrap: nowrap !important;
     align-items: center !important;
-    gap: 14px !important;
-    margin: 4px 0 0 !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    margin-bottom: 0px !important;
     font-size: 12.5px !important;
+    line-height: 1 !important;
     overflow-x: auto !important;
 }
-div.jobs-page-jobboard.saved-jobs-jobboard .job-card-meta span {
+body.candidate-app .saved-jobs-jobboard .recommended-job-card.saved-job-card .job-card-meta span {
     display: inline-flex !important;
     align-items: center !important;
     gap: 5px !important;
+    flex: 0 0 auto !important;
     white-space: nowrap !important;
     margin: 0 !important;
+    line-height: 1 !important;
 }
 
+/* Tags */
 div.jobs-page-jobboard.saved-jobs-jobboard .job-card-tags {
     display: flex !important;
     flex-wrap: wrap !important;
     gap: 6px !important;
-    margin: 4px 0 0 !important;
+    margin: 6px 0 0 !important;
 }
 div.jobs-page-jobboard.saved-jobs-jobboard .job-card-tags .badge {
     padding: 3px 8px !important;
@@ -123,7 +145,7 @@ div.jobs-page-jobboard.saved-jobs-jobboard .saved-job-visited-note {
     display: inline-flex !important;
     align-items: center !important;
     position: static !important;
-    margin: 8px 0 0 !important;
+    margin: 0 !important;
     padding: 4px 10px !important;
     gap: 5px !important;
     font-size: 12.5px !important;
@@ -135,15 +157,15 @@ div.jobs-page-jobboard.saved-jobs-jobboard .saved-job-visited-note {
     white-space: nowrap !important;
 }
 
-/* Footer row — posted date left, save button right */
+/* Footer row — posted date / viewed pill left, save button right */
 .candidate-app .job-card-footer,
 div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    margin-top: 10px !important;
-    padding-top: 10px !important;
-    border-top: 1px solid var(--border, #f0f1f3) !important;
+    margin-top: 8px !important;
+    padding-top: 8px !important;
+    border-top: none !important;
 }
 .candidate-app .job-card-posted {
     font-size: 12.5px !important;
@@ -167,6 +189,25 @@ div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer .job-card-save {
 div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer .job-card-save i { font-size: 14px !important; }
 div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer .job-card-save i.fas { color: var(--primary, #1FB7B5) !important; }
 div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer .job-card-save.is-saving { opacity: .6 !important; pointer-events: none !important; }
+
+/* ── Grid: tight gutter, no extra bottom margin stacking ── */
+div.jobs-page-jobboard.saved-jobs-jobboard .row.g-4 {
+    --bs-gutter-x: 16px !important;
+    --bs-gutter-y: 16px !important;
+    margin-left: calc(-1 * var(--bs-gutter-x) / 2) !important;
+    margin-right: calc(-1 * var(--bs-gutter-x) / 2) !important;
+    padding-top: 4px !important; /* gives translateY(-2px) room to breathe */
+}
+div.jobs-page-jobboard.saved-jobs-jobboard .row.g-4 > [class*="col-"] {
+    padding-left: calc(var(--bs-gutter-x) / 2) !important;
+    padding-right: calc(var(--bs-gutter-x) / 2) !important;
+    margin-bottom: 16px !important; /* was 24px, and no longer stacked with g-4's own gutter-y */
+}
+
+/* Remove trailing empty-line gap when experience/salary block is absent */
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-body > *:last-child.job-card-footer {
+    margin-top: 8px !important;
+}
 </style>
 <?php $jobs = $jobs ?? []; ?>
 <?php
@@ -305,6 +346,20 @@ $pickRequiredSkillBadges = static function (array $job, int $limit = 3) use ($fo
 
     return $badges;
 };
+
+/* Robust "not specified" detector — handles case, punctuation, and
+   invisible/whitespace characters (nbsp, tabs, etc.) that strcasecmp misses */
+$isNotSpecified = static function (?string $value): bool {
+    $value = (string) $value;
+    $value = preg_replace('/[\x{00A0}\s]+/u', ' ', $value) ?? $value; // collapse nbsp + whitespace
+    $value = trim($value);
+    $value = rtrim($value, ".!"); // strip trailing punctuation
+    if ($value === '') {
+        return true;
+    }
+    $key = strtolower($value);
+    return in_array($key, ['not specified', 'n a', 'n/a', 'na', 'none', 'not disclosed', '-'], true);
+};
 ?>
 
 <div class="jobs-page-jobboard saved-jobs-jobboard">
@@ -323,144 +378,189 @@ $pickRequiredSkillBadges = static function (array $job, int $limit = 3) use ($fo
         </div>
     </div>
 
-    <section class="site-section pt-0">
-        <div class="container">
-            <?php if (!empty($jobs)): ?>
-                <div class="recommended-job-grid saved-job-grid mb-4">
-                    <?php foreach ($jobs as $job): ?>
-                        <?php
-                             $stripBadChars = static function (string $text): string {
-    // Collapse runs of 2+ literal '?' (typical artifact of lost emoji/unicode chars)
-    $text = preg_replace('/\?{2,}\s*/u', '', $text);
-    return trim($text);
-};
-             
-$title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role')); 
-                            $company = (string) ($job['company'] ?? 'Company');
-                            $location = (string) ($job['location'] ?? 'N/A');
-                            $experience = trim((string) ($job['experience_level'] ?? ''));
-                            $salary = trim((string) ($job['salary_range'] ?? ''));
-                            $employmentType = trim((string) ($job['employment_type'] ?? ''));
-                            $showEmploymentBadge = $isEmploymentBadgeValue($employmentType);
-                            $type = strtolower((string) ($job['employment_type'] ?? ''));
-                            $typeBadge = str_contains($type, 'part') ? 'badge-secondary' : 'badge-primary';
-                            $isExternal = !empty($job['is_external']);
-                            $isExternalJob = (int) ($job['is_external'] ?? 0) === 1;
-                            $initial = strtoupper(substr($company, 0, 1) ?: 'J');
-                            $postedDateSource = (string) ($job['created_at'] ?? $job['posted_at_raw'] ?? $job['saved_at'] ?? '');
-                            $postedTimestamp = $postedDateSource !== '' ? strtotime($postedDateSource) : false;
-                            $postedAt = $postedTimestamp !== false ? date('d M Y', $postedTimestamp) : null;
-                            $postedAge = $formatAge($postedDateSource);
-                            $companyLogo = trim((string) ($job['company_logo'] ?? ''));
-                            $score = (float) ($job['match_score'] ?? 0);
-                            $hasMatchScore = $score > 0;
-                            $matchPct = $hasMatchScore ? max(10, min(100, (int) round($score))) : 0;
-                            $requiredSkillBadges = $pickRequiredSkillBadges($job);
-                            $showRemoteBadge = $isRemoteJob($job);
-                            $isVisited = (int) ($job['visited_flag'] ?? 0) === 1;
-                            $detailsUrl = trim((string) ($job['details_url'] ?? ''));
-                            $unsaveUrl = trim((string) ($job['unsave_url'] ?? ''));
-                            if ($detailsUrl === '') {
-                                $detailsUrl = base_url('job/' . (int) ($job['id'] ?? 0));
-                            }
-                            if ($unsaveUrl === '') {
-                                $unsaveUrl = base_url('job/unsave/' . (int) ($job['id'] ?? 0));
-                            }
-                            // Build a footer date label from whatever we already computed
-                            $postedFooterLabel = $postedAt !== null
-                                ? ('Posted on ' . $postedAt . ($postedAge !== null ? ' - ' . $postedAge : ''))
-                                : '';
-                        ?>
-               <?php
-    $isExternalAttr = $isExternal ? 'data-external="1"' : '';
-?>
-<article class="job-card recommended-job-card saved-job-card js-clickable-card"
-          data-href="<?= esc($detailsUrl) ?>"
-          data-job-id="<?= (int) $job['id'] ?>"
-          <?= $isExternalAttr ?>
-          role="link"
-          tabindex="0" style="cursor:pointer;">
-    <div class="job-card-icon saved-job-logo">
-        <?php if ($companyLogo !== ''): ?>
-            <img src="<?= esc($resolveAssetUrl($companyLogo)) ?>" alt="<?= esc($company) ?>">
-        <?php else: ?>
-            <span><?= esc($initial) ?></span>
-        <?php endif; ?>
-    </div>
-    <div class="job-card-body">
-        <h3 class="job-card-title"><?= esc($title) ?></h3>
-        <p class="job-card-company"><?= esc($company) ?></p>
-        <div class="job-card-meta">
-            <span><i class="fas fa-map-pin"></i> <?= esc($location) ?></span>
-            <?php if ($postedAt !== null): ?>
-                <span>
-                    <i class="fas fa-clock"></i>
-                    Posted on <?= esc($postedAt) ?><?= $postedAge !== null ? ' - ' . esc($postedAge) : '' ?>
-                </span>
-            <?php endif; ?>
-        </div>
-        <div class="job-card-tags">
-            <?php if ($showEmploymentBadge): ?>
-                <span class="badge <?= $typeBadge ?>"><?= esc($employmentType) ?></span>
-            <?php endif; ?>
-            <?php if ($showRemoteBadge): ?>
-                <span class="badge badge-warning">Remote</span>
-            <?php endif; ?>
-            <?php foreach ($requiredSkillBadges as $requiredSkillBadge): ?>
-                <span class="badge badge-secondary"><?= esc($requiredSkillBadge) ?></span>
-            <?php endforeach; ?>
-        </div>
-        <?php if (!empty($job['match_reason'])): ?>
-            <div class="small text-muted mb-2"><?= esc($job['match_reason']) ?></div>
-        <?php elseif ($experience !== '' || $salary !== ''): ?>
-            <div class="small text-muted mb-2">
-                <?= esc(trim($experience . ($experience !== '' && $salary !== '' ? ' - ' : '') . $salary)) ?>
-            </div>
-        <?php endif; ?>
-        <?php if ($hasMatchScore): ?>
-            <div class="progress-container saved-job-status">
-                <div class="progress-track">
-                    <div class="progress-bar-custom candidate-progress-fill" style="--candidate-progress: <?= $matchPct ?>%;"></div>
-                </div>
-                <span class="progress-label"><?= $matchPct ?>% match</span>
-            </div>
-        <?php endif; ?>
-        <?php if ($isVisited): ?>
-            <span class="saved-job-visited-note"><i class="fas fa-eye"></i> Viewed</span>
-        <?php endif; ?>
+<section class="site-section pt-0">
+    <div class="container">
+        <?php if (!empty($jobs)): ?>
+            <div class="row g-4">
+                <?php foreach ($jobs as $job): ?>
+                    <?php
+                    $stripBadChars = static function (string $text): string {
+                        $text = preg_replace('/\?{2,}\s*/u', '', $text);
+                        return trim($text);
+                    };
 
-        <div class="job-card-footer">
-            <span class="job-card-posted"><?= esc($postedFooterLabel) ?></span>
-            <button
-                type="button"
-                class="btn btn-sm btn-outline-secondary py-0 px-2 job-card-save js-save-job-toggle is-saved"
-                aria-label="Remove saved job"
-                title="Remove"
-                data-save-url="<?= esc($unsaveUrl) ?>"
-                <?php if (!$isExternal): ?>
-                    data-job-id="<?= (int) $job['id'] ?>"
-                <?php endif; ?>
-                data-saved="1"
-                data-save-label-save="Save Job"
-                data-save-label-saved="Saved"
-            >
-                <i class="js-save-icon fas fa-bookmark"></i>
-            </button>
-        </div>
+                    $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
+                    $company = (string) ($job['company'] ?? 'Company');
+                    $location = (string) ($job['location'] ?? 'N/A');
+                    $experience = trim((string) ($job['experience_level'] ?? ''));
+                    $salary = trim((string) ($job['salary_range'] ?? ''));
+                    $employmentType = trim((string) ($job['employment_type'] ?? ''));
+                    $showEmploymentBadge = $isEmploymentBadgeValue($employmentType);
+                    $type = strtolower((string) ($job['employment_type'] ?? ''));
+                    $typeBadge = str_contains($type, 'part') ? 'badge-secondary' : 'badge-primary';
+                    $isExternal = !empty($job['is_external']);
+                    $isExternalJob = (int) ($job['is_external'] ?? 0) === 1;
+                    $initial = strtoupper(substr($company, 0, 1) ?: 'J');
+                    $postedDateSource = (string) ($job['created_at'] ?? $job['posted_at_raw'] ?? $job['saved_at'] ?? '');
+                    $postedTimestamp = $postedDateSource !== '' ? strtotime($postedDateSource) : false;
+                    $postedAt = $postedTimestamp !== false ? date('d M Y', $postedTimestamp) : null;
+                    $postedAge = $formatAge($postedDateSource);
+                    $companyLogo = trim((string) ($job['company_logo'] ?? ''));
+                    $score = (float) ($job['match_score'] ?? 0);
+                    $hasMatchScore = $score > 0;
+                    $matchPct = $hasMatchScore ? max(10, min(100, (int) round($score))) : 0;
+                    $requiredSkillBadges = $pickRequiredSkillBadges($job);
+                    $showRemoteBadge = $isRemoteJob($job);
+                    $isVisited = (int) ($job['visited_flag'] ?? 0) === 1;
+                    $detailsUrl = trim((string) ($job['details_url'] ?? ''));
+                    $unsaveUrl = trim((string) ($job['unsave_url'] ?? ''));
+
+                    if ($detailsUrl === '') {
+                        $detailsUrl = base_url('job/' . (int) ($job['id'] ?? 0));
+                    }
+
+                    if ($unsaveUrl === '') {
+                        $unsaveUrl = base_url('job/unsave/' . (int) ($job['id'] ?? 0));
+                    }
+
+                    $postedFooterLabel = $postedAt !== null
+                        ? ('Posted on ' . $postedAt . ($postedAge !== null ? ' - ' . $postedAge : ''))
+                        : '';
+
+                    $isExternalAttr = $isExternal ? 'data-external="1"' : '';
+
+                    $expClean = $isNotSpecified($experience) ? '' : $experience;
+                    $salaryClean = $isNotSpecified($salary) ? '' : $salary;
+                    $expSalaryText = trim($expClean . ($expClean !== '' && $salaryClean !== '' ? ' - ' : '') . $salaryClean);
+                    ?>
+
+                    <div class="col-md-6">
+                        <article class="job-card recommended-job-card saved-job-card js-clickable-card"
+                            data-href="<?= esc($detailsUrl) ?>"
+                            data-job-id="<?= (int) $job['id'] ?>"
+                            <?= $isExternalAttr ?>
+                            role="link"
+                            tabindex="0"
+                            style="cursor:pointer;">
+
+                            <div class="job-card-top">
+                                <div class="job-card-heading">
+                                    <h3 class="job-card-title"><?= esc($title) ?></h3>
+                                    <div class="job-card-company-row">
+                                <?= esc($company) ?> 
+                               
+                            </div>
+                                </div>
+                                <div class="job-card-icon">
+                                    <?php if ($companyLogo !== ''): ?>
+                                        <img src="<?= esc($companyLogo) ?>" alt="<?= esc($company) ?>">
+                                    <?php else: ?>
+                                        <span><?= esc($initial) ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            </div> 
+                                <div class="job-card-meta">
+                                    <span>
+                                        <i class="fas fa-map-pin"></i>
+                                        <?= esc($location) ?>
+                                    </span>
+
+                                    <?php if ($postedAt !== null): ?>
+                                        <span>
+                                            <i class="fas fa-clock"></i>
+                                            Posted on <?= esc($postedAt) ?>
+                                            <?= $postedAge !== null ? ' - ' . esc($postedAge) : '' ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div class="job-card-tags">
+                                    <?php if ($showEmploymentBadge): ?>
+                                        <span class="badge <?= $typeBadge ?>">
+                                            <?= esc($employmentType) ?>
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <?php if ($showRemoteBadge): ?>
+                                        <span class="badge badge-warning">
+                                            Remote
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <?php foreach ($requiredSkillBadges as $requiredSkillBadge): ?>
+                                        <span class="badge badge-secondary">
+                                            <?= esc($requiredSkillBadge) ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <?php if ($expSalaryText !== ''): ?>
+                                    <div class="small text-muted mb-2">
+                                        <?= esc($expSalaryText) ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ($hasMatchScore): ?>
+                                    <div class="progress-container saved-job-status">
+                                        <div class="progress-track">
+                                            <div class="progress-bar-custom candidate-progress-fill"
+                                                style="--candidate-progress: <?= $matchPct ?>%;">
+                                            </div>
+                                        </div>
+
+                                        <span class="progress-label">
+                                            <?= $matchPct ?>% match
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="job-card-footer mt-auto">
+                                    <span class="job-card-posted">
+                                        <?php if ($isVisited): ?>
+                                            <span class="saved-job-visited-note">
+                                                <i class="fas fa-eye"></i>
+                                                Viewed
+                                            </span>
+                                        <?php endif; ?>
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-secondary py-0 px-2 job-card-save js-save-job-toggle is-saved"
+                                        aria-label="Remove saved job"
+                                        title="Remove"
+                                        data-save-url="<?= esc($unsaveUrl) ?>"
+                                        <?php if (!$isExternal): ?>
+                                            data-job-id="<?= (int) $job['id'] ?>"
+                                        <?php endif; ?>
+                                        data-saved="1"
+                                        data-save-label-save="Save Job"
+                                        data-save-label-saved="Saved">
+
+                                        <i class="js-save-icon fas fa-bookmark"></i>
+                                    </button>
+                                </div>
+ 
+                        </article>
+                    </div>
+
+                <?php endforeach; ?>
+            </div>
+
+        <?php else: ?>
+
+            <div class="empty-state">
+                <i class="fas fa-bookmark"></i>
+                <h5>No saved jobs yet</h5>
+                <p>Save jobs from listings and they will appear here.</p>
+                <a href="<?= base_url('jobs') ?>" class="candidate-primary-link">
+                    Browse Jobs
+                </a>
+            </div>
+
+        <?php endif; ?>
     </div>
-</article>
-                    <?php endforeach; ?>
-                </div>
-            <?php else: ?>
-                <div class="empty-state">
-                    <i class="fas fa-bookmark"></i>
-                    <h5>No saved jobs yet</h5>
-                    <p>Save jobs from listings and they will appear here.</p>
-                    <a href="<?= base_url('jobs') ?>" class="candidate-primary-link">Browse Jobs</a>
-                </div>
-            <?php endif; ?>
-        </div>
-    </section>
+</section>
 </div>
 <script>
 document.addEventListener('click', function (e) {
