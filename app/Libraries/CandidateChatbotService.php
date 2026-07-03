@@ -67,11 +67,14 @@ class CandidateChatbotService
 
     private function handleActionRequest(int $candidateId, string $question): ?array
     {
-        if (preg_match('/\b(compare|difference|versus|vs)\b.*\bjobs?\b/i', $question) || preg_match('/\bjobs?\s*#?\d+.*\b(vs|versus|and)\b.*\bjobs?\s*#?\d+/i', $question)) {
+        $jobIdPattern = '\bjobs?\s*(?:#|id|number|no\.?|to)?\s*\d+\b';
+
+        if (preg_match('/\b(compare|difference|versus|vs)\b.*\bjobs?\b/i', $question) || preg_match('/' . $jobIdPattern . '.*\b(vs|versus|and)\b.*' . $jobIdPattern . '/i', $question)) {
             return $this->actionResult('compare_jobs', $this->compareJobs($candidateId, $question));
         }
 
-        if (preg_match('/\b(save|bookmark)\b.*\bjobs?\s*#?\d+\b/i', $question)) {
+        if (preg_match('/\b(save|bookmark)\b.*' . $jobIdPattern . '/i', $question)
+            || preg_match('/\b(save|bookmark)\b.*\bjobs?\s*#\s*[a-z0-9+#.][a-z0-9+#. -]{1,80}\b/i', $question)) {
             return $this->actionResult('save_job', $this->saveJobFromPrompt($candidateId, $question));
         }
 
@@ -79,16 +82,22 @@ class CandidateChatbotService
             return $this->actionResult('find_jobs_to_save', $this->findJobsForCandidate($candidateId, $question, true));
         }
 
-        if (preg_match('/\b(apply|submit application)\b.*\bjobs?\s*#?\d+\b/i', $question)) {
+        if (preg_match('/\b(apply|submit application)\b.*' . $jobIdPattern . '/i', $question)
+            || preg_match('/\b(apply|submit application)\b.*\bjobs?\s*#?\s*[a-z0-9+#.][a-z0-9+#. -]{1,80}\b/i', $question)) {
             return $this->actionResult('apply_job', $this->applyToJobFromPrompt($candidateId, $question));
         }
 
-        if (preg_match('/\b(why|explain|match|fit|suitable|good fit|bad fit)\b.*\bjobs?\s*#?\d+\b/i', $question)) {
+        if (preg_match('/\b(why|explain|match|fit|suitable|good fit|bad fit)\b.*' . $jobIdPattern . '/i', $question)
+            || preg_match('/\b(why|explain|match|fit|suitable|good fit|bad fit)\b.*\bjobs?\s*#?\s*[a-z0-9+#.][a-z0-9+#. -]{1,80}\b/i', $question)) {
             return $this->actionResult('explain_job_match', $this->explainJobMatch($candidateId, $question));
         }
 
         if (preg_match('/\b(jobs?|roles?|openings?|opportunities?)\s+(?:opening\s+)?(details?|info|information|description)\b/i', $question)
             || preg_match('/\b(details?|info|information|description)\b.*\b(job|role|opening|opportunity)\b/i', $question)) {
+            return $this->actionResult('job_details', $this->showJobDetails($candidateId, $question));
+        }
+
+        if (preg_match('/' . $jobIdPattern . '/i', $question)) {
             return $this->actionResult('job_details', $this->showJobDetails($candidateId, $question));
         }
 
@@ -243,7 +252,11 @@ class CandidateChatbotService
     {
         $jobId = $this->extractFirstJobId($question);
         if ($jobId <= 0) {
-            return 'Please include a job ID, for example: save job #12.';
+            $resolved = $this->resolveSingleOpenJobFromPrompt($candidateId, $question);
+            if (!empty($resolved['message'])) {
+                return (string) $resolved['message'];
+            }
+            $jobId = (int) ($resolved['job']['id'] ?? 0);
         }
 
         $job = $this->findOpenJob($jobId);
@@ -272,7 +285,11 @@ class CandidateChatbotService
     {
         $jobId = $this->extractFirstJobId($question);
         if ($jobId <= 0) {
-            return 'Please include a job ID, for example: apply to job #12.';
+            $resolved = $this->resolveSingleOpenJobFromPrompt($candidateId, $question);
+            if (!empty($resolved['message'])) {
+                return (string) $resolved['message'];
+            }
+            $jobId = (int) ($resolved['job']['id'] ?? 0);
         }
 
         $job = $this->findOpenJob($jobId);
@@ -342,25 +359,150 @@ class CandidateChatbotService
         return 'Application submitted for job #' . $jobId . ' ' . ($job['title'] ?? 'Untitled role') . '. Status: Applied.';
     }
 
+    private function resolveSingleOpenJobFromPrompt(int $candidateId, string $question): array
+    {
+        $title = $this->extractJobReferenceText($question);
+        if ($title === '') {
+            return [
+                'job' => null,
+                'message' => 'Please include a job ID or title, for example: apply to job #12 or apply to job #PHP Developer.',
+            ];
+        }
+
+        $jobs = $this->findJobsByTitle($candidateId, $title, 5);
+        if (empty($jobs)) {
+            return [
+                'job' => null,
+                'message' => 'I could not find an open job matching "' . $title . '". Try the exact job title or use the job ID.',
+            ];
+        }
+
+        if (count($jobs) === 1) {
+            return [
+                'job' => $jobs[0],
+                'message' => '',
+            ];
+        }
+
+        $exactMatches = array_values(array_filter($jobs, static function (array $job) use ($title): bool {
+            return strtolower(trim((string) ($job['title'] ?? ''))) === strtolower(trim($title));
+        }));
+
+        if (count($exactMatches) === 1) {
+            return [
+                'job' => $exactMatches[0],
+                'message' => '',
+            ];
+        }
+
+        $lines = ['I found multiple matching jobs. Please choose the exact job ID:'];
+        foreach ($jobs as $job) {
+            $lines[] = sprintf(
+                '- Job #%d | %s | %s | %s',
+                (int) $job['id'],
+                $job['title'] ?? 'Untitled role',
+                $job['company'] ?? 'Company not listed',
+                $job['location'] ?? 'Location not listed'
+            );
+        }
+
+        return [
+            'job' => null,
+            'message' => implode("\n", $lines),
+        ];
+    }
+
+    private function resolveSingleOpenJobByTitle(int $candidateId, string $title): array
+    {
+        $title = $this->cleanJobReferenceText($title);
+        if ($title === '') {
+            return [
+                'job' => null,
+                'message' => 'Please include a job title or ID.',
+            ];
+        }
+
+        $jobs = $this->findJobsByTitle($candidateId, $title, 5);
+        if (empty($jobs)) {
+            return [
+                'job' => null,
+                'message' => 'I could not find an open job matching "' . $title . '". Try the exact job title from the listing.',
+            ];
+        }
+
+        if (count($jobs) === 1) {
+            return [
+                'job' => $jobs[0],
+                'message' => '',
+            ];
+        }
+
+        $exactMatches = array_values(array_filter($jobs, static function (array $job) use ($title): bool {
+            return strtolower(trim((string) ($job['title'] ?? ''))) === strtolower(trim($title));
+        }));
+
+        if (count($exactMatches) === 1) {
+            return [
+                'job' => $exactMatches[0],
+                'message' => '',
+            ];
+        }
+
+        $lines = ['I found multiple jobs matching "' . $title . '". Please choose one by title or job ID:'];
+        foreach ($jobs as $job) {
+            $lines[] = sprintf(
+                '- Job #%d | %s | %s | %s',
+                (int) $job['id'],
+                $job['title'] ?? 'Untitled role',
+                $job['company'] ?? 'Company not listed',
+                $job['location'] ?? 'Location not listed'
+            );
+        }
+
+        return [
+            'job' => null,
+            'message' => implode("\n", $lines),
+        ];
+    }
+
+    private function extractJobReferenceText(string $question): string
+    {
+        if (preg_match('/\bjobs?\s*#\s*([a-z0-9+#.][a-z0-9+#. -]{1,80})/i', $question, $matches)) {
+            return $this->cleanJobReferenceText((string) $matches[1]);
+        }
+
+        if (preg_match('/\b(?:apply|save|bookmark|submit application)\b.*\bjobs?\s+(?:named|called|titled)?\s*["\']?([a-z0-9+#.][a-z0-9+#. -]{1,80})/i', $question, $matches)) {
+            return $this->cleanJobReferenceText((string) $matches[1]);
+        }
+
+        return '';
+    }
+
+    private function cleanJobReferenceText(string $value): string
+    {
+        $value = trim($value, " \t\n\r\0\x0B.,:;!?\"'");
+        $value = preg_replace('/\s+\b(?:please|now|today|for me|from chatbot)\b.*$/i', '', $value) ?? $value;
+        $value = preg_replace('/\s+\b(?:job|role|opening|application)\b\s*$/i', '', $value) ?? $value;
+
+        return trim($value, " \t\n\r\0\x0B.,:;!?\"'");
+    }
+
     private function compareJobs(int $candidateId, string $question): string
     {
-        $ids = $this->extractJobIds($question);
-        if (count($ids) < 2) {
-            return 'Please include two job IDs, for example: compare job #12 and job #18.';
+        $resolved = $this->resolveJobsForComparison($candidateId, $question);
+        if (!empty($resolved['message'])) {
+            return (string) $resolved['message'];
         }
 
-        $jobs = [];
-        foreach (array_slice($ids, 0, 2) as $jobId) {
-            $job = $this->findOpenJob($jobId);
-            if ($job) {
-                $job['_match'] = $this->buildJobMatchBreakdown($candidateId, $job);
-                $jobs[] = $job;
-            }
-        }
-
+        $jobs = array_slice((array) ($resolved['jobs'] ?? []), 0, 2);
         if (count($jobs) < 2) {
-            return 'I could not find both open jobs. Please check the job IDs and try again.';
+            return 'Please include two job titles or IDs, for example: compare job PHP Developer and job Data Analyst.';
         }
+
+        foreach ($jobs as &$job) {
+            $job['_match'] = $this->buildJobMatchBreakdown($candidateId, $job);
+        }
+        unset($job);
 
         $lines = ['Here is a quick comparison:'];
         foreach ($jobs as $job) {
@@ -384,11 +526,80 @@ class CandidateChatbotService
         return implode("\n", $lines);
     }
 
+    private function resolveJobsForComparison(int $candidateId, string $question): array
+    {
+        $ids = $this->extractJobIds($question);
+        if (count($ids) >= 2) {
+            $jobs = [];
+            foreach (array_slice($ids, 0, 2) as $jobId) {
+                $job = $this->findOpenJob($jobId);
+                if ($job) {
+                    $jobs[] = $job;
+                }
+            }
+
+            if (count($jobs) < 2) {
+                return [
+                    'jobs' => [],
+                    'message' => 'I could not find both open jobs. Please check the job IDs and try again.',
+                ];
+            }
+
+            return ['jobs' => $jobs, 'message' => ''];
+        }
+
+        $titles = $this->extractComparisonJobTitles($question);
+        if (count($titles) < 2) {
+            return [
+                'jobs' => [],
+                'message' => 'Please include two job titles or IDs, for example: compare job PHP Developer and job Data Analyst.',
+            ];
+        }
+
+        $jobs = [];
+        foreach (array_slice($titles, 0, 2) as $title) {
+            $resolved = $this->resolveSingleOpenJobByTitle($candidateId, $title);
+            if (!empty($resolved['message'])) {
+                return [
+                    'jobs' => [],
+                    'message' => (string) $resolved['message'],
+                ];
+            }
+            $jobs[] = $resolved['job'];
+        }
+
+        return ['jobs' => $jobs, 'message' => ''];
+    }
+
+    private function extractComparisonJobTitles(string $question): array
+    {
+        $normalized = trim(preg_replace('/\s+/', ' ', $question) ?? $question);
+        $normalized = preg_replace('/^\s*(?:compare|difference between|what(?:\'s| is)? the difference between)\s+/i', '', $normalized) ?? $normalized;
+        $normalized = preg_replace('/\bjob\s+data\b/i', 'job Data', $normalized) ?? $normalized;
+        $normalized = preg_replace('/\bjobs?\s*#\s*/i', 'job ', $normalized) ?? $normalized;
+
+        $parts = preg_split('/\s+(?:and|vs|versus)\s+/i', $normalized) ?: [];
+        $titles = [];
+        foreach ($parts as $part) {
+            $part = preg_replace('/^\s*(?:jobs?|roles?|openings?)\s+/i', '', (string) $part) ?? (string) $part;
+            $part = $this->cleanJobReferenceText($part);
+            if ($part !== '' && !preg_match('/^\d+$/', $part)) {
+                $titles[] = $part;
+            }
+        }
+
+        return array_values(array_unique($titles));
+    }
+
     private function explainJobMatch(int $candidateId, string $question): string
     {
         $jobId = $this->extractFirstJobId($question);
         if ($jobId <= 0) {
-            return 'Please include a job ID, for example: explain why job #12 matches me.';
+            $resolved = $this->resolveSingleOpenJobFromPrompt($candidateId, $question);
+            if (!empty($resolved['message'])) {
+                return (string) $resolved['message'];
+            }
+            $jobId = (int) ($resolved['job']['id'] ?? 0);
         }
 
         $job = $this->findOpenJob($jobId);
@@ -1028,7 +1239,7 @@ class CandidateChatbotService
 
     private function extractJobIds(string $question): array
     {
-        preg_match_all('/\bjobs?\s*#?\s*(\d+)\b/i', $question, $matches);
+        preg_match_all('/\bjobs?\s*(?:#|id|number|no\.?|to)?\s*(\d+)\b/i', $question, $matches);
         $ids = array_map('intval', $matches[1] ?? []);
 
         if (count($ids) < 2) {

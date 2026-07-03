@@ -9,6 +9,160 @@ class CareerTransitionAI
         // API keys loaded from environment in each method
     }
 
+    public function buildContextSummary(array $context): string
+    {
+        $currentRole = trim((string) ($context['current_role'] ?? ''));
+        $targetRole = trim((string) ($context['target_role'] ?? ''));
+        $skills = array_values(array_filter(array_map('trim', (array) ($context['candidate_skills'] ?? []))));
+        $company = trim((string) ($context['current_company'] ?? ''));
+        $bio = trim((string) ($context['candidate_bio'] ?? ''));
+
+        $parts = [];
+        if ($currentRole !== '') {
+            $parts[] = 'Current role: ' . $currentRole;
+        }
+        if ($targetRole !== '') {
+            $parts[] = 'Target role: ' . $targetRole;
+        }
+        if (!empty($skills)) {
+            $parts[] = 'Candidate strengths: ' . implode(', ', $skills);
+        }
+        if ($company !== '') {
+            $parts[] = 'Current company: ' . $company;
+        }
+        if ($bio !== '') {
+            $parts[] = 'Background: ' . $bio;
+        }
+
+        return implode(' | ', $parts);
+    }
+
+    public function buildGenerationMetadata(string $stage, bool $shouldExpand = false, int $moduleCount = 4): array
+    {
+        return [
+            'stage' => $stage,
+            'should_expand' => $shouldExpand,
+            'module_count' => $moduleCount,
+        ];
+    }
+
+    private function buildEducationalCoursePrompt(string $currentRole, string $targetRole, string $skills): string
+    {
+        return <<<PROMPT
+Create a professional career transition course from {$currentRole} to {$targetRole}.
+Skill gaps to close: {$skills}
+
+*** REAL EDUCATIONAL CONTENT (like Udemy), NOT guidance ***
+DO write actual teaching content with definitions, examples, code, workflows, and exercises.
+DO NOT write "study X", "research", or "understand best practices".
+
+Generate 4 modules with 1 lesson each. Each lesson should be 600-800 words of teaching content.
+
+Use this structure in each lesson:
+## Outcome
+## Core Concepts
+## Real-World Example
+## Step-by-Step Implementation
+## Practice Exercise
+## Completion Checklist
+## Resources
+
+Return ONLY valid JSON with:
+{
+  "modules": [{
+    "number": 1,
+    "title": "Specific {$targetRole} Capability",
+    "description": "Concrete outcome",
+    "weeks": 2,
+    "covered_skill_gaps": ["gap1", "gap2"],
+    "lessons": [{
+      "number": 1,
+      "title": "Specific Skill",
+      "covered_skill_gaps": ["gap1"],
+      "content": "[Detailed lesson content]",
+      "resources": ["https://docs.example.com"],
+      "exercises": ["Specific task"]
+    }]
+  }],
+  "daily_tasks": []
+}
+
+Rules:
+- Use real tools/frameworks for {$targetRole}
+- Include concrete examples and code where relevant
+- Sound like a senior {$targetRole} engineer teaching a junior learner
+- Specific to {$targetRole}, not generic career advice
+- Learner is coming from {$currentRole}
+PROMPT;
+    }
+
+    private function buildCompactEducationalCoursePrompt(string $currentRole, string $targetRole, string $skills): string
+    {
+        return <<<PROMPT
+Create a compact course from {$currentRole} to {$targetRole}.
+Skill gaps: {$skills}
+
+Write practical teaching content only. Return valid JSON with 4 modules and 1 lesson per module.
+Each lesson should be 400-600 words and include: outcome, concepts, example, steps, exercise, checklist, resources.
+Use real examples and tools for {$targetRole}.
+PROMPT;
+    }
+
+    private function buildStagedCoursePrompt(string $currentRole, string $targetRole, string $skills, string $stage, int $moduleNumber = 1, ?string $moduleTitle = null, ?string $moduleDescription = null, array $coveredSkillGaps = [], string $contextSummary = ''): string
+    {
+        $moduleTitle = trim((string) $moduleTitle);
+        $moduleDescription = trim((string) $moduleDescription);
+        $coveredGaps = implode(', ', array_values(array_filter(array_map('trim', $coveredSkillGaps))));
+        $moduleContext = $moduleTitle !== '' ? "\nModule title: {$moduleTitle}\nModule description: {$moduleDescription}" : '';
+        $contextText = $contextSummary !== '' ? "\nCandidate context: {$contextSummary}" : '';
+
+        if ($stage === 'module') {
+            return <<<PROMPT
+Create one practical learning module for a career transition from {$currentRole} to {$targetRole}.
+Skill gaps to close: {$skills}
+Covered gaps: {$coveredGaps}{$contextText}
+{$moduleContext}
+
+Return ONLY valid JSON with one module and one lesson.
+{
+  "number": {$moduleNumber},
+  "title": "Specific module title",
+  "description": "Concrete outcome",
+  "weeks": 2,
+  "covered_skill_gaps": ["gap1"],
+  "lessons": [{
+    "number": 1,
+    "title": "Specific lesson title",
+    "covered_skill_gaps": ["gap1"],
+    "content": "Detailed lesson content with outcome, concepts, example, steps, exercise, checklist, resources",
+    "resources": ["https://docs.example.com"],
+    "exercises": ["Specific task"]
+  }]
+}
+PROMPT;
+        }
+
+        return <<<PROMPT
+Create a short course outline from {$currentRole} to {$targetRole}.
+Skill gaps to close: {$skills}{$contextText}
+
+Return ONLY valid JSON using this exact schema:
+{
+  "modules": [
+    {
+      "number": 1,
+      "title": "Specific capability",
+      "description": "Concrete outcome",
+      "weeks": 2,
+      "covered_skill_gaps": ["gap1", "gap2"]
+    }
+  ]
+}
+
+Provide 4 modules in the "modules" array.
+PROMPT;
+    }
+
     public function analyzeTransition($currentRole, $targetRole)
     {
         $prompt = "Analyze career transition from {$currentRole} to {$targetRole}. Provide ONLY valid JSON:
@@ -35,7 +189,7 @@ class CareerTransitionAI
         return $data;
     }
 
-    public function generateCourseContent($currentRole, $targetRole, $skillGaps)
+    public function generateCourseContent($currentRole, $targetRole, $skillGaps, array $context = [])
     {
         set_time_limit(300);
         
@@ -43,49 +197,32 @@ class CareerTransitionAI
             ? array_values(array_filter(array_map('trim', $skillGaps)))
             : array_values(array_filter(array_map('trim', explode(',', (string) $skillGaps))));
         $skills = implode(', ', array_slice($skillList, 0, 8));
-        
-        $prompt = "Create a professional career transition course from {$currentRole} to {$targetRole}. Skill gaps to close: {$skills}.
 
-Generate 4 broad modules, 2 lessons each. Each module should be a major capability area, not a tiny topic. A single module may cover several related skills, tools, workflows, and interview expectations. Make each lesson read like an excellent ChatGPT-style coaching response, but more complete: detailed explanation, concrete workflow, realistic examples, mistakes, practice, and interview/portfolio proof. Make it structured and reliable like a senior mentor-designed course:
-- Modules must progress from foundations to applied role workflows, production/job readiness, and portfolio/interview proof.
-- Each module must list the exact skill gaps it covers in covered_skill_gaps, usually 2-4 gaps per module when available.
-- Module descriptions must explain the broader capability area and the practical outcome, not just a one-line topic.
-- Each lesson must list covered_skill_gaps.
-- Lesson content must be 1000-1400 words and use clear sections: Outcome, Why This Matters, Concepts, Step-by-Step Work, {$targetRole} Example, Mini Project, Common Mistakes, Interview Readiness, Completion Checklist.
-- Each section must contain practical detail, not one-line summaries. Step-by-Step Work must include at least 6 detailed steps. Completion Checklist must include at least 7 observable checks.
-- Explain concepts like a mentor teaching a real learner: define terms, explain why they matter, connect them to the target role, show how to apply them, and describe what good output looks like.
-- Avoid generic filler. Use tools, workflows, deliverables, and examples relevant to {$targetRole}.
-- Exercises must create portfolio evidence or interview-ready proof of skill.
-- Resources must be stable learning destinations such as official docs, roadmap pages, or trusted educational sources.
-
-JSON format:
-{
-  \"modules\": [
-    {
-      \"number\": 1,
-      \"title\": \"[Specific topic for {$targetRole}]\",
-      \"description\": \"[Concrete outcome and why it matters]\",
-      \"weeks\": 2,
-      \"covered_skill_gaps\": [\"skill gap 1\", \"skill gap 2\"],
-      \"lessons\": [
-        {
-          \"number\": 1,
-          \"title\": \"[Specific skill]\",
-          \"covered_skill_gaps\": [\"skill gap 1\"],
-          \"content\": \"## Outcome\n[What the learner can do after this lesson]\n\n## Why This Matters\n[Why this skill matters for {$targetRole}]\n\n## Concepts\n[Core concepts explained deeply]\n\n## Step-by-Step Work\n### Step 1\n[Instructions with examples]\n### Step 2\n[More steps]\n\n## {$targetRole} Example\n[Realistic role-specific example]\n\n## Mini Project\n[Portfolio-ready task]\n\n## Common Mistakes\n[Issues and fixes]\n\n## Interview Readiness\n[How to explain this in interviews]\n\n## Completion Checklist\n[Observable proof the learner completed it]\",
-          \"resources\": [\"[URL1]\", \"[URL2]\"],
-          \"exercises\": [\"[Task1]\", \"[Task2]\"]
+        $stagedCourse = $this->generateCourseContentInStages($currentRole, $targetRole, $skills, $context);
+        if (!empty($stagedCourse['modules']) && !$this->hasEmptyLessonContent($stagedCourse)) {
+            log_message('info', 'AI course generated successfully via staged workflow');
+            return $stagedCourse;
         }
-      ]
-    }
-  ],
-  \"daily_tasks\": [{\"day\": 1, \"title\": \"Module 1 - Lesson 1\", \"description\": \"Complete the lesson and checklist\", \"duration\": 45, \"module\": 1, \"lesson\": 1}]
-}
 
-Return ONLY valid JSON. Do not summarize. Do not give brief bullet-only lessons. Make content practical and specific to {$targetRole}. Assume learner has {$currentRole} experience and must close these gaps: {$skills}.";
+        if (!empty($stagedCourse['modules'])) {
+            log_message('warning', 'Staged course generated with empty lesson content; trying Udemy-style fallback.');
+            $udemyCourse = $this->generateUdemyStyleCourseContent($currentRole, $targetRole, $skills, $context);
+            if (!empty($udemyCourse['modules']) && !$this->hasEmptyLessonContent($udemyCourse)) {
+                log_message('info', 'Udemy-style fallback produced complete lesson content');
+                return $udemyCourse;
+            }
+        }
 
-        $response = $this->callOpenAI($prompt);
+        $prompt = $this->buildEducationalCoursePrompt($currentRole, $targetRole, $skills);
+
+        $response = $this->callOpenAI($prompt, 6000, 120);
         $data = json_decode($response, true);
+
+        if (!$data || !isset($data['modules']) || empty($data['modules'])) {
+            $compactPrompt = $this->buildCompactEducationalCoursePrompt($currentRole, $targetRole, $skills);
+            $response = $this->callOpenAI($compactPrompt, 4000, 90);
+            $data = json_decode($response, true);
+        }
         
         if (!$data || !isset($data['modules']) || empty($data['modules'])) {
             log_message('error', 'AI generation failed - using fallback. Response: ' . substr($response, 0, 500));
@@ -106,6 +243,157 @@ Return ONLY valid JSON. Do not summarize. Do not give brief bullet-only lessons.
         
         log_message('info', 'AI course generated successfully');
         return $data;
+    }
+
+    private function generateCourseContentInStages(string $currentRole, string $targetRole, string $skills, array $context = []): array
+    {
+        $outlineData = $this->buildCourseOutlineInStages($currentRole, $targetRole, $skills, $context);
+        if (empty($outlineData['modules'])) {
+            return [];
+        }
+
+        $modules = [];
+        foreach ($outlineData['modules'] as $moduleSpec) {
+            $moduleData = $this->buildModuleInStages($currentRole, $targetRole, $skills, $moduleSpec, $context);
+            if (!empty($moduleData['lessons'])) {
+                $modules[] = $moduleData;
+            }
+        }
+
+        if (empty($modules)) {
+            return [];
+        }
+
+        $dailyTasks = [];
+        $day = 1;
+        foreach ($modules as $moduleIndex => $module) {
+            foreach ($module['lessons'] ?? [] as $lessonIndex => $lesson) {
+                $dailyTasks[] = [
+                    'day' => $day++,
+                    'title' => 'Module ' . ($module['number'] ?? ($moduleIndex + 1)) . ' - ' . ($lesson['title'] ?? 'Lesson'),
+                    'description' => 'Complete lesson: ' . ($lesson['title'] ?? 'Lesson'),
+                    'duration' => 10,
+                    'module' => $module['number'] ?? ($moduleIndex + 1),
+                    'lesson' => $lesson['number'] ?? ($lessonIndex + 1),
+                ];
+            }
+        }
+
+        return [
+            'modules' => $modules,
+            'daily_tasks' => $dailyTasks,
+        ];
+    }
+
+    private function hasEmptyLessonContent(array $courseData): bool
+    {
+        foreach (($courseData['modules'] ?? []) as $module) {
+            foreach (($module['lessons'] ?? []) as $lesson) {
+                if (trim((string) ($lesson['content'] ?? '')) === '') {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function generateUdemyStyleCourseContent(string $currentRole, string $targetRole, string $skills, array $context = []): array
+    {
+        $fallback = new CareerTransitionAIv2();
+        $prompt = $fallback->buildEducationalPrompt($currentRole, $targetRole, $skills);
+        $response = $fallback->callOpenAI($prompt);
+        $data = json_decode($response, true);
+
+        if (!is_array($data) || empty($data['modules'])) {
+            return [];
+        }
+
+        foreach ($data['modules'] as &$module) {
+            $module['lessons'] = array_values(array_map(static function (array $lesson): array {
+                return [
+                    'number' => (int) ($lesson['number'] ?? 1),
+                    'title' => trim((string) ($lesson['title'] ?? 'Lesson')),
+                    'covered_skill_gaps' => array_values(array_filter(array_map('trim', (array) ($lesson['covered_skill_gaps'] ?? [])))),
+                    'content' => trim((string) ($lesson['content'] ?? '')),
+                    'resources' => array_values(array_filter(array_map('trim', (array) ($lesson['resources'] ?? [])))),
+                    'exercises' => array_values(array_filter(array_map('trim', (array) ($lesson['exercises'] ?? [])))),
+                ];
+            }, (array) ($module['lessons'] ?? [])));
+        }
+        unset($module);
+
+        return $data;
+    }
+
+    private function buildCourseOutlineInStages(string $currentRole, string $targetRole, string $skills, array $context = []): array
+    {
+        $metadata = $this->buildGenerationMetadata('outline', true, 4);
+        $contextSummary = $this->buildContextSummary($context);
+        $prompt = $this->buildStagedCoursePrompt($currentRole, $targetRole, $skills, 'outline', 1, null, null, [], $contextSummary);
+        $response = $this->callOpenAI($prompt, 2500, 75);
+        $data = json_decode($response, true);
+
+        if (is_array($data) && !empty($data['modules'])) {
+            log_message('info', 'Staged outline generated with ' . count($data['modules']) . ' modules. Metadata: ' . json_encode($metadata));
+            return $data;
+        }
+
+        log_message('warning', 'Staged outline generation returned invalid outline, falling back');
+        return [];
+    }
+
+    private function buildModuleInStages(string $currentRole, string $targetRole, string $skills, array $moduleSpec, array $context = []): array
+    {
+        $moduleNumber = (int) ($moduleSpec['number'] ?? 1);
+        $moduleTitle = trim((string) ($moduleSpec['title'] ?? ''));
+        $moduleDescription = trim((string) ($moduleSpec['description'] ?? ''));
+        $weeks = (int) ($moduleSpec['weeks'] ?? 1);
+        $coveredSkillGaps = array_values(array_filter(array_map('trim', (array) ($moduleSpec['covered_skill_gaps'] ?? [])))) ;
+        $metadata = $this->buildGenerationMetadata('module', false, 1);
+        $contextSummary = $this->buildContextSummary($context);
+
+        $prompt = $this->buildStagedCoursePrompt($currentRole, $targetRole, $skills, 'module', $moduleNumber, $moduleTitle, $moduleDescription, $coveredSkillGaps, $contextSummary);
+        $response = $this->callOpenAI($prompt, 2800, 90);
+        $data = json_decode($response, true);
+
+        if (is_array($data) && !empty($data['lessons'])) {
+            log_message('info', 'Staged module generated for module ' . $moduleNumber . '. Metadata: ' . json_encode($metadata));
+            return [
+                'number' => $moduleNumber,
+                'title' => $moduleTitle !== '' ? $moduleTitle : 'Practical module',
+                'description' => $moduleDescription !== '' ? $moduleDescription : 'Build the key capability for ' . $targetRole,
+                'weeks' => $weeks,
+                'covered_skill_gaps' => $coveredSkillGaps,
+                'lessons' => array_values(array_map(static function (array $lesson): array {
+                    return [
+                        'number' => (int) ($lesson['number'] ?? 1),
+                        'title' => trim((string) ($lesson['title'] ?? 'Lesson')),
+                        'covered_skill_gaps' => array_values(array_filter(array_map('trim', (array) ($lesson['covered_skill_gaps'] ?? [])))),
+                        'content' => trim((string) ($lesson['content'] ?? '')),
+                        'resources' => array_values(array_filter(array_map('trim', (array) ($lesson['resources'] ?? [])))),
+                        'exercises' => array_values(array_filter(array_map('trim', (array) ($lesson['exercises'] ?? [])))),
+                    ];
+                }, (array) ($data['lessons'] ?? []))),
+            ];
+        }
+
+        $fallbackLessonTitle = $moduleTitle !== '' ? 'Apply ' . $moduleTitle : 'Build the target skill';
+        return [
+            'number' => $moduleNumber,
+            'title' => $moduleTitle !== '' ? $moduleTitle : 'Practical module',
+            'description' => $moduleDescription !== '' ? $moduleDescription : 'Build the key capability for ' . $targetRole,
+            'weeks' => $weeks,
+            'covered_skill_gaps' => $coveredSkillGaps,
+            'lessons' => [[
+                'number' => 1,
+                'title' => $fallbackLessonTitle,
+                'covered_skill_gaps' => $coveredSkillGaps,
+                'content' => 'Build practical competency in ' . ($moduleTitle !== '' ? $moduleTitle : $targetRole) . ' by practicing a small real-world scenario, documenting your workflow, and reflecting on how the skill maps to your upcoming role.',
+                'resources' => ['https://docs.example.com'],
+                'exercises' => ['Complete one portfolio-ready deliverable tied to this module.'],
+            ]],
+        ];
     }
 
     private function isCourseTooBrief(array $courseData): bool
@@ -324,7 +612,7 @@ Course JSON to expand:
         ];
     }
 
-    private function callOpenAI($prompt)
+    private function callOpenAI($prompt, int $maxTokens = 6000, int $timeoutSeconds = 120)
     {
         $apiKey = getenv('OPENAI_API_KEY');
         if (empty($apiKey)) {
@@ -336,13 +624,13 @@ Course JSON to expand:
             'model' => 'gpt-4o-mini',
             'messages' => [[
                 'role' => 'system',
-                'content' => 'You are a career transition expert who creates practical, actionable learning content for any profession.'
+                'content' => 'You are a career transition expert who creates practical, actionable learning content for any profession. Generate content efficiently without extra preamble.'
             ], [
                 'role' => 'user',
                 'content' => $prompt
             ]],
-            'temperature' => 0.7,
-            'max_tokens' => 16000,
+            'temperature' => 0.6,
+            'max_tokens' => $maxTokens,
             'stream' => false
         ];
 
@@ -356,9 +644,8 @@ Course JSON to expand:
                 'Authorization: Bearer ' . trim($apiKey),
             ],
             CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_TIMEOUT => 90,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_TIMEOUT => $timeoutSeconds,
+            CURLOPT_CONNECTTIMEOUT => 20
         ]);
 
         $response = curl_exec($ch);

@@ -92,6 +92,11 @@
     line-height: 1;
 }
 .hm-chat-header-close:hover { color: #fff; }
+.hm-chat-header-close:focus,
+.hm-chat-header-close:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
 
 /* Messages area */
 .hm-chat-messages {
@@ -217,13 +222,21 @@
     transition: transform 0.15s;
 }
 .hm-chat-send:hover { transform: scale(1.06); }
+.hm-chat-send:focus,
+.hm-chat-send:focus-visible,
+.hm-chat-voice:focus,
+.hm-chat-voice:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
 .hm-chat-voice {
     background: #E8F9F8;
     color: #0D8A90;
     border: 1px solid #D9ECE5;
 }
 .hm-chat-voice:hover { transform: scale(1.06); }
-.hm-chat-voice.is-listening {
+.hm-chat-voice.is-listening,
+.hm-chat-voice.is-speaking {
     background: #ef4444;
     border-color: #ef4444;
     color: #fff;
@@ -294,7 +307,8 @@ body.dark .hm-chat-voice {
     border-color: #23343A;
     color: #1FB7B5;
 }
-body.dark .hm-chat-voice.is-listening {
+body.dark .hm-chat-voice.is-listening,
+body.dark .hm-chat-voice.is-speaking {
     background: #ef4444;
     border-color: #ef4444;
     color: #fff;
@@ -409,6 +423,7 @@ body.dark .hm-chat-voice.is-listening {
     var hasLoadedSuggestions = false;
     var recognition = null;
     var isListening = false;
+    var isSpeaking = false;
     var shouldSpeakNextReply = false;
     var voiceTurnSubmitted = false;
 
@@ -453,6 +468,7 @@ body.dark .hm-chat-voice.is-listening {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
         }
+        setVoiceSpeaking(false);
     }
 
     fab.addEventListener('click', openWidget);
@@ -540,10 +556,12 @@ body.dark .hm-chat-voice.is-listening {
 
                 if (data.success && data.answer) {
                     appendMessage('bot', data.answer);
+                    if (voiceBtn && recognition) voiceBtn.disabled = false;
                     speakRecruiterReply(data.answer);
                 } else {
                     var reply = data.answer || 'Sorry, I couldn\'t process that. Please try asking differently.';
                     appendMessage('bot', reply);
+                    if (voiceBtn && recognition) voiceBtn.disabled = false;
                     speakRecruiterReply(reply);
                 }
             })
@@ -552,6 +570,7 @@ body.dark .hm-chat-voice.is-listening {
                 if (typing) typing.remove();
                 var reply = 'Connection error: ' + err.message + '. Make sure you are logged in as a recruiter.';
                 appendMessage('bot', reply);
+                if (voiceBtn && recognition) voiceBtn.disabled = false;
                 speakRecruiterReply(reply);
             })
             .finally(function () {
@@ -572,6 +591,15 @@ body.dark .hm-chat-voice.is-listening {
         utterance.lang = 'en-US';
         utterance.rate = 1;
         utterance.pitch = 1;
+        utterance.onstart = function () {
+            setVoiceSpeaking(true);
+        };
+        utterance.onend = function () {
+            setVoiceSpeaking(false);
+        };
+        utterance.onerror = function () {
+            setVoiceSpeaking(false);
+        };
         window.speechSynthesis.speak(utterance);
     }
 
@@ -602,12 +630,33 @@ body.dark .hm-chat-voice.is-listening {
         isListening = listening;
         if (!voiceBtn) return;
         voiceBtn.classList.toggle('is-listening', listening);
-        voiceBtn.setAttribute('aria-label', listening ? 'Stop voice chat' : 'Start voice chat');
-        voiceBtn.setAttribute('title', listening ? 'Stop voice chat' : 'Start voice chat');
+        updateVoiceButtonState();
+    }
+
+    function setVoiceSpeaking(speaking) {
+        isSpeaking = speaking;
+        if (!voiceBtn) return;
+        voiceBtn.classList.toggle('is-speaking', speaking);
+        updateVoiceButtonState();
+    }
+
+    function stopVoiceAudio() {
+        shouldSpeakNextReply = false;
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        setVoiceSpeaking(false);
+    }
+
+    function updateVoiceButtonState() {
+        if (!voiceBtn) return;
+        var isStopping = isListening || isSpeaking;
+        voiceBtn.setAttribute('aria-label', isSpeaking ? 'Stop audio' : (isListening ? 'Stop voice chat' : 'Start voice chat'));
+        voiceBtn.setAttribute('title', isSpeaking ? 'Stop audio' : (isListening ? 'Stop voice chat' : 'Start voice chat'));
         var mic = voiceBtn.querySelector('.hm-chat-voice-mic');
         var stop = voiceBtn.querySelector('.hm-chat-voice-stop');
-        if (mic) mic.style.display = listening ? 'none' : 'block';
-        if (stop) stop.style.display = listening ? 'block' : 'none';
+        if (mic) mic.style.display = isStopping ? 'none' : 'block';
+        if (stop) stop.style.display = isStopping ? 'block' : 'none';
     }
 
     function initVoiceChat() {
@@ -664,14 +713,17 @@ body.dark .hm-chat-voice.is-listening {
         voiceBtn.addEventListener('click', function () {
             openWidget();
 
+            if (isSpeaking) {
+                stopVoiceAudio();
+                return;
+            }
+
             if (isListening) {
                 recognition.stop();
                 return;
             }
 
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
+            stopVoiceAudio();
 
             input.value = '';
             voiceTurnSubmitted = false;

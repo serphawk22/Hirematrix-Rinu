@@ -41,25 +41,6 @@ class PremiumCareerMentorController extends BaseController
         $this->aiLibrary         = new CareerTransitionAI();
     }
 
-    public function index()
-    {
-        $userId = session()->get('user_id');
-        $subscription = $this->subscriptionModel->getUserActiveSubscription($userId);
-        
-        if (!$subscription) {
-            return redirect()->to(base_url('premium/plans?service=mentor'));
-        }
-
-        $data = [
-            'title' => 'AI Career Mentor - Premium',
-            'subscription' => $subscription,
-            'usage_today' => $this->usageModel->getTodayUsage($userId),
-            'active_sessions' => $this->hydrateSessionProgress($this->sessionModel->getUserActiveSessions($userId), $userId)
-        ];
-
-        return view('premium_mentor/dashboard', $data);
-    }
-
     public function plans()
     {
         return redirect()->to(base_url('premium/plans?service=mentor'));
@@ -105,8 +86,8 @@ class PremiumCareerMentorController extends BaseController
         ];
 
         if ($this->subscriptionModel->saveSubscription($subscriptionData)) {
-            return redirect()->to('/premium-mentor')->with('success', 
-                sprintf('Your %d-day free trial has started! You now have full access to the AI Career Mentor.', SUBSCRIPTION_TRIAL_DAYS)
+            return redirect()->to('/candidate/dashboard')->with('success',
+                sprintf('Your %d-day free trial has started! You can now use AI Career Mentor in the chatbot.', SUBSCRIPTION_TRIAL_DAYS)
             );
         }
 
@@ -472,7 +453,7 @@ class PremiumCareerMentorController extends BaseController
         ];
 
         if ($this->subscriptionModel->saveSubscription($subscriptionData)) {
-            return redirect()->to('/premium-mentor')->with('success', 'Subscription activated successfully!');
+            return redirect()->to('/candidate/dashboard')->with('success', 'Subscription activated successfully! You can now use AI Career Mentor in the chatbot.');
         }
 
         return redirect()->back()->with('error', 'Failed to activate subscription');

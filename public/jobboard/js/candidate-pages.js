@@ -894,7 +894,7 @@
                 }).join('')
                 : '<p class="text-muted mb-0">No exercises for this lesson.</p>';
 
-            return '<div class="course-lesson-content">' + renderLessonMarkdown(lesson.content || '') + '</div>' +
+            return '<div class="course-lesson-summary-details mb-3"><strong>Lesson details</strong><p class="text-muted mb-0">This view shows the lesson details only, with the full lesson text hidden.</p></div>' +
                 '<div class="mt-4"><h6 class="course-section-title"><i class="fas fa-book"></i> Learning Resources</h6><div>' + resourceHtml + '</div></div>' +
                 '<div class="mt-4"><h6 class="course-section-title"><i class="fas fa-pen"></i> Practice Exercises</h6>' + exerciseHtml + '</div>';
         };
