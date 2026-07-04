@@ -232,6 +232,7 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->get('career-transition/(:num)', 'ApiCareerTransitionController::getTransition/$1');
     $routes->post('career-transition/create', 'ApiCareerTransitionController::create');
     $routes->post('career-transition/complete-task/(:num)', 'ApiCareerTransitionController::completeTask/$1');
+    $routes->post('career-transition/complete-lesson/(:num)', 'ApiCareerTransitionController::completeLesson/$1');
     $routes->get('career-transition/modules/(:num)', 'ApiCareerTransitionController::getModules/$1');
     $routes->get('career-transition/module-lessons/(:num)', 'ApiCareerTransitionController::getLessons/$1');
     $routes->post('career-transition/reset', 'ApiCareerTransitionController::reset');

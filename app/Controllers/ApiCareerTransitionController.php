@@ -210,11 +210,41 @@ class ApiCareerTransitionController extends ResourceController
             return $this->fail('Invalid Module ID');
         }
 
+        $moduleModel = new CourseModuleModel();
+        $module = $moduleModel->find($moduleId);
+
+        if (!$module) {
+            return $this->fail('Module not found');
+        }
+
+        $transitionModel = new CareerTransitionModel();
+        $activeTransition = $transitionModel->find($module['transition_id']);
+
+        if (!$activeTransition) {
+            return $this->fail('Transition not found');
+        }
+
+        $skillGaps = $this->parseSkillGaps($activeTransition['skill_gaps'] ?? '[]');
+
         $lessonModel = new CourseLessonModel();
         $lessons = $lessonModel->getLessonsByModule($moduleId);
+        $lessons = $this->ensureModuleHasEnoughLessons($activeTransition, $module, $lessons, $skillGaps);
 
-        // Decode exercises and resources for mobile use
+        // Expand brief lessons and decode JSON arrays for mobile use
         foreach ($lessons as &$lesson) {
+            if ($this->lessonNeedsFullCourseContent($lesson)) {
+                $generatedLesson = $this->generateFullLessonOnDemand($activeTransition, $module, $lesson);
+                if (!empty($generatedLesson['content'])) {
+                    $lesson['content'] = $generatedLesson['content'];
+                    if (array_key_exists('resources', $generatedLesson)) {
+                        $lesson['resources'] = $generatedLesson['resources'];
+                    }
+                    if (array_key_exists('exercises', $generatedLesson)) {
+                        $lesson['exercises'] = $generatedLesson['exercises'];
+                    }
+                }
+            }
+
             if (isset($lesson['resources']) && is_string($lesson['resources'])) {
                 $decoded = json_decode($lesson['resources'], true);
                 $lesson['resources'] = is_array($decoded) ? $decoded : [$lesson['resources']];
@@ -230,6 +260,217 @@ class ApiCareerTransitionController extends ResourceController
             'data' => [
                 'lessons' => $lessons
             ]
+        ]);
+    }
+
+    private function ensureModuleHasEnoughLessons(array $transition, array $module, array $lessons, array $skillGaps): array
+    {
+        if (count($lessons) >= 2 || !$this->moduleNeedsMultipleLessons($module, $lessons)) {
+            return $lessons;
+        }
+
+        $candidateId = (int) ($transition['candidate_id']);
+        $context = $this->getCandidateCourseContext($candidateId, (string) ($transition['current_role'] ?? ''), (string) ($transition['target_role'] ?? ''));
+        $moduleGaps = array_values(array_filter((array) ($module['covered_skill_gaps'] ?? $skillGaps)));
+
+        $db = \Config\Database::connect();
+        $db->close();
+
+        $ai = new \App\Libraries\CareerTransitionAI();
+        $generatedLessons = $ai->generateModuleLessons(
+            (string) ($transition['current_role'] ?? ''),
+            (string) ($transition['target_role'] ?? ''),
+            $moduleGaps,
+            $module,
+            $context
+        );
+
+        $db->reconnect();
+
+        if (count($generatedLessons) < 2) {
+            return $lessons;
+        }
+
+        $lessonModel = new CourseLessonModel();
+        $existingFirstLesson = $lessons[0] ?? null;
+
+        foreach ($generatedLessons as $index => $generatedLesson) {
+            $lessonData = [
+                'module_id' => (int) $module['id'],
+                'lesson_number' => $index + 1,
+                'title' => $generatedLesson['title'] ?? ('Lesson ' . ($index + 1)),
+                'content' => $generatedLesson['content'] ?? '',
+                'resources' => json_encode($generatedLesson['resources'] ?? []),
+                'exercises' => json_encode($generatedLesson['exercises'] ?? []),
+            ];
+
+            if ($index === 0 && !empty($existingFirstLesson['id'])) {
+                $lessonModel->update((int) $existingFirstLesson['id'], $lessonData);
+                continue;
+            }
+
+            $lessonData['is_completed'] = 0;
+            $lessonModel->insert($lessonData);
+        }
+
+        return $lessonModel->getLessonsByModule((int) $module['id']);
+    }
+
+    private function moduleNeedsMultipleLessons(array $module, array $lessons): bool
+    {
+        if (count($lessons) === 0) {
+            return true;
+        }
+
+        $coveredGaps = array_values(array_filter((array) ($module['covered_skill_gaps'] ?? [])));
+        $title = strtolower((string) ($module['title'] ?? ''));
+        $description = strtolower((string) ($module['description'] ?? ''));
+        $broadKeywords = ['database', 'backend', 'frontend', 'framework', 'cloud', 'security', 'analytics', 'data', 'api', 'integration', 'javascript', 'react', 'node', 'sql', 'nosql'];
+
+        if (count($coveredGaps) > 1 || (int) ($module['duration_weeks'] ?? 0) >= 2) {
+            return true;
+        }
+
+        foreach ($broadKeywords as $keyword) {
+            if (str_contains($title, $keyword) || str_contains($description, $keyword)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function lessonNeedsFullCourseContent(array $lesson): bool
+    {
+        $content = trim(strip_tags((string) ($lesson['content'] ?? '')));
+        if ($content === '') {
+            return true;
+        }
+
+        $wordCount = str_word_count($content);
+        if ($wordCount < 900) {
+            return true;
+        }
+
+        $outlineSignals = 0;
+        foreach (['Concepts Covered:', 'Example:', 'Steps:', 'Exercise:', 'Checklist:', 'Resources:'] as $signal) {
+            if (stripos((string) ($lesson['content'] ?? ''), $signal) !== false) {
+                $outlineSignals++;
+            }
+        }
+
+        return $outlineSignals >= 3 && $wordCount < 1300;
+    }
+
+    private function generateFullLessonOnDemand(array $transition, array $module, array $lesson): array
+    {
+        $candidateId = (int) ($transition['candidate_id']);
+
+        $skillGaps = array_values(array_filter((array) ($lesson['covered_skill_gaps'] ?? $module['covered_skill_gaps'] ?? $this->parseSkillGaps($transition['skill_gaps'] ?? '[]'))));
+        $context = $this->getCandidateCourseContext($candidateId, (string) ($transition['current_role'] ?? ''), (string) ($transition['target_role'] ?? ''));
+
+        $db = \Config\Database::connect();
+        $db->close();
+
+        $ai = new \App\Libraries\CareerTransitionAI();
+        $generated = $ai->generateLessonContent(
+            (string) ($transition['current_role'] ?? ''),
+            (string) ($transition['target_role'] ?? ''),
+            $skillGaps,
+            $module,
+            $lesson,
+            $context
+        );
+
+        $db->reconnect();
+
+        if (empty($generated['content'])) {
+            return [];
+        }
+
+        $lessonModel = new CourseLessonModel();
+        $lessonModel->update((int) $lesson['id'], [
+            'content' => $generated['content'],
+            'resources' => json_encode($generated['resources'] ?? []),
+            'exercises' => json_encode($generated['exercises'] ?? []),
+        ]);
+
+        return $generated;
+    }
+
+    private function getCandidateCourseContext(int $candidateId, string $currentRole, string $targetRole): array
+    {
+        $skillsModel = new \App\Models\CandidateSkillsModel();
+        $workExpModel = new \App\Models\WorkExperienceModel();
+        $userModel = new \App\Models\UserModel();
+
+        $candidateSkills = $skillsModel->where('candidate_id', $candidateId)->findAll();
+        $candidateSkillNames = array_values(array_filter(array_map(static function (array $row): string {
+            return trim((string) ($row['skill_name'] ?? ''));
+        }, $candidateSkills)));
+
+        $latestWork = $workExpModel->where('user_id', $candidateId)->where('is_current', 1)->first();
+        if (empty($latestWork)) {
+            $latestWork = $workExpModel->where('user_id', $candidateId)->orderBy('start_date', 'DESC')->first();
+        }
+
+        $user = $userModel->find($candidateId);
+
+        return [
+            'current_role' => $currentRole,
+            'target_role' => $targetRole,
+            'candidate_skills' => $candidateSkillNames,
+            'current_company' => !empty($latestWork['company_name']) ? (string) $latestWork['company_name'] : '',
+            'candidate_bio' => trim((string) ($user['bio'] ?? '')),
+        ];
+    }
+
+    private function parseSkillGaps($skillGaps): array
+    {
+        $decoded = is_string($skillGaps) ? json_decode($skillGaps, true) : $skillGaps;
+        if (!is_array($decoded)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(static function ($gap): string {
+            return trim((string) $gap);
+        }, $decoded)));
+    }
+
+    public function completeLesson($lessonId)
+    {
+        $lessonId = (int) $lessonId;
+        if ($lessonId <= 0) {
+            return $this->fail('Invalid Lesson ID');
+        }
+
+        $lessonModel = new CourseLessonModel();
+        $lesson = $lessonModel->find($lessonId);
+        
+        if (!$lesson) {
+            return $this->fail('Lesson not found');
+        }
+
+        $moduleModel = new CourseModuleModel();
+        $module = $moduleModel->find($lesson['module_id']);
+
+        if (!$module) {
+            return $this->fail('Module not found');
+        }
+
+        $lessonModel->update($lessonId, ['is_completed' => 1]);
+
+        $taskModel = new DailyTaskModel();
+        $taskModel
+            ->where('transition_id', $module['transition_id'])
+            ->where('module_number', $module['module_number'])
+            ->where('lesson_number', $lesson['lesson_number'])
+            ->set(['is_completed' => 1, 'completed_at' => date('Y-m-d H:i:s')])
+            ->update();
+
+        return $this->respond([
+            'status' => 'success',
+            'message' => 'Lesson marked as complete'
         ]);
     }
 
