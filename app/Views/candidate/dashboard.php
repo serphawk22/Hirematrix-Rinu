@@ -34,20 +34,7 @@ $nextActionCta = $topRecommendedCount > 0 ? 'View matches' : 'Browse jobs';
 $formatCompactCount = static function (int $count): string {
     return $count > 99 ? '99+' : (string) $count;
 };
-$dashboardStrategy = is_array($jobSearchStrategy ?? null) ? $jobSearchStrategy : [];
-$dashboardStrategySource = (string) ($dashboardStrategy['source'] ?? 'fallback');
-$dashboardStrategyHeading = $dashboardStrategySource === 'ai' ? 'AI-generated strategy' : 'Job Search Strategy Coach';
-$dashboardStrategyBadge = $dashboardStrategySource === 'ai' ? 'AI-generated' : 'Strategy preview';
-$dashboardStrategyRoles = array_values(array_filter(array_map('trim', (array) ($dashboardStrategy['target_roles'] ?? []))));
 $dailyReminder = is_array($dailyReminder ?? null) ? $dailyReminder : [];
-if (empty($dashboardStrategyRoles)) {
-    $dashboardStrategyRoles = array_slice(array_values(array_filter(array_map(static function (array $job): string {
-        return trim((string) ($job['title'] ?? ''));
-    }, $topSuggestedJobs))), 0, 3);
-}
-if (empty($dashboardStrategyRoles)) {
-    $dashboardStrategyRoles = ['Web Developer', 'Software Developer', 'Frontend Developer'];
-}
 
 $pickJobIcon = static function (string $title): string {
     $needle = strtolower($title);
@@ -819,6 +806,8 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
                         <div class="job-card-desc">
                             <i class="fas fa-align-left"></i> <span><?= esc($description) ?></span>
                         </div>
+                    <?php else: ?>
+                        <div class="job-card-desc job-card-desc--empty" aria-hidden="true"></div>
                     <?php endif; ?>
 
                     <?php if (!empty($tags)): ?>
@@ -827,6 +816,8 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
                                 <span class="job-card-tag"><?= esc($tag) ?></span><?php if ($i < min(count($tags), 6) - 1): ?><span class="job-card-tag-dot">·</span><?php endif; ?>
                             <?php endforeach; ?>
                         </div>
+                    <?php else: ?>
+                        <div class="job-card-tags job-card-tags--empty" aria-hidden="true"></div>
                     <?php endif; ?>
                 </a>
  <div class="job-card-footer">
@@ -858,78 +849,6 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
         </div>
     <?php endif; ?>
 </div>
-        </div>
-    </section>
-
-    <section class="dashboard-section pt-0">
-        <div class="container-fluid px-lg-5">
-            <div class="dashboard-strategy-banner-inner">
-                <div class="dashboard-strategy-copy">
-                    <h2 class="dashboard-strategy-title"><?= esc((string) ($dashboardStrategy['title'] ?? 'Job Search Strategy Coach')) ?></h2>
-                    <p class="dashboard-strategy-text">
-                        <?= esc((string) ($dashboardStrategy['summary'] ?? 'Use a focused plan to refine your resume, prioritize applications, and target roles that align with your strongest skills.')) ?>
-                    </p>
-                    <ul class="dashboard-strategy-list">
-                        <?php foreach (array_slice((array) ($dashboardStrategy['priority_actions'] ?? []), 0, 3) as $item): ?>
-                            <li><?= esc($item) ?></li>
-                        <?php endforeach; ?>
-                        <?php if (empty($dashboardStrategy['priority_actions'])): ?>
-                            <li>Refine your resume around the skills that matter most.</li>
-                            <li>Focus on applications with the highest match potential.</li>
-                            <li>Set weekly priorities instead of applying broadly.</li>
-                        <?php endif; ?>
-                    </ul>
-                    <a href="<?= base_url('candidate/job-search-strategy') ?>" class="btn btn-primary dashboard-strategy-btn">
-                        Open Full Strategy 
-                    </a>
-                </div>
-                
-            </div>
-        </div>
-    </section>
-
-    <section class="dashboard-section pt-0">
-        <div class="container-fluid px-lg-5">
-            <?php if (empty($premiumSubscription ?? null)): ?>
-            <div class="dashboard-cta-banner">
-                <div class="dashboard-cta-banner-inner">
-                    <div class="dashboard-cta-copy">
-                        <h2 class="dashboard-cta-title">Unlock all AI career tools</h2>
-                        <div class="pro-ad-services">
-                            <div class="pro-ad-service">
-                                <div class="pro-ad-service-title"><i class="fas fa-map-signs"></i> Career Transition AI</div>
-                                <ul class="pro-ad-features">
-                                    <li>Personalized roadmap</li>
-                                    <li>Skill gap analysis</li>
-                                </ul>
-                            </div>
-                            <div class="pro-ad-service">
-                                <div class="pro-ad-service-title"><i class="fas fa-file-alt"></i> Resume Studio</div>
-                                <ul class="pro-ad-features">
-                                    <li>ATS-friendly resumes</li>
-                                    <li>Job-specific versions</li>
-                                </ul>
-                            </div>
-                            <div class="pro-ad-service">
-                                <div class="pro-ad-service-title"><i class="fas fa-robot"></i> AI Career Mentor</div>
-                                <ul class="pro-ad-features">
-                                    <li>Unlimited mentor chats</li>
-                                    <li>Interview preparation</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <a href="<?= base_url('premium/plans') ?>" class="btn btn-primary dashboard-cta-btn">
-                            View Plans 
-                        </a>
-                    </div>
-                    <div class="dashboard-cta-art d-none d-lg-flex" aria-hidden="true">
-                        <div class="dashboard-cta-orb">
-                            <i class="fas fa-crown"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <?php endif; ?>
         </div>
     </section>
 

@@ -215,13 +215,10 @@ body.dark .hm-candidate-chat-input:focus {
     border-color: var(--candidate-accent, var(--primary, #1FB7B5));
     box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.16);
 }
-<<<<<<< HEAD
-=======
  
 body.dark .hm-candidate-chat-bubble.user{
     background-color:#0D8A90 !important; 
 }
->>>>>>> 0718e82f168b322063a0d5c85be34be314e0d7fb
 body.dark .hm-candidate-chat-voice {
     background: #082124;
     border-color: rgba(31, 183, 181, 0.42);
@@ -231,14 +228,11 @@ body.dark .hm-candidate-chat-voice.is-listening,
 body.dark .hm-candidate-chat-voice.is-speaking {
     background: #ef4444;
     border-color: #ef4444;
-<<<<<<< HEAD
     color: #fff;
 }
 body.dark .hm-candidate-chat-bubble.user{
     background-color:#0D8A90 !important;
-=======
     color: #fff; 
->>>>>>> 0718e82f168b322063a0d5c85be34be314e0d7fb
 }
 @media (max-width: 480px) {
     .hm-candidate-chat-widget { right: 12px; left: 12px; width: auto; height: 70vh; bottom: 80px; }

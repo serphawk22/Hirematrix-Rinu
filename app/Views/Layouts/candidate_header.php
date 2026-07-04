@@ -77,6 +77,18 @@
         body.dark.candidate-app .loader .spinner-border {
             color: #1FB7B5 !important;
         }
+        body.candidate-app .cand-leftnav__user-dropdown a.is-active,
+        body.candidate-app .cand-topbar__user-dropdown a.is-active {
+            background: var(--candidate-nav-active, #E0F5F0) !important;
+            color: var(--candidate-nav-primary-dark, #0D8A90) !important;
+            font-weight: 800 !important;
+            box-shadow: inset 3px 0 0 var(--candidate-nav-primary, #1FB7B5) !important;
+        }
+        body.candidate-app .cand-leftnav__user-dropdown a.is-active i,
+        body.candidate-app .cand-topbar__user-dropdown a.is-active i {
+            background: rgba(31, 183, 181, 0.16) !important;
+            color: var(--candidate-nav-primary-dark, #0D8A90) !important;
+        }
  
     </style>
 </head>
@@ -152,6 +164,10 @@
     $isResumeStudioActive = $pathEndsWith('/candidate/resume-studio');
     $isJobStrategyActive = str_contains($currentPath, '/job-strategy');
     $isServicesActive = $isCareerTransitionActive || $isResumeStudioActive || $isJobStrategyActive ;
+    $isCandidateProfileActive = $pathEndsWith('/candidate/profile');
+    $isCandidateSettingsActive = $pathEndsWith('/candidate/settings');
+    $isPremiumPlansActive = str_contains($currentPath, '/premium/plans');
+    $isPaymentHistoryActive = str_contains($currentPath, '/payment/history');
     $activeCompanySegment = trim((string) service('request')->getGet('segment'));
     $companyNavSegments = [
         '' => ['label' => 'All Companies', 'icon' => 'fas fa-building'],
@@ -497,10 +513,10 @@
                             <span><?= esc($profileHeadline ?? 'Candidate') ?></span>
                         </span>
                     </div>
-                    <a href="<?= base_url('candidate/profile') ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
-                    <a href="<?= base_url('candidate/settings') ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
-                    <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
-                    <a href="<?= base_url('payment/history') ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
+                    <a href="<?= base_url('candidate/profile') ?>" class="<?= $isCandidateProfileActive ? 'is-active' : '' ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
+                    <a href="<?= base_url('candidate/settings') ?>" class="<?= $isCandidateSettingsActive ? 'is-active' : '' ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
+                    <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link <?= $isPremiumPlansActive ? 'is-active' : '' ?>"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
+                    <a href="<?= base_url('payment/history') ?>" class="<?= $isPaymentHistoryActive ? 'is-active' : '' ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
                     <a href="<?= base_url('logout') ?>" class="cand-leftnav__logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
                 </div>
                 <button type="button" class="cand-leftnav__user-btn" id="candidateLeftnavUserBtn" aria-haspopup="true" aria-expanded="false">
@@ -566,10 +582,10 @@
                             <span><?= esc($profileHeadline ?? 'Candidate') ?></span>
                         </span>
                     </div>
-                    <a href="<?= base_url('candidate/profile') ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
-                    <a href="<?= base_url('candidate/settings') ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
-                    <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
-                    <a href="<?= base_url('payment/history') ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
+                    <a href="<?= base_url('candidate/profile') ?>" class="<?= $isCandidateProfileActive ? 'is-active' : '' ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
+                    <a href="<?= base_url('candidate/settings') ?>" class="<?= $isCandidateSettingsActive ? 'is-active' : '' ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
+                    <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link <?= $isPremiumPlansActive ? 'is-active' : '' ?>"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
+                    <a href="<?= base_url('payment/history') ?>" class="<?= $isPaymentHistoryActive ? 'is-active' : '' ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
                     <a href="<?= base_url('logout') ?>" class="cand-leftnav__logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
                 </div>
             </div>

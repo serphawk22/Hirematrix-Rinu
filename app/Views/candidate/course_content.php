@@ -107,7 +107,7 @@ $lessonCount = count($lessons ?? []);
                                 <div class="course-lesson-detail" data-course-lesson-detail hidden>
                                     <div class="course-lesson-loading">
                                         <span class="spinner-border spinner-border-sm" role="status"></span>
-                                        Loading lesson content...
+                                        Preparing full lesson...
                                     </div>
                                 </div>
                             </div>
