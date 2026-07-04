@@ -38,7 +38,13 @@ div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer {
     flex-direction: column;
     gap: 0rem;
 } 
-
+.job-card-tools-wrapper {
+    position: absolute;
+    bottom: none !important;
+    right: 34px !important; /* Positioned side-by-side with the save button */
+    z-index: 100; /* Ensure wrapper is above card content */
+    display: block;
+}
  .job-card-saveing-btn{
      background: none;
     border: none !important;
@@ -359,7 +365,7 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
      data-job-id="<?= (int) $job['id'] ?>"
      <?= $isExternalJob ? 'data-external="1"' : '' ?>
      role="link"
-     tabindex="0">
+     tabindex="0" style="cursor:pointer;">
 
     <div class="job-card-body">
         <h3 class="job-card-title"><?= esc($title) ?></h3>
@@ -917,7 +923,7 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
          data-job-id="<?= (int) $job['id'] ?>"
          <?= $isExternalJob ? 'data-external="1"' : '' ?>
          role="link"
-         tabindex="0"> 
+         tabindex="0" style="cursor:pointer;"> 
         
         <div class="job-card-body">
             <h3 class="job-card-title"><?= esc($title) ?></h3>
