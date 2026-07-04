@@ -289,6 +289,46 @@
         ].join('');
     }
 
+    function showRecommendationEmpty(recType) {
+        var stage = document.querySelector('.jobs-page-jobboard .recommended-jobs-stage');
+        if (!stage) {
+            return;
+        }
+
+        var activeTab = document.querySelector('.jobs-page-jobboard .tab-pill[data-rec-type="' + recType + '"]');
+        var label = activeTab ? activeTab.textContent.replace(/\s+/g, ' ').replace(/\d+$/, '').trim() : 'this recommendation view';
+        label = label || 'this recommendation view';
+
+        stage.innerHTML = [
+            '<div class="recommended-job-pane" data-rec-pane="' + recType + '" data-rec-loaded="1">',
+            '  <div class="empty-state">',
+            '    <i class="fas fa-star"></i>',
+            '    <h5>No suitable jobs found</h5>',
+            '    <p>No matches are available in ' + label + ' right now.</p>',
+            '  </div>',
+            '</div>'
+        ].join('');
+    }
+
+    function ensureRecommendationResultState(recType) {
+        var stage = document.querySelector('.jobs-page-jobboard .recommended-jobs-stage');
+        if (!stage) {
+            return;
+        }
+
+        var activePane = stage.querySelector('[data-rec-pane="' + recType + '"]') || stage.querySelector('[data-rec-pane]');
+        if (!activePane) {
+            showRecommendationEmpty(recType);
+            return;
+        }
+
+        var hasCards = !!activePane.querySelector('.recommended-job-card');
+        var hasEmptyState = !!activePane.querySelector('.empty-state');
+        if (!hasCards && !hasEmptyState) {
+            showRecommendationEmpty(recType);
+        }
+    }
+
     function updateSaveButtonState(button, saved) {
         var icon = button.querySelector('.js-save-icon') || button.querySelector('i');
         var label = button.querySelector('.js-save-label');
@@ -425,9 +465,166 @@
             });
     });
 
+    function initCandidateSearchSuggestions() {
+        var suggestions = [
+            'PHP',
+            'PHP Developer',
+            'PHP Development',
+            'PHP And Web Developer',
+            'PHP Laravel',
+            'PHP Fresher',
+            'Laravel Developer',
+            'WordPress Developer',
+            'React Developer',
+            'Frontend Developer',
+            'JavaScript Developer',
+            'Full Stack Developer',
+            'Backend Developer',
+            'Node.js Developer',
+            'Python Developer',
+            'Java Developer',
+            'Data Analyst',
+            'Data Scientist',
+            'DevOps Engineer',
+            'UI UX Designer',
+            'Software Developer',
+            'Web Developer',
+            'MySQL',
+            'MongoDB',
+            'Remote Developer'
+        ];
+
+        var escapeHtml = function (value) {
+            return String(value).replace(/[&<>"']/g, function (char) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[char];
+            });
+        };
+
+        document.querySelectorAll('[data-job-search-suggest]').forEach(function (input) {
+            var wrapper = input.closest('.candidate-search-suggest-wrap');
+            var panel = wrapper ? wrapper.querySelector('[data-job-search-suggestions]') : null;
+            var form = input.closest('form');
+            var activeIndex = -1;
+
+            if (!wrapper || !panel || input.dataset.suggestionsReady === '1') {
+                return;
+            }
+            input.dataset.suggestionsReady = '1';
+
+            var closePanel = function () {
+                panel.classList.remove('is-open');
+                panel.innerHTML = '';
+                input.setAttribute('aria-expanded', 'false');
+                activeIndex = -1;
+            };
+
+            var selectSuggestion = function (value) {
+                input.value = value;
+                closePanel();
+                if (form) {
+                    form.submit();
+                }
+            };
+
+            var setActiveSuggestion = function (nextIndex) {
+                var items = panel.querySelectorAll('.candidate-search-suggestion');
+                if (!items.length) {
+                    activeIndex = -1;
+                    return;
+                }
+                activeIndex = (nextIndex + items.length) % items.length;
+                items.forEach(function (item, index) {
+                    item.classList.toggle('is-active', index === activeIndex);
+                });
+            };
+
+            var renderSuggestions = function () {
+                var query = input.value.trim().toLowerCase();
+                if (!query) {
+                    closePanel();
+                    return;
+                }
+
+                var matches = suggestions
+                    .filter(function (item) {
+                        return item.toLowerCase().indexOf(query) !== -1;
+                    })
+                    .sort(function (a, b) {
+                        var aText = a.toLowerCase();
+                        var bText = b.toLowerCase();
+                        var aStarts = aText.indexOf(query) === 0 ? 0 : 1;
+                        var bStarts = bText.indexOf(query) === 0 ? 0 : 1;
+                        return aStarts - bStarts || a.length - b.length || a.localeCompare(b);
+                    })
+                    .slice(0, 6);
+
+                if (!matches.length) {
+                    closePanel();
+                    return;
+                }
+
+                panel.innerHTML = matches.map(function (item) {
+                    return '<div class="candidate-search-suggestion" role="option" tabindex="-1" data-search-value="' + escapeHtml(item) + '">' + escapeHtml(item) + '</div>';
+                }).join('');
+                panel.classList.add('is-open');
+                input.setAttribute('aria-expanded', 'true');
+                activeIndex = -1;
+            };
+
+            input.addEventListener('input', renderSuggestions);
+            input.addEventListener('focus', renderSuggestions);
+            input.addEventListener('keydown', function (event) {
+                var items = panel.querySelectorAll('.candidate-search-suggestion');
+                if (event.key === 'Escape') {
+                    closePanel();
+                    return;
+                }
+                if (!panel.classList.contains('is-open') || !items.length) {
+                    return;
+                }
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    setActiveSuggestion(activeIndex + 1);
+                    return;
+                }
+                if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    setActiveSuggestion(activeIndex - 1);
+                    return;
+                }
+                if (event.key === 'Enter' && activeIndex >= 0 && items[activeIndex]) {
+                    event.preventDefault();
+                    selectSuggestion(items[activeIndex].dataset.searchValue || items[activeIndex].textContent.trim());
+                }
+            });
+
+            panel.addEventListener('mousedown', function (event) {
+                var item = event.target.closest('.candidate-search-suggestion');
+                if (!item) {
+                    return;
+                }
+                event.preventDefault();
+                selectSuggestion(item.dataset.searchValue || item.textContent.trim());
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!wrapper.contains(event.target)) {
+                    closePanel();
+                }
+            });
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         initCandidateThemeSettings();
         initJobsFilterSelects(document);
+        initCandidateSearchSuggestions();
     });
 
     window.dismissAllSuggestions = function () {
@@ -1148,15 +1345,18 @@
         if (tab === 'recommended') {
             url.searchParams.set('tab', 'recommended');
             url.searchParams.set('rec', recType || 'skills');
+            showRecommendationLoading(recType);
             setJobsLoadingState(true);
             fetchHtml(url.toString())
                 .then(function (html) {
                     if (!replaceJobsMainFromHtml(html, url.toString())) {
                         window.location.href = url.toString();
+                        return;
                     }
+                    ensureRecommendationResultState(recType);
                 })
                 .catch(function () {
-                    window.location.href = url.toString();
+                    showRecommendationEmpty(recType);
                 })
                 .finally(function () {
                     setJobsLoadingState(false);
@@ -1170,10 +1370,12 @@
             .then(function (html) {
                 if (!replaceJobsMainFromHtml(html, url.toString())) {
                     window.location.href = url.toString();
+                    return;
                 }
+                ensureRecommendationResultState(recType);
             })
             .catch(function () {
-                window.location.href = url.toString();
+                showRecommendationEmpty(recType);
             })
             .finally(function () {
                 setJobsLoadingState(false);
@@ -1206,10 +1408,12 @@
             .then(function (html) {
                 if (!replaceJobsMainFromHtml(html, url.toString())) {
                     window.location.href = url.toString();
+                    return;
                 }
+                ensureRecommendationResultState(recType);
             })
             .catch(function () {
-                window.location.href = url.toString();
+                showRecommendationEmpty(recType);
             })
             .finally(function () {
                 setJobsLoadingState(false);

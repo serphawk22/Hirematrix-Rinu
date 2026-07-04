@@ -50,6 +50,33 @@ div.jobs-page-jobboard .recommended-job-pane .row.g-4 > [class*="col-"] {
     padding-right: calc(var(--bs-gutter-x) / 2) !important;
     margin-bottom: 16px !important; /* was 24px, and no longer stacked with g-4's own gutter-y */
 }
+.candidate-app .jobs-page-jobboard .recommended-tab-loading {
+    align-items: center !important;
+    background: var(--candidate-surface, #fff) !important;
+    border: 1px solid var(--candidate-line, #d7e5f2) !important;
+    border-radius: 8px !important;
+    color: var(--candidate-muted, #64748b) !important;
+    display: flex !important;
+    gap: 10px !important;
+    justify-content: center !important;
+    min-height: 180px !important;
+    padding: 28px !important;
+    width: 100% !important;
+}
+.candidate-app .jobs-page-jobboard .recommended-tab-spinner {
+    animation: recommendedTabSpin .75s linear infinite !important;
+    border: 2px solid rgba(31, 183, 181, .2) !important;
+    border-radius: 999px !important;
+    border-top-color: var(--primary, #1FB7B5) !important;
+    flex: 0 0 20px !important;
+    height: 20px !important;
+    width: 20px !important;
+}
+@keyframes recommendedTabSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 </style>
 <?php
 $allJobsAreExternal = $allJobsAreExternal ?? false;
