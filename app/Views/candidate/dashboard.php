@@ -700,7 +700,26 @@ window.addEventListener('load', function(){
 <?php endif; ?>
 <!-- ═══════════════ END PRO FEATURE PROMO ═══════════════ -->
 
-    <section class="dashboard-section pt-0">
+   <section class="dashboard-section pt-0">
+    <style>
+        .job-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .job-card-heading {
+            flex: 1;
+            min-width: 0;
+        }
+        .job-card-icon {
+            flex-shrink: 0;
+        }
+        .row.g-4 > [class*="col-"] {
+            margin-bottom: 24px;
+        }
+    </style>
+
         <div class="container-fluid px-lg-5">
             <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
                 <div>
@@ -710,7 +729,7 @@ window.addEventListener('load', function(){
                 <a href="<?= base_url('jobs?tab=suggested') ?>" class="btn btn-primary">View all jobs</a>
             </div>
 
-            <div class="dashboard-jobs-grid">
+            <div class="row g-4">
     <?php if (!empty($topSuggestedJobs)): ?>
         <?php foreach (array_slice($topSuggestedJobs, 0, 4) as $job): ?>
             <?php
@@ -768,7 +787,8 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
                 $locationDisplay = mb_substr($locationDisplay, 0, 24) . '…';
             }
             ?>
-            <div class="job-card dashboard-card">
+            <div class="col-md-6">
+            <div class="job-card dashboard-card h-100">
                 <a href="<?= base_url('job/' . $jobId) ?>" class="job-card-link" style="text-decoration:none;color:inherit;display:block;">
                     <div class="job-card-top">
                         <div class="job-card-heading">
@@ -816,6 +836,7 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
                         </div>
                     <?php endif; ?>
                 </a>
+                
  <div class="job-card-footer">
                     <span class="job-card-posted"><?= esc($postedAgo) ?></span>
                 <button
@@ -833,6 +854,7 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
                     </button>
                 </div>
 
+            </div>
             </div>
         <?php endforeach; ?>
     <?php else: ?>

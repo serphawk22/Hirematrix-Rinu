@@ -1,210 +1,55 @@
         <?= view('Layouts/candidate_header', ['title' => 'Find Jobs']) ?>
 <style> 
-/* ============================================
-   SHARED CARD LAYOUT — tight spacing, logo pinned
-   top-right near title, footer: viewed left / tools+save right
-   ============================================ */
-.candidate-app .jobs-page-jobboard .job-card .viewed-action-mark {
-    display: inline-flex !important;
-    align-items: left !important;
-    justify-content: flex-start !important;
-    text-align: left !important;
-    gap: 5px !important;
-}
-.candidate-app .jobs-page-jobboard .recommended-job-grid {
+body.dark .div.job-card.js-clickable-card ,body.dark.candidate-app .jobs-page-jobboard .job-card{
+    background-color:var(--card) !important;
+    border:1px solid #23343A !important;
+ }
+ .candidate-app .job-card-footer,
+div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer {
     display: flex !important;
-    flex-direction: column !important;
-    gap: 10px !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-top: 8px !important;
+    padding-top: 8px !important;
+    border-top: none !important;
+} 
+.candidate-app .job-card-posted {
+    font-size: 12.5px !important;
+    color: var(--muted-foreground, #8a94a0) !important;
 }
-.candidate-app .jobs-page-jobboard #tab-all .row.g-4 {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 10px !important;
-    margin: 0 !important;
-}
-.candidate-app .jobs-page-jobboard #tab-all .col-12 {
-    padding: 0 !important;
+ .candidate-app .job-card-company{
+        font-size: 0.94rem !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+ }
+.candidate-app .jobs-page-jobboard .recommended-job-card, .candidate-app .jobs-page-jobboard .job-card { 
+    gap: 2px !important;
+    height: 100% !important;
+    min-height: 0 !important;
     width: 100% !important;
-}
-
-/* Card shell — plain block, not row-reverse anymore.
-   Logo is absolutely positioned top-right instead of taking flex space. */
-.candidate-app .jobs-page-jobboard .recommended-job-card,
-.candidate-app .jobs-page-jobboard #tab-all .job-card {
-    display: block !important;
     position: relative !important;
-    background: #fff !important;
-    border: 1px solid #e8edf3 !important;
-    border-radius: var(--candidate-card-radius) !important;
-    box-shadow: none !important;
-    padding: 12px 16px 36px 16px !important;
-    margin: 0 !important;
-    width: 100% !important;
-    text-align: left !important;
     transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease !important;
 }
-.candidate-app .jobs-page-jobboard .recommended-job-card:hover,
-.candidate-app .jobs-page-jobboard #tab-all .job-card:hover {
-    border-color: rgba(47, 111, 221, 0.32) !important;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08) !important;
-    transform: translateY(-2px) !important;
+.jobs-page-jobboard .job-card-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0rem;
 }
-body.dark .candidate-app .jobs-page-jobboard .recommended-job-card,
-body.dark .candidate-app .jobs-page-jobboard #tab-all .job-card {
-    background: var(--card) !important;
+div.jobs-page-jobboard .recommended-job-pane .row.g-4 {
+    --bs-gutter-x: 16px !important;
+    --bs-gutter-y: 16px !important;
+    margin-left: calc(-1 * var(--bs-gutter-x) / 2) !important;
+    margin-right: calc(-1 * var(--bs-gutter-x) / 2) !important;
+    padding-top: 4px !important; /* gives translateY(-2px) room to breathe */
 }
-
-/* Logo — small, pinned top-right, level with title/company */
-.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-icon,
-.candidate-app .jobs-page-jobboard #tab-all .job-card .job-card-icon {
-    position: absolute !important;
-    top: 12px !important;
-    right: 14px !important;
-    width: 30px !important;
-    height: 30px !important;
-    flex: none !important;
-    margin: 0 !important;
-    border-radius: 50% !important;
-    overflow: hidden !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+div.jobs-page-jobboard .recommended-job-pane .row.g-4 > [class*="col-"] {
+    padding-left: calc(var(--bs-gutter-x) / 2) !important;
+    padding-right: calc(var(--bs-gutter-x) / 2) !important;
+    margin-bottom: 16px !important; /* was 24px, and no longer stacked with g-4's own gutter-y */
 }
-.candidate-app .jobs-page-jobboard .job-card-icon img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-}
-
-/* Body — no flex gap, everything hugs together, right padding clears the logo */
-.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-body,
-.candidate-app .jobs-page-jobboard #tab-all .job-card .job-card-body {
-    display: block !important;
-    width: 100% !important;
-    max-width: none !important;
-    padding-right: 40px !important;
-    padding-bottom: 28px !important; /* room for absolutely positioned footer */
-    text-align: left !important;
-}
-
-.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-title,
-.candidate-app .jobs-page-jobboard #tab-all .job-card .job-card-title {
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    line-height: 1.25 !important;
-    margin: 0 !important;
-    text-align: left !important;
-    width: 100% !important;
-}
-
-.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-company,
-.candidate-app .jobs-page-jobboard #tab-all .job-card .job-card-company {
-    font-size: 13px !important;
-    line-height: 1.15 !important;
-    margin: 1px 0 0 !important;
-    text-align: left !important;
-    width: 100% !important;
-    opacity: 0.75 !important;
-}
-
-/* Meta row: location + posted date, tight under company name */
-.candidate-app .jobs-page-jobboard .job-card .job-card-meta {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    text-align: left !important;
-    gap: 14px !important;
-    width: 100% !important;
-    margin: 4px 0 0 !important;
-    font-size: 12.5px !important;
-    line-height: 1.15 !important;
-    overflow-x: auto !important;
-}
-.candidate-app .jobs-page-jobboard .job-card .job-card-meta span {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 5px !important;
-    flex: 0 0 auto !important;
-    white-space: nowrap !important;
-    margin: 0 !important;
-    line-height: 1 !important;
-}
-
-/* Tags row */
-.candidate-app .jobs-page-jobboard .job-card .job-card-tags {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    justify-content: flex-start !important;
-    gap: 6px !important;
-    width: 100% !important;
-    margin: 4px 0 0 !important;
-}
-.candidate-app .jobs-page-jobboard .job-card .job-card-tags .badge {
-    padding: 3px 8px !important;
-    font-size: 11.5px !important;
-    line-height: 1.2 !important;
-}
-
-/* Description line (tab-all only) */
-.candidate-app .jobs-page-jobboard #tab-all .job-card .job-card-desc,
-.candidate-app .jobs-page-jobboard .job-card .small.text-muted {
-    font-size: 12.5px !important;
-    line-height: 1.25 !important;
-    margin: 4px 0 0 !important;
-    color: #1FB7B5 !important;
-    text-align: left !important;
-    width: 100% !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-}
-
-/* Progress bar row (recommended cards) */
-.candidate-app .jobs-page-jobboard .recommended-job-card .progress-container {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-    width: 100% !important;
-    max-width: 320px !important;
-    margin: 4px 0 0 !important;
-}
-
-/* ============================================
-   FOOTER ROW — viewed pill bottom-left,
-   3-dot tools + save bottom-right
-   ============================================ */
-
-/* Viewed / Not viewed pill — bottom-left */
-.candidate-app .jobs-page-jobboard .job-card .view-details {
-    display: inline-flex !important;
-    position: absolute !important;
-    left: 16px !important;
-    bottom: 10px !important;
-    margin: 0 !important;
-}
-
-/* 3-dot tools menu — bottom-right, left of save */
-.candidate-app .jobs-page-jobboard .job-card .job-card-tools-wrapper {
-    position: absolute !important;
-    right: 52px !important;
-    bottom: 8px !important;
-    top: auto !important;
-    margin: 0 !important;
-}
-
-/* Save/bookmark button — bottom-right corner */
-.candidate-app .jobs-page-jobboard .job-card .job-card-save {
-    position: absolute !important;
-    right: 14px !important;
-    bottom: 8px !important;
-    top: auto !important;
-    margin: 0 !important;
-}
-body.dark .job-card.recommended-job-card.js-clickable-card {
-    background-color:var(--card) !important;
- }
 </style>
 <?php
 $allJobsAreExternal = $allJobsAreExternal ?? false;
@@ -428,48 +273,47 @@ $renderRecommendedPane = static function (
     ?>
     <div class="recommended-job-pane <?= $isActivePane ? '' : 'd-none' ?>" data-rec-pane="<?= esc($recType) ?>" data-rec-label="<?= esc($tabLabel) ?>" data-rec-loaded="<?= $isLoadedPane ? '1' : '0' ?>">
         <?php if (!empty($jobs)): ?>
-            <div class="recommended-job-grid mb-4">
-            <?php foreach ($jobs as $job): ?>
-                <?php
-                    $score = (float) ($job['match_score'] ?? 0);
-                    $stripBadChars = static function (string $text): string {
+    <div class="row g-4 mb-4 alljobs-scope">
+    <?php foreach ($jobs as $job): ?>
+        <?php
+               $stripBadChars = static function (string $text): string {
     // Collapse runs of 2+ literal '?' (typical artifact of lost emoji/unicode chars)
     $text = preg_replace('/\?{2,}\s*/u', '', $text);
     return trim($text);
 };
-             
+     
 $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role')); 
                     $company = (string) ($job['company'] ?? 'Company');
-                    $location = (string) ($job['location'] ?? 'N/A');
+                    $location =  $stripBadChars((string) ($job['location'] ?? 'N/A'));
                     $postedMeta = $formatPostedMeta($job['created_at'] ?? null);
                     $isSaved = in_array((int) ($job['id'] ?? 0), $savedJobIds, true);
                     $appliedStatus = $appliedJobMap[(int) ($job['id'] ?? 0)] ?? null;
                     $type = strtolower((string) ($job['employment_type'] ?? ''));
                     $typeBadge = str_contains($type, 'part') ? 'badge-secondary' : 'badge-primary';
-                    $matchPct = max(10, min(100, (int) round($score)));
                     $companyInitial = strtoupper(substr($company, 0, 1) ?: 'C');
                     $companyLogo = trim((string) ($job['company_logo'] ?? ''));
-                    $matchLabel = $matchPct . '% match';
+                    $score = (int) round((float) ($job['match_score'] ?? 0));
+                    $matchPct = max(10, min(100, (int) round($score)));
+                    $matchLabel = $score > 0 ? max(10, min(100, $score)) . '% match' : 'Open role';
                     $isExternalJob = (int) ($job['is_external'] ?? 0) === 1;
                     $externalSource = trim((string) ($job['external_source'] ?? ''));
                     $isVisited = (int)($job['visited_flag'] ?? 0) === 1;
                     $requiredSkillBadges = $pickRequiredSkillBadges($job);
                     $showRemoteBadge = $isRemoteJob($job);
                 ?>
-                
-           <?php
+            <div class="col-md-6">
+<?php
     $jobLink = $isExternalJob && !empty($job['external_apply_url'])
         ? esc($job['external_apply_url'])
         : base_url('job/' . $job['id']);
 ?>
-<article class="job-card recommended-job-card js-clickable-card <?= $appliedStatus !== null ? 'is-applied' : '' ?>"
-          data-href="<?= $jobLink ?>"
-          data-job-id="<?= (int) $job['id'] ?>"
-          <?= $isExternalJob ? 'data-external="1"' : '' ?>
-          role="link"
-          tabindex="0" style="cursor:pointer;">
-
-    <div class="job-card-icon">
+<div class="job-card js-clickable-card <?= $appliedStatus !== null ? 'is-applied' : '' ?>"
+     data-href="<?= $jobLink ?>"
+     data-job-id="<?= (int) $job['id'] ?>"
+     <?= $isExternalJob ? 'data-external="1"' : '' ?>
+     role="link"
+     tabindex="0">
+<div class="job-card-icon">
         <?php
             $displayLogo = "";
             $useFavicon = false;
@@ -509,7 +353,7 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
             <?php endif; ?>
         </div>
         <?php if (!empty($job['match_reason'])): ?>
-            <div class="small text-muted mb-2"><?= esc($job['match_reason']) ?></div>
+            <div class="small mb-2"><?= esc($job['match_reason']) ?></div>
         <?php endif; ?>
 
         <div class="progress-container">
@@ -518,27 +362,12 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
             </div>
             <span class="progress-label"><?= $matchPct ?>% ATS match</span>
         </div>
-        <div class="job-card-tools-wrapper">
-            <button type="button" class="btn btn-sm btn-outline-secondary job-card-tools-toggle" title="Tools" onclick="event.stopPropagation();">
-                <i class="fas fa-ellipsis-v"></i>
-            </button>
-             <div class="job-card-tools-dropdown">
-                                <?php if ($primaryResumeId > 0 || ($hasBaseResume ?? false)): ?>
-                                    <button type="button" class="job-card-tools-item js-analyze-ats" data-job-id="<?= (int) $job['id'] ?>" data-resume-id="<?= $primaryResumeId ?>">
-                                        Analyze ATS Match
-                                    </button>
-                                <?php endif; ?>
-                            <button type="button" class="job-card-tools-item" onclick="event.stopPropagation(); generateCoverLetter(<?= (int) $job['id'] ?>)">
-                                AI Cover Letter
-                            </button>
-                            <button type="button" class="job-card-tools-item" onclick="event.stopPropagation(); shareJob(<?= (int) $job['id'] ?>)">
-                                Share Job
-                            </button>
-                            </div>
-        </div>
-       <a href="<?= $isExternalJob && !empty($job['external_apply_url']) 
-        ? esc($job['external_apply_url']) 
-        : base_url('job/' . $job['id']) ?>" 
+         <div class="job-card-footer mt-auto">
+                                    <span class="job-card-posted"> 
+                                            <span class="saved-job-visited-note">
+                                               <a href="<?= $isExternalJob && !empty($job['external_apply_url']) 
+    ? esc($job['external_apply_url']) 
+    : base_url('job/' . $job['id']) ?>" 
    class="view-details js-mark-visited <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>"
    data-job-id="<?= (int) $job['id'] ?>"
    <?= $isExternalJob ? 'target="_blank"' : '' ?> style="text-decoration:none;">
@@ -548,23 +377,52 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
 </span>
    <span> </span>
 </a>
+                                            </span> 
+                                    </span>
+
+                                   <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary py-0 px-2 job-card-save js-save-job-toggle <?= $isSaved ? 'is-saved' : '' ?>"
+                    aria-label="<?= $isSaved ? 'Saved job' : 'Save job' ?>"
+                    title="<?= $isSaved ? 'Saved' : 'Save Job' ?>"
+                    data-save-url="<?= base_url($isSaved ? 'job/unsave/' . $job['id'] : 'job/save/' . $job['id']) ?>"
+                    data-job-id="<?= (int) $job['id'] ?>"
+                    data-saved="<?= $isSaved ? '1' : '0' ?>"
+                    data-save-label-save="Save Job"
+                    data-save-label-saved="Saved"
+                >
+                    <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark"></i>
+                </button>
+<div class="job-card-tools-wrapper">
+            <button type="button" class="btn btn-sm btn-outline-secondary job-card-tools-toggle" title="Tools" onclick="event.stopPropagation();">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+             <div class="job-card-tools-dropdown">
+                            <?php if ($primaryResumeId > 0 || ($hasBaseResume ?? false)): ?>
+                                <button type="button" class="job-card-tools-item js-analyze-ats" data-job-id="<?= (int) $job['id'] ?>" data-resume-id="<?= $primaryResumeId ?>">
+                                    Analyze ATS Match
+                                </button>
+                            <?php endif; ?>
+                        <button type="button" class="job-card-tools-item" onclick="event.stopPropagation(); generateCoverLetter(<?= (int) $job['id'] ?>)">
+                            AI Cover Letter
+                        </button>
+                        <button type="button" class="job-card-tools-item" onclick="event.stopPropagation(); shareJob(<?= (int) $job['id'] ?>)">
+                            Share Job
+                        </button>
+                        </div>
+                         
+        </div>
+                                </div>
+        
+
     </div>
-    <button
-                        type="button"
-                        class="btn btn-sm btn-outline-secondary py-0 px-2 job-card-save js-save-job-toggle <?= $isSaved ? 'is-saved' : '' ?>"
-                        aria-label="<?= $isSaved ? 'Saved job' : 'Save job' ?>"
-                        title="<?= $isSaved ? 'Saved' : 'Save Job' ?>"
-                        data-save-url="<?= base_url($isSaved ? 'job/unsave/' . $job['id'] : 'job/save/' . $job['id']) ?>"
-                        data-job-id="<?= (int) $job['id'] ?>"
-                        data-saved="<?= $isSaved ? '1' : '0' ?>"
-                        data-save-label-save="Save Job"
-                        data-save-label-saved="Saved"
-                    >
-                        <i class="<?= $isSaved ? 'fas' : 'far' ?> fa-bookmark"></i>
-                    </button>
-</article>
-            <?php endforeach; ?>
-            </div>
+    
+                
+    
+</div>
+</div>
+                <?php endforeach; ?>
+                </div>
         <?php else: ?>
             <div class="empty-state">
                 <i class="fas fa-star"></i>
@@ -675,163 +533,159 @@ $activeFilterCount = count($activeFilterChips);
     <div class="jobs-layout <?= $showFilters ? '' : 'jobs-layout-no-sidebar' ?>">
 
         <?php if ($showFilters): ?>
-            <div class="sidebar">
-                <div class="sidebar-head">
-                    <h5><i class="fas fa-sliders-h"></i> Filters</h5>
-                    <?php
-                    $clearUrl = !empty($filters['company'])
-                        ? base_url('jobs?company=' . urlencode($filters['company']))
-                        : base_url('jobs?tab=all');
-                    ?>
-                    <?php if ($activeFilterCount > 0): ?>
-                    <a href="<?= esc($clearUrl) ?>" class="clear-link" data-jobs-filter-link="1">Clear all</a>
-                    <?php endif; ?>
-                </div>
+          <div class="sidebar">
+    <div class="sidebar-head">
+        <h5><i class="fas fa-sliders-h"></i> Filters</h5>
+        <?php
+        $clearUrl = !empty($filters['company'])
+            ? base_url('jobs?company=' . urlencode($filters['company']))
+            : base_url('jobs?tab=all');
+        ?>
+        <?php if ($activeFilterCount > 0): ?>
+        <a href="<?= esc($clearUrl) ?>" class="clear-link" data-jobs-filter-link="1">Clear all</a>
+        <?php endif; ?>
+    </div>
 
-            <?php if (!$allJobsAreExternal): ?>
-            <?php
-            $meaningfulCategories = array_values(array_filter(
-                array_unique(array_column($categories, 'category')),
-                static fn($v) => strtolower(trim($v)) !== 'external' && trim($v) !== ''
-            ));
-            ?>
-            <?php if (count($meaningfulCategories) > 1): ?>
-            <div class="filter-section">
-                <span class="filter-label">Category</span>
-                <select name="category" onchange="submitFilters()">
-                    <option value="">All Categories</option>
-                    <?php foreach ($meaningfulCategories as $cat): ?>
-                        <option value="<?= esc($cat) ?>" <?= ($filters['category'] ?? '') === $cat ? 'selected' : '' ?>>
-                            <?= esc($cat) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <?php endif; ?>
-            <?php endif; ?>
+    <?php
+    $meaningfulCategories = array_values(array_filter(
+        array_unique(array_column($categories, 'category')),
+        static fn($v) => strtolower(trim($v)) !== 'external' && trim($v) !== ''
+    ));
+    ?>
+    <?php if (!empty($meaningfulCategories)): ?>
+    <div class="filter-section">
+        <span class="filter-label">Category</span>
+        <select name="category" onchange="submitFilters()">
+            <option value="">All Categories</option>
+            <?php foreach ($meaningfulCategories as $cat): ?>
+                <option value="<?= esc($cat) ?>" <?= ($filters['category'] ?? '') === $cat ? 'selected' : '' ?>>
+                    <?= esc($cat) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <?php endif; ?>
 
-            <?php
-            $uniqueLocations = array_values(array_unique(array_column($locations, 'location')));
-            ?>
-            <?php if (count($uniqueLocations) > 1): ?>
-            <div class="filter-section">
-                <span class="filter-label">Location</span>
-                <select name="location" onchange="submitFilters()">
-                    <option value="">All Locations</option>
-                    <?php foreach ($uniqueLocations as $loc): ?>
-                        <option value="<?= esc($loc) ?>" <?= ($filters['location'] ?? '') === $loc ? 'selected' : '' ?>>
-                            <?= esc($loc) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <?php endif; ?>
+    <?php
+    $uniqueLocations = array_values(array_unique(array_column($locations, 'location')));
+    ?>
+    <?php if (!empty($uniqueLocations)): ?>
+    <div class="filter-section">
+        <span class="filter-label">Location</span>
+        <select name="location" onchange="submitFilters()">
+            <option value="">All Locations</option>
+            <?php foreach ($uniqueLocations as $loc): ?>
+                <option value="<?= esc($loc) ?>" <?= ($filters['location'] ?? '') === $loc ? 'selected' : '' ?>>
+                    <?= esc($loc) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <?php endif; ?>
 
-            <?php if (!$allJobsAreExternal): ?>
-            <?php
-            $jobWorkModes = array_filter(array_unique(array_map(static function ($j) {
-                return strtolower(trim((string) ($j['work_mode'] ?? '')));
-            }, $jobs)));
-            $availableWorkModes = array_filter($workModes, static function ($label, $val) use ($jobWorkModes) {
-                return $val === '' || in_array(strtolower($val), $jobWorkModes, true);
-            }, ARRAY_FILTER_USE_BOTH);
-            ?>
-            <?php if (count($availableWorkModes) > 1): ?>
-            <div class="filter-section">
-                <span class="filter-label">Work Mode</span>
-                <select name="work_mode" onchange="submitFilters()">
-                    <?php foreach ($availableWorkModes as $modeValue => $modeLabel): ?>
-                        <option value="<?= esc($modeValue) ?>" <?= ($filters['work_mode'] ?? '') === $modeValue ? 'selected' : '' ?>>
-                            <?= esc($modeLabel) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <?php endif; ?>
+    <?php
+    $jobWorkModes = array_filter(array_unique(array_map(static function ($j) {
+        return strtolower(trim((string) ($j['work_mode'] ?? '')));
+    }, $jobs)));
+    $availableWorkModes = array_filter($workModes, static function ($label, $val) use ($jobWorkModes) {
+        return $val === '' || in_array(strtolower($val), $jobWorkModes, true);
+    }, ARRAY_FILTER_USE_BOTH);
+    ?>
+    <?php if (!empty($availableWorkModes)): ?>
+    <div class="filter-section">
+        <span class="filter-label">Work Mode</span>
+        <select name="work_mode" onchange="submitFilters()">
+            <?php foreach ($availableWorkModes as $modeValue => $modeLabel): ?>
+                <option value="<?= esc($modeValue) ?>" <?= ($filters['work_mode'] ?? '') === $modeValue ? 'selected' : '' ?>>
+                    <?= esc($modeLabel) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <?php endif; ?>
 
-            <?php
-            $jobSalaries = array_filter(array_unique(array_map(static function ($j) {
-                return trim((string) ($j['salary_range'] ?? ''));
-            }, $jobs)));
-            $hasSalaryData = !empty($jobSalaries);
-            ?>
-            <?php if ($hasSalaryData): ?>
-            <div class="filter-section">
-                <span class="filter-label">Salary Range</span>
-                <select name="salary_range" onchange="submitFilters()">
-                    <?php foreach ($salaryRanges as $rangeValue => $rangeLabel): ?>
-                        <option value="<?= esc($rangeValue) ?>" <?= ($filters['salary_range'] ?? '') === $rangeValue ? 'selected' : '' ?>>
-                            <?= esc($rangeLabel) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <?php endif; ?>
+    <?php
+    $jobSalaries = array_filter(array_unique(array_map(static function ($j) {
+        return trim((string) ($j['salary_range'] ?? ''));
+    }, $jobs)));
+    $hasSalaryData = !empty($jobSalaries);
+    ?>
+    <?php if ($hasSalaryData): ?>
+    <div class="filter-section">
+        <span class="filter-label">Salary Range</span>
+        <select name="salary_range" onchange="submitFilters()">
+            <?php foreach ($salaryRanges as $rangeValue => $rangeLabel): ?>
+                <option value="<?= esc($rangeValue) ?>" <?= ($filters['salary_range'] ?? '') === $rangeValue ? 'selected' : '' ?>>
+                    <?= esc($rangeLabel) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <?php endif; ?>
 
-            <?php
-            $uniqueEmploymentTypes = array_values(array_filter(
-                array_unique(array_map(static fn($row) => trim((string) ($row['employment_type'] ?? '')), $employmentTypes)),
-                static fn($type) => $type !== ''
-            ));
-            ?>
-            <?php if (count($uniqueEmploymentTypes) > 1): ?>
-            <div class="filter-section">
-                <span class="filter-label">Job Type</span>
-                <?php foreach ($uniqueEmploymentTypes as $type): ?>
-                    <label class="check-item">
-                        <input type="checkbox" name="employment_type[]" value="<?= esc($type) ?>"
-                               <?= in_array($type, (array) ($filters['employment_type'] ?? []), true) ? 'checked' : '' ?>
-                               onchange="submitFilters()">
-                        <span class="check-box"></span>
-                        <span class="check-text"><?= esc($type) ?></span>
-                    </label>
-                <?php endforeach; ?>
-            </div>
-            <?php endif; ?>
+    <?php
+    $uniqueEmploymentTypes = array_values(array_filter(
+        array_unique(array_map(static fn($row) => trim((string) ($row['employment_type'] ?? '')), $employmentTypes)),
+        static fn($type) => $type !== ''
+    ));
+    ?>
+    <?php if (!empty($uniqueEmploymentTypes)): ?>
+    <div class="filter-section">
+        <span class="filter-label">Job Type</span>
+        <?php foreach ($uniqueEmploymentTypes as $type): ?>
+            <label class="check-item">
+                <input type="checkbox" name="employment_type[]" value="<?= esc($type) ?>"
+                       <?= in_array($type, (array) ($filters['employment_type'] ?? []), true) ? 'checked' : '' ?>
+                       onchange="submitFilters()">
+                <span class="check-box"></span>
+                <span class="check-text"><?= esc($type) ?></span>
+            </label>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
 
-            <?php
-            $uselessExp = ['not specified', 'not_specified', ''];
-            $meaningfulExp = array_values(array_filter(
-                array_unique(array_column($experienceLevels, 'experience_level')),
-                static fn($v) => !in_array(strtolower(trim($v)), $uselessExp, true)
-            ));
-            ?>
-            <?php if (!empty($meaningfulExp)): ?>
-            <div class="filter-section">
-                <span class="filter-label">Experience</span>
-                <?php foreach ($meaningfulExp as $exp): ?>
-                    <label class="check-item">
-                        <input type="checkbox" name="experience_level[]" value="<?= esc($exp) ?>"
-                               <?= in_array($exp, (array) ($filters['experience_level'] ?? []), true) ? 'checked' : '' ?>
-                               onchange="submitFilters()">
-                        <span class="check-box"></span>
-                        <span class="check-text"><?= esc($exp) ?></span>
-                    </label>
-                <?php endforeach; ?>
-            </div>
-            <?php endif; ?>
+    <?php
+    $uselessExp = ['not specified', 'not_specified', ''];
+    $meaningfulExp = array_values(array_filter(
+        array_unique(array_column($experienceLevels, 'experience_level')),
+        static fn($v) => !in_array(strtolower(trim($v)), $uselessExp, true)
+    ));
+    ?>
+    <?php if (!empty($meaningfulExp)): ?>
+    <div class="filter-section">
+        <span class="filter-label">Experience</span>
+        <?php foreach ($meaningfulExp as $exp): ?>
+            <label class="check-item">
+                <input type="checkbox" name="experience_level[]" value="<?= esc($exp) ?>"
+                       <?= in_array($exp, (array) ($filters['experience_level'] ?? []), true) ? 'checked' : '' ?>
+                       onchange="submitFilters()">
+                <span class="check-box"></span>
+                <span class="check-text"><?= esc($exp) ?></span>
+            </label>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
 
-            <?php
-            $hasDateData = !empty(array_filter(array_map(static function ($j) {
-                return trim((string) ($j['created_at'] ?? ''));
-            }, $jobs)));
-            ?>
-            <?php if ($hasDateData): ?>
-            <div class="filter-section">
-                <span class="filter-label">Posted Within</span>
-                <?php foreach (['' => 'Any time', '1' => 'Today', '3' => 'Last 3 days', '7' => 'Last week', '14' => 'Last 2 weeks'] as $val => $label): ?>
-                    <label class="check-item">
-                        <input type="radio" name="posted_within" value="<?= $val ?>"
-                               <?= ($filters['posted_within'] ?? '') == $val ? 'checked' : '' ?>
-                               onchange="submitFilters()">
-                        <span class="radio-box"></span>
-                        <span class="check-text"><?= $label ?></span>
-                    </label>
-                <?php endforeach; ?>
-            </div>
-            <?php endif; ?>
-            <?php endif; // !$allJobsAreExternal ?>
-        </div>
+    <?php
+    $hasDateData = !empty(array_filter(array_map(static function ($j) {
+        return trim((string) ($j['created_at'] ?? ''));
+    }, $jobs)));
+    ?>
+    <?php if ($hasDateData): ?>
+    <div class="filter-section">
+        <span class="filter-label">Posted Within</span>
+        <?php foreach (['' => 'Any time', '1' => 'Today', '3' => 'Last 3 days', '7' => 'Last week', '14' => 'Last 2 weeks'] as $val => $label): ?>
+            <label class="check-item">
+                <input type="radio" name="posted_within" value="<?= $val ?>"
+                       <?= ($filters['posted_within'] ?? '') == $val ? 'checked' : '' ?>
+                       onchange="submitFilters()">
+                <span class="radio-box"></span>
+                <span class="check-text"><?= $label ?></span>
+            </label>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+</div>
         <?php endif; ?>
 
         <div class="jobs-main">
@@ -1458,5 +1312,4 @@ document.addEventListener('keydown', function (e) {
 </script>
 <?= view('Layouts/candidate_footer') ?>
     
-
 
