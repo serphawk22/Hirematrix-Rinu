@@ -88,8 +88,30 @@ class CompanyJobsController extends BaseController
         $freshAfter = date('Y-m-d H:i:s', strtotime('-30 days'));
 
         try {
+            $aliases = [$companyName];
+            if (preg_match('/tech$/i', $companyName) === 1) {
+                $aliases[] = preg_replace('/tech$/i', ' Technologies', $companyName) ?? $companyName;
+            }
+            if (preg_match('/technologies$/i', $companyName) === 1) {
+                $aliases[] = preg_replace('/\s*technologies$/i', 'Tech', $companyName) ?? $companyName;
+            }
+            $aliases = array_values(array_unique(array_filter(array_map('trim', $aliases))));
+
             $model = new MncJobModel();
-            $jobs = $model->where('company_name', $companyName)
+            $model->groupStart();
+            foreach ($aliases as $index => $alias) {
+                if ($index === 0) {
+                    $model->where('company_name', $alias);
+                } else {
+                    $model->orWhere('company_name', $alias);
+                }
+            }
+            if (strlen($this->normalizeCompanyKey($companyName)) > 4) {
+                $model->orLike('company_name', $companyName, 'both');
+            }
+            $model->groupEnd();
+
+            $jobs = $model
                 ->where('is_active', 1)
                 ->where('last_sync_at >=', $freshAfter)
                 ->where('apply_url IS NOT NULL', null, false)
@@ -278,6 +300,10 @@ class CompanyJobsController extends BaseController
             return true;
         }
 
+        if (min(strlen($left), strlen($right)) <= 4 && (str_starts_with($left, $right) || str_starts_with($right, $left))) {
+            return true;
+        }
+
         if (min(strlen($left), strlen($right)) <= 4) {
             return false;
         }
@@ -291,7 +317,11 @@ class CompanyJobsController extends BaseController
         $value = preg_replace('/[^a-z0-9]+/', ' ', $value) ?? '';
         $value = preg_replace('/\b(limited|ltd|inc|llc|llp|plc|corp|corporation|company|co|technologies|technology|solutions|services|systems|group|holdings|private|pvt)\b/', ' ', $value) ?? '';
         $value = preg_replace('/\s+/', ' ', $value) ?? '';
-        return str_replace(' ', '', trim($value));
+        $key = str_replace(' ', '', trim($value));
+        if (strlen($key) > 4 && str_ends_with($key, 'tech')) {
+            $key = substr($key, 0, -4);
+        }
+        return $key;
     }
 
     /**

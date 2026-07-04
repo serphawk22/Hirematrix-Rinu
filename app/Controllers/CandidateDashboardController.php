@@ -64,7 +64,6 @@ class CandidateDashboardController extends BaseController
 
         // Top suggested jobs for dashboard (best matches only)
         $topSuggestedJobs = $this->getTopSuggestedJobs($candidateId, 4);
-        $jobSearchStrategy = $this->buildJobSearchStrategyCoach((int) $candidateId, $applications, $topSuggestedJobs);
         $dailyReminder = $this->buildDailyReminder($candidateId, $applications, $topSuggestedJobs);
             $engagementBanners = $this->buildDashboardEngagementBanners($candidateId, $applications, $topSuggestedJobs, (string) ($dailyReminder['key'] ?? ''), $hasActiveSubscription);
         $applications = $this->maskApplicationsList($applications);
@@ -93,7 +92,6 @@ class CandidateDashboardController extends BaseController
             'dailyReminder' => $dailyReminder,
             'engagementBanners' => $engagementBanners,
             'topSuggestedJobs' => $topSuggestedJobs,
-            'jobSearchStrategy' => $jobSearchStrategy,
             'topHiringCompanies' => $topHiringCompanies,
             'primaryResumeId' => $primaryResumeId,
             'hasBaseResume' => $hasBaseResume,
@@ -1392,14 +1390,16 @@ class CandidateDashboardController extends BaseController
             'suggested_jobs' => $suggestedJobsContext,
         ];
 
+        $targetRoles = $this->deriveTargetRoles($user, $topSuggestedJobs, $topCategories);
+        $jobDecisions = $this->buildStrategyJobDecisions($topSuggestedJobs, $skills, $targetRoles, (string) ($user['preferred_job_titles'] ?? ''));
         $recommendedJobIds = array_values(array_filter(array_map(static function (array $job): int {
             return (int) ($job['id'] ?? 0);
-        }, array_slice($topSuggestedJobs, 0, 3))));
+        }, $jobDecisions['worth_applying'])));
 
         $fallback = [
-            'title' => 'Job Search Strategy Coach',
-            'summary' => 'Use your strongest matching roles and current application behavior to focus on a narrower, higher-conversion search over the next 1 to 2 weeks.',
-            'target_roles' => $this->deriveTargetRoles($user, $topSuggestedJobs, $topCategories),
+            'title' => 'Practical Job Search Strategy',
+            'summary' => 'Use only role-relevant matches first, fix the profile gaps that block conversion, and avoid low-fit jobs that dilute your applications.',
+            'target_roles' => $targetRoles,
             'priority_actions' => $this->buildPriorityActions($user, $skills, $topSuggestedJobs),
             'profile_fixes' => $this->buildProfileFixes($user, $skills),
             'application_strategy' => $this->buildApplicationStrategy($topSuggestedJobs, $activeApplications, $shortlistedCount),
@@ -1409,7 +1409,173 @@ class CandidateDashboardController extends BaseController
             'source' => 'fallback',
         ];
 
-        return (new AiJobSearchStrategyCoach())->generate($candidateId, $context, $fallback);
+        $strategy = (new AiJobSearchStrategyCoach())->generate($candidateId, $context, $fallback);
+        $strategy['jobs_worth_applying'] = $jobDecisions['worth_applying'];
+        $strategy['jobs_to_avoid'] = $jobDecisions['avoid'];
+        $strategy['profile_blockers'] = $this->buildProfileBlockers($strategy['profile_fixes'] ?? [], $jobDecisions['common_missing_skills']);
+        $strategy['recommended_job_ids'] = $recommendedJobIds;
+
+        return $strategy;
+    }
+
+    private function buildStrategyJobDecisions(array $jobs, array $candidateSkills, array $targetRoles, string $preferredTitles): array
+    {
+        $roleKeywords = $this->buildTargetRoleKeywords($targetRoles, $preferredTitles);
+        $candidateSkillSet = array_fill_keys(array_map('strtolower', $candidateSkills), true);
+        $enriched = [];
+        $missingFrequency = [];
+
+        foreach ($jobs as $job) {
+            $requiredSkills = $this->tokenizeCsv((string) ($job['required_skills'] ?? ''));
+            $matchedSkills = array_values(array_filter($requiredSkills, static fn (string $skill): bool => isset($candidateSkillSet[$skill])));
+            $missingSkills = array_values(array_filter($requiredSkills, static fn (string $skill): bool => !isset($candidateSkillSet[$skill])));
+            foreach (array_slice($missingSkills, 0, 8) as $skill) {
+                $missingFrequency[$skill] = ($missingFrequency[$skill] ?? 0) + 1;
+            }
+
+            $roleScore = $this->scoreJobTitleRelevance((string) ($job['title'] ?? ''), $roleKeywords);
+            $matchScore = (float) ($job['match_score'] ?? 0);
+            $job['role_relevance_score'] = $roleScore;
+            $job['matched_skills'] = $matchedSkills;
+            $job['missing_skills'] = array_slice($missingSkills, 0, 6);
+            $job['why_this_role'] = $this->buildJobWhyThisRole($job, $matchedSkills, $roleScore, $matchScore);
+            $job['fix_before_applying'] = $this->buildJobFixBeforeApplying($job['missing_skills'], $job);
+            $job['avoid_reason'] = $this->buildJobAvoidReason($job, $roleScore, $matchScore);
+            $job['apply_later_if'] = $this->buildApplyLaterCondition($job['missing_skills'], $roleScore, $matchScore);
+            $enriched[] = $job;
+        }
+
+        usort($enriched, static function (array $a, array $b): int {
+            $scoreA = ((int) ($a['role_relevance_score'] ?? 0) * 100) + (float) ($a['match_score'] ?? 0);
+            $scoreB = ((int) ($b['role_relevance_score'] ?? 0) * 100) + (float) ($b['match_score'] ?? 0);
+            return $scoreB <=> $scoreA;
+        });
+
+        $worth = array_values(array_filter($enriched, static function (array $job): bool {
+            return (int) ($job['role_relevance_score'] ?? 0) > 0 || (float) ($job['match_score'] ?? 0) >= 72;
+        }));
+        $avoid = array_values(array_filter($enriched, static function (array $job): bool {
+            return (int) ($job['role_relevance_score'] ?? 0) === 0 && (float) ($job['match_score'] ?? 0) < 72;
+        }));
+
+        if (empty($worth)) {
+            $worth = array_slice($enriched, 0, 3);
+            $avoid = array_slice($enriched, 3, 3);
+        }
+
+        arsort($missingFrequency);
+
+        return [
+            'worth_applying' => array_slice($worth, 0, 4),
+            'avoid' => array_slice($avoid, 0, 4),
+            'common_missing_skills' => array_slice(array_keys($missingFrequency), 0, 6),
+        ];
+    }
+
+    private function buildTargetRoleKeywords(array $targetRoles, string $preferredTitles): array
+    {
+        $roles = array_merge($targetRoles, preg_split('/[,|\\/]+/', $preferredTitles) ?: []);
+        $specificStopwords = ['developer', 'engineer', 'senior', 'junior', 'lead', 'software', 'role', 'roles'];
+        $phrases = [];
+        $tokens = [];
+
+        foreach ($roles as $role) {
+            $normalized = trim(strtolower(str_replace(['-', '_'], ' ', (string) $role)));
+            if ($normalized === '') {
+                continue;
+            }
+            $phrases[] = $normalized;
+            foreach (preg_split('/\s+/', $normalized) ?: [] as $token) {
+                $token = trim($token);
+                if ($token !== '' && !in_array($token, $specificStopwords, true) && strlen($token) > 2) {
+                    $tokens[] = $token;
+                }
+            }
+        }
+
+        return [
+            'phrases' => array_values(array_unique($phrases)),
+            'tokens' => array_values(array_unique($tokens)),
+        ];
+    }
+
+    private function scoreJobTitleRelevance(string $title, array $roleKeywords): int
+    {
+        $normalizedTitle = trim(strtolower(str_replace(['-', '_'], ' ', $title)));
+        $score = 0;
+        foreach ((array) ($roleKeywords['phrases'] ?? []) as $phrase) {
+            if ($phrase !== '' && str_contains($normalizedTitle, $phrase)) {
+                $score += 3;
+            }
+        }
+        foreach ((array) ($roleKeywords['tokens'] ?? []) as $token) {
+            if ($token !== '' && preg_match('/\b' . preg_quote($token, '/') . '\b/', $normalizedTitle)) {
+                $score++;
+            }
+        }
+
+        return $score;
+    }
+
+    private function buildJobWhyThisRole(array $job, array $matchedSkills, int $roleScore, float $matchScore): string
+    {
+        if ($roleScore > 0 && !empty($matchedSkills)) {
+            return 'Role title aligns with your target search and matches ' . implode(', ', array_slice($matchedSkills, 0, 3)) . '.';
+        }
+        if ($roleScore > 0) {
+            return 'Role title aligns with your target search; verify the skill requirements before applying.';
+        }
+        if (!empty($matchedSkills) && $matchScore >= 72) {
+            return 'Skill overlap is strong through ' . implode(', ', array_slice($matchedSkills, 0, 3)) . ', but title fit needs review.';
+        }
+
+        return (string) ($job['match_reason'] ?? 'Use this only if the responsibilities match your target direction.');
+    }
+
+    private function buildJobFixBeforeApplying(array $missingSkills, array $job): string
+    {
+        if (!empty($missingSkills)) {
+            return 'Add evidence or a small project for ' . implode(', ', array_slice($missingSkills, 0, 3)) . ' before applying.';
+        }
+
+        return 'Tailor your resume headline and top project to mirror this role before applying.';
+    }
+
+    private function buildJobAvoidReason(array $job, int $roleScore, float $matchScore): string
+    {
+        if ($roleScore === 0) {
+            return 'Title does not clearly match your selected target roles.';
+        }
+        if ($matchScore < 60) {
+            return 'Match score is low compared with stronger suggested jobs.';
+        }
+
+        return 'Apply later only after stronger-fit roles are handled.';
+    }
+
+    private function buildApplyLaterCondition(array $missingSkills, int $roleScore, float $matchScore): string
+    {
+        if ($roleScore === 0) {
+            return 'Apply only if you intentionally expand your target role toward this title.';
+        }
+        if (!empty($missingSkills)) {
+            return 'Reconsider after adding proof for ' . implode(', ', array_slice($missingSkills, 0, 3)) . '.';
+        }
+        if ($matchScore < 60) {
+            return 'Reconsider when your match score improves above 70%.';
+        }
+
+        return 'Reconsider after your stronger-fit jobs are already applied to.';
+    }
+
+    private function buildProfileBlockers(array $profileFixes, array $commonMissingSkills): array
+    {
+        $blockers = array_values(array_filter(array_map('trim', (array) $profileFixes)));
+        foreach ($commonMissingSkills as $skill) {
+            $blockers[] = 'Repeated missing skill in suggested jobs: ' . $skill . '. Add proof if it is part of your target role.';
+        }
+
+        return array_values(array_slice(array_unique($blockers), 0, 7));
     }
 
     private function deriveTargetRoles(array $user, array $topSuggestedJobs, array $topCategories): array
@@ -1422,15 +1588,21 @@ class CandidateDashboardController extends BaseController
                 $roles[] = $title;
             }
         }
-        foreach ($topSuggestedJobs as $job) {
-            $title = trim((string) ($job['title'] ?? ''));
-            if ($title !== '') {
-                $roles[] = $title;
+
+        if (empty($roles)) {
+            foreach ($topSuggestedJobs as $job) {
+                $title = trim((string) ($job['title'] ?? ''));
+                if ($title !== '') {
+                    $roles[] = $title;
+                }
             }
         }
-        foreach ($topCategories as $category) {
-            if ($category !== '') {
-                $roles[] = $category . ' roles';
+
+        if (empty($roles)) {
+            foreach ($topCategories as $category) {
+                if ($category !== '') {
+                    $roles[] = $category . ' roles';
+                }
             }
         }
 

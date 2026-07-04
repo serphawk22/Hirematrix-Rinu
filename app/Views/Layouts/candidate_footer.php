@@ -1,20 +1,4 @@
         </main>
-<?php
-$candidateId = (int) (session()->get('user_id') ?? 0);
-$premiumMentorSubscription = null;
-if ($candidateId > 0) {
-    try {
-        $premiumMentorSubscription = (new \App\Models\SubscriptionModel())->getUserActiveSubscription($candidateId);
-    } catch (\Throwable $e) {
-        $premiumMentorSubscription = null;
-    }
-}
-$premiumMentorUrl = $premiumMentorSubscription ? base_url('premium-mentor') : base_url('premium/plans?service=mentor');
-$premiumMentorLabel = $premiumMentorSubscription ? 'AI Career Mentor' : 'Unlock AI Mentor';
-$premiumMentorSubLabel = $premiumMentorSubscription ? 'Open your mentor' : 'View plans';
-?>
-
-
 
 <!-- SCRIPTS -->
 <?php

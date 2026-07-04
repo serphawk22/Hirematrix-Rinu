@@ -55,6 +55,64 @@ $jobExcerpt = static function ($value): string {
 };
 ?>
 
+<style>
+.company-jobs-page .company-job-card[data-href] {
+    cursor: pointer;
+}
+.company-jobs-page .company-job-card[data-href]:focus,
+.company-jobs-page .company-job-card[data-href]:focus-visible {
+    border-color: var(--primary, #1FB7B5);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, .14);
+}
+.company-jobs-page .company-jobs-empty-state {
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid var(--candidate-line, #d7e5f2);
+    border-radius: 8px;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 44px minmax(0, 1fr);
+    padding: 22px;
+}
+.company-jobs-page .company-jobs-empty-icon {
+    align-items: center;
+    background: rgba(31, 183, 181, .1);
+    border: 1px solid rgba(31, 183, 181, .28);
+    border-radius: 8px;
+    color: var(--primary, #1FB7B5);
+    display: inline-flex;
+    height: 44px;
+    justify-content: center;
+    width: 44px;
+}
+.company-jobs-page .company-jobs-empty-state strong {
+    color: var(--foreground, #0f172a);
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+.company-jobs-page .company-jobs-empty-state p {
+    color: var(--muted-foreground, #64748b);
+    margin: 0;
+}
+body.dark.candidate-app .company-jobs-page .company-jobs-empty-state {
+    background: #111;
+    border-color: #272727;
+}
+body.dark.candidate-app .company-jobs-page .company-jobs-empty-state strong {
+    color: #f4f4f5;
+}
+body.dark.candidate-app .company-jobs-page .company-jobs-empty-state p {
+    color: #b8bec8;
+}
+@media (max-width: 768px) {
+    .company-jobs-page .company-jobs-empty-state {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
 <div class="jobs-page-jobboard company-jobs-page">
     <div class="container company-jobs-shell">
         <div class="page-board-header company-jobs-header">
@@ -145,10 +203,15 @@ $jobExcerpt = static function ($value): string {
                         <div class="company-jobs-section-label">HireMatrix Posted Jobs</div>
                     <?php endif; ?>
                     <?php foreach ($portalJobs as $job): ?>
-                        <article class="company-job-card">
+                        <?php $jobDetailsUrl = base_url('job/' . (int) $job['id']); ?>
+                        <article class="company-job-card"
+                            data-href="<?= esc($jobDetailsUrl) ?>"
+                            role="link"
+                            tabindex="0"
+                            aria-label="View details for <?= esc($job['title'] ?? 'this job') ?>">
                             <div class="company-job-main">
                                 <div class="company-job-source">HireMatrix</div>
-                                <h3><a href="<?= base_url('job/' . (int) $job['id']) ?>"><?= esc($job['title'] ?? 'Untitled role') ?></a></h3>
+                                <h3><?= esc($job['title'] ?? 'Untitled role') ?></h3>
                                 <div class="company-job-meta">
                                     <span><i class="fas fa-map-marker-alt"></i><?= esc($job['location'] ?? 'N/A') ?></span>
                                     <span><i class="fas fa-briefcase"></i><?= esc($job['experience_level'] ?? 'Not specified') ?></span>
@@ -161,7 +224,6 @@ $jobExcerpt = static function ($value): string {
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            <a href="<?= base_url('job/' . (int) $job['id']) ?>" class="company-job-action">View Details</a>
                         </article>
                     <?php endforeach; ?>
 
@@ -171,9 +233,14 @@ $jobExcerpt = static function ($value): string {
                             $isStale = !empty($job['is_stale']);
                             $applyUrl = (string) ($job['apply_url'] ?? '#');
                             ?>
-                            <article class="company-job-card company-job-card-external">
+                            <article class="company-job-card company-job-card-external"
+                                data-href="<?= esc($applyUrl) ?>"
+                                data-target="_blank"
+                                role="link"
+                                tabindex="0"
+                                aria-label="Apply to <?= esc($job['title'] ?? 'this job') ?>">
                                 <div class="company-job-main">
-                                    <h3><a href="<?= esc($applyUrl) ?>" target="_blank" rel="noopener"><?= esc($job['title'] ?? 'Untitled role') ?></a></h3>
+                                    <h3><?= esc($job['title'] ?? 'Untitled role') ?></h3>
                                     <div class="company-job-meta">
                                         <span><i class="fas fa-map-marker-alt"></i><?= esc($job['location'] ?? 'Remote/Multiple') ?></span>
                                         <span><i class="fas fa-layer-group"></i><?= esc($job['source_platform'] ?? 'Official/public source') ?></span>
@@ -185,16 +252,15 @@ $jobExcerpt = static function ($value): string {
                                         </div>
                                     <?php endif; ?>
                                 </div>
-                                <a href="<?= esc($applyUrl) ?>" target="_blank" rel="noopener" class="company-job-action">Apply <i class="fas fa-external-link-alt"></i></a>
                             </article>
                         <?php endforeach; ?>
                     </div>
 
                     <div id="companyJobsEmptyState" class="company-jobs-empty-state" <?= $totalCount > 0 ? 'hidden' : '' ?>>
-                        <i class="fas fa-search"></i>
+                        <span class="company-jobs-empty-icon"><i class="fas fa-search"></i></span>
                         <div>
-                            <strong>Finding current openings at <?= esc($companyName) ?></strong>
-                            <p>We are checking public career sources. Results will appear here as soon as they are available.</p>
+                            <strong>Loading current openings at <?= esc($companyName) ?></strong>
+                            <p>Matching roles will appear here as soon as they are available.</p>
                         </div>
                     </div>
                 </div>
@@ -207,6 +273,8 @@ $jobExcerpt = static function ($value): string {
 (function () {
     const companyName = <?= json_encode($companyName) ?>;
     const discoverUrl = <?= json_encode($discoverUrl) ?>;
+    const companyWebsite = <?= json_encode($companyWebsite) ?>;
+    const companyCareerPage = <?= json_encode($companyCareerPage) ?>;
     const portalCount = <?= (int) $portalCount ?>;
     const externalList = document.getElementById('cachedExternalJobsList');
     const emptyState = document.getElementById('companyJobsEmptyState');
@@ -249,6 +317,40 @@ $jobExcerpt = static function ($value): string {
         });
     });
 
+    document.addEventListener('click', (event) => {
+        const card = event.target.closest('.company-job-card[data-href]');
+        if (!card || event.target.closest('a, button')) {
+            return;
+        }
+
+        const href = card.dataset.href || '';
+        if (href && card.dataset.target === '_blank') {
+            window.open(href, '_blank', 'noopener');
+        } else if (href) {
+            window.location.href = href;
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') {
+            return;
+        }
+
+        const card = event.target.closest('.company-job-card[data-href]');
+        if (!card) {
+            return;
+        }
+
+        const href = card.dataset.href || '';
+        if (href && card.dataset.target === '_blank') {
+            event.preventDefault();
+            window.open(href, '_blank', 'noopener');
+        } else if (href) {
+            event.preventDefault();
+            window.location.href = href;
+        }
+    });
+
     const setCounts = (externalCount) => {
         const total = portalCount + externalCount;
         if (totalCountEl) {
@@ -267,14 +369,21 @@ $jobExcerpt = static function ($value): string {
         if (!emptyState) {
             return;
         }
-        emptyState.innerHTML = '<i class="' + escapeHtml(iconClass) + '"></i>' +
-            '<div><strong>' + escapeHtml(title) + '</strong><p>' + escapeHtml(message) + '</p></div>';
+
+        emptyState.innerHTML = [
+            '<span class="company-jobs-empty-icon"><i class="' + escapeHtml(iconClass) + '"></i></span>',
+            '<div>',
+            '  <strong>' + escapeHtml(title) + '</strong>',
+            '  <p>' + escapeHtml(message) + '</p>',
+            '</div>'
+        ].join('');
     };
 
     const showNoResultsState = () => {
         setEmptyStateContent(
-            'No current openings found at ' + companyName,
-            'We checked public career sources and did not find active roles for this company right now.'
+            'No openings available at ' + companyName,
+            'There are no matching roles available here right now. Please check again later.',
+            'fas fa-briefcase'
         );
         if (emptyState) {
             emptyState.hidden = portalCount > 0;
@@ -290,9 +399,9 @@ $jobExcerpt = static function ($value): string {
         const employmentType = escapeHtml(job.employment_type || '');
 
         return `
-            <article class="company-job-card company-job-card-external">
+            <article class="company-job-card company-job-card-external" data-href="${url}" data-target="_blank" role="link" tabindex="0" aria-label="Apply to ${title}">
                 <div class="company-job-main">
-                    <h3><a href="${url}" target="_blank" rel="noopener">${title}</a></h3>
+                    <h3>${title}</h3>
                     <div class="company-job-meta">
                         <span><i class="fas fa-map-marker-alt"></i>${location}</span>
                         <span><i class="fas fa-layer-group"></i>${source}</span>
@@ -300,7 +409,6 @@ $jobExcerpt = static function ($value): string {
                     </div>
                     ${employmentType ? `<div class="company-jobs-pills"><span class="skill-chip">${employmentType}</span></div>` : ''}
                 </div>
-                <a href="${url}" target="_blank" rel="noopener" class="company-job-action">Apply <i class="fas fa-external-link-alt"></i></a>
             </article>
         `;
     };
@@ -337,14 +445,28 @@ $jobExcerpt = static function ($value): string {
         }
 
         const previousHtml = externalList.innerHTML;
-        emptyState.hidden = true;
         setEmptyStateContent(
-            'Finding current openings at ' + companyName,
-            'We are checking public career sources. Results will appear here as soon as they are available.'
+            'Loading current openings at ' + companyName,
+            'Matching roles will appear here as soon as they are available.',
+            'fas fa-spinner fa-spin'
         );
-        externalList.innerHTML = '<div class="company-jobs-note"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span>Finding current openings at ' + escapeHtml(companyName) + '...</span></div>';
+        if (emptyState) {
+            emptyState.hidden = portalCount > 0;
+        }
+        externalList.innerHTML = '';
 
-        fetch(discoverUrl + '?' + new URLSearchParams({ company: companyName, limit: '20' }).toString(), {
+        const discoverParams = new URLSearchParams({
+            company: companyName,
+            limit: '20'
+        });
+        if (companyWebsite) {
+            discoverParams.set('website', companyWebsite);
+        }
+        if (companyCareerPage) {
+            discoverParams.set('career_url', companyCareerPage);
+        }
+
+        fetch(discoverUrl + '?' + discoverParams.toString(), {
             headers: { 'Accept': 'application/json' }
         })
             .then((response) => response.text().then((text) => {
@@ -372,10 +494,15 @@ $jobExcerpt = static function ($value): string {
                 renderExternalJobs(payload.jobs || []);
             })
             .catch((error) => {
-                externalList.innerHTML = (previousHtml && !isAutomatic ? previousHtml : '') + '<div class="company-jobs-note"><i class="fas fa-exclamation-circle"></i><span>' + escapeHtml(error.message || 'Could not check public openings right now.') + '</span></div>';
+                externalList.innerHTML = previousHtml && !isAutomatic ? previousHtml : '';
                 setCounts(initialExternalCount);
                 if (emptyState) {
-                    emptyState.hidden = true;
+                    setEmptyStateContent(
+                        'Openings are not available right now',
+                        'Please try again shortly.',
+                        'fas fa-exclamation-circle'
+                    );
+                    emptyState.hidden = renderedJobCardCount() > 0;
                 }
             });
     };

@@ -406,6 +406,19 @@ $isNotSpecified = static function (?string $value): bool {
                     $postedAt = $postedTimestamp !== false ? date('d M Y', $postedTimestamp) : null;
                     $postedAge = $formatAge($postedDateSource);
                     $companyLogo = trim((string) ($job['company_logo'] ?? ''));
+                    $companyWebsite = trim((string) ($job['company_website'] ?? ''));
+                    $displayLogo = '';
+                    $useFavicon = false;
+                    if ($companyLogo !== '') {
+                        $displayLogo = $resolveAssetUrl($companyLogo);
+                    } elseif ($companyWebsite !== '') {
+                        $websiteHost = parse_url($companyWebsite, PHP_URL_HOST) ?: $companyWebsite;
+                        $websiteHost = preg_replace('/^www\./i', '', (string) $websiteHost) ?? '';
+                        if ($websiteHost !== '') {
+                            $displayLogo = 'https://www.google.com/s2/favicons?domain=' . rawurlencode($websiteHost) . '&sz=96';
+                            $useFavicon = true;
+                        }
+                    }
                     $score = (float) ($job['match_score'] ?? 0);
                     $hasMatchScore = $score > 0;
                     $matchPct = $hasMatchScore ? max(10, min(100, (int) round($score))) : 0;
@@ -452,8 +465,8 @@ $isNotSpecified = static function (?string $value): bool {
                             </div>
                                 </div>
                                 <div class="job-card-icon">
-                                    <?php if ($companyLogo !== ''): ?>
-                                        <img src="<?= esc($companyLogo) ?>" alt="<?= esc($company) ?>">
+                                    <?php if ($displayLogo !== ''): ?>
+                                        <img src="<?= esc($displayLogo) ?>" alt="<?= esc($company) ?>" class="job-card-logo <?= $useFavicon ? 'is-favicon' : '' ?>" onerror="this.onerror=null; this.parentElement.innerHTML='<span><?= esc($initial) ?></span>';">
                                     <?php else: ?>
                                         <span><?= esc($initial) ?></span>
                                     <?php endif; ?>

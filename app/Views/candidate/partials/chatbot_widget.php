@@ -150,7 +150,8 @@
     color: var(--candidate-accent-dark, var(--primary-dark, #0D8A90));
     border: 1px solid rgba(31, 183, 181, 0.25);
 }
-.hm-candidate-chat-voice.is-listening {
+.hm-candidate-chat-voice.is-listening,
+.hm-candidate-chat-voice.is-speaking {
     background: #ef4444;
     color: #fff;
     border-color: #ef4444;
@@ -223,9 +224,14 @@ body.dark .hm-candidate-chat-voice {
     border-color: rgba(31, 183, 181, 0.42);
     color: #D8FFFF;
 }
-body.dark .hm-candidate-chat-voice.is-listening {
+body.dark .hm-candidate-chat-voice.is-listening,
+body.dark .hm-candidate-chat-voice.is-speaking {
     background: #ef4444;
     border-color: #ef4444;
+    color: #fff;
+}
+body.dark .hm-candidate-chat-bubble.user{
+    background-color:#0D8A90 !important;
     color: #fff; 
 }
 @media (max-width: 480px) {
@@ -349,6 +355,7 @@ html.hm-dark-preload .hm-theme-chip {
     let chatSessionId = '';
     let recognition = null;
     let isListening = false;
+    let isSpeaking = false;
     let shouldSpeakNextReply = false;
     let voiceTurnSubmitted = false;
 
@@ -431,6 +438,15 @@ html.hm-dark-preload .hm-theme-chip {
         utterance.lang = 'en-US';
         utterance.rate = 1;
         utterance.pitch = 1;
+        utterance.onstart = function () {
+            setVoiceSpeaking(true);
+        };
+        utterance.onend = function () {
+            setVoiceSpeaking(false);
+        };
+        utterance.onerror = function () {
+            setVoiceSpeaking(false);
+        };
         window.speechSynthesis.speak(utterance);
     }
 
@@ -646,11 +662,32 @@ html.hm-dark-preload .hm-theme-chip {
         isListening = listening;
         if (!voice) return;
         voice.classList.toggle('is-listening', listening);
-        voice.setAttribute('aria-label', listening ? 'Stop voice chat' : 'Start voice chat');
-        voice.setAttribute('title', listening ? 'Stop voice chat' : 'Start voice chat');
+        updateVoiceButtonState();
+    }
+
+    function setVoiceSpeaking(speaking) {
+        isSpeaking = speaking;
+        if (!voice) return;
+        voice.classList.toggle('is-speaking', speaking);
+        updateVoiceButtonState();
+    }
+
+    function stopVoiceAudio() {
+        shouldSpeakNextReply = false;
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        setVoiceSpeaking(false);
+    }
+
+    function updateVoiceButtonState() {
+        if (!voice) return;
+        const isStopping = isListening || isSpeaking;
+        voice.setAttribute('aria-label', isSpeaking ? 'Stop audio' : (isListening ? 'Stop voice chat' : 'Start voice chat'));
+        voice.setAttribute('title', isSpeaking ? 'Stop audio' : (isListening ? 'Stop voice chat' : 'Start voice chat'));
         const icon = voice.querySelector('i');
         if (icon) {
-            icon.className = listening ? 'fas fa-stop' : 'fas fa-microphone';
+            icon.className = isStopping ? 'fas fa-stop' : 'fas fa-microphone';
         }
     }
 
@@ -709,14 +746,17 @@ html.hm-dark-preload .hm-theme-chip {
             widget.classList.add('open');
             fab.style.display = 'none';
 
+            if (isSpeaking) {
+                stopVoiceAudio();
+                return;
+            }
+
             if (isListening) {
                 recognition.stop();
                 return;
             }
 
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
+            stopVoiceAudio();
 
             input.value = '';
             voiceTurnSubmitted = false;
@@ -750,6 +790,7 @@ html.hm-dark-preload .hm-theme-chip {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
         }
+        setVoiceSpeaking(false);
     });
     send.addEventListener('click', () => sendMessage(false));
     input.addEventListener('keydown', function (e) {

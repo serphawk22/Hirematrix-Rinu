@@ -57,10 +57,11 @@
         <link rel="stylesheet" href="<?= base_url('jobboard/css/animate.min.css') ?>">
     <?php endif; ?>
     <link rel="stylesheet" href="<?= base_url('jobboard/css/style.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/candidate-bundle.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-bundle.min.css')) ?>">
+    <?php $candidateBundleHref = base_url('jobboard/css/candidate-bundle.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-bundle.min.css')); ?>
+    <link rel="preload" href="<?= $candidateBundleHref ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $candidateBundleHref ?>"></noscript>
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.min.css')) ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/candidate-pages.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-pages.css')) ?>">
     <?php if ($candidateNeedsAtsCircle): ?>
         <!-- CSS Circle Progress (Required for visual ATS Score) -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/css-percentage-circle/0.0.3/css/circle.min.css">
@@ -78,6 +79,74 @@
         html.hm-dark-preload .loader .spinner-border,
         body.dark.candidate-app .loader .spinner-border {
             color: #1FB7B5 !important;
+        }
+        body.candidate-app .cand-leftnav__user-dropdown a.is-active,
+        body.candidate-app .cand-topbar__user-dropdown a.is-active {
+            background: var(--candidate-nav-active, #E0F5F0) !important;
+            color: var(--candidate-nav-primary-dark, #0D8A90) !important;
+            font-weight: 800 !important;
+            box-shadow: inset 3px 0 0 var(--candidate-nav-primary, #1FB7B5) !important;
+        }
+        body.candidate-app .cand-leftnav__user-dropdown a.is-active i,
+        body.candidate-app .cand-topbar__user-dropdown a.is-active i {
+            background: rgba(31, 183, 181, 0.16) !important;
+            color: var(--candidate-nav-primary-dark, #0D8A90) !important;
+        }
+        body.candidate-app .candidate-search-suggest-wrap {
+            position: relative !important;
+            overflow: visible !important;
+        }
+        body.candidate-app .candidate-search-suggestions {
+            background: #fff !important;
+            border: 1px solid rgba(148, 163, 184, .22) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, .14) !important;
+            display: none;
+            left: 0;
+            max-height: 310px;
+            overflow: auto;
+            padding: 8px 0 !important;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            z-index: 1200;
+        }
+        body.candidate-app .candidate-search-suggestions.is-open {
+            display: block;
+        }
+        body.candidate-app .candidate-search-suggestion {
+            align-items: center;
+            background: transparent;
+            border: 0;
+            color: #142033;
+            cursor: pointer;
+            display: flex;
+            font-size: 14px;
+            font-weight: 700;
+            justify-content: flex-start;
+            line-height: 1.3;
+            min-height: 38px;
+            padding: 9px 14px;
+            text-align: left;
+            width: 100%;
+        }
+        body.candidate-app .candidate-search-suggestion:hover,
+        body.candidate-app .candidate-search-suggestion.is-active {
+            background: rgba(31, 183, 181, .09);
+            color: #007d83;
+        }
+        body.dark.candidate-app .candidate-search-suggestions {
+            background: #141414 !important;
+            border-color: #272727 !important;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, .36) !important;
+        }
+        body.dark.candidate-app .candidate-search-suggestion {
+            color: #f4f4f5;
+        }
+        body.dark.candidate-app .candidate-search-suggestion:hover,
+        body.dark.candidate-app .candidate-search-suggestion.is-active {
+            background: rgba(31, 183, 181, .16);
+            color: #28d7d4;
         }
  
     </style>
@@ -152,9 +221,12 @@
     $isJobsActive = $isJobsRoot || $isApplicationStatusActive || $isJobAlertsActive;
     $isCareerTransitionActive = str_contains($currentPath, '/career-transition');
     $isResumeStudioActive = $pathEndsWith('/candidate/resume-studio');
-    $isPremiumMentorActive = str_contains($currentPath, '/premium-mentor');
     $isJobStrategyActive = str_contains($currentPath, '/job-strategy');
-    $isServicesActive = $isCareerTransitionActive || $isResumeStudioActive || $isPremiumMentorActive || $isJobStrategyActive ;
+    $isServicesActive = $isCareerTransitionActive || $isResumeStudioActive || $isJobStrategyActive ;
+    $isCandidateProfileActive = $pathEndsWith('/candidate/profile');
+    $isCandidateSettingsActive = $pathEndsWith('/candidate/settings');
+    $isPremiumPlansActive = str_contains($currentPath, '/premium/plans');
+    $isPaymentHistoryActive = str_contains($currentPath, '/payment/history');
     $activeCompanySegment = trim((string) service('request')->getGet('segment'));
     $companyNavSegments = [
         '' => ['label' => 'All Companies', 'icon' => 'fas fa-building'],
@@ -184,7 +256,6 @@
     $resumeStudioClass = $isResumeStudioActive ? 'active' : '';
     $jobStrategyClass = $isJobStrategyActive ? 'active' : '';
     $companyJobDiscoveryClass = str_contains($currentPath, '/candidate/company-job-discovery') ? 'active' : '';
-    $premiumMentorClass = $isPremiumMentorActive ? 'active' : '';
     
     if ($candidatePhoto === '' && $candidateId > 0) {
         $candidateRecord = model('UserModel')->findCandidateWithProfile($candidateId);
@@ -212,7 +283,6 @@
     $premiumLocked = !$premiumSubscription;
     $careerTransitionUrl = $premiumLocked ? base_url('premium/plans?service=career-transition') : base_url('career-transition');
     $resumeStudioUrl = $premiumLocked ? base_url('premium/plans?service=resume-studio') : base_url('candidate/resume-studio');
-    $mentorUrl = $premiumLocked ? base_url('premium/plans?service=mentor') : base_url('premium-mentor');
     ?>
     <div class="site-mobile-menu site-navbar-target">
         <div class="site-mobile-menu-header">
@@ -340,11 +410,6 @@
                     <a href="<?= esc($resumeStudioUrl) ?>" class="hm-drawer-link <?= $isResumeStudioActive ? 'is-active' : '' ?>">
                         <span class="cand-leftnav__icon"><i class="fas fa-file-alt" style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;"></i></span>
                         <span style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">Resume Studio</span>
-                        <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
-                    </a>
-                    <a href="<?= esc($mentorUrl) ?>" class="hm-drawer-link <?= $isPremiumMentorActive ? 'is-active' : '' ?>">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-comments"></i></span>
-                        <span>AI Career Mentor</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
                 </div>
@@ -507,10 +572,10 @@
                             <span><?= esc($profileHeadline ?? 'Candidate') ?></span>
                         </span>
                     </div>
-                    <a href="<?= base_url('candidate/profile') ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
-                    <a href="<?= base_url('candidate/settings') ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
-                    <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
-                    <a href="<?= base_url('payment/history') ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
+                    <a href="<?= base_url('candidate/profile') ?>" class="<?= $isCandidateProfileActive ? 'is-active' : '' ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
+                    <a href="<?= base_url('candidate/settings') ?>" class="<?= $isCandidateSettingsActive ? 'is-active' : '' ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
+                    <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link <?= $isPremiumPlansActive ? 'is-active' : '' ?>"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
+                    <a href="<?= base_url('payment/history') ?>" class="<?= $isPaymentHistoryActive ? 'is-active' : '' ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
                     <a href="<?= base_url('logout') ?>" class="cand-leftnav__logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
                 </div>
                 <button type="button" class="cand-leftnav__user-btn" id="candidateLeftnavUserBtn" aria-haspopup="true" aria-expanded="false">
@@ -576,10 +641,10 @@
                             <span><?= esc($profileHeadline ?? 'Candidate') ?></span>
                         </span>
                     </div>
-                    <a href="<?= base_url('candidate/profile') ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
-                    <a href="<?= base_url('candidate/settings') ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
-                    <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
-                    <a href="<?= base_url('payment/history') ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
+                    <a href="<?= base_url('candidate/profile') ?>" class="<?= $isCandidateProfileActive ? 'is-active' : '' ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
+                    <a href="<?= base_url('candidate/settings') ?>" class="<?= $isCandidateSettingsActive ? 'is-active' : '' ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
+                    <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link <?= $isPremiumPlansActive ? 'is-active' : '' ?>"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
+                    <a href="<?= base_url('payment/history') ?>" class="<?= $isPaymentHistoryActive ? 'is-active' : '' ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
                     <a href="<?= base_url('logout') ?>" class="cand-leftnav__logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
                 </div>
             </div>
@@ -591,9 +656,10 @@
     <!-- Mobile search drawer -->
     <div id="mobileSearchDrawer" class="mobile-search-drawer">
         <form action="<?= base_url('jobs') ?>" method="get" class="mobile-search-form">
-            <div class="mobile-search-field">
+            <div class="mobile-search-field candidate-search-suggest-wrap">
                 <span class="icon-search mobile-search-icon"></span>
-                <input type="text" name="search" placeholder="Job title, skills or company" value="<?= esc($headerSearch !== '' ? $headerSearch : ($headerDesignation !== '' ? $headerDesignation : $headerCompany)) ?>" autocomplete="off">
+                <input type="text" name="search" placeholder="Job title, skills or company" value="<?= esc($headerSearch !== '' ? $headerSearch : ($headerDesignation !== '' ? $headerDesignation : $headerCompany)) ?>" autocomplete="off" data-job-search-suggest aria-autocomplete="list" aria-expanded="false">
+                <div class="candidate-search-suggestions" data-job-search-suggestions></div>
             </div>
             <div class="mobile-search-row2">
                 <div class="mobile-search-field mobile-search-field-half">
@@ -625,9 +691,10 @@
                 <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                 <input type="text" name="location" placeholder="Location" value="<?= esc($headerLocation) ?>" autocomplete="off" aria-label="Location">
             </label>
-            <label class="candidate-workbar__field">
+            <label class="candidate-workbar__field candidate-workbar__field--search candidate-search-suggest-wrap">
                 <i class="fas fa-search" aria-hidden="true"></i>
-                <input type="text" name="search" placeholder="Job title, skills or company" value="<?= esc($headerSearch !== '' ? $headerSearch : ($headerDesignation !== '' ? $headerDesignation : $headerCompany)) ?>" autocomplete="off" aria-label="Job title, skills or company">
+                <input type="text" name="search" placeholder="Job title, skills or company" value="<?= esc($headerSearch !== '' ? $headerSearch : ($headerDesignation !== '' ? $headerDesignation : $headerCompany)) ?>" autocomplete="off" aria-label="Job title, skills or company" data-job-search-suggest aria-autocomplete="list" aria-expanded="false">
+                <div class="candidate-search-suggestions" data-job-search-suggestions></div>
             </label>
             <button type="submit" class="candidate-workbar__submit">Find Jobs</button>
         </form>

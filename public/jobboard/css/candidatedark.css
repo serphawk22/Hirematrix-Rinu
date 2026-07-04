@@ -1154,28 +1154,7 @@ body.dark .bot-message .message-content {
 
 body.dark .message small { color: #8b949e !important; }
 
-body.dark #chat-input {
-    background: #0d1117 !important;
-    border: 1px solid #30363d !important;
-    color: #e6edf3 !important;
-}
-
-body.dark #chat-input::placeholder { color: #6e7681; }
-body.dark #chat-input:focus { border-color: #1FB7B5 !important; }
-
-body.dark #send-btn { background: #1FB7B5 !important; border: none !important; color: #fff !important; }
-body.dark #send-btn:hover { background: #0D8A90 !important; }
-
 body.dark .progress-bar { background: linear-gradient(90deg, #1FB7B5, #53B86C) !important; }
-
-body.dark #chat-messages span {
-    background: rgba(31,183,181,0.1) !important;
-    color: #1FB7B5 !important;
-    border: 1px solid rgba(31,183,181,0.2) !important;
-    border-radius: 999px;
-    padding: 4px 10px;
-    font-size: 11px;
-}
 
 /* =====================================================
    MODAL

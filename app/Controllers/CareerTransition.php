@@ -10,6 +10,12 @@ use App\Libraries\CareerTransitionAI;
 
 class CareerTransition extends BaseController
 {
+    private function requireCareerTransitionPremium(int $candidateId): void
+    {
+        helper('premium');
+        requirePremiumForFeature($candidateId, 'career transition');
+    }
+
     public function index()
     {
         if (session()->get('role') !== 'candidate') {
@@ -17,8 +23,7 @@ class CareerTransition extends BaseController
         }
         
         $candidateId = (int) session()->get('user_id');
-        helper('premium');
-        requirePremiumForFeature($candidateId, 'career transition');
+        $this->requireCareerTransitionPremium($candidateId);
         $transitionModel = new CareerTransitionModel();
         $taskModel = new DailyTaskModel();
         $userModel = new \App\Models\UserModel();
@@ -70,6 +75,7 @@ class CareerTransition extends BaseController
         $currentRole = trim($this->request->getPost('current_role'));
         $targetRole  = trim($this->request->getPost('target_role'));
         $candidateId = (int) session()->get('user_id');
+        $this->requireCareerTransitionPremium($candidateId);
 
         $suggestions = session()->get('career_suggestions') ?? [];
         $suggestions = array_filter($suggestions, function($s) use ($targetRole) {
@@ -114,7 +120,7 @@ class CareerTransition extends BaseController
             );
             $courseRefreshed = $this->refreshCourseContentIfBrief($existingTransition);
 
-            return redirect()->to('career-transition')
+            return redirect()->to('career-transition/course')
                 ->with('success', $courseRefreshed
                     ? 'Welcome back! Your learning path was restored and the course content was refreshed with more detailed lessons.'
                     : 'Welcome back! Your learning path has been instantly restored - no AI generation needed!');
@@ -136,11 +142,42 @@ class CareerTransition extends BaseController
         // Close DB, call AI, reconnect
         $db->close();
 
-        helper('premium');
-        requirePremiumForFeature($savedCandidateId, 'career transition AI');
         $ai         = new CareerTransitionAI();
         $analysis   = $ai->analyzeTransition($savedCurrentRole, $savedTargetRole);
-        $courseData = $ai->generateCourseContent($savedCurrentRole, $savedTargetRole, $analysis['skill_gaps'] ?? []);
+
+        $skillsModel = new \App\Models\CandidateSkillsModel();
+        $workExpModel = new \App\Models\WorkExperienceModel();
+        $userModel = new \App\Models\UserModel();
+
+        $candidateSkills = $skillsModel->where('candidate_id', $savedCandidateId)->findAll();
+        $candidateSkillNames = array_values(array_filter(array_map(static function (array $row): string {
+            return trim((string) ($row['skill_name'] ?? ''));
+        }, $candidateSkills)));
+
+        $currentCompany = '';
+        $latestWork = $workExpModel->where('user_id', $savedCandidateId)->where('is_current', 1)->first();
+        if (empty($latestWork)) {
+            $latestWork = $workExpModel->where('user_id', $savedCandidateId)->orderBy('start_date', 'DESC')->first();
+        }
+        if (!empty($latestWork['company_name'])) {
+            $currentCompany = (string) $latestWork['company_name'];
+        }
+
+        $user = $userModel->find($savedCandidateId);
+        $candidateBio = trim((string) ($user['bio'] ?? ''));
+
+        $courseData = $ai->generateCourseContent(
+            $savedCurrentRole,
+            $savedTargetRole,
+            $analysis['skill_gaps'] ?? [],
+            [
+                'current_role' => $savedCurrentRole,
+                'target_role' => $savedTargetRole,
+                'candidate_skills' => $candidateSkillNames,
+                'current_company' => $currentCompany,
+                'candidate_bio' => $candidateBio,
+            ]
+        );
 
         $db->reconnect();
 
@@ -204,7 +241,7 @@ class CareerTransition extends BaseController
             ]);
         }
 
-        return redirect()->to('career-transition')
+        return redirect()->to('career-transition/course')
             ->with('success', 'Career transition plan created! AI-powered course content is ready.');
     }
 
@@ -214,7 +251,8 @@ class CareerTransition extends BaseController
             return redirect()->to(base_url('recruiter/dashboard'))->with('error', 'Access denied.');
         }
         
-        $candidateId = session()->get('user_id');
+        $candidateId = (int) session()->get('user_id');
+        $this->requireCareerTransitionPremium($candidateId);
         $transitionModel = new CareerTransitionModel();
         $moduleModel = new CourseModuleModel();
         $activeTransition = $transitionModel->getActiveTransition($candidateId);
@@ -234,7 +272,8 @@ class CareerTransition extends BaseController
             return redirect()->to(base_url('recruiter/dashboard'))->with('error', 'Access denied.');
         }
         
-        $candidateId = session()->get('user_id');
+        $candidateId = (int) session()->get('user_id');
+        $this->requireCareerTransitionPremium($candidateId);
         $transitionModel = new CareerTransitionModel();
         $moduleModel = new CourseModuleModel();
         $lessonModel = new CourseLessonModel();
@@ -257,6 +296,7 @@ class CareerTransition extends BaseController
         $modules = $this->attachModuleSkillGaps($modules, $skillGaps);
         $module = $this->attachModuleSkillGaps([$module], $skillGaps)[0] ?? $module;
         $lessons = $this->attachLessonSkillGaps($lessons, $module['covered_skill_gaps'] ?? $skillGaps);
+        $lessons = $this->ensureModuleHasEnoughLessons($activeTransition, $module, $lessons, $skillGaps);
 
         if ($this->request->isAJAX()) {
             return $this->response->setJSON([
@@ -290,6 +330,84 @@ class CareerTransition extends BaseController
         ]);
     }
 
+    private function ensureModuleHasEnoughLessons(array $transition, array $module, array $lessons, array $skillGaps): array
+    {
+        if (count($lessons) >= 2 || !$this->moduleNeedsMultipleLessons($module, $lessons)) {
+            return $lessons;
+        }
+
+        $candidateId = (int) ($transition['candidate_id'] ?? session()->get('user_id'));
+        $context = $this->getCandidateCourseContext($candidateId, (string) ($transition['current_role'] ?? ''), (string) ($transition['target_role'] ?? ''));
+        $moduleGaps = array_values(array_filter((array) ($module['covered_skill_gaps'] ?? $skillGaps)));
+
+        $db = \Config\Database::connect();
+        $db->close();
+
+        $ai = new CareerTransitionAI();
+        $generatedLessons = $ai->generateModuleLessons(
+            (string) ($transition['current_role'] ?? ''),
+            (string) ($transition['target_role'] ?? ''),
+            $moduleGaps,
+            $module,
+            $context
+        );
+
+        $db->reconnect();
+
+        if (count($generatedLessons) < 2) {
+            return $lessons;
+        }
+
+        $lessonModel = new CourseLessonModel();
+        $existingFirstLesson = $lessons[0] ?? null;
+
+        foreach ($generatedLessons as $index => $generatedLesson) {
+            $lessonData = [
+                'module_id' => (int) $module['id'],
+                'lesson_number' => $index + 1,
+                'title' => $generatedLesson['title'] ?? ('Lesson ' . ($index + 1)),
+                'content' => $generatedLesson['content'] ?? '',
+                'resources' => json_encode($generatedLesson['resources'] ?? []),
+                'exercises' => json_encode($generatedLesson['exercises'] ?? []),
+            ];
+
+            if ($index === 0 && !empty($existingFirstLesson['id'])) {
+                $lessonModel->update((int) $existingFirstLesson['id'], $lessonData);
+                continue;
+            }
+
+            $lessonData['is_completed'] = 0;
+            $lessonModel->insert($lessonData);
+        }
+
+        $refreshedLessons = $lessonModel->getLessonSummariesByModule((int) $module['id']);
+        return $this->attachLessonSkillGaps($refreshedLessons, $moduleGaps);
+    }
+
+    private function moduleNeedsMultipleLessons(array $module, array $lessons): bool
+    {
+        if (count($lessons) === 0) {
+            return true;
+        }
+
+        $coveredGaps = array_values(array_filter((array) ($module['covered_skill_gaps'] ?? [])));
+        $title = strtolower((string) ($module['title'] ?? ''));
+        $description = strtolower((string) ($module['description'] ?? ''));
+        $broadKeywords = ['database', 'backend', 'frontend', 'framework', 'cloud', 'security', 'analytics', 'data', 'api', 'integration', 'javascript', 'react', 'node', 'sql', 'nosql'];
+
+        if (count($coveredGaps) > 1 || (int) ($module['duration_weeks'] ?? 0) >= 2) {
+            return true;
+        }
+
+        foreach ($broadKeywords as $keyword) {
+            if (str_contains($title, $keyword) || str_contains($description, $keyword)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function lesson($lessonId)
     {
         if (session()->get('role') !== 'candidate') {
@@ -297,6 +415,7 @@ class CareerTransition extends BaseController
         }
 
         $candidateId = (int) session()->get('user_id');
+        $this->requireCareerTransitionPremium($candidateId);
         $transitionModel = new CareerTransitionModel();
         $moduleModel = new CourseModuleModel();
         $lessonModel = new CourseLessonModel();
@@ -313,6 +432,19 @@ class CareerTransition extends BaseController
         $module = $this->attachModuleSkillGaps([$module], $skillGaps)[0] ?? $module;
         $lesson = $this->attachLessonSkillGaps([$lesson], $module['covered_skill_gaps'] ?? $skillGaps)[0] ?? $lesson;
 
+        if ($this->lessonNeedsFullCourseContent($lesson)) {
+            $generatedLesson = $this->generateFullLessonOnDemand($activeTransition, $module, $lesson);
+            if (!empty($generatedLesson['content'])) {
+                $lesson['content'] = $generatedLesson['content'];
+                if (array_key_exists('resources', $generatedLesson)) {
+                    $lesson['resources'] = $generatedLesson['resources'];
+                }
+                if (array_key_exists('exercises', $generatedLesson)) {
+                    $lesson['exercises'] = $generatedLesson['exercises'];
+                }
+            }
+        }
+
         return $this->response->setJSON([
             'success' => true,
             'lesson' => [
@@ -328,8 +460,99 @@ class CareerTransition extends BaseController
         ]);
     }
 
+    private function lessonNeedsFullCourseContent(array $lesson): bool
+    {
+        $content = trim(strip_tags((string) ($lesson['content'] ?? '')));
+        if ($content === '') {
+            return true;
+        }
+
+        $wordCount = str_word_count($content);
+        if ($wordCount < 900) {
+            return true;
+        }
+
+        $outlineSignals = 0;
+        foreach (['Concepts Covered:', 'Example:', 'Steps:', 'Exercise:', 'Checklist:', 'Resources:'] as $signal) {
+            if (stripos((string) ($lesson['content'] ?? ''), $signal) !== false) {
+                $outlineSignals++;
+            }
+        }
+
+        return $outlineSignals >= 3 && $wordCount < 1300;
+    }
+
+    private function generateFullLessonOnDemand(array $transition, array $module, array $lesson): array
+    {
+        $candidateId = (int) ($transition['candidate_id'] ?? session()->get('user_id'));
+        $this->requireCareerTransitionPremium($candidateId);
+
+        $skillGaps = array_values(array_filter((array) ($lesson['covered_skill_gaps'] ?? $module['covered_skill_gaps'] ?? $this->parseSkillGaps($transition['skill_gaps'] ?? '[]'))));
+        $context = $this->getCandidateCourseContext($candidateId, (string) ($transition['current_role'] ?? ''), (string) ($transition['target_role'] ?? ''));
+
+        $db = \Config\Database::connect();
+        $db->close();
+
+        $ai = new CareerTransitionAI();
+        $generated = $ai->generateLessonContent(
+            (string) ($transition['current_role'] ?? ''),
+            (string) ($transition['target_role'] ?? ''),
+            $skillGaps,
+            $module,
+            $lesson,
+            $context
+        );
+
+        $db->reconnect();
+
+        if (empty($generated['content'])) {
+            return [];
+        }
+
+        $lessonModel = new CourseLessonModel();
+        $lessonModel->update((int) $lesson['id'], [
+            'content' => $generated['content'],
+            'resources' => json_encode($generated['resources'] ?? []),
+            'exercises' => json_encode($generated['exercises'] ?? []),
+        ]);
+
+        return $generated;
+    }
+
+    private function getCandidateCourseContext(int $candidateId, string $currentRole, string $targetRole): array
+    {
+        $skillsModel = new \App\Models\CandidateSkillsModel();
+        $workExpModel = new \App\Models\WorkExperienceModel();
+        $userModel = new \App\Models\UserModel();
+
+        $candidateSkills = $skillsModel->where('candidate_id', $candidateId)->findAll();
+        $candidateSkillNames = array_values(array_filter(array_map(static function (array $row): string {
+            return trim((string) ($row['skill_name'] ?? ''));
+        }, $candidateSkills)));
+
+        $latestWork = $workExpModel->where('user_id', $candidateId)->where('is_current', 1)->first();
+        if (empty($latestWork)) {
+            $latestWork = $workExpModel->where('user_id', $candidateId)->orderBy('start_date', 'DESC')->first();
+        }
+
+        $user = $userModel->find($candidateId);
+
+        return [
+            'current_role' => $currentRole,
+            'target_role' => $targetRole,
+            'candidate_skills' => $candidateSkillNames,
+            'current_company' => !empty($latestWork['company_name']) ? (string) $latestWork['company_name'] : '',
+            'candidate_bio' => trim((string) ($user['bio'] ?? '')),
+        ];
+    }
+
     public function completeTask($taskId)
     {
+        if (session()->get('role') !== 'candidate') {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false]);
+        }
+
+        $this->requireCareerTransitionPremium((int) session()->get('user_id'));
         $taskModel = new DailyTaskModel();
         $taskModel->markComplete($taskId);
         return $this->response->setJSON(['success' => true]);
@@ -342,6 +565,7 @@ class CareerTransition extends BaseController
         }
 
         $candidateId = (int) session()->get('user_id');
+        $this->requireCareerTransitionPremium($candidateId);
         $transitionModel = new CareerTransitionModel();
         $moduleModel = new CourseModuleModel();
         $lessonModel = new CourseLessonModel();
@@ -368,13 +592,23 @@ class CareerTransition extends BaseController
 
     public function dismissSuggestion()
     {
+        if (session()->get('role') !== 'candidate') {
+            return $this->response->setStatusCode(403)->setJSON(['success' => false]);
+        }
+
+        $this->requireCareerTransitionPremium((int) session()->get('user_id'));
         session()->remove('career_suggestions');
         return $this->response->setJSON(['success' => true]);
     }
 
     public function reset()
     {
-        $candidateId = session()->get('user_id');
+        if (session()->get('role') !== 'candidate') {
+            return redirect()->to(base_url('recruiter/dashboard'))->with('error', 'Access denied.');
+        }
+
+        $candidateId = (int) session()->get('user_id');
+        $this->requireCareerTransitionPremium($candidateId);
         $db = \Config\Database::connect();
         $db->query(
             "UPDATE career_transitions SET status = 'inactive', deactivated_at = NOW() WHERE candidate_id = ? AND status = 'active'",
@@ -390,7 +624,8 @@ class CareerTransition extends BaseController
             return redirect()->to(base_url('recruiter/dashboard'))->with('error', 'Access denied.');
         }
         
-        $candidateId = session()->get('user_id');
+        $candidateId = (int) session()->get('user_id');
+        $this->requireCareerTransitionPremium($candidateId);
         $transitionModel = new CareerTransitionModel();
         $transitions = $transitionModel
             ->where('candidate_id', $candidateId)
@@ -406,7 +641,8 @@ class CareerTransition extends BaseController
             return redirect()->to(base_url('recruiter/dashboard'))->with('error', 'Access denied.');
         }
         
-        $candidateId = session()->get('user_id');
+        $candidateId = (int) session()->get('user_id');
+        $this->requireCareerTransitionPremium($candidateId);
         $transitionModel = new CareerTransitionModel();
         $db = \Config\Database::connect();
         $transition = $transitionModel->find($transitionId);
@@ -530,10 +766,35 @@ class CareerTransition extends BaseController
         helper('premium');
         requirePremiumForFeature((int) ($transition['candidate_id'] ?? session()->get('user_id')), 'career transition AI');
         $ai = new CareerTransitionAI();
+
+        $skillsModel = new \App\Models\CandidateSkillsModel();
+        $workExpModel = new \App\Models\WorkExperienceModel();
+        $userModel = new \App\Models\UserModel();
+
+        $candidateSkills = $skillsModel->where('candidate_id', (int) ($transition['candidate_id'] ?? 0))->findAll();
+        $candidateSkillNames = array_values(array_filter(array_map(static function (array $row): string {
+            return trim((string) ($row['skill_name'] ?? ''));
+        }, $candidateSkills)));
+
+        $latestWork = $workExpModel->where('user_id', (int) ($transition['candidate_id'] ?? 0))->where('is_current', 1)->first();
+        if (empty($latestWork)) {
+            $latestWork = $workExpModel->where('user_id', (int) ($transition['candidate_id'] ?? 0))->orderBy('start_date', 'DESC')->first();
+        }
+        $currentCompany = !empty($latestWork['company_name']) ? (string) $latestWork['company_name'] : '';
+        $user = $userModel->find((int) ($transition['candidate_id'] ?? 0));
+        $candidateBio = trim((string) ($user['bio'] ?? ''));
+
         $courseData = $ai->generateCourseContent(
             (string) ($transition['current_role'] ?? ''),
             (string) ($transition['target_role'] ?? ''),
-            $skillGaps
+            $skillGaps,
+            [
+                'current_role' => (string) ($transition['current_role'] ?? ''),
+                'target_role' => (string) ($transition['target_role'] ?? ''),
+                'candidate_skills' => $candidateSkillNames,
+                'current_company' => $currentCompany,
+                'candidate_bio' => $candidateBio,
+            ]
         );
 
         $db->reconnect();
