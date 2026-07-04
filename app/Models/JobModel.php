@@ -140,12 +140,21 @@ class JobModel extends Model
      */
     public function getSuggestedJobsBasic($candidateId, $limit = 10)
     {
+        $candidateId = (int) $candidateId;
+        $limit = max(1, (int) $limit);
+        $cache = cache();
+        $cacheKey = 'suggested_jobs_basic_' . $candidateId . '_' . $limit;
+        $cached = $cache->get($cacheKey);
+        if (is_array($cached)) {
+            return $cached;
+        }
+
         $skillsModel = new \App\Models\CandidateSkillsModel();
         $userModel = new \App\Models\UserModel();
         $db = \Config\Database::connect();
         $resumeVersionModel = new \App\Models\CandidateResumeVersionModel();
 
-        $profile = $userModel->findCandidateWithProfile((int) $candidateId) ?? [];
+        $profile = $userModel->findCandidateWithProfile($candidateId) ?? [];
         $skillRow = $skillsModel->where('candidate_id', $candidateId)->first();
         
         // 1. Aggregate skills from all sources (Profile table, Bio, and Primary Resume)
@@ -263,7 +272,10 @@ class JobModel extends Model
         }
 
         usort($ranked, static fn (array $a, array $b): int => ((float) ($b['match_score'] ?? 0.0)) <=> ((float) ($a['match_score'] ?? 0.0)));
-        return array_slice($ranked, 0, $limit);
+        $result = array_slice($ranked, 0, $limit);
+        $cache->save($cacheKey, $result, 300);
+
+        return $result;
     }
 
     public function upsertExternalJob(int $companyId, string $companyName, array $job, string $sourceUrl): int

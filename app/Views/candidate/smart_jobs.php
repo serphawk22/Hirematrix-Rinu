@@ -217,6 +217,7 @@ $suggestedJobsBySkills      = $suggestedJobsBySkills ?? [];
 $suggestedJobsByPreferences = $suggestedJobsByPreferences ?? [];
 $suggestedJobsByAi          = $suggestedJobsByAi ?? [];
 $loadedRecommendationTypes  = $loadedRecommendationTypes ?? ['applies', 'skills', 'preferences', 'ai'];
+$recommendationCounts       = $recommendationCounts ?? [];
 $candidateSkills            = $candidateSkills ?? [];
 $candidateInterests         = $candidateInterests ?? [];
 $behavior                   = $behavior ?? [];
@@ -254,6 +255,19 @@ if (!array_key_exists($recommendationType, $recommendationSets)) {
     $recommendationType = 'skills';
 }
 $activeRecommendedJobs = $recommendationSets[$recommendationType];
+$recommendationLabels = [
+    'applies' => 'Based On Applies',
+    'skills' => 'Based On Skills',
+    'preferences' => 'Preferences / Interests',
+    'ai' => 'Other Recommendations',
+];
+$recommendationCountLabel = static function (string $type, array $jobs) use ($recommendationCounts): string {
+    if (array_key_exists($type, $recommendationCounts) && $recommendationCounts[$type] !== null) {
+        return (string) (int) $recommendationCounts[$type];
+    }
+
+    return $jobs !== [] ? (string) count($jobs) : '';
+};
 $jobsHeroTitle = $showFilters ? 'Browse Jobs' : 'Jobs Matching Your Profile';
 $jobsHeroSubtitle = $showFilters
     ? 'Use live filters to narrow roles by company, location, experience, job type, salary, and work mode.'
@@ -1132,28 +1146,29 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
                     <div class="tab-pills">
                         <button type="button" class="tab-pill <?= $recommendationType === 'applies' ? 'active' : '' ?>" data-rec-type="applies" onclick="switchRecommendation('applies', event)">
                             <i class="fas fa-history"></i> Based On Applies
-                            <span class="pill-count"><?= count($suggestedJobsByApplies) ?></span>
+                            <?php $countLabel = $recommendationCountLabel('applies', $suggestedJobsByApplies); ?>
+                            <?php if ($countLabel !== ''): ?><span class="pill-count"><?= esc($countLabel) ?></span><?php endif; ?>
                         </button>
                         <button type="button" class="tab-pill <?= $recommendationType === 'skills' ? 'active' : '' ?>" data-rec-type="skills" onclick="switchRecommendation('skills', event)">
                             <i class="fas fa-tools"></i> Based On Skills
-                            <span class="pill-count"><?= count($suggestedJobsBySkills) ?></span>
+                            <?php $countLabel = $recommendationCountLabel('skills', $suggestedJobsBySkills); ?>
+                            <?php if ($countLabel !== ''): ?><span class="pill-count"><?= esc($countLabel) ?></span><?php endif; ?>
                         </button>
                         <button type="button" class="tab-pill <?= $recommendationType === 'preferences' ? 'active' : '' ?>" data-rec-type="preferences" onclick="switchRecommendation('preferences', event)">
                             <i class="fas fa-heart"></i> Preferences / Interests
-                            <span class="pill-count"><?= count($suggestedJobsByPreferences) ?></span>
+                            <?php $countLabel = $recommendationCountLabel('preferences', $suggestedJobsByPreferences); ?>
+                            <?php if ($countLabel !== ''): ?><span class="pill-count"><?= esc($countLabel) ?></span><?php endif; ?>
                         </button>
                         <button type="button" class="tab-pill <?= $recommendationType === 'ai' ? 'active' : '' ?>" data-rec-type="ai" onclick="switchRecommendation('ai', event)">
                             <i class="fas fa-brain"></i> Other Recommendations
-                            <span class="pill-count"><?= count($suggestedJobsByAi) ?></span>
+                            <?php $countLabel = $recommendationCountLabel('ai', $suggestedJobsByAi); ?>
+                            <?php if ($countLabel !== ''): ?><span class="pill-count"><?= esc($countLabel) ?></span><?php endif; ?>
                         </button>
                     </div>
                 </div>
 
                 <div class="recommended-jobs-stage">
-                    <?= $renderRecommendedPane('applies', $suggestedJobsByApplies, 'Based On Applies') ?>
-                    <?= $renderRecommendedPane('skills', $suggestedJobsBySkills, 'Based On Skills') ?>
-                    <?= $renderRecommendedPane('preferences', $suggestedJobsByPreferences, 'Preferences / Interests') ?>
-                    <?= $renderRecommendedPane('ai', $suggestedJobsByAi, 'Other Recommendations') ?>
+                    <?= $renderRecommendedPane($recommendationType, $activeRecommendedJobs, $recommendationLabels[$recommendationType] ?? 'Recommended Jobs') ?>
                 </div>
             </div>
             <?php endif; ?>

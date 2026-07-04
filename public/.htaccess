@@ -31,4 +31,28 @@ Options -Indexes
     ErrorDocument 404 index.php
 </IfModule>
 
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType font/woff2 "access plus 1 month"
+    ExpiresByType application/font-woff2 "access plus 1 month"
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js|png|jpe?g|gif|svg|webp|woff2?)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+</IfModule>
+
 ServerSignature Off

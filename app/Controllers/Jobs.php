@@ -53,6 +53,33 @@ class Jobs extends BaseController
             'sort'             => $this->request->getGet('sort') ?: 'newest',
         ];
 
+        $filterContextKeys = [
+            'search',
+            'designation',
+            'company',
+            'location',
+            'category',
+            'experience_level',
+            'employment_type',
+            'work_mode',
+            'salary_range',
+            'posted_within',
+            'skills_match',
+        ];
+        $showFilters = false;
+        foreach ($filterContextKeys as $searchKey) {
+            $value = $filters[$searchKey] ?? null;
+            if (is_array($value) && !empty(array_filter($value, static fn ($v) => trim((string) $v) !== ''))) {
+                $showFilters = true;
+                break;
+            }
+            if (!is_array($value) && trim((string) $value) !== '') {
+                $showFilters = true;
+                break;
+            }
+        }
+        $activeTab = $showFilters ? 'all' : 'recommended';
+
         $builder = $jobModel->where('status', 'open');
         
         // Implicitly treat expired jobs as closed by hiding them from search
@@ -135,31 +162,41 @@ class Jobs extends BaseController
                 break;
         }
 
-        $jobs = $builder->paginate(perPage: 4);
-        $pager = $jobModel->pager;
-        $totalJobs = $pager->getTotal();
+        $jobs = [];
+        $pager = null;
+        $totalJobs = 0;
+        $locations = [];
+        $categories = [];
+        $employmentTypes = [];
+        $experienceLevels = [];
 
-        $locationBuilder      = $jobModel->select('location')->where('status', 'open')->where('location IS NOT NULL')->where('location !=', '');
-        $categoryBuilder      = $jobModel->select('category')->where('status', 'open')->where('category IS NOT NULL')->where('category !=', '');
-        $employmentTypeBuilder = $jobModel->select('employment_type')->where('status', 'open')->where('employment_type IS NOT NULL')->where('employment_type !=', '');
-        $experienceBuilder    = $jobModel->select('experience_level')->where('status', 'open')->where('experience_level IS NOT NULL')->where('experience_level !=', '');
+        if ($showFilters) {
+            $jobs = $builder->paginate(perPage: 4);
+            $pager = $jobModel->pager;
+            $totalJobs = $pager->getTotal();
 
-        foreach ([$locationBuilder, $categoryBuilder, $employmentTypeBuilder, $experienceBuilder] as $fb) {
-            if (!empty($filters['search'])) {
-                $fb->groupStart()->like('title', $filters['search'])->orLike('company', $filters['search'])->orLike('required_skills', $filters['search'])->groupEnd();
+            $locationBuilder      = $jobModel->select('location')->where('status', 'open')->where('location IS NOT NULL')->where('location !=', '');
+            $categoryBuilder      = $jobModel->select('category')->where('status', 'open')->where('category IS NOT NULL')->where('category !=', '');
+            $employmentTypeBuilder = $jobModel->select('employment_type')->where('status', 'open')->where('employment_type IS NOT NULL')->where('employment_type !=', '');
+            $experienceBuilder    = $jobModel->select('experience_level')->where('status', 'open')->where('experience_level IS NOT NULL')->where('experience_level !=', '');
+
+            foreach ([$locationBuilder, $categoryBuilder, $employmentTypeBuilder, $experienceBuilder] as $fb) {
+                if (!empty($filters['search'])) {
+                    $fb->groupStart()->like('title', $filters['search'])->orLike('company', $filters['search'])->orLike('required_skills', $filters['search'])->groupEnd();
+                }
+                if (!empty($filters['company']))    { $fb->like('company', $filters['company']); }
+                if (!empty($filters['designation'])) { $fb->like('title', $filters['designation']); }
+                if (!empty($filters['posted_within'])) {
+                    $days = (int) $filters['posted_within'];
+                    $fb->where('created_at >=', date('Y-m-d H:i:s', strtotime("-{$days} days")));
+                }
             }
-            if (!empty($filters['company']))    { $fb->like('company', $filters['company']); }
-            if (!empty($filters['designation'])) { $fb->like('title', $filters['designation']); }
-            if (!empty($filters['posted_within'])) {
-                $days = (int) $filters['posted_within'];
-                $fb->where('created_at >=', date('Y-m-d H:i:s', strtotime("-{$days} days")));
-            }
+
+            $locations        = $locationBuilder->groupBy('location')->findAll();
+            $categories       = $categoryBuilder->groupBy('category')->findAll();
+            $employmentTypes  = $employmentTypeBuilder->groupBy('employment_type')->findAll();
+            $experienceLevels = $experienceBuilder->groupBy('experience_level')->findAll();
         }
-
-        $locations        = $locationBuilder->groupBy('location')->findAll();
-        $categories       = $categoryBuilder->groupBy('category')->findAll();
-        $employmentTypes  = $employmentTypeBuilder->groupBy('employment_type')->findAll();
-        $experienceLevels = $experienceBuilder->groupBy('experience_level')->findAll();
 
         $allJobsAreExternal = !empty($jobs) && count(array_filter($jobs, static fn($j) => (int)($j['is_external'] ?? 0) !== 1)) === 0;
 
@@ -169,39 +206,18 @@ class Jobs extends BaseController
             $recommendationType = 'skills';
         }
 
-        $filterContextKeys = [
-            'search',
-            'designation',
-            'company',
-            'location',
-            'category',
-            'experience_level',
-            'employment_type',
-            'work_mode',
-            'salary_range',
-            'posted_within',
-            'skills_match',
-        ];
-        $showFilters = false;
-        foreach ($filterContextKeys as $searchKey) {
-            $value = $filters[$searchKey] ?? null;
-            if (is_array($value) && !empty(array_filter($value, static fn ($v) => trim((string) $v) !== ''))) {
-                $showFilters = true;
-                break;
-            }
-            if (!is_array($value) && trim((string) $value) !== '') {
-                $showFilters = true;
-                break;
-            }
-        }
-        $activeTab = $showFilters ? 'all' : 'recommended';
-
         $suggestedJobsByApplies = [];
         $suggestedJobsBySkills = [];
         $suggestedJobsByPreferences = [];
         $suggestedJobsByAi = [];
         $suggestedJobs = [];
         $loadedRecommendationTypes = [];
+        $recommendationCounts = [
+            'applies' => null,
+            'skills' => null,
+            'preferences' => null,
+            'ai' => null,
+        ];
 
         $candidateSkills = [];
         $candidateInterests = [];
@@ -225,30 +241,36 @@ class Jobs extends BaseController
                 );
             }
 
-            $behavior = $jobModel->getCandidateBehaviorProfile($candidateId);
-
-            $suggestedJobsBySkills = $jobModel->getSuggestedJobsBasic($candidateId, 20);
-            $suggestedJobsByApplies = $this->rankJobsByApplicationBehavior($candidateId, $behavior, 20);
-            $suggestedJobsByPreferences = $this->rankJobsByPreferences($candidateId, $behavior, $candidateInterests, 20);
-            $loadedRecommendationTypes = ['applies', 'skills', 'preferences'];
-
-            if ($recommendationType === 'ai') {
-                $aiPrimarySuggestions = (new AiJobMatcher())->generateSuggestions($candidateId, 20);
-                $suggestedJobsByAi = $this->buildOtherRecommendations(
-                    $aiPrimarySuggestions,
-                    $suggestedJobsBySkills,
-                    $suggestedJobsByPreferences,
-                    20
-                );
-                $loadedRecommendationTypes[] = 'ai';
+            if ($recommendationType === 'applies' || $recommendationType === 'preferences') {
+                $behavior = $jobModel->getCandidateBehaviorProfile($candidateId);
             }
 
-            $suggestedJobs = match ($recommendationType) {
-                'applies' => $suggestedJobsByApplies,
-                'preferences' => $suggestedJobsByPreferences,
-                'ai' => $suggestedJobsByAi,
-                default => $suggestedJobsBySkills,
-            };
+            switch ($recommendationType) {
+                case 'applies':
+                    $suggestedJobsByApplies = $this->rankJobsByApplicationBehavior($candidateId, $behavior, 20);
+                    $suggestedJobs = $suggestedJobsByApplies;
+                    break;
+
+                case 'preferences':
+                    $suggestedJobsByPreferences = $this->rankJobsByPreferences($candidateId, $behavior, $candidateInterests, 20);
+                    $suggestedJobs = $suggestedJobsByPreferences;
+                    break;
+
+                case 'ai':
+                    $aiPrimarySuggestions = (new AiJobMatcher())->generateSuggestions($candidateId, 20);
+                    $suggestedJobsByAi = $this->buildOtherRecommendations($aiPrimarySuggestions, [], [], 20);
+                    $suggestedJobs = $suggestedJobsByAi;
+                    break;
+
+                case 'skills':
+                default:
+                    $suggestedJobsBySkills = $jobModel->getSuggestedJobsBasic($candidateId, 20);
+                    $suggestedJobs = $suggestedJobsBySkills;
+                    break;
+            }
+
+            $loadedRecommendationTypes = [$recommendationType];
+            $recommendationCounts[$recommendationType] = count($suggestedJobs);
         }
 
         $companyIds = [];
@@ -404,6 +426,13 @@ class Jobs extends BaseController
         $suggestedJobsByPreferences = $applyVisitedFlags($suggestedJobsByPreferences);
         $suggestedJobsByAi = $applyVisitedFlags($suggestedJobsByAi);
 
+        $suggestedJobs = match ($recommendationType) {
+            'applies' => $suggestedJobsByApplies,
+            'preferences' => $suggestedJobsByPreferences,
+            'ai' => $suggestedJobsByAi,
+            default => $suggestedJobsBySkills,
+        };
+
         return view('candidate/smart_jobs', [
             'jobs' => $jobs,
             'totalJobs' => $totalJobs,
@@ -421,6 +450,7 @@ class Jobs extends BaseController
             'suggestedJobsByPreferences' => $suggestedJobsByPreferences,
             'suggestedJobsByAi' => $suggestedJobsByAi,
             'loadedRecommendationTypes' => $loadedRecommendationTypes,
+            'recommendationCounts' => $recommendationCounts,
             'candidateSkills' => $candidateSkills,
             'candidateInterests' => $candidateInterests,
             'behavior' => $behavior,

@@ -271,6 +271,24 @@
         return true;
     }
 
+    function showRecommendationLoading(recType) {
+        var stage = document.querySelector('.jobs-page-jobboard .recommended-jobs-stage');
+        if (!stage) {
+            return;
+        }
+
+        var activeTab = document.querySelector('.jobs-page-jobboard .tab-pill[data-rec-type="' + recType + '"]');
+        var label = activeTab ? activeTab.textContent.replace(/\s+/g, ' ').trim() : 'recommended jobs';
+        label = label.replace(/\d+$/, '').trim() || 'recommended jobs';
+
+        stage.innerHTML = [
+            '<div class="recommended-tab-loading" role="status" aria-live="polite">',
+            '  <span class="recommended-tab-spinner" aria-hidden="true"></span>',
+            '  <span>Loading ' + label + '...</span>',
+            '</div>'
+        ].join('');
+    }
+
     function updateSaveButtonState(button, saved) {
         var icon = button.querySelector('.js-save-icon') || button.querySelector('i');
         var label = button.querySelector('.js-save-label');
@@ -1182,6 +1200,7 @@
         var url = new URL(getBaseUrl() + '/jobs', window.location.origin);
         url.searchParams.set('tab', 'recommended');
         url.searchParams.set('rec', recType);
+        showRecommendationLoading(recType);
         setJobsLoadingState(true);
         fetchHtml(url.toString())
             .then(function (html) {

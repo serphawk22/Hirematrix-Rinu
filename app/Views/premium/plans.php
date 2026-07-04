@@ -34,8 +34,9 @@ $serviceCards = [
         'title' => 'AI Career Mentor',
         'icon' => 'fas fa-comments',
         'accent' => 'info',
-        'summary' => 'Chat with a career mentor for interview prep, strategy, and next-step guidance.',
+        'summary' => 'This works inside the chatbot. Open chat and ask for interview prep, strategy, or next-step guidance.',
         'points' => [
+            'Use it from the chat button',
             'Unlimited mentor chats',
             'Interview preparation',
             'Resume review guidance',

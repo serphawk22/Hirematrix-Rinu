@@ -64,7 +64,6 @@ class CandidateDashboardController extends BaseController
 
         // Top suggested jobs for dashboard (best matches only)
         $topSuggestedJobs = $this->getTopSuggestedJobs($candidateId, 4);
-        $jobSearchStrategy = $this->buildJobSearchStrategyCoach((int) $candidateId, $applications, $topSuggestedJobs);
         $dailyReminder = $this->buildDailyReminder($candidateId, $applications, $topSuggestedJobs);
             $engagementBanners = $this->buildDashboardEngagementBanners($candidateId, $applications, $topSuggestedJobs, (string) ($dailyReminder['key'] ?? ''), $hasActiveSubscription);
         $applications = $this->maskApplicationsList($applications);
@@ -93,7 +92,6 @@ class CandidateDashboardController extends BaseController
             'dailyReminder' => $dailyReminder,
             'engagementBanners' => $engagementBanners,
             'topSuggestedJobs' => $topSuggestedJobs,
-            'jobSearchStrategy' => $jobSearchStrategy,
             'topHiringCompanies' => $topHiringCompanies,
             'primaryResumeId' => $primaryResumeId,
             'hasBaseResume' => $hasBaseResume,

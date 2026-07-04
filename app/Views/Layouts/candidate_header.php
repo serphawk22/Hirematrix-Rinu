@@ -56,7 +56,9 @@
         <link rel="stylesheet" href="<?= base_url('jobboard/css/animate.min.css') ?>">
     <?php endif; ?>
     <link rel="stylesheet" href="<?= base_url('jobboard/css/style.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/candidate-bundle.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-bundle.min.css')) ?>">
+    <?php $candidateBundleHref = base_url('jobboard/css/candidate-bundle.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-bundle.min.css')); ?>
+    <link rel="preload" href="<?= $candidateBundleHref ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $candidateBundleHref ?>"></noscript>
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.min.css')) ?>">
     <?php if ($candidateNeedsAtsCircle): ?>
