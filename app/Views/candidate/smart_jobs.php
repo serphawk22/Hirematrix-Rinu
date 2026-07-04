@@ -38,7 +38,13 @@ div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer {
     flex-direction: column;
     gap: 0rem;
 } 
-
+.job-card-tools-wrapper {
+    position: absolute;
+    bottom: none !important;
+    right: 34px !important; /* Positioned side-by-side with the save button */
+    z-index: 100; /* Ensure wrapper is above card content */
+    display: block;
+}
  .job-card-saveing-btn{
      background: none;
     border: none !important;
@@ -70,8 +76,7 @@ div.jobs-page-jobboard .recommended-job-pane .row.g-4, .row.g-4.mb-4 > [class*="
     padding-right: calc(var(--bs-gutter-x) / 2) !important;
     margin-bottom: 10px !important; /* was 24px, and no longer stacked with g-4's own gutter-y */
 }
- 
-.candidate-app .jobs-page-jobboard .recommended-tab-loading {
+ .candidate-app .jobs-page-jobboard .recommended-tab-loading {
     align-items: center !important;
     background: var(--candidate-surface, #fff) !important;
     border: 1px solid var(--candidate-line, #d7e5f2) !important;
@@ -97,7 +102,7 @@ div.jobs-page-jobboard .recommended-job-pane .row.g-4, .row.g-4.mb-4 > [class*="
     to {
         transform: rotate(360deg);
     }
-} 
+}
 </style>
 <?php
 $allJobsAreExternal = $allJobsAreExternal ?? false;
@@ -360,7 +365,7 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
      data-job-id="<?= (int) $job['id'] ?>"
      <?= $isExternalJob ? 'data-external="1"' : '' ?>
      role="link"
-     tabindex="0">
+     tabindex="0" style="cursor:pointer;">
 
     <div class="job-card-body">
         <h3 class="job-card-title"><?= esc($title) ?></h3>
@@ -918,7 +923,7 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
          data-job-id="<?= (int) $job['id'] ?>"
          <?= $isExternalJob ? 'data-external="1"' : '' ?>
          role="link"
-         tabindex="0"> 
+         tabindex="0" style="cursor:pointer;"> 
         
         <div class="job-card-body">
             <h3 class="job-card-title"><?= esc($title) ?></h3>

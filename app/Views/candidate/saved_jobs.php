@@ -447,7 +447,7 @@ $isNotSpecified = static function (?string $value): bool {
                     $expSalaryText = trim($expClean . ($expClean !== '' && $salaryClean !== '' ? ' - ' : '') . $salaryClean);
                     ?>
 
-                    <div class="col-md-6">
+                    <div class="col-md-6" >
                         <article class="job-card recommended-job-card saved-job-card js-clickable-card"
                             data-href="<?= esc($detailsUrl) ?>"
                             data-job-id="<?= (int) $job['id'] ?>"
