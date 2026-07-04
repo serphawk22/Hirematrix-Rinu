@@ -3987,9 +3987,9 @@ body.dark.candidate-app .company-profile-jobboard .form-control {
 }
 /* Job Card Tools Dropdown Styles */
 .job-card-tools-wrapper {
-    position: absolute;
-    bottom: 14px;
-    right: 44px; /* Positioned side-by-side with the save button */
+    position: none;
+    bottom: 22px !important;
+    right: 34px !important; /* Positioned side-by-side with the save button */
     z-index: 100; /* Ensure wrapper is above card content */
     display: block;
 }
@@ -8956,7 +8956,7 @@ body.candidate-app .jobs-page-jobboard .recommended-job-card .job-card-tools-tog
 .candidate-app .mock-intro,
 .candidate-app .application-detail-submeta {
     font-size: 0.94rem !important;
-    line-height: 1.55 !important;
+    line-height: 1 !important;
     letter-spacing: 0 !important;
     text-transform: none !important;
 }
@@ -13023,8 +13023,8 @@ body.candidate-app .jobs-page-jobboard #tab-all .job-card-icon {
     border-radius: 10px !important;
     background: var(--candidate-accent-soft, #E8F7F7) !important;
     border: 1px solid rgba(31, 183, 181, 0.2) !important;
-    color: var(--primary-dark, #0D8A90) !important;
-    flex: 0 0 48px !important;
+    color: var(--primary-dark, #0D8A90) !important; 
+        flex: 0 0 auto !important; 
 }
 
 body.candidate-app .jobs-page-jobboard .job-card-logo {

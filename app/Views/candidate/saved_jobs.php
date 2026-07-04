@@ -529,12 +529,17 @@ $isNotSpecified = static function (?string $value): bool {
 
                                 <div class="job-card-footer mt-auto">
                                     <span class="job-card-posted">
-                                        <?php if ($isVisited): ?>
+                                        <?php if ($isVisited){ ?>
                                             <span class="saved-job-visited-note">
                                                 <i class="fas fa-eye"></i>
                                                 Viewed
                                             </span>
-                                        <?php endif; ?>
+                                             <?php } else { ?>
+                                            <span class="saved-job-visited-note">
+                                                <i class="fas fa-eye"></i>
+                                                Not Viewed
+                                            </span>
+                                        <?php } ?>
                                     </span>
 
                                     <button
