@@ -130,6 +130,7 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->post('company/(:num)/review', 'ApiJobsController::submitCompanyReview/$1');
     $routes->get('plans/(:num)', 'ApiDashboardController::getPlans/$1');
     $routes->post('plans/subscribe', 'ApiDashboardController::subscribe');
+    $routes->post('plans/start-trial', 'ApiDashboardController::startTrial');
     $routes->post('payment/create-order', 'ApiPaymentController::createOrder');
     $routes->post('payment/verify', 'ApiPaymentController::verify');
     $routes->get('applications/(:num)', 'ApiApplicationsController::getApplications/$1');

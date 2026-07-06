@@ -587,6 +587,10 @@ class ApiJobsController extends ResourceController
             // Fetch open jobs
             $openJobs = $jobModel->where('company_id', $companyId)->where('status', 'open')->orderBy('created_at', 'DESC')->findAll(10);
             
+            // Fetch discovered external jobs using CompanyJobsController logic
+            $companyJobsController = new \App\Controllers\CompanyJobsController();
+            $discoveredJobs = $companyJobsController->getCachedDiscoveredJobsByCompany((string) ($company['name'] ?? ''), 10);
+            
             // Format company logo
             $logo = (string) ($company['logo'] ?? '');
             if ($logo !== '' && !preg_match('/^https?:\/\//i', $logo)) {
@@ -660,6 +664,7 @@ class ApiJobsController extends ResourceController
                 'success' => true,
                 'company' => $company,
                 'open_jobs' => $openJobs,
+                'discovered_jobs' => $discoveredJobs,
                 'review_summary' => [
                     'total_reviews' => (int) ($reviewSummary['total_reviews'] ?? 0),
                     'average_rating' => (float) ($reviewSummary['average_rating'] ?? 0.0),

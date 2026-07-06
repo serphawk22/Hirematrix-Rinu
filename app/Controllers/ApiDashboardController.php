@@ -647,12 +647,63 @@ class ApiDashboardController extends ResourceController
         $plans = $subscriptionModel->getActivePlans();
         $currentSubscription = $subscriptionModel->getUserActiveSubscription($candidateId);
 
+        $db = \Config\Database::connect();
+        $existingTrial = $db->table('user_subscriptions')->where('user_id', $candidateId)->where('amount_paid', 0.00)->get()->getRowArray();
+        $hasUsedTrial = !empty($existingTrial);
+
         return $this->respond([
             'status' => 'success',
             'data' => [
                 'plans' => $plans,
-                'currentSubscription' => $currentSubscription
+                'currentSubscription' => $currentSubscription,
+                'trial_days' => defined('SUBSCRIPTION_TRIAL_DAYS') ? SUBSCRIPTION_TRIAL_DAYS : 7,
+                'has_used_trial' => $hasUsedTrial
             ]
+        ]);
+    }
+
+    public function startTrial()
+    {
+        $candidateId = (int) $this->request->getPost('candidate_id');
+        $planId = (int) $this->request->getPost('plan_id');
+
+        if ($candidateId <= 0 || $planId <= 0) {
+            return $this->fail('Invalid candidate or plan ID');
+        }
+
+        $subscriptionModel = model('SubscriptionModel');
+        $plan = $subscriptionModel->find($planId);
+        if (!$plan) {
+            return $this->fail('Invalid plan selected.');
+        }
+
+        $db = \Config\Database::connect();
+        $existingTrial = $db->table('user_subscriptions')
+                            ->where('user_id', $candidateId)
+                            ->where('amount_paid', 0.00)
+                            ->get()->getRowArray();
+        if ($existingTrial) {
+            return $this->fail('You have already used your free trial option.');
+        }
+
+        $trialDays = defined('SUBSCRIPTION_TRIAL_DAYS') ? SUBSCRIPTION_TRIAL_DAYS : 7;
+        
+        $subscriptionData = [
+            'user_id' => $candidateId,
+            'plan_id' => $planId,
+            'start_date' => date('Y-m-d'),
+            'end_date' => date('Y-m-d', strtotime("+$trialDays days")),
+            'status' => 'active',
+            'amount_paid' => 0.00,
+            'payment_id' => 'TRIAL_' . time(),
+            'order_id' => 'ORDER_TRIAL_' . time(),
+        ];
+
+        $subscriptionModel->insert($subscriptionData);
+
+        return $this->respond([
+            'status' => 'success',
+            'message' => "Your $trialDays-day free trial has started!"
         ]);
     }
 
