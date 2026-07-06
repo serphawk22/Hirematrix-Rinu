@@ -23843,8 +23843,8 @@ body.candidate-app #courseModuleContent.is-loading {
     }
 }
 
-/* Tablet/narrow desktop: use the topbar layout, not the desktop left rail. */
-@media (max-width: 1099.98px) {
+/* Phone/mobile: use the topbar layout, not the desktop left rail. */
+@media (max-width: 767.98px) {
     html:not(.candidate-touch-device) body.candidate-app,
     body.candidate-app {
         --candidate-sb-width: 0px !important;
@@ -23869,3 +23869,83 @@ body.candidate-app #courseModuleContent.is-loading {
     }
   
 } 
+
+/* Applications sidebar scroller: keep the list scrollbar dark in dark mode. */
+body.dark.candidate-app .applications-jobboard .applications-sidebar-list {
+    scrollbar-width: thin;
+    scrollbar-color: #4a4a4a #111111;
+}
+
+body.dark.candidate-app .applications-jobboard .applications-sidebar-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+body.dark.candidate-app .applications-jobboard .applications-sidebar-list::-webkit-scrollbar-track {
+    background: #111111;
+}
+
+body.dark.candidate-app .applications-jobboard .applications-sidebar-list::-webkit-scrollbar-thumb {
+    background: #4a4a4a;
+    border: 2px solid #111111;
+    border-radius: 999px;
+}
+
+body.dark.candidate-app .applications-jobboard .applications-sidebar-list::-webkit-scrollbar-thumb:hover {
+    background: #5a5a5a;
+}
+
+/* Narrow desktop rail: show section icons instead of an empty collapsed panel. */
+@media (min-width: 768px) and (max-width: 1099.98px) and (hover: hover) and (pointer: fine) {
+    html:not(.candidate-touch-device) body.candidate-app:not(.candidate-leftnav-expanded) .cand-leftnav__nav {
+        align-items: center !important;
+        display: flex !important;
+        flex: 1 1 auto !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        padding: 14px 8px !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app:not(.candidate-leftnav-expanded) .cand-leftnav__section {
+        display: flex !important;
+        flex: 0 0 auto !important;
+        width: 100% !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app:not(.candidate-leftnav-expanded) .cand-leftnav__group-label {
+        align-items: center !important;
+        display: flex !important;
+        height: 48px !important;
+        justify-content: center !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        position: relative !important;
+        width: 48px !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app:not(.candidate-leftnav-expanded) .cand-leftnav__group-icon {
+        align-items: center !important;
+        display: inline-flex !important;
+        flex: 0 0 40px !important;
+        height: 40px !important;
+        justify-content: center !important;
+        left: auto !important;
+        margin: 0 !important;
+        position: static !important;
+        top: auto !important;
+        transform: none !important;
+        width: 40px !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app:not(.candidate-leftnav-expanded) .cand-leftnav__group-icon i {
+        color: var(--candidate-nav-primary-dark, #0D8A90) !important;
+        display: block !important;
+        font-size: 17px !important;
+        line-height: 1 !important;
+        text-align: center !important;
+    }
+
+    html:not(.candidate-touch-device) body.candidate-app:not(.candidate-leftnav-expanded) .cand-leftnav__group-body,
+    html:not(.candidate-touch-device) body.candidate-app:not(.candidate-leftnav-expanded) .cand-leftnav__group-body.is-collapsed {
+        display: none !important;
+    }
+}
