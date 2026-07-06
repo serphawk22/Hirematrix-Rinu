@@ -119,18 +119,7 @@ $proFeatureSlides = [
         ],
         'cta_label' => 'Build my resume',
         'cta_url' => base_url('candidate/resume-studio'),
-    ],
-    [
-        'eyebrow' => 'Job Search Strategy Coach',
-        'title' => 'Search Smarter, Not Harder',
-        'rows' => [
-            'Weekly application priorities',
-            'Post-application follow-up plan',
-            'Traction-focused role targeting',
-        ],
-        'cta_label' => 'Open Full Strategy',
-        'cta_url' => base_url('candidate/job-search-strategy'),
-    ],
+    ], 
      [
         'eyebrow' => 'AI Career Mentor',
         'title' => 'Get Guidance, Anytime You Need It',
@@ -508,13 +497,7 @@ body.dark .job-card.dashboard-card{
         </div>
 
         <div class="dash-pro-carousel" id="dashProCarousel">
-          <button type="button" class="dash-pro-carousel-nav dash-pro-carousel-prev" id="dashProPrev" aria-label="Previous features">
-              <i class="fas fa-chevron-left"></i>
-          </button>
-          <button type="button" class="dash-pro-carousel-nav dash-pro-carousel-next" id="dashProNext" aria-label="Next features">
-              <i class="fas fa-chevron-right"></i>
-          </button>
-
+         
           <div class="dash-pro-grid" id="dashProGrid">
           <?php foreach ($proFeatureSlides as $slide):
               $hasVideo = !empty($slide['video_url']);
@@ -621,81 +604,7 @@ document.addEventListener('keydown', function(e){
 document.getElementById('dashProVideoModal').addEventListener('click', function(e){
     if (e.target === this) { dashProCloseVideo(); }
 });
-
-window.addEventListener('load', function(){
-    var track = document.getElementById('dashProGrid');
-    var prev  = document.getElementById('dashProPrev');
-    var next  = document.getElementById('dashProNext');
-    var wrap  = document.getElementById('dashProCarousel');
-    if (!track || !prev || !next || !wrap) return;
-
-    function cardStep(){
-        var card = track.querySelector('.dash-pro-ring');
-        var gap = 18;
-        return card ? (card.getBoundingClientRect().width + gap) : 300;
-    }
-
-    function maxScroll(){
-        return Math.max(0, track.scrollWidth - track.clientWidth);
-    }
-
-    var animId = null;
-    function animateTo(target){
-        if (animId) cancelAnimationFrame(animId);
-        var start = track.scrollLeft;
-        var change = target - start;
-        var duration = 650;
-        var startTime = null;
-
-        function step(ts){
-            if (!startTime) startTime = ts;
-            var progress = Math.min(1, (ts - startTime) / duration);
-            var eased = 1 - Math.pow(1 - progress, 3); // ease-out
-            track.scrollLeft = start + change * eased;
-            if (progress < 1) {
-                animId = requestAnimationFrame(step);
-            } else {
-                animId = null;
-            }
-        }
-        animId = requestAnimationFrame(step);
-    }
-
-    function goNext(){
-        var max = maxScroll();
-        if (max <= 0) return;
-        var target = track.scrollLeft >= max - 4 ? 0 : Math.min(max, track.scrollLeft + cardStep());
-        animateTo(target);
-    }
-
-    function goPrev(){
-        var max = maxScroll();
-        if (max <= 0) return;
-        var target = track.scrollLeft <= 4 ? max : Math.max(0, track.scrollLeft - cardStep());
-        animateTo(target);
-    }
-
-    next.addEventListener('click', function(e){ e.preventDefault(); stopAuto(); goNext(); startAuto(); });
-    prev.addEventListener('click', function(e){ e.preventDefault(); stopAuto(); goPrev(); startAuto(); });
-
-    var autoTimer = null;
-    var AUTO_DELAY = 4000;
-
-    function startAuto(){
-        stopAuto();
-        autoTimer = setInterval(goNext, AUTO_DELAY);
-    }
-    function stopAuto(){
-        if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
-    }
-
-    wrap.addEventListener('mouseenter', stopAuto);
-    wrap.addEventListener('mouseleave', startAuto);
-    wrap.addEventListener('touchstart', stopAuto, { passive: true });
-    wrap.addEventListener('touchend', function(){ setTimeout(startAuto, AUTO_DELAY); }, { passive: true });
-
-    startAuto();
-});
+ 
 </script>
 <?php endif; ?>
 <!-- ═══════════════ END PRO FEATURE PROMO ═══════════════ -->
