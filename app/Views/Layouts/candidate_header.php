@@ -57,7 +57,9 @@
         <link rel="stylesheet" href="<?= base_url('jobboard/css/animate.min.css') ?>">
     <?php endif; ?>
     <link rel="stylesheet" href="<?= base_url('jobboard/css/style.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/candidate-bundle.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-bundle.min.css')) ?>">
+    <?php $candidateBundleHref = base_url('jobboard/css/candidate-bundle.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-bundle.min.css')); ?>
+    <link rel="preload" href="<?= $candidateBundleHref ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $candidateBundleHref ?>"></noscript>
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.min.css')) ?>">
     <?php if ($candidateNeedsAtsCircle): ?>
@@ -89,6 +91,62 @@
         body.candidate-app .cand-topbar__user-dropdown a.is-active i {
             background: rgba(31, 183, 181, 0.16) !important;
             color: var(--candidate-nav-primary-dark, #0D8A90) !important;
+        }
+        body.candidate-app .candidate-search-suggest-wrap {
+            position: relative !important;
+            overflow: visible !important;
+        }
+        body.candidate-app .candidate-search-suggestions {
+            background: #fff !important;
+            border: 1px solid rgba(148, 163, 184, .22) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, .14) !important;
+            display: none;
+            left: 0;
+            max-height: 310px;
+            overflow: auto;
+            padding: 8px 0 !important;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            z-index: 1200;
+        }
+        body.candidate-app .candidate-search-suggestions.is-open {
+            display: block;
+        }
+        body.candidate-app .candidate-search-suggestion {
+            align-items: center;
+            background: transparent;
+            border: 0;
+            color: #142033;
+            cursor: pointer;
+            display: flex;
+            font-size: 14px;
+            font-weight: 700;
+            justify-content: flex-start;
+            line-height: 1.3;
+            min-height: 38px;
+            padding: 9px 14px;
+            text-align: left;
+            width: 100%;
+        }
+        body.candidate-app .candidate-search-suggestion:hover,
+        body.candidate-app .candidate-search-suggestion.is-active {
+            background: rgba(31, 183, 181, .09);
+            color: #007d83;
+        }
+        body.dark.candidate-app .candidate-search-suggestions {
+            background: #141414 !important;
+            border-color: #272727 !important;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, .36) !important;
+        }
+        body.dark.candidate-app .candidate-search-suggestion {
+            color: #f4f4f5;
+        }
+        body.dark.candidate-app .candidate-search-suggestion:hover,
+        body.dark.candidate-app .candidate-search-suggestion.is-active {
+            background: rgba(31, 183, 181, .16);
+            color: #28d7d4;
         }
  
     </style>
@@ -598,9 +656,10 @@
     <!-- Mobile search drawer -->
     <div id="mobileSearchDrawer" class="mobile-search-drawer">
         <form action="<?= base_url('jobs') ?>" method="get" class="mobile-search-form">
-            <div class="mobile-search-field">
+            <div class="mobile-search-field candidate-search-suggest-wrap">
                 <span class="icon-search mobile-search-icon"></span>
-                <input type="text" name="search" placeholder="Job title, skills or company" value="<?= esc($headerSearch !== '' ? $headerSearch : ($headerDesignation !== '' ? $headerDesignation : $headerCompany)) ?>" autocomplete="off">
+                <input type="text" name="search" placeholder="Job title, skills or company" value="<?= esc($headerSearch !== '' ? $headerSearch : ($headerDesignation !== '' ? $headerDesignation : $headerCompany)) ?>" autocomplete="off" data-job-search-suggest aria-autocomplete="list" aria-expanded="false">
+                <div class="candidate-search-suggestions" data-job-search-suggestions></div>
             </div>
             <div class="mobile-search-row2">
                 <div class="mobile-search-field mobile-search-field-half">
@@ -632,9 +691,10 @@
                 <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                 <input type="text" name="location" placeholder="Location" value="<?= esc($headerLocation) ?>" autocomplete="off" aria-label="Location">
             </label>
-            <label class="candidate-workbar__field">
+            <label class="candidate-workbar__field candidate-workbar__field--search candidate-search-suggest-wrap">
                 <i class="fas fa-search" aria-hidden="true"></i>
-                <input type="text" name="search" placeholder="Job title, skills or company" value="<?= esc($headerSearch !== '' ? $headerSearch : ($headerDesignation !== '' ? $headerDesignation : $headerCompany)) ?>" autocomplete="off" aria-label="Job title, skills or company">
+                <input type="text" name="search" placeholder="Job title, skills or company" value="<?= esc($headerSearch !== '' ? $headerSearch : ($headerDesignation !== '' ? $headerDesignation : $headerCompany)) ?>" autocomplete="off" aria-label="Job title, skills or company" data-job-search-suggest aria-autocomplete="list" aria-expanded="false">
+                <div class="candidate-search-suggestions" data-job-search-suggestions></div>
             </label>
             <button type="submit" class="candidate-workbar__submit">Find Jobs</button>
         </form>

@@ -494,7 +494,7 @@ $routes->get('mnc/job/unsave/(:num)', 'MncJobController::unsave/$1', ['filter' =
 $routes->get('candidate/company-jobs/suggestions', 'CompanyJobsController::suggestions');
 $routes->get('candidate/company-jobs/clear-cache/(:segment)', 'CompanyJobsController::clearCache/$1');
 $routes->get('candidate/company-jobs/clear-all-cache', 'CompanyJobsController::clearAllCache');
-$routes->get('candidate/company-jobs/(:segment)', 'CompanyJobsController::viewCompanyJobs/$1', ['filter' => 'candidate']);
+$routes->get('candidate/company-jobs/(:any)', 'CompanyJobsController::viewCompanyJobs/$1', ['filter' => 'candidate']);
 
 // Google Calendar Sync Routes
 $routes->group('auth', ['filter' => 'auth'], function($routes) {

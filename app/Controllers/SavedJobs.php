@@ -61,28 +61,63 @@ class SavedJobs extends BaseController
         });
 
         $companyIds = [];
+        $companyNames = [];
         foreach ($savedRows as $job) {
             $id = (int) ($job['company_id'] ?? 0);
             if ($id > 0) {
                 $companyIds[] = $id;
             }
+
+            $companyName = trim((string) ($job['company'] ?? ''));
+            if ($companyName !== '') {
+                $companyNames[] = $companyName;
+            }
         }
 
-        $companyLogoMap = [];
+        $companyById = [];
+        $companyByName = [];
         $companyIds = array_values(array_unique($companyIds));
         if (!empty($companyIds)) {
             $companies = (new CompanyModel())
-                ->select('id, logo')
+                ->select('id, name, logo, website')
                 ->whereIn('id', $companyIds)
                 ->findAll();
             foreach ($companies as $company) {
-                $companyLogoMap[(int) $company['id']] = (string) ($company['logo'] ?? '');
+                $companyById[(int) $company['id']] = [
+                    'logo' => (string) ($company['logo'] ?? ''),
+                    'website' => (string) ($company['website'] ?? ''),
+                ];
+                $nameKey = strtolower(trim((string) ($company['name'] ?? '')));
+                if ($nameKey !== '') {
+                    $companyByName[$nameKey] = $companyById[(int) $company['id']];
+                }
+            }
+        }
+
+        $companyNames = array_values(array_unique(array_filter(array_map('trim', $companyNames))));
+        if (!empty($companyNames)) {
+            $companies = (new CompanyModel())
+                ->select('name, logo, website')
+                ->whereIn('name', $companyNames)
+                ->findAll();
+            foreach ($companies as $company) {
+                $nameKey = strtolower(trim((string) ($company['name'] ?? '')));
+                if ($nameKey === '') {
+                    continue;
+                }
+                $companyByName[$nameKey] = [
+                    'logo' => (string) ($company['logo'] ?? ''),
+                    'website' => (string) ($company['website'] ?? ''),
+                ];
             }
         }
 
         foreach ($savedRows as $index => $job) {
             $id = (int) ($job['company_id'] ?? 0);
-            $savedRows[$index]['company_logo'] = $companyLogoMap[$id] ?? '';
+            $nameKey = strtolower(trim((string) ($job['company'] ?? '')));
+            $companyInfo = $companyById[$id] ?? ($companyByName[$nameKey] ?? []);
+            $savedRows[$index]['company_logo'] = (string) ($companyInfo['logo'] ?? '');
+            $savedRows[$index]['company_website'] = (string) ($companyInfo['website'] ?? '');
         }
 
         return view('candidate/saved_jobs', [

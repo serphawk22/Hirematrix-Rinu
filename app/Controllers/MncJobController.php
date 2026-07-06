@@ -35,9 +35,13 @@ class MncJobController extends BaseController
 
         $limit = (int) ($this->request->getGet('limit') ?? 10);
         $limit = max(1, min(100, $limit));
+        $companyHints = [
+            'website' => trim((string) ($this->request->getGet('website') ?? '')),
+            'career_url' => trim((string) ($this->request->getGet('career_url') ?? '')),
+        ];
 
         try {
-            return $this->runDiscover($companyName, $limit);
+            return $this->runDiscover($companyName, $limit, $companyHints);
         } catch (\Throwable $e) {
             log_message('error', 'MncJobController::discover exception: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
             return $this->response->setJSON([
@@ -50,7 +54,7 @@ class MncJobController extends BaseController
         }
     }
 
-    private function runDiscover(string $companyName, int $limit): \CodeIgniter\HTTP\ResponseInterface
+    private function runDiscover(string $companyName, int $limit, array $companyHints = []): \CodeIgniter\HTTP\ResponseInterface
     {
         @set_time_limit(180);
 
@@ -60,6 +64,17 @@ class MncJobController extends BaseController
 
         // 1. Get or Discover/Enrich Company Info
         $companyInfo = $companyModel->like('name', $companyName, 'both')->first();
+        $hintWebsite = $this->normalizeApplyUrl((string) ($companyHints['website'] ?? ''));
+        $hintCareerUrl = $this->normalizeApplyUrl((string) ($companyHints['career_url'] ?? ''));
+        if (!$companyInfo) {
+            $companyInfo = ['name' => $companyName];
+        }
+        if ($hintWebsite !== '' && empty($companyInfo['website'])) {
+            $companyInfo['website'] = $hintWebsite;
+        }
+        if ($hintCareerUrl !== '' && empty($companyInfo['career_page'])) {
+            $companyInfo['career_page'] = $hintCareerUrl;
+        }
         
         // Enrichment logic: If company exists but lacks description or industry, trigger AI discovery
         $needsEnrichment = !$companyInfo || empty($companyInfo['short_description']) || empty($companyInfo['industry']);
@@ -111,9 +126,17 @@ class MncJobController extends BaseController
         // Find official ATS mapping to prioritize official website search
         $atsMappingModel = model('App\Models\CompanyAtsMappingModel');
         $mapping = $atsMappingModel->findMatchingMapping($companyName);
+        if (!$mapping && ($hintCareerUrl !== '' || $hintWebsite !== '')) {
+            $mapping = [
+                'company_name' => $companyName,
+                'career_url' => $hintCareerUrl,
+                'website_url' => $hintWebsite,
+                'platform' => 'Official Career Site',
+            ];
+        }
 
         // 1. Check if we have recently discovered jobs (Cache to save API costs)
-        $jobs = $this->filterUsableJobs($model->getCachedJobs($companyName, $limit), $companyName, $limit);
+        $jobs = $this->filterUsableJobs($this->getCachedJobsForCompanyAliases($model, $companyName, $companyInfo, $limit), $companyName, $limit);
 
         if (count($jobs) < $limit) {
             // 2. Perform AI discovery if cache is empty or old
@@ -193,7 +216,7 @@ class MncJobController extends BaseController
                     log_message('error', 'MncJobController: Final cache fetch reconnect failed: ' . $e->getMessage());
                 }
 
-                $jobs = $this->filterUsableJobs($model->getCachedJobs($companyName, $limit), $companyName, $limit);
+                $jobs = $this->filterUsableJobs($this->getCachedJobsForCompanyAliases($model, $companyName, $companyInfo, $limit), $companyName, $limit);
             }
         }
 
@@ -378,6 +401,63 @@ class MncJobController extends BaseController
     }
 
     /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function getCachedJobsForCompanyAliases(MncJobModel $model, string $companyName, ?array $companyInfo, int $limit): array
+    {
+        $aliases = [$companyName];
+        if (!empty($companyInfo['name'])) {
+            $aliases[] = (string) $companyInfo['name'];
+        }
+
+        if (preg_match('/tech$/i', $companyName) === 1) {
+            $aliases[] = preg_replace('/tech$/i', ' Technologies', $companyName) ?? $companyName;
+        }
+        if (preg_match('/technologies$/i', $companyName) === 1) {
+            $aliases[] = preg_replace('/\s*technologies$/i', 'Tech', $companyName) ?? $companyName;
+        }
+
+        $aliases = array_values(array_unique(array_filter(array_map(static function (string $alias): string {
+            return trim($alias);
+        }, $aliases))));
+
+        $jobsByUrl = [];
+        foreach ($aliases as $alias) {
+            foreach ($model->getCachedJobs($alias, $limit) as $job) {
+                $key = trim((string) ($job['apply_url'] ?? ''));
+                if ($key === '') {
+                    $key = (string) ($job['id'] ?? count($jobsByUrl));
+                }
+                $jobsByUrl[$key] = $job;
+            }
+        }
+
+        if (count($jobsByUrl) < $limit && strlen($this->normalizeCompanyKey($companyName)) > 4) {
+            try {
+                $freshAfter = date('Y-m-d H:i:s', strtotime('-48 hours'));
+                $likeJobs = (new MncJobModel())
+                    ->where('is_active', 1)
+                    ->where('last_sync_at >=', $freshAfter)
+                    ->like('company_name', $companyName, 'both')
+                    ->orderBy('last_sync_at', 'DESC')
+                    ->limit($limit)
+                    ->findAll();
+
+                foreach ($likeJobs as $job) {
+                    $key = trim((string) ($job['apply_url'] ?? ''));
+                    if ($key !== '') {
+                        $jobsByUrl[$key] = $job;
+                    }
+                }
+            } catch (\Throwable $e) {
+                log_message('error', 'MncJobController alias cache lookup failed: ' . $e->getMessage());
+            }
+        }
+
+        return array_slice(array_values($jobsByUrl), 0, $limit);
+    }
+
+    /**
      * @param array<int, array<string, mixed>> $jobs
      * @return array<int, array<string, mixed>>
      */
@@ -558,6 +638,10 @@ class MncJobController extends BaseController
             return true;
         }
 
+        if (min(strlen($left), strlen($right)) <= 4 && (str_starts_with($left, $right) || str_starts_with($right, $left))) {
+            return true;
+        }
+
         if (min(strlen($left), strlen($right)) <= 4) {
             return false;
         }
@@ -589,7 +673,11 @@ class MncJobController extends BaseController
         $value = preg_replace('/[^a-z0-9]+/', ' ', $value) ?? '';
         $value = preg_replace('/\b(limited|ltd|inc|llc|llp|plc|corp|corporation|company|co|technologies|technology|solutions|services|systems|group|holdings|private|pvt)\b/', ' ', $value) ?? '';
         $value = preg_replace('/\s+/', ' ', $value) ?? '';
-        return str_replace(' ', '', trim($value));
+        $key = str_replace(' ', '', trim($value));
+        if (strlen($key) > 4 && str_ends_with($key, 'tech')) {
+            $key = substr($key, 0, -4);
+        }
+        return $key;
     }
 
     private function isStaleExternalJob(array $job): bool

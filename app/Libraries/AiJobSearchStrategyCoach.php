@@ -123,7 +123,8 @@ class AiJobSearchStrategyCoach
                 'Authorization: Bearer ' . trim($this->apiKey),
             ],
             CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_TIMEOUT => 60,
+            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_TIMEOUT => 8,
         ]);
 
         $response = curl_exec($ch);

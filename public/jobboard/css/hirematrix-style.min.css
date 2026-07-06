@@ -3174,7 +3174,8 @@ body {
     display: inline-flex
 }
 
-.career-transition-jobboard .btn.is-loading #btnText {
+.career-transition-jobboard .btn.is-loading #btnText,
+.career-transition-jobboard .btn.is-loading [data-submit-label] {
     display: none
 }
 

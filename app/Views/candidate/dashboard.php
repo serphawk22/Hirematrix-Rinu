@@ -826,8 +826,6 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
                         <div class="job-card-desc">
                             <i class="fas fa-align-left"></i> <span><?= esc($description) ?></span>
                         </div>
-                    <?php else: ?>
-                        <div class="job-card-desc job-card-desc--empty" aria-hidden="true"></div>
                     <?php endif; ?>
 
                     <?php if (!empty($tags)): ?>
@@ -836,8 +834,6 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
                                 <span class="job-card-tag"><?= esc($tag) ?></span><?php if ($i < min(count($tags), 6) - 1): ?><span class="job-card-tag-dot">·</span><?php endif; ?>
                             <?php endforeach; ?>
                         </div>
-                    <?php else: ?>
-                        <div class="job-card-tags job-card-tags--empty" aria-hidden="true"></div>
                     <?php endif; ?>
                 </a>
                 
