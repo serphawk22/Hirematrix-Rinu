@@ -546,7 +546,7 @@ foreach ((array) ($filters['experience_level'] ?? []) as $experienceLevel) {
     $addActiveChip('Experience: ' . $experienceLevel, $buildJobsUrl(['experience_level' => $remaining], []));
 }
 if (!empty($filters['posted_within'])) {
-    $postedLabels = ['1' => 'Today', '3' => 'Last 3 days', '7' => 'Last week', '14' => 'Last 2 weeks'];
+    $postedLabels = ['1' => 'Today', '7' => 'This week', '30' => 'Last one month'];
     $postedLabel = $postedLabels[(string) $filters['posted_within']] ?? (string) $filters['posted_within'];
     $addActiveChip('Posted: ' . $postedLabel, $buildJobsUrl(['posted_within' => null], ['posted_within']));
 }
@@ -730,7 +730,7 @@ $activeFilterCount = count($activeFilterChips);
     <?php if ($hasDateData): ?>
     <div class="filter-section">
         <span class="filter-label">Posted Within</span>
-        <?php foreach (['' => 'Any time', '1' => 'Today', '3' => 'Last 3 days', '7' => 'Last week', '14' => 'Last 2 weeks'] as $val => $label): ?>
+        <?php foreach (['1' => 'Today', '7' => 'This week', '30' => 'Last one month', '' => 'Any time'] as $val => $label): ?>
             <label class="check-item">
                 <input type="radio" name="posted_within" value="<?= $val ?>"
                        <?= ($filters['posted_within'] ?? '') == $val ? 'checked' : '' ?>
