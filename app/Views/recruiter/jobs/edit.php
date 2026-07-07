@@ -790,6 +790,24 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
             createRow(item || {});
         });
     }
+
+    let screeningPrefill = [];
+    try {
+        const rawScreeningPrefill = window.sessionStorage.getItem('hmRecruiterScreeningPrefill');
+        if (rawScreeningPrefill) {
+            window.sessionStorage.removeItem('hmRecruiterScreeningPrefill');
+            screeningPrefill = JSON.parse(rawScreeningPrefill) || [];
+        }
+    } catch (error) {
+        screeningPrefill = [];
+    }
+
+    if (Array.isArray(screeningPrefill) && screeningPrefill.length > 0) {
+        const remainingSlots = Math.max(0, 8 - builder.querySelectorAll('.questionnaire-row').length);
+        screeningPrefill.slice(0, remainingSlots).forEach(function (item) {
+            createRow(item || {});
+        });
+    }
 })();
 </script>
 <?= view('Layouts/recruiter_footer') ?>

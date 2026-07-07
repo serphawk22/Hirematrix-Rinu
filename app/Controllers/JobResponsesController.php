@@ -56,7 +56,78 @@ class JobResponsesController extends BaseController
         foreach ($jobs as &$job) {
             $job['applicant_count'] = $applicationModel->where('job_id', $job['id'])->countAllResults();
             $job['shortlisted_count'] = $applicationModel->where('job_id', $job['id'])->where('status', 'shortlisted')->countAllResults();
+
+            $jobApplications = $this->getApplicationsForRecruiterJobs([(int) $job['id']], $recruiterId, false, 'all', ['sort' => 'ats_desc']);
+            $atsScores = array_map(static fn (array $application): int => (int) ($application['ats_score'] ?? 0), $jobApplications);
+            $averageAts = !empty($atsScores) ? (int) round(array_sum($atsScores) / count($atsScores)) : 0;
+            $job['average_ats_score'] = $averageAts;
+
+            $attentionFacts = [];
+            $suggestedActions = [];
+            $priorityScore = 0;
+            $createdAt = strtotime((string) ($job['created_at'] ?? ''));
+            $isOpen = strtolower((string) ($job['status'] ?? '')) === 'open';
+            $jobAgeDays = $createdAt ? max(0, (int) floor((time() - $createdAt) / 86400)) : 0;
+            if ($isOpen && $jobAgeDays >= 14) {
+                $priorityScore += 20;
+                $attentionFacts[] = 'stale ' . $jobAgeDays . 'd';
+            } elseif ($isOpen && $jobAgeDays >= 7) {
+                $priorityScore += 10;
+                $attentionFacts[] = 'stale ' . $jobAgeDays . 'd';
+            }
+            if ((int) $job['applicant_count'] > 0 && (int) $job['shortlisted_count'] === 0) {
+                $priorityScore += (int) $job['applicant_count'] >= 2 ? 30 : 15;
+                $attentionFacts[] = '0 shortlisted';
+                $suggestedActions[] = [
+                    'label' => 'Review Candidates',
+                    'url' => base_url('recruiter/jobs/view/' . (int) $job['id']),
+                    'primary' => true,
+                ];
+            }
+            if ((int) $job['applicant_count'] > 0) {
+                if ($averageAts < 20) {
+                    $priorityScore += (int) $job['shortlisted_count'] > 0 ? 22 : 35;
+                } elseif ($averageAts < 30) {
+                    $priorityScore += (int) $job['shortlisted_count'] > 0 ? 14 : 25;
+                } elseif ($averageAts < 40) {
+                    $priorityScore += (int) $job['shortlisted_count'] > 0 ? 6 : 12;
+                }
+                if ($averageAts < 30 && (int) $job['shortlisted_count'] === 0) {
+                    $attentionFacts[] = 'weak candidate pool';
+                    $suggestedActions[] = [
+                        'label' => 'Edit Job Requirements',
+                        'url' => base_url('recruiter/jobs/edit/' . (int) $job['id']),
+                        'primary' => false,
+                    ];
+                }
+            }
+            $job['job_age_days'] = $jobAgeDays;
+            $job['attention_score'] = $priorityScore;
+            $job['attention_facts'] = array_values(array_unique($attentionFacts));
+            $job['suggested_actions'] = $suggestedActions;
+            $job['attention_level'] = 'quiet';
         }
+        unset($job);
+
+        usort($jobs, static function (array $a, array $b): int {
+            $scoreCompare = ((int) ($b['attention_score'] ?? 0)) <=> ((int) ($a['attention_score'] ?? 0));
+            if ($scoreCompare !== 0) {
+                return $scoreCompare;
+            }
+            return strtotime((string) ($b['created_at'] ?? '')) <=> strtotime((string) ($a['created_at'] ?? ''));
+        });
+
+        $visibleAttentionLimit = max(1, min(3, (int) floor(count($jobs) / 2)));
+        foreach ($jobs as $index => &$job) {
+            $job['attention_rank'] = $index + 1;
+            $score = (int) ($job['attention_score'] ?? 0);
+            if ($score < 35 || $index >= $visibleAttentionLimit) {
+                $job['attention_level'] = 'quiet';
+                continue;
+            }
+            $job['attention_level'] = $score >= 55 ? 'critical' : 'watch';
+        }
+        unset($job);
 
         return view('recruiter/job_responses', [
             'jobs' => $jobs,
@@ -81,7 +152,7 @@ class JobResponsesController extends BaseController
             'location'    => trim((string) $this->request->getGet('location')),
             'ats_min'     => $this->request->getGet('ats_min'),
             'ats_max'     => $this->request->getGet('ats_max'),
-            'sort'        => trim((string) $this->request->getGet('sort')),
+            'sort'        => trim((string) $this->request->getGet('sort')) ?: 'ats_desc',
             'last_active' => trim((string) $this->request->getGet('last_active')),
         ];
 
@@ -354,12 +425,11 @@ class JobResponsesController extends BaseController
         }
 
         // Sorting
-        if (!empty($filters['sort'])) {
-            if ($filters['sort'] === 'ats_desc') {
-                usort($applications, fn($a, $b) => $b['ats_score'] <=> $a['ats_score']);
-            } elseif ($filters['sort'] === 'ats_asc') {
-                usort($applications, fn($a, $b) => $a['ats_score'] <=> $b['ats_score']);
-            }
+        $sort = $filters['sort'] ?? 'ats_desc';
+        if ($sort === 'ats_desc') {
+            usort($applications, fn($a, $b) => $b['ats_score'] <=> $a['ats_score']);
+        } elseif ($sort === 'ats_asc') {
+            usort($applications, fn($a, $b) => $a['ats_score'] <=> $b['ats_score']);
         }
 
         return $applications;

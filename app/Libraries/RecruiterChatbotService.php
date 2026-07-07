@@ -41,7 +41,7 @@ class RecruiterChatbotService
 
         if ($this->apiKey === '') {
             return [
-                'answer' => 'The AI answer mode is not available because the OpenAI API key is not configured. I can still help with action requests like "draft job description for PHP Developer", "screening questions for job 12", "shortlist candidates for job 12", "suggest slots for job 12", or "export candidates".',
+                'answer' => 'The AI answer mode is not available because the OpenAI API key is not configured. I can still help with recruiter tasks from the action buttons, including drafting job descriptions, screening questions, shortlisting candidates, interview slots, and exports.',
                 'data_summary' => [],
                 'actions' => [],
             ];
@@ -88,6 +88,10 @@ class RecruiterChatbotService
     {
         $question = $this->expandContextualQuestion($question, $chatContext);
 
+        if (preg_match('/^\s*confirm\b.*\b(send|message|mail|email)\b.*\bcandidates?\b/i', $question)) {
+            return $this->actionResult('send_candidate_message', $this->sendBatchCandidateMessageFromPrompt($recruiterId, $question, $chatContext));
+        }
+
         if (preg_match('/^\s*confirm\b.*\b(send|message)\b.*\bcandidate\s*#?\s*\d+\b/i', $question)) {
             return $this->actionResult('send_candidate_message', $this->sendCandidateMessageFromPrompt($recruiterId, $question));
         }
@@ -98,6 +102,10 @@ class RecruiterChatbotService
 
         if ($this->isBatchStatusByScoreRequest($question)) {
             return $this->buildBatchStatusByScoreConfirmation($recruiterId, $question);
+        }
+
+        if ($this->isBatchMessageByScoreRequest($question)) {
+            return $this->buildBatchMessageByScoreConfirmation($recruiterId, $question, $chatContext);
         }
 
         if ($this->isInterviewInviteRequest($question)) {
@@ -148,7 +156,8 @@ class RecruiterChatbotService
         if (preg_match('/\b(draft|write|create|generate|improve|post)\b.*\b(job description|jd|job post|job posting|job)\b/i', $question)
             || preg_match('/\bjob description\b/i', $question)
             || preg_match('/\bpost\s+(?:a\s+)?job\s+(?:for|as|role|position)\b/i', $question)) {
-            return $this->actionResult('draft_job_description', $this->draftJobDescription($recruiterId, $question));
+            $jobDraft = $this->draftJobDescription($recruiterId, $question);
+            return $this->actionResult('draft_job_description', $jobDraft['answer'], $jobDraft['actions']);
         }
 
         if ($this->isTopCandidateRequest($question)) {
@@ -162,7 +171,8 @@ class RecruiterChatbotService
         }
 
         if (preg_match('/\b(suggest|show|find|available)\b.*\b(slots?|interviews?|schedule)\b/i', $question)) {
-            return $this->actionResult('suggest_interview_slots', $this->suggestInterviewSlots($recruiterId, $question));
+            $slotResult = $this->suggestInterviewSlots($recruiterId, $question);
+            return $this->actionResult('suggest_interview_slots', $slotResult['answer'], $slotResult['actions']);
         }
 
         if (preg_match('/\b(export|download)\b.*\b(candidates?|applications?|jobs?|data|excel|csv|leaderboard|overview|funnel)\b/i', $question)) {
@@ -197,6 +207,12 @@ class RecruiterChatbotService
     private function isBatchStatusByScoreRequest(string $question): bool
     {
         return preg_match('/\b(reject|shortlist)\b.*\b(anyone|all|candidates?|applicants?)\b.*\b(below|under|less than|above|over|at least)\b.*\d{1,3}\s*%?/i', $question) === 1;
+    }
+
+    private function isBatchMessageByScoreRequest(string $question): bool
+    {
+        return preg_match('/\b(send|message|mail|email)\b.*\b(candidates?|applicants?)\b.*\b(below|under|less than|above|over|at least)\b.*\d{1,3}\s*%?/i', $question) === 1
+            || preg_match('/\b(send|message|mail|email)\b.*\b(above|previous|last|this|that)\s+(mail|email|message|draft)\b.*\b(below|under|less than|above|over|at least)\b.*\d{1,3}\s*%?/i', $question) === 1;
     }
 
     private function buildTopCandidateAnswer(int $recruiterId, string $question): array
@@ -258,6 +274,7 @@ class RecruiterChatbotService
         $jobId = (int) ($candidateContext['job_id'] ?? 0);
         $candidateName = (string) ($candidateContext['candidate_name'] ?? ('candidate #' . $candidateId));
         $draftCommand = 'send message to candidate #' . $candidateId . ': Subject: ' . $subject . "\n\n" . $body;
+        $draftCommandPrefix = 'send message to candidate #' . $candidateId . ': ';
         $buttons = [
             [
                 'label' => $isInterviewInvite ? 'Send Now' : 'Send',
@@ -269,6 +286,8 @@ class RecruiterChatbotService
                 'label' => 'Edit',
                 'kind' => 'draft',
                 'command' => $draftCommand,
+                'command_prefix' => $draftCommandPrefix,
+                'draft_text' => 'Subject: ' . $subject . "\n\n" . $body,
             ],
         ];
 
@@ -295,6 +314,8 @@ class RecruiterChatbotService
             'subject' => $subject,
             'message_body' => $body,
             'command' => $draftCommand,
+            'command_prefix' => $draftCommandPrefix,
+            'draft_text' => 'Subject: ' . $subject . "\n\n" . $body,
             'title' => $title,
             'meta' => 'Subject: ' . $subject,
             'detail' => $body,
@@ -309,6 +330,10 @@ class RecruiterChatbotService
         $candidateId = (int) ($lastCandidate['candidate_id'] ?? 0);
         $applicationId = (int) ($lastCandidate['application_id'] ?? 0);
         if ($candidateId <= 0) {
+            return $question;
+        }
+
+        if ($this->isBatchMessageByScoreRequest($question)) {
             return $question;
         }
 
@@ -348,7 +373,7 @@ class RecruiterChatbotService
         return $question;
     }
 
-    private function draftJobDescription(int $recruiterId, string $question): string
+    private function draftJobDescription(int $recruiterId, string $question): array
     {
         $job = $this->resolveJobFromQuestion($recruiterId, $question);
         $title = (string) ($job['title'] ?? $this->extractRoleTitle($question));
@@ -362,12 +387,6 @@ class RecruiterChatbotService
         }
 
         $lines = [
-            'Here is a recruiter-ready job description draft:',
-            '',
-            $title,
-            ($company !== '' ? $company . ' | ' : '') . $location . ' | ' . $employmentType,
-            '',
-            'About the role',
             'We are looking for a strong ' . $title . ' to join our team and contribute to high-impact work from day one. The ideal candidate is comfortable owning responsibilities, collaborating with stakeholders, and delivering reliable outcomes.',
             '',
             'Key responsibilities',
@@ -387,10 +406,41 @@ class RecruiterChatbotService
         $lines[] = 'Nice to have';
         $lines[] = '- Experience in a similar domain or fast-moving environment.';
         $lines[] = '- Ability to mentor others or improve team processes.';
-        $lines[] = '';
-        $lines[] = 'Next step: open Post a Job, paste this draft, then add the required category, location, openings, salary, deadline, and must-have experience before publishing.';
+        $draft = implode("\n", $lines);
 
-        return implode("\n", $lines);
+        return [
+            'answer' => 'Job description draft ready for ' . $title . '.',
+            'actions' => [[
+                'type' => 'job_draft',
+                'title' => 'Job description draft',
+                'meta' => trim($title . ($company !== '' ? ' | ' . $company : '')),
+                'detail' => $draft,
+                'buttons' => [
+                    [
+                        'label' => 'Use This',
+                        'kind' => 'prefill_job',
+                        'url' => base_url('recruiter/post_job'),
+                        'job_prefill' => [
+                            'title' => $title,
+                            'description' => $draft,
+                            'location' => $location,
+                            'employment_type' => $employmentType,
+                            'required_skills' => implode(', ', $skills),
+                        ],
+                    ],
+                    [
+                        'label' => 'Copy Draft',
+                        'kind' => 'copy',
+                        'copy_text' => $draft,
+                    ],
+                    [
+                        'label' => 'Regenerate',
+                        'kind' => 'primary',
+                        'command' => 'draft job description for ' . $title,
+                    ],
+                ],
+            ]],
+        ];
     }
 
     private function generateScreeningQuestions(int $recruiterId, string $question, array $chatContext = []): array
@@ -412,28 +462,61 @@ class RecruiterChatbotService
             $heading = 'That is "' . $title . "\".\n\n" . $heading;
         }
 
-        $lines = [
-            $heading,
-            '',
-            '1. Tell us about your most relevant experience for this role.',
-            '2. Which tools, technologies, or workflows from the job requirements have you used recently?',
-            '3. Describe a project where you solved a difficult problem with limited guidance.',
-            '4. What quality checks do you use before calling your work complete?',
-            '5. What is your expected notice period and availability for interviews?',
+        $questions = [
+            'Tell us about your most relevant experience for this role.',
+            'Which tools, technologies, or workflows from the job requirements have you used recently?',
+            'Describe a project where you solved a difficult problem with limited guidance.',
+            'What quality checks do you use before calling your work complete?',
+            'What is your expected notice period and availability for interviews?',
         ];
 
-        $index = 6;
         foreach (array_slice($skills, 0, 5) as $skill) {
-            $lines[] = $index . '. Rate your hands-on experience with ' . $skill . ' and share one example.';
-            $index++;
+            $questions[] = 'Rate your hands-on experience with ' . $skill . ' and share one example.';
+        }
+
+        $lines = [$heading, ''];
+        foreach ($questions as $index => $questionText) {
+            $lines[] = ($index + 1) . '. ' . $questionText;
         }
 
         $lines[] = '';
         $lines[] = 'Suggested scoring: 0-2 weak, 3 acceptable, 4 strong, 5 excellent. Use the same rubric for every applicant.';
+        $questionnaireRows = array_map(static fn (string $questionText): array => [
+            'label' => $questionText,
+            'type' => 'textarea',
+            'placeholder' => 'Candidate answer',
+            'required' => true,
+        ], $questions);
 
         return [
             'answer' => implode("\n", $lines),
-            'actions' => [],
+            'actions' => [[
+                'type' => 'screening_questions',
+                'job_id' => (int) ($job['id'] ?? 0),
+                'job_title' => $title,
+                'title' => 'Screening questions',
+                'meta' => $title,
+                'detail' => implode("\n", array_slice($lines, 2)),
+                'buttons' => array_values(array_filter([
+                    !empty($job['id']) ? [
+                        'label' => 'Save to Job',
+                        'kind' => 'prefill_questions',
+                        'url' => base_url('recruiter/jobs/edit/' . (int) $job['id']),
+                        'screening_prefill' => $questionnaireRows,
+                    ] : null,
+                    [
+                        'label' => 'Copy Questions',
+                        'kind' => 'copy',
+                        'copy_text' => implode("\n", $lines),
+                    ],
+                    [
+                        'label' => 'Regenerate',
+                        'kind' => 'primary',
+                        'silent' => true,
+                        'command' => !empty($job['id']) ? 'create screening questions for job #' . (int) $job['id'] : 'create screening questions for ' . $title,
+                    ],
+                ])),
+            ]],
         ];
     }
 
@@ -580,12 +663,10 @@ class RecruiterChatbotService
         }
 
         $visibleCandidates = array_slice($candidates, 0, 5);
-        $lines = ['Here are the strongest candidates I found' . ($jobId > 0 ? ' for job #' . $jobId . (!empty($job['title']) ? ' (' . $job['title'] . ')' : '') : '') . ':'];
+        $lines = ['Here are the strongest candidates I found' . ($jobId > 0 ? ' for ' . (!empty($job['title']) ? (string) $job['title'] : 'that job') : '') . ':'];
         foreach ($visibleCandidates as $row) {
             $lines[] = sprintf(
-                '- App #%d | Candidate #%d: %s | %s | Status: %s | Match: %d%% | Skills: %s',
-                (int) $row['application_id'],
-                (int) $row['candidate_id'],
+                '- %s | %s | Status: %s | Match: %d%% | Skills: %s',
                 $row['candidate_name'],
                 $row['job_title'],
                 $row['status'],
@@ -602,31 +683,64 @@ class RecruiterChatbotService
         ];
     }
 
-    private function suggestInterviewSlots(int $recruiterId, string $question): string
+    private function suggestInterviewSlots(int $recruiterId, string $question): array
     {
         $job = $this->resolveJobFromQuestion($recruiterId, $question);
         $jobId = (int) ($job['id'] ?? $this->extractNumberAfter($question, 'job'));
         $rows = $this->getUpcomingInterviewSlots($recruiterId, $jobId, 8);
         if (empty($rows)) {
-            return 'I found no available upcoming slots' . ($jobId > 0 ? ' for job #' . $jobId : '') . '. Create more slots from Interview Slots > Create Slot.';
+            return [
+                'answer' => 'No available upcoming slots' . ($job ? ' for ' . (string) ($job['title'] ?? 'that job') : '') . '.',
+                'actions' => [[
+                    'type' => 'slot_action',
+                    'title' => 'Create interview slots',
+                    'meta' => $job ? (string) ($job['title'] ?? 'Selected job') : 'Recruiter calendar',
+                    'buttons' => [[
+                        'label' => 'Create Slots',
+                        'kind' => 'link',
+                        'url' => base_url('recruiter/slots/create' . ($jobId > 0 ? '?job_id=' . $jobId : '')),
+                    ]],
+                ]],
+            ];
         }
 
-        $lines = ['Available interview slot suggestions:'];
+        $lines = ['Available interview slots' . ($job ? ' for ' . (string) ($job['title'] ?? 'that job') : '') . ':'];
+        $slotText = [];
         foreach ($rows as $slot) {
-            $lines[] = sprintf(
-                '- Slot #%d | %s | %s %s | %d/%d booked',
-                (int) $slot['id'],
-                $slot['job_title'] ?: ('Job #' . (int) $slot['job_id']),
+            $label = sprintf(
+                '%s | %s %s | %d/%d booked',
+                $slot['job_title'] ?: 'Interview',
                 $slot['slot_date'],
                 $slot['slot_time'],
                 (int) $slot['booked_count'],
                 (int) $slot['capacity']
             );
+            $lines[] = '- ' . $label;
+            $slotText[] = $label;
         }
-        $lines[] = '';
-        $lines[] = 'I only suggested slots. Booking or rescheduling still needs recruiter confirmation in the slot workflow.';
 
-        return implode("\n", $lines);
+        return [
+            'answer' => implode("\n", $lines),
+            'actions' => [[
+                'type' => 'slot_action',
+                'title' => 'Use these slots',
+                'meta' => $job ? (string) ($job['title'] ?? 'Selected job') : 'Recruiter calendar',
+                'detail' => implode("\n", array_slice($slotText, 0, 3)),
+                'buttons' => [
+                    [
+                        'label' => 'Send Slots',
+                        'kind' => 'draft',
+                        'command' => 'draft interview invite for ' . ($job ? (string) ($job['title'] ?? 'this job') : 'this role'),
+                        'draft_text' => "Available interview slots:\n- " . implode("\n- ", array_slice($slotText, 0, 3)),
+                    ],
+                    [
+                        'label' => 'Manage Slots',
+                        'kind' => 'link',
+                        'url' => base_url('recruiter/slots' . ($jobId > 0 ? '?job_id=' . $jobId : '')),
+                    ],
+                ],
+            ]],
+        ];
     }
 
     private function getUpcomingInterviewSlots(int $recruiterId, int $jobId = 0, int $limit = 8): array
@@ -672,6 +786,9 @@ class RecruiterChatbotService
     {
         $candidateContext = $this->resolveCandidateContextForAction($recruiterId, $question, $chatContext);
         $job = $this->resolveJobFromQuestion($recruiterId, $question);
+        if (!$job) {
+            $job = $this->resolveJobFromChatContext($recruiterId, $chatContext);
+        }
         if (!$job && $candidateContext && !empty($candidateContext['job_id'])) {
             $job = \Config\Database::connect()->table('jobs')
                 ->where('id', (int) $candidateContext['job_id'])
@@ -695,22 +812,23 @@ class RecruiterChatbotService
             $body = "Hi {candidate_name},\n\nI came across your profile and thought your background could be a strong fit for {$title}" . ($company !== '' ? " at {$company}" : '') . ". If you are open to exploring this opportunity, I would be happy to share more details.\n\nBest regards,\n{recruiter_name}";
         }
 
-        $context = $candidateContext ?: [
-            'candidate_name' => 'Candidate',
-            'job_title' => $title,
-            'company' => $company,
-        ];
-        $personalizedBody = $this->personalizeRecruiterMessage($body, $context, $recruiterId);
-        $subject = $type === 'outreach' ? 'Following up on ' . $title : 'Update on ' . $title;
+        $subject = $type === 'outreach'
+            ? 'Following up on ' . $title
+            : 'Update on your application - ' . $title;
+        $personalizedBody = $candidateContext
+            ? $this->personalizeRecruiterMessage($body, $candidateContext, $recruiterId)
+            : $this->buildBulkMessagePreview($body, $recruiterId);
 
-        $answer = "Here is a draft {$type} message:\n\nSubject: {$subject}\n\n{$personalizedBody}";
+        $answer = $candidateContext
+            ? "Draft ready:\n\nSubject: {$subject}\n\n{$personalizedBody}"
+            : "Reusable draft for this role:\n\nSubject: {$subject}\n\n{$personalizedBody}";
         $actions = [];
 
         if ($candidateContext && !empty($candidateContext['candidate_id'])) {
             $candidateId = (int) $candidateContext['candidate_id'];
             $actions[] = $this->buildMessageDraftAction($candidateContext, $subject, $personalizedBody, 'Use this draft for ' . ($candidateContext['candidate_name'] ?? ('candidate #' . $candidateId)));
         } else {
-            $answer .= "\n\nTo send from chat, use: send message to candidate #ID: your message";
+            $actions = $this->buildBulkDraftSelectionActions($recruiterId, $job, $subject, $body, $type);
         }
 
         return [
@@ -719,10 +837,137 @@ class RecruiterChatbotService
         ];
     }
 
+    private function buildBulkMessagePreview(string $body, int $recruiterId): string
+    {
+        return strtr($body, [
+            '{candidate_name}' => '[Candidate Name]',
+            '{{candidate_name}}' => '[Candidate Name]',
+            '{recruiter_name}' => trim((string) (session()->get('user_name') ?? 'Recruiter')),
+            '{{recruiter_name}}' => trim((string) (session()->get('user_name') ?? 'Recruiter')),
+        ]);
+    }
+
+    private function buildBulkDraftSelectionActions(int $recruiterId, ?array $job, string $subject, string $body, string $type): array
+    {
+        $jobId = (int) ($job['id'] ?? 0);
+        $title = (string) ($job['title'] ?? 'this role');
+        $candidates = $jobId > 0 ? $this->fetchCandidateMatches($recruiterId, $jobId, '', 0) : [];
+
+        if ($type === 'rejection') {
+            usort($candidates, static fn (array $a, array $b): int => ((int) ($a['match_score'] ?? 0)) <=> ((int) ($b['match_score'] ?? 0)));
+        }
+
+        $candidateItems = [];
+        foreach (array_slice($candidates, 0, 8) as $row) {
+            $candidateId = (int) ($row['candidate_id'] ?? 0);
+            if ($candidateId <= 0) {
+                continue;
+            }
+            $score = (int) ($row['match_score'] ?? 0);
+            $candidateItems[] = [
+                'candidate_id' => $candidateId,
+                'label' => (string) ($row['candidate_name'] ?? ('Candidate #' . $candidateId)),
+                'meta' => 'Match ' . $score . '%',
+                'match_score' => $score,
+            ];
+        }
+
+        $lowScoreIds = array_values(array_map(
+            static fn (array $row): int => (int) ($row['candidate_id'] ?? 0),
+            array_filter($candidates, static fn (array $row): bool => (int) ($row['match_score'] ?? 0) < 40)
+        ));
+        $lowScoreIds = array_values(array_filter(array_unique($lowScoreIds), static fn (int $id): bool => $id > 0));
+
+        $draftCard = [
+            'type' => 'message_draft',
+            'title' => 'Reusable draft for ' . $title,
+            'meta' => 'Subject: ' . $subject,
+            'detail' => $this->buildBulkMessagePreview($body, $recruiterId),
+            'job_id' => $jobId,
+            'job_title' => $title,
+            'subject' => $subject,
+            'message_body' => $body,
+            'draft_text' => 'Subject: ' . $subject . "\n\n" . $this->buildBulkMessagePreview($body, $recruiterId),
+            'buttons' => [[
+                'label' => 'Edit Draft',
+                'kind' => 'draft',
+                'draft_text' => 'Subject: ' . $subject . "\n\n" . $this->buildBulkMessagePreview($body, $recruiterId),
+                'command_prefix' => '',
+                'command' => 'draft rejection email for ' . $title,
+            ]],
+        ];
+
+        if (!empty($candidateItems)) {
+            $buttons = [[
+                'label' => 'Edit Draft',
+                'kind' => 'draft',
+                'draft_text' => 'Subject: ' . $subject . "\n\n" . $this->buildBulkMessagePreview($body, $recruiterId),
+                'command_prefix' => '',
+                'command' => 'draft rejection email for ' . $title,
+            ], [
+                'label' => 'Select All',
+                'kind' => 'secondary',
+                'select_candidate_ids' => array_values(array_map(static fn (array $item): int => (int) $item['candidate_id'], $candidateItems)),
+            ], [
+                'label' => 'Send to Selected',
+                'kind' => 'primary',
+                'silent' => true,
+                'requires_selection' => true,
+                'command_prefix' => 'confirm send previous draft to candidates ',
+            ]];
+            if (!empty($lowScoreIds)) {
+                $buttons[] = [
+                    'label' => 'Select All Below 40%',
+                    'kind' => 'secondary',
+                    'select_candidate_ids' => $lowScoreIds,
+                ];
+            }
+
+            $draftCard['items_title'] = 'Choose candidates to send to';
+            $draftCard['items'] = $candidateItems;
+            $draftCard['buttons'] = $buttons;
+            return [$draftCard];
+        }
+
+        $draftCard['meta'] .= ' | No candidates currently match for ' . $title . '.';
+        return [$draftCard];
+    }
+
+    private function resolveJobFromChatContext(int $recruiterId, array $chatContext): ?array
+    {
+        $db = \Config\Database::connect();
+        $jobId = (int) ($chatContext['last_job']['job_id'] ?? $chatContext['last_draft']['job_id'] ?? $chatContext['last_candidate']['job_id'] ?? 0);
+        if ($jobId > 0) {
+            $row = $db->table('jobs')
+                ->where('id', $jobId)
+                ->where('recruiter_id', $recruiterId)
+                ->get()
+                ->getRowArray();
+            if ($row) {
+                return $row;
+            }
+        }
+
+        $jobTitle = trim((string) ($chatContext['last_job']['job_title'] ?? $chatContext['last_draft']['job_title'] ?? $chatContext['last_candidate']['job_title'] ?? ''));
+        if ($jobTitle !== '') {
+            $row = $db->table('jobs')
+                ->where('recruiter_id', $recruiterId)
+                ->like('title', $jobTitle)
+                ->orderBy('created_at', 'DESC')
+                ->get(1)
+                ->getRowArray();
+            if ($row) {
+                return $row;
+            }
+        }
+
+        return null;
+    }
+
     private function sendCandidateMessageFromPrompt(int $recruiterId, string $question): string
     {
         if (!preg_match('/candidate\s*#?\s*(\d+)\s*:?\s*(.+)$/is', $question, $matches)) {
-            return 'To send a message, use this exact format: send message to candidate #123: Your message text';
+            return 'Pick a candidate from an action card, then use Message or Send so I can attach the message to the right person.';
         }
 
         $candidateId = (int) $matches[1];
@@ -732,7 +977,7 @@ class RecruiterChatbotService
 
         $context = $this->findRecruiterCandidateContext($recruiterId, $candidateId);
         if (!$context) {
-            return 'Message was not sent because candidate #' . $candidateId . ' is not linked to one of your applications.';
+            return 'Message was not sent because that candidate is not linked to one of your applications.';
         }
 
         $message = $this->personalizeRecruiterMessage($message, $context, $recruiterId);
@@ -741,16 +986,181 @@ class RecruiterChatbotService
         return $this->sendMessageToCandidate($recruiterId, $candidateId, $delivery['subject'], $delivery['body']);
     }
 
+    private function buildBatchMessageByScoreConfirmation(int $recruiterId, string $question, array $chatContext): array
+    {
+        $draft = $this->getDraftDeliveryFromChatContext($chatContext);
+        if (!$draft) {
+            return $this->buildMissingBatchMessageDraftPrompt($recruiterId, $question, $chatContext);
+        }
+
+        $threshold = $this->extractScoreThreshold($question);
+        $below = preg_match('/\b(below|under|less than)\b/i', $question) === 1;
+        $job = $this->resolveJobFromQuestion($recruiterId, $question);
+        $jobId = (int) ($job['id'] ?? ($chatContext['last_candidate']['job_id'] ?? 0));
+        $candidates = $this->fetchCandidateMatches($recruiterId, $jobId, '', 0);
+        $matches = array_values(array_filter($candidates, static function (array $row) use ($threshold, $below): bool {
+            $score = (int) ($row['match_score'] ?? 0);
+            return $below ? $score < $threshold : $score >= $threshold;
+        }));
+
+        if (empty($matches)) {
+            $direction = $below ? 'below' : 'at or above';
+            return $this->actionResult('batch_message_by_score', 'No candidates found ' . $direction . ' ' . $threshold . '% ATS match' . ($job ? ' for ' . (string) ($job['title'] ?? 'that job') : '') . '.', []);
+        }
+
+        $candidateIds = array_values(array_unique(array_map(static fn (array $row): int => (int) ($row['candidate_id'] ?? 0), $matches)));
+        $candidateIds = array_values(array_filter($candidateIds, static fn (int $id): bool => $id > 0));
+        $preview = [];
+        foreach (array_slice($matches, 0, 5) as $row) {
+            $preview[] = sprintf('%s (%d%%)', (string) ($row['candidate_name'] ?? 'Candidate'), (int) ($row['match_score'] ?? 0));
+        }
+
+        $count = count($candidateIds);
+        $direction = $below ? 'below' : 'at or above';
+        $answer = $count . ' candidate' . ($count === 1 ? '' : 's') . ' ' . $direction . ' ' . $threshold . '% ATS match: ' . implode(', ', $preview) . ($count > 5 ? ', +' . ($count - 5) . ' more' : '') . '. Send the draft?';
+
+        return $this->actionResult('batch_message_by_score', $answer, [[
+            'type' => 'confirmation',
+            'title' => 'Send draft to ' . $count . ' candidate' . ($count === 1 ? '' : 's'),
+            'meta' => 'Subject: ' . $draft['subject'],
+            'detail' => implode("\n", array_slice($preview, 0, 5)),
+            'buttons' => [
+                [
+                    'label' => 'Confirm Send',
+                    'kind' => 'primary',
+                    'silent' => true,
+                    'command' => 'confirm send previous draft to candidates ' . implode(' ', array_map(static fn (int $id): string => 'candidate #' . $id, $candidateIds)),
+                ],
+                [
+                    'label' => 'Review List',
+                    'kind' => 'link',
+                    'url' => $jobId > 0 ? base_url('recruiter/applications/job/' . $jobId) : base_url('recruiter/dashboard/leaderboard'),
+                ],
+            ],
+        ]]);
+    }
+
+    private function buildMissingBatchMessageDraftPrompt(int $recruiterId, string $question, array $chatContext): array
+    {
+        $threshold = $this->extractScoreThreshold($question);
+        $below = preg_match('/\b(below|under|less than)\b/i', $question) === 1;
+        $job = $this->resolveJobFromQuestion($recruiterId, $question);
+        $jobId = (int) ($job['id'] ?? ($chatContext['last_candidate']['job_id'] ?? 0));
+        if (!$job && $jobId > 0) {
+            $job = \Config\Database::connect()->table('jobs')
+                ->where('id', $jobId)
+                ->where('recruiter_id', $recruiterId)
+                ->get()
+                ->getRowArray();
+        }
+
+        $title = (string) ($job['title'] ?? $this->extractRoleTitle($question) ?: 'this role');
+        $direction = $below ? 'below' : 'at or above';
+        $draftCommand = 'draft rejection email for ' . $title;
+        $answer = 'No email draft is ready yet. I can draft one for ' . $title . ', then send it to candidates ' . $direction . ' ' . $threshold . '% ATS after you confirm.';
+
+        return $this->actionResult('batch_message_needs_draft', $answer, [[
+            'type' => 'next_step',
+            'title' => 'Draft email first',
+            'meta' => $title . ' | ATS ' . $direction . ' ' . $threshold . '%',
+            'buttons' => array_values(array_filter([
+                [
+                    'label' => 'Draft Email',
+                    'kind' => 'primary',
+                    'command' => $draftCommand,
+                ],
+                $jobId > 0 ? [
+                    'label' => 'View Candidates',
+                    'kind' => 'link',
+                    'url' => base_url('recruiter/applications/job/' . $jobId),
+                ] : null,
+            ])),
+        ]]);
+    }
+
+    private function sendBatchCandidateMessageFromPrompt(int $recruiterId, string $question, array $chatContext): string
+    {
+        $draft = $this->getDraftDeliveryFromChatContext($chatContext);
+        if (!$draft) {
+            return 'Message was not sent because I could not find the previous draft.';
+        }
+
+        preg_match_all('/candidate\s*#?\s*(\d+)/i', $question, $matches);
+        $candidateIds = array_values(array_unique(array_map('intval', $matches[1] ?? [])));
+        if (empty($candidateIds)) {
+            return 'Message was not sent because no matching candidates were selected.';
+        }
+
+        $sent = [];
+        $skipped = [];
+        foreach ($candidateIds as $candidateId) {
+            $context = $this->findRecruiterCandidateContext($recruiterId, $candidateId);
+            if (!$context) {
+                $skipped[] = 'candidate not linked to your applications';
+                continue;
+            }
+
+            $subject = $this->personalizeRecruiterMessage($draft['subject'], $context, $recruiterId);
+            $body = $this->personalizeRecruiterMessage($draft['body'], $context, $recruiterId);
+            $result = $this->sendMessageToCandidate($recruiterId, $candidateId, $subject, $body);
+            if (str_starts_with($result, 'Message sent')) {
+                $sent[] = (string) ($context['candidate_name'] ?? 'Candidate');
+            } else {
+                $skipped[] = (string) ($context['candidate_name'] ?? 'Candidate');
+            }
+        }
+
+        $lines = [];
+        $lines[] = 'Message sent to ' . count($sent) . ' candidate' . (count($sent) === 1 ? '' : 's') . (!empty($sent) ? ': ' . implode(', ', array_slice($sent, 0, 5)) . (count($sent) > 5 ? ', +' . (count($sent) - 5) . ' more' : '') : '') . '.';
+        if (!empty($skipped)) {
+            $lines[] = count($skipped) . ' skipped.';
+        }
+
+        return implode("\n", $lines);
+    }
+
+    private function getDraftDeliveryFromChatContext(array $chatContext): ?array
+    {
+        $lastDraft = is_array($chatContext['last_draft'] ?? null) ? $chatContext['last_draft'] : [];
+        if (empty($lastDraft)) {
+            return null;
+        }
+
+        $subject = trim((string) ($lastDraft['subject'] ?? ''));
+        $body = trim((string) ($lastDraft['message_body'] ?? ''));
+        if ($body === '' && !empty($lastDraft['command'])) {
+            $commandBody = preg_replace('/^send\s+message\s+to\s+candidate\s*#?\s*\d+\s*:?\s*/i', '', (string) $lastDraft['command']) ?? '';
+            $delivery = $this->prepareMessageForDelivery($commandBody, [], 0);
+            $subject = $subject !== '' ? $subject : $delivery['subject'];
+            $body = $delivery['body'];
+        }
+
+        if ($subject === '' && $body !== '') {
+            $delivery = $this->prepareMessageForDelivery($body, [], 0);
+            $subject = $delivery['subject'];
+            $body = $delivery['body'];
+        }
+
+        if ($body === '') {
+            return null;
+        }
+
+        return [
+            'subject' => $subject !== '' ? $subject : 'Regarding your application',
+            'body' => $body,
+        ];
+    }
+
     private function sendMessageToCandidate(int $recruiterId, int $candidateId, string $subject, string $body): string
     {
         $context = $this->findRecruiterCandidateContext($recruiterId, $candidateId);
         if (!$context) {
-            return 'Message was not sent because candidate #' . $candidateId . ' is not linked to one of your applications.';
+            return 'Message was not sent because that candidate is not linked to one of your applications.';
         }
 
         $message = trim($body);
         if (!$this->hasUsableMessageText($message) || mb_strlen($message) > 1000) {
-            return 'Message was not sent. Please provide 1 to 1000 characters after the candidate ID.';
+            return 'Message was not sent. Please keep the message between 1 and 1000 characters.';
         }
 
         $db = \Config\Database::connect();
@@ -777,7 +1187,7 @@ class RecruiterChatbotService
             );
         }
 
-        return 'Message sent to ' . ($context['candidate_name'] ?? ('candidate #' . $candidateId)) . '.';
+        return 'Message sent to ' . ($context['candidate_name'] ?? 'the candidate') . '.';
     }
 
     private function buildExportAnswer(int $recruiterId, string $question): array
@@ -900,7 +1310,7 @@ class RecruiterChatbotService
         $ids = array_values(array_unique(array_map('intval', $matches[1] ?? [])));
 
         if (empty($ids)) {
-            return $this->actionResult('confirm_application_status', 'No application ID found. Use: shortlist application #123 or reject application #123.');
+            return $this->actionResult('confirm_application_status', 'Choose a candidate from the action cards, then click Shortlist or Reject.');
         }
 
         $items = [];
@@ -922,8 +1332,7 @@ class RecruiterChatbotService
         $lines = [];
         foreach ($items as $item) {
             $lines[] = sprintf(
-                'I found application #%d for %s (%s). Confirm %s?',
-                (int) $item['id'],
+                'I found %s for %s. Confirm %s?',
                 $item['candidate_name'] ?? 'candidate',
                 $item['job_title'] ?? 'job',
                 $verb
@@ -940,12 +1349,13 @@ class RecruiterChatbotService
             $jobId = (int) $item['job_id'];
             $cards[] = [
                 'type' => 'confirmation',
-                'title' => ucfirst($verb) . ' application #' . $applicationId,
+                'title' => ucfirst($verb) . ' candidate',
                 'meta' => trim(($item['candidate_name'] ?? 'Candidate') . ' | ' . ($item['job_title'] ?? 'Job')),
                 'buttons' => [
                     [
                         'label' => 'Confirm ' . ucfirst($verb),
                         'kind' => $status === 'rejected' ? 'danger' : 'primary',
+                        'silent' => true,
                         'command' => 'confirm ' . $verb . ' application #' . $applicationId,
                     ],
                     [
@@ -963,7 +1373,7 @@ class RecruiterChatbotService
     private function buildCandidateMessageConfirmation(int $recruiterId, string $question): array
     {
         if (!preg_match('/candidate\s*#?\s*(\d+)\s*:?\s*(.+)$/is', $question, $matches)) {
-            return $this->actionResult('confirm_candidate_message', 'To send a message, use this exact format: send message to candidate #123: Your message text');
+            return $this->actionResult('confirm_candidate_message', 'Pick a candidate from an action card, then use Message or Send so I know who should receive it.');
         }
 
         $candidateId = (int) $matches[1];
@@ -973,7 +1383,7 @@ class RecruiterChatbotService
 
         $context = $this->findRecruiterCandidateContext($recruiterId, $candidateId);
         if (!$context) {
-            return $this->actionResult('confirm_candidate_message', 'Message was not prepared because candidate #' . $candidateId . ' is not linked to one of your applications.');
+            return $this->actionResult('confirm_candidate_message', 'Message was not prepared because that candidate is not linked to one of your applications.');
         }
 
         $message = $this->personalizeRecruiterMessage($message, $context, $recruiterId);
@@ -981,7 +1391,7 @@ class RecruiterChatbotService
         $message = $delivery['body'];
 
         if (!$this->hasUsableMessageText($message) || mb_strlen($message) > 1000) {
-            return $this->actionResult('confirm_candidate_message', 'Message was not prepared. Please provide 1 to 1000 characters after the candidate ID.');
+            return $this->actionResult('confirm_candidate_message', 'Message was not prepared. Please keep the message between 1 and 1000 characters.');
         }
 
         $applicationId = (int) ($context['application_id'] ?? 0);
@@ -997,6 +1407,7 @@ class RecruiterChatbotService
                 [
                     'label' => 'Confirm Send',
                     'kind' => 'primary',
+                    'silent' => true,
                     'command' => 'confirm send message to candidate #' . $candidateId . ': Subject: ' . $delivery['subject'] . "\n\n" . $message,
                 ],
                 [
@@ -1044,6 +1455,8 @@ class RecruiterChatbotService
                     'label' => 'Write Message',
                     'kind' => 'draft',
                     'command' => 'send message to candidate #' . $candidateId . ': ',
+                    'command_prefix' => 'send message to candidate #' . $candidateId . ': ',
+                    'draft_text' => '',
                 ],
                 [
                     'label' => 'View Profile',
@@ -1155,7 +1568,7 @@ class RecruiterChatbotService
         preg_match_all('/applications?\s*#?\s*(\d+)/i', $question, $matches);
         $ids = array_values(array_unique(array_map('intval', $matches[1] ?? [])));
         if (empty($ids)) {
-            return 'No application ID found. Use: shortlist application #123 or reject application #123.';
+            return 'Choose a candidate from the action cards, then click Shortlist or Reject.';
         }
 
         $db = \Config\Database::connect();
@@ -1219,7 +1632,6 @@ class RecruiterChatbotService
             }
 
             $metaParts = [
-                'App #' . $applicationId,
                 (string) ($row['job_title'] ?? 'Job'),
             ];
             if (array_key_exists('match_score', $row)) {
@@ -1245,12 +1657,15 @@ class RecruiterChatbotService
                     [
                         'label' => 'Shortlist',
                         'kind' => 'primary',
+                        'silent' => true,
                         'command' => 'shortlist application #' . $applicationId,
                     ],
                     [
                         'label' => 'Message',
                         'kind' => 'draft',
                         'command' => 'send message to candidate #' . $candidateId . ': ',
+                        'command_prefix' => 'send message to candidate #' . $candidateId . ': ',
+                        'draft_text' => '',
                     ],
                     [
                         'label' => 'Schedule Interview',
@@ -1260,6 +1675,7 @@ class RecruiterChatbotService
                     [
                         'label' => 'Reject',
                         'kind' => 'danger',
+                        'silent' => true,
                         'command' => 'reject application #' . $applicationId,
                     ],
                 ],
@@ -1672,20 +2088,22 @@ class RecruiterChatbotService
         $companyName = $user['company_name'] ?? '';
 
         return "You are HireMate, an AI recruitment assistant embedded in the HireMatrix recruiter dashboard. "
-            . "You help recruiters understand their hiring data.\n\n"
+            . "You help recruiters manage jobs, candidates, screening, communication, scheduling, and reporting with minimum effort.\n\n"
             . "Recruiter: {$recruiterName}\n"
             . "Company: {$companyName}\n\n"
             . "You have access to the recruiter's data through RAG retrieval. "
             . "The data provided in each query is real-time and specific to this recruiter.\n\n"
             . "Guidelines:\n"
-            . "- Be concise and conversational. Use natural language.\n"
+            . "- Lead with the direct answer or result. Keep prose minimal.\n"
+            . "- Never expose or ask for internal IDs. Refer to jobs by title and candidates by name.\n"
+            . "- If a job or candidate reference is ambiguous, ask the recruiter to choose from short options.\n"
+            . "- Every action-oriented response should end with a useful button, link, copy action, or confirmation control.\n"
+            . "- Do not ask what you can infer from recruiter, job, candidate, or recent chat context.\n"
+            . "- If a bulk email/message needs recipient selection, show the draft and candidate selection in the same turn. Do not draft first and then ask the recruiter to choose candidates manually.\n"
+            . "- Bulk or destructive actions must show a count and require explicit confirmation.\n"
             . "- Answer only based on the data provided. Do not invent numbers.\n"
             . "- If the data is insufficient, say 'I don't have enough data to answer that yet.'\n"
-            . "- Use bullet points or short paragraphs for readability.\n"
-            . "- If the question is about taking action (e.g. 'post a job', 'send message'), "
-            . "explain that you can only provide information and suggest they use the dashboard.\n"
             . "- Format numbers with commas for readability.\n"
-            . "- Use emojis sparingly to make responses friendly.\n"
             . "- Never reveal raw SQL or database details.\n"
             . "- Keep responses under 200 words unless the question requires more detail.";
     }

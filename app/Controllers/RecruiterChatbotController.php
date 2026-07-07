@@ -114,30 +114,42 @@ class RecruiterChatbotController extends BaseController
             ->get()
             ->getResultArray();
 
+        $recentCandidate = \Config\Database::connect()->table('applications a')
+            ->select('u.name as candidate_name, j.title as job_title')
+            ->join('jobs j', 'j.id = a.job_id', 'inner')
+            ->join('users u', 'u.id = a.candidate_id', 'inner')
+            ->where('j.recruiter_id', $recruiterId)
+            ->orderBy('a.applied_at', 'DESC')
+            ->get(1)
+            ->getRowArray();
+
         $suggestions = [];
 
         if (!empty($jobs)) {
-            foreach ($jobs as $job) {
+            foreach (array_slice($jobs, 0, 2) as $job) {
                 $title = trim((string) ($job['title'] ?? ''));
                 if ($title === '') {
                     continue;
                 }
 
                 $quoted = '"' . $title . '"';
-                $suggestions[] = ['text' => 'Create screening questions for ' . $quoted, 'mode' => 'send'];
-                $suggestions[] = ['text' => 'Shortlist candidates for ' . $quoted . ' with ATS above 70', 'mode' => 'send'];
-                $suggestions[] = ['text' => 'Suggest interview slots for ' . $quoted, 'mode' => 'send'];
-                $suggestions[] = ['text' => 'Draft shortlist email for ' . $quoted, 'mode' => 'send'];
+                $suggestions[] = ['text' => 'Draft screening questions for ' . $quoted, 'mode' => 'send'];
+                $suggestions[] = ['text' => 'Shortlist candidates above 70 ATS for ' . $quoted, 'mode' => 'send'];
                 $suggestions[] = ['text' => 'Draft rejection email for ' . $quoted, 'mode' => 'send'];
             }
         } else {
-            $suggestions[] = ['text' => 'Post job for Front End Developer', 'mode' => 'send'];
-            $suggestions[] = ['text' => 'Draft job description for QA Engineer', 'mode' => 'send'];
+            $suggestions[] = ['text' => 'Post your first job', 'mode' => 'link', 'url' => base_url('recruiter/post_job')];
+            $suggestions[] = ['text' => 'Draft job description for Front End Developer', 'mode' => 'send'];
+        }
+
+        if (!empty($recentCandidate['candidate_name'])) {
+            $suggestions[] = ['text' => 'Send interview invite to ' . (string) $recentCandidate['candidate_name'], 'mode' => 'send'];
+            $suggestions[] = ['text' => 'Suggest interview slots for ' . (string) $recentCandidate['candidate_name'], 'mode' => 'send'];
         }
 
         $suggestions[] = ['text' => 'Export candidate data', 'mode' => 'send'];
-        $suggestions[] = ['text' => 'Give me a summary of my hiring', 'mode' => 'send'];
+        $suggestions[] = ['text' => 'Summary of my hiring this week', 'mode' => 'send'];
 
-        return array_slice($suggestions, 0, 12);
+        return array_slice($suggestions, 0, 8);
     }
 }

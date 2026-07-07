@@ -1851,7 +1851,12 @@ $allApplicationsLabel = (int) ($totalApplicationsCount ?? 0);
 $avgMatch = (int) ($scoreboard['average_ats_score'] ?? 0);
 $openings = (int) ($job['openings'] ?? 0);
 $safeActiveStage = $activeStage ?? 'all';
-$hasActiveFilters = !empty(array_filter($advancedFilters ?? [], function($v) { return $v !== '' && $v !== null; }));
+$hasActiveFilters = !empty(array_filter($advancedFilters ?? [], function($v, $key) {
+    if ($key === 'sort' && ($v === '' || $v === null || $v === 'ats_desc')) {
+        return false;
+    }
+    return $v !== '' && $v !== null;
+}, ARRAY_FILTER_USE_BOTH));
 $companyName = trim((string) ($job['company'] ?? $job['client_company_name'] ?? ''));
 $metaParts = array_filter([
     $job['location'] ?? '',
@@ -2083,7 +2088,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                     <label class="small font-weight-bold text-muted">Sort By</label>
                                     <select name="sort" class="form-control form-control-sm">
                                         <option value="applied_desc" <?= ($advancedFilters['sort'] ?? '') === 'applied_desc' ? 'selected' : '' ?>>Most recent application</option>
-                                        <option value="ats_desc" <?= ($advancedFilters['sort'] ?? '') === 'ats_desc' ? 'selected' : '' ?>>Highest ATS Match</option>
+                                        <option value="ats_desc" <?= ($advancedFilters['sort'] ?? 'ats_desc') === 'ats_desc' ? 'selected' : '' ?>>Highest ATS Match</option>
                                         <option value="ats_asc" <?= ($advancedFilters['sort'] ?? '') === 'ats_asc' ? 'selected' : '' ?>>Lowest ATS Match</option>
                                     </select>
                                 </div>

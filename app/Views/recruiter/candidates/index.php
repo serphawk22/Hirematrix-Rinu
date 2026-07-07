@@ -917,6 +917,7 @@ $hasSelectableCandidates = $candidateCount > 0 || $aiSuggestionCount > 0;
                 </button>
             </div>
             <div class="modal-body">
+                <div id="candidatePoolEmailFeedback" class="alert alert-danger d-none" role="alert"></div>
                 <div class="form-group">
                     <label class="font-weight-bold">To:</label>
                     <div id="candidatePoolEmailRecipients" class="p-2 border rounded bg-light" style="max-height: 120px; overflow-y: auto;">
@@ -973,6 +974,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function selectedCheckboxes() {
         return checkboxes.filter(function (checkbox) { return checkbox.checked; });
+    }
+
+    function setCandidatePoolEmailFeedback(message, type) {
+        const feedback = document.getElementById('candidatePoolEmailFeedback');
+        if (!feedback) return;
+
+        feedback.classList.remove('alert-danger', 'alert-success', 'alert-warning');
+        if (!message) {
+            feedback.classList.add('d-none');
+            feedback.textContent = '';
+            return;
+        }
+
+        feedback.classList.remove('d-none');
+        feedback.classList.add(type === 'success' ? 'alert-success' : (type === 'warning' ? 'alert-warning' : 'alert-danger'));
+        feedback.textContent = message;
     }
 
     function syncSelection() {
@@ -1033,6 +1050,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('candidatePoolEmailRecipientCount').textContent = selected.length;
             document.getElementById('candidatePoolEmailSubject').value = '';
             document.getElementById('candidatePoolEmailBody').value = '';
+            setCandidatePoolEmailFeedback('');
             if (window.jQuery) {
                 window.jQuery('#candidatePoolEmailModal').modal('show');
             }
@@ -1072,17 +1090,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 .map(function (checkbox) { return checkbox.value; });
 
             if (!subject) {
-                alert('Please enter an email subject.');
+                setCandidatePoolEmailFeedback('Add an email subject before sending.');
+                document.getElementById('candidatePoolEmailSubject').focus();
                 return;
             }
 
             if (!body) {
-                alert('Please enter an email message.');
+                setCandidatePoolEmailFeedback('Add the email message before sending.');
+                document.getElementById('candidatePoolEmailBody').focus();
                 return;
             }
 
             if (!selectedIds.length) {
-                alert('No valid recipients found.');
+                setCandidatePoolEmailFeedback('Select at least one candidate with an email address.');
                 return;
             }
 
@@ -1116,6 +1136,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (window.jQuery) {
                         window.jQuery('#candidatePoolEmailModal').modal('hide');
                     }
+                    setCandidatePoolEmailFeedback('');
                     alert(payload.message || 'Email sent successfully.');
                     window.location.reload();
                 })
@@ -1123,7 +1144,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (error.csrf_hash) {
                         root.dataset.csrfHash = error.csrf_hash;
                     }
-                    alert(error.message || 'Failed to send email. Please try again.');
+                    setCandidatePoolEmailFeedback(error.message || 'Failed to send email. Please try again.');
                 })
                 .finally(function () {
                     sendEmailButton.disabled = false;

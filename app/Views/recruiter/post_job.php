@@ -565,5 +565,47 @@ $payrollType = old('payroll_type', '');
     }
 })();
 </script>
+<script>
+(function () {
+    'use strict';
+
+    var raw = null;
+    try {
+        raw = window.sessionStorage.getItem('hmRecruiterJobPrefill');
+        if (raw) {
+            window.sessionStorage.removeItem('hmRecruiterJobPrefill');
+        }
+    } catch (e) {
+        raw = null;
+    }
+
+    if (!raw) {
+        return;
+    }
+
+    var data = {};
+    try {
+        data = JSON.parse(raw) || {};
+    } catch (e) {
+        return;
+    }
+
+    function fillIfEmpty(id, value) {
+        var field = document.getElementById(id);
+        if (!field || !value || String(field.value || '').trim() !== '') {
+            return;
+        }
+        field.value = value;
+        field.dispatchEvent(new Event('change', { bubbles: true }));
+        field.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    fillIfEmpty('title', data.title);
+    fillIfEmpty('description', data.description);
+    fillIfEmpty('location', data.location);
+    fillIfEmpty('employment_type', data.employment_type);
+    fillIfEmpty('required_skills', data.required_skills);
+})();
+</script>
 <?= view('Layouts/recruiter_footer') ?>
     

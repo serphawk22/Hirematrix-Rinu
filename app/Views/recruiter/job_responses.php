@@ -469,9 +469,90 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
     white-space:nowrap;
 }
 .recruiter-jobs-jobboard .hm-job-dropdown-item:hover { background:#EDF8F5; color:#0D8A90; }
+.recruiter-jobs-jobboard .hm-attention-stack {
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:8px;
+}
+.recruiter-jobs-jobboard .hm-attention-pill {
+    align-items:center;
+    background:#FFF7ED;
+    border:1px solid #FDBA74;
+    border-radius:999px;
+    color:#9A3412;
+    display:inline-flex;
+    font-size:.74rem;
+    font-weight:700;
+    line-height:1;
+    padding:6px 9px;
+}
+.recruiter-jobs-jobboard .hm-attention-pill.is-critical {
+    background:#FEF2F2;
+    border-color:#FCA5A5;
+    color:#B91C1C;
+}
+.recruiter-jobs-jobboard .hm-attention-pill.is-watch {
+    background:#FFFBEB;
+    border-color:#FCD34D;
+    color:#92400E;
+}
+.recruiter-jobs-jobboard .hm-job-match-meta {
+    color:#64748B;
+    display:block;
+    font-size:.78rem;
+    margin-top:2px;
+}
+.recruiter-jobs-jobboard .hm-attention-summary {
+    color:#64748B;
+    display:block;
+    font-size:.8rem;
+    font-weight:500;
+    margin-top:6px;
+}
+.recruiter-jobs-jobboard .hm-job-quick-actions {
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:10px;
+}
+.recruiter-jobs-jobboard .hm-job-quick-action {
+    align-items:center;
+    background:#FFFFFF;
+    border:1px solid #B9E8E4;
+    border-radius:999px;
+    color:#008C95;
+    display:inline-flex;
+    font-size:.78rem;
+    font-weight:700;
+    padding:7px 11px;
+    text-decoration:none !important;
+}
+.recruiter-jobs-jobboard .hm-job-quick-action.is-primary {
+    background:#1FB7B5;
+    border-color:#1FB7B5;
+    color:#FFFFFF;
+}
+.recruiter-jobs-jobboard .hm-job-quick-action:hover,
+.recruiter-jobs-jobboard .hm-job-quick-action:focus {
+    border-color:#0D8A90;
+    color:#0D8A90;
+}
+.recruiter-jobs-jobboard .hm-job-quick-action.is-primary:hover,
+.recruiter-jobs-jobboard .hm-job-quick-action.is-primary:focus {
+    background:#0D8A90;
+    color:#FFFFFF;
+}
 body.dark .recruiter-jobs-jobboard .hm-job-dropdown-menu { background:#111 !important; border-color:#23343A !important; }
 body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item { color:#94A3B8 !important; }
 body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item:hover { background:rgba(31,183,181,.1) !important; color:#F8FAFC !important; }
+body.dark .recruiter-jobs-jobboard .hm-attention-pill { background:rgba(251,146,60,.12); border-color:rgba(251,146,60,.38); color:#FDBA74; }
+body.dark .recruiter-jobs-jobboard .hm-attention-pill.is-critical { background:rgba(248,113,113,.12); border-color:rgba(248,113,113,.38); color:#FCA5A5; }
+body.dark .recruiter-jobs-jobboard .hm-attention-pill.is-watch { background:rgba(245,158,11,.12); border-color:rgba(245,158,11,.42); color:#FCD34D; }
+body.dark .recruiter-jobs-jobboard .hm-job-match-meta { color:#94A3B8; }
+body.dark .recruiter-jobs-jobboard .hm-attention-summary { color:#94A3B8; }
+body.dark .recruiter-jobs-jobboard .hm-job-quick-action { background:#111; border-color:#23343A; color:#5EEAD4; }
+body.dark .recruiter-jobs-jobboard .hm-job-quick-action.is-primary { background:#1FB7B5; border-color:#1FB7B5; color:#FFFFFF; }
 </style> 
 
 <div
@@ -530,10 +611,39 @@ body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item:hover { background:rgba
                         </thead>
                         <tbody>
                             <?php foreach ($jobs as $job): ?>
+                                <?php
+                                    $attentionLevel = (string) ($job['attention_level'] ?? 'quiet');
+                                    $showAttention = in_array($attentionLevel, ['critical', 'watch'], true);
+                                    $attentionLabel = $attentionLevel === 'critical' ? 'Critical priority' : 'Watch';
+                                    $attentionFacts = array_values((array) ($job['attention_facts'] ?? []));
+                                    $attentionSummaryParts = [
+                                        (int) ($job['shortlisted_count'] ?? 0) . ' shortlisted',
+                                    ];
+                                    if ((int) ($job['applicant_count'] ?? 0) > 0) {
+                                        $attentionSummaryParts[] = (int) ($job['average_ats_score'] ?? 0) . '% avg match';
+                                    }
+                                    $attentionSummaryParts = array_merge($attentionSummaryParts, $attentionFacts);
+                                ?>
                                 <tr class="hm-job-row" data-href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>" style="cursor:pointer;">
                                     <td>
                                         <div class="job-title"><?= esc($job['title']) ?></div>
                                         <small class="text-muted"><?= esc($job['location']) ?></small>
+                                        <?php if ($showAttention): ?>
+                                            <div class="hm-attention-stack" aria-label="Needs attention">
+                                                <span class="hm-attention-pill is-<?= esc($attentionLevel) ?>"><?= esc($attentionLabel) ?></span>
+                                            </div>
+                                            <span class="hm-attention-summary"><?= esc(implode(' · ', array_unique($attentionSummaryParts))) ?></span>
+                                            <?php if (!empty($job['suggested_actions'])): ?>
+                                                <div class="hm-job-quick-actions">
+                                                    <?php foreach (array_slice((array) $job['suggested_actions'], 0, 2) as $action): ?>
+                                                        <a class="hm-job-quick-action <?= !empty($action['primary']) ? 'is-primary' : '' ?>"
+                                                           href="<?= esc($action['url'] ?? '#') ?>">
+                                                            <?= esc($action['label'] ?? 'Open') ?>
+                                                        </a>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <?php $statusColor = $job['status'] == 'open' ? '#1FB7B5' : '#ef4444'; ?>
@@ -542,6 +652,9 @@ body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item:hover { background:rgba
                                     <td>
                                         <strong><?= $job['applicant_count'] ?></strong>
                                         <small class="text-muted d-block"><?= $job['shortlisted_count'] ?> shortlisted</small>
+                                        <?php if ((int) ($job['applicant_count'] ?? 0) > 0): ?>
+                                            <span class="hm-job-match-meta"><?= (int) ($job['average_ats_score'] ?? 0) ?>% avg match</span>
+                                        <?php endif; ?>
                                     </td>
                                     <td class="text-right hm-job-actions-cell" style="overflow:visible;">
                                         <div class="hm-job-dropdown" style="position:relative;display:inline-block;">
@@ -588,7 +701,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Row click → pipeline (skip actions cell)
     document.querySelectorAll('.hm-job-row').forEach(function (row) {
         row.addEventListener('click', function (e) {
-            if (e.target.closest('.hm-job-actions-cell')) return;
+            if (e.target.closest('.hm-job-actions-cell') || e.target.closest('.hm-job-quick-action')) return;
             window.location = row.dataset.href;
         });
     });

@@ -171,6 +171,9 @@
     font-weight: 700;
     line-height: 1.35;
 }
+.hm-action-card-subtitle {
+    margin-top: 10px;
+}
 .hm-action-card-meta,
 .hm-action-card-detail {
     color: #64748B;
@@ -184,6 +187,36 @@
     white-space: pre-wrap;
     word-break: break-word;
 }
+.hm-candidate-select-list {
+    display: grid;
+    gap: 6px;
+    margin-top: 9px;
+}
+.hm-candidate-select-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border: 1px solid #D9ECE5;
+    border-radius: 8px;
+    background: #F8FCFA;
+    cursor: pointer;
+}
+.hm-candidate-select-row input {
+    flex: 0 0 auto;
+    accent-color: #1FB7B5;
+}
+.hm-candidate-select-name {
+    min-width: 0;
+    color: #16212B;
+    font-size: 12.5px;
+    font-weight: 700;
+}
+.hm-candidate-select-meta {
+    color: #64748B;
+    font-size: 11px;
+    line-height: 1.25;
+}
 .hm-action-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -191,7 +224,7 @@
     margin-top: 9px;
 }
 .hm-action-btn {
-    border: 1px solid #D9ECE5;
+    border: 1px solid transparent;
     border-radius: 999px;
     background: #F8FCFA;
     color: #0D8A90;
@@ -200,13 +233,21 @@
     font-weight: 700;
     line-height: 1;
     padding: 7px 9px;
+    outline: none;
+    box-shadow: none;
 }
 .hm-action-btn:hover {
     background: #E8F9F8;
 }
+.hm-action-btn:focus,
+.hm-action-btn:focus-visible,
+.hm-action-btn:active {
+    outline: none;
+    box-shadow: none;
+}
 .hm-action-btn.primary {
     background: #1FB7B5;
-    border-color: #1FB7B5;
+    border-color: transparent;
     color: #fff;
 }
 .hm-action-btn.secondary {
@@ -215,7 +256,7 @@
 }
 .hm-action-btn.danger {
     background: #fff;
-    border-color: #fecaca;
+    border-color: transparent;
     color: #b91c1c;
 }
 .hm-action-btn.danger:hover {
@@ -232,7 +273,7 @@
 }
 .hm-chat-suggestions button {
     background: #E8F9F8;
-    border: 1px solid #D9ECE5;
+    border: 1px solid transparent;
     border-radius: 20px;
     padding: 5px 12px;
     font-size: 12px;
@@ -241,17 +282,26 @@
     cursor: pointer;
     transition: background 0.15s;
     white-space: nowrap;
+    outline: none;
+    box-shadow: none;
 }
 .hm-chat-suggestions button:hover {
     background: #1FB7B5;
     color: #fff;
-    border-color: #1FB7B5;
+    border-color: transparent;
+}
+.hm-chat-suggestions button:focus,
+.hm-chat-suggestions button:focus-visible,
+.hm-chat-suggestions button:active {
+    outline: none;
+    box-shadow: none;
+    border-color: transparent;
 }
 
 /* Input area */
 .hm-chat-input-wrap {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 8px;
     padding: 10px 14px;
     border-top: 1px solid #D9ECE5;
@@ -261,12 +311,17 @@
 .hm-chat-input {
     flex: 1;
     border: 1px solid #D9ECE5;
-    border-radius: 24px;
-    padding: 9px 16px;
+    border-radius: 18px;
+    padding: 9px 14px;
     font-size: 13.5px;
+    line-height: 1.4;
     outline: none;
     background: #F8FCFA;
     transition: border-color 0.15s;
+    min-height: 38px;
+    max-height: 120px;
+    resize: none;
+    overflow-y: auto;
 }
 .hm-chat-input:focus {
     border-color: #1FB7B5;
@@ -360,9 +415,19 @@ body.dark .hm-action-card-meta,
 body.dark .hm-action-card-detail {
     color: #94A3B8;
 }
-body.dark .hm-action-btn {
+body.dark .hm-candidate-select-row {
     background: #162327;
     border-color: #23343A;
+}
+body.dark .hm-candidate-select-name {
+    color: #F8FAFC;
+}
+body.dark .hm-candidate-select-meta {
+    color: #94A3B8;
+}
+body.dark .hm-action-btn {
+    background: #162327;
+    border-color: transparent;
     color: #1FB7B5;
 }
 body.dark .hm-chat-input-wrap {
@@ -377,7 +442,7 @@ body.dark .hm-chat-input {
 body.dark .hm-chat-input:focus { border-color: #1FB7B5; }
 body.dark .hm-chat-suggestions button {
     background: #162327;
-    border-color: #23343A;
+    border-color: transparent;
     color: #1FB7B5;
 }
 body.dark .hm-chat-suggestions button:hover {
@@ -455,8 +520,8 @@ body.dark .hm-chat-voice.is-speaking {
     </div>
 
     <div class="hm-chat-input-wrap">
-        <input type="text" class="hm-chat-input" id="hmChatInput"
-               placeholder="Ask about your hiring data..." autocomplete="off">
+        <textarea class="hm-chat-input" id="hmChatInput" rows="1"
+                  placeholder="Ask about your hiring data..." autocomplete="off"></textarea>
         <button class="hm-chat-voice" id="hmChatVoice" aria-label="Start voice chat" title="Start voice chat" type="button">
             <svg class="hm-chat-voice-mic" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
@@ -510,10 +575,14 @@ body.dark .hm-chat-voice.is-speaking {
     var isSpeaking = false;
     var shouldSpeakNextReply = false;
     var voiceTurnSubmitted = false;
+    var pendingDraft = null;
     var chatContext = {
         last_candidate: null,
-        last_draft: null
+        last_draft: null,
+        last_job: null
     };
+
+    hydratePageJobContext();
 
     // ── FIX: Prevent background scroll when hovering over widget ──
     // Trap wheel events inside the messages container so the page never scrolls
@@ -605,11 +674,16 @@ body.dark .hm-chat-voice.is-speaking {
                 data.suggestions.forEach(function (item) {
                     var text = typeof item === 'string' ? item : (item && item.text ? item.text : '');
                     var mode = typeof item === 'object' && item ? (item.mode || 'send') : 'send';
+                    var url = typeof item === 'object' && item ? (item.url || '') : '';
                     if (!text) return;
                     var btn = document.createElement('button');
                     btn.textContent = text;
                     btn.type = 'button';
                     btn.addEventListener('click', function () {
+                        if (mode === 'link' && url) {
+                            window.location.href = url;
+                            return;
+                        }
                         input.value = text;
                         input.focus();
                         if (mode === 'edit') {
@@ -631,17 +705,28 @@ body.dark .hm-chat-voice.is-speaking {
 
     // ── Send message ──
     function sendMessage(customText, options) {
-        var text = (typeof customText === 'string' ? customText : input.value).trim();
+        options = options || {};
+        hydratePageJobContext();
+        var inputText = input.value.trim();
+        var text = (typeof customText === 'string' ? customText : inputText).trim();
+        var displayText = options.displayText || text;
+        if (typeof customText !== 'string' && pendingDraft && text && !looksLikeInternalCommand(text)) {
+            displayText = text;
+            text = pendingDraft.commandPrefix + text;
+        }
         if (text === '' || isLoading) return;
-        var silent = options && options.silent === true;
+        var silent = options.silent === true;
 
         input.value = '';
+        autoResizeInput();
+        pendingDraft = null;
+        input.placeholder = 'Ask about your hiring data...';
         isLoading = true;
         sendBtn.disabled = true;
         if (voiceBtn && recognition) voiceBtn.disabled = true;
 
         if (!silent) {
-            appendMessage('user', text);
+            appendMessage('user', displayText);
         }
 
         // Show typing indicator
@@ -775,6 +860,51 @@ body.dark .hm-chat-voice.is-speaking {
                 item.appendChild(detail);
             }
 
+            if (card.items_title) {
+                var itemsTitle = document.createElement('div');
+                itemsTitle.className = 'hm-action-card-title hm-action-card-subtitle';
+                itemsTitle.textContent = card.items_title;
+                item.appendChild(itemsTitle);
+            }
+
+            if (card.items && card.items.length) {
+                var list = document.createElement('div');
+                list.className = 'hm-candidate-select-list';
+
+                card.items.forEach(function (candidate) {
+                    if (!candidate || !candidate.candidate_id) return;
+                    var row = document.createElement('label');
+                    row.className = 'hm-candidate-select-row';
+
+                    var checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = String(candidate.candidate_id);
+                    checkbox.setAttribute('data-candidate-id', String(candidate.candidate_id));
+                    if (candidate.match_score !== undefined) {
+                        checkbox.setAttribute('data-match-score', String(candidate.match_score));
+                    }
+
+                    var text = document.createElement('span');
+                    text.className = 'hm-candidate-select-text';
+                    var name = document.createElement('span');
+                    name.className = 'hm-candidate-select-name';
+                    name.textContent = candidate.label || 'Candidate';
+                    text.appendChild(name);
+                    if (candidate.meta) {
+                        var meta = document.createElement('div');
+                        meta.className = 'hm-candidate-select-meta';
+                        meta.textContent = candidate.meta;
+                        text.appendChild(meta);
+                    }
+
+                    row.appendChild(checkbox);
+                    row.appendChild(text);
+                    list.appendChild(row);
+                });
+
+                item.appendChild(list);
+            }
+
             if (card.buttons && card.buttons.length) {
                 var buttons = document.createElement('div');
                 buttons.className = 'hm-action-buttons';
@@ -786,7 +916,7 @@ body.dark .hm-chat-voice.is-speaking {
                     btn.className = 'hm-action-btn ' + (action.kind || '');
                     btn.textContent = action.label;
                     btn.addEventListener('click', function () {
-                        handleActionButton(action);
+                        handleActionButton(action, item);
                     });
                     buttons.appendChild(btn);
                 });
@@ -816,22 +946,70 @@ body.dark .hm-chat-voice.is-speaking {
                 };
             }
 
-            if (card.type === 'message_draft' && card.command) {
+            if (card.job_id || card.job_title) {
+                chatContext.last_job = {
+                    job_id: card.job_id || null,
+                    job_title: card.job_title || card.meta || ''
+                };
+            }
+
+            if (card.type === 'message_draft' && (card.command || card.subject || card.message_body)) {
                 chatContext.last_draft = {
                     candidate_id: card.candidate_id || null,
                     application_id: card.application_id || null,
                     job_id: card.job_id || null,
                     subject: card.subject || '',
                     message_body: card.message_body || card.detail || '',
-                    command: card.command
+                    command: card.command || ''
                 };
             }
         });
     }
 
-    function handleActionButton(action) {
+    function handleActionButton(action, cardEl) {
+        if (action.select_candidate_ids && cardEl) {
+            var idMap = {};
+            action.select_candidate_ids.forEach(function (id) {
+                idMap[String(id)] = true;
+            });
+            cardEl.querySelectorAll('.hm-candidate-select-row input[type="checkbox"]').forEach(function (checkbox) {
+                checkbox.checked = !!idMap[String(checkbox.value)];
+            });
+            return;
+        }
+
         if (action.url) {
+            if (action.kind === 'prefill_job' && action.job_prefill) {
+                try {
+                    window.sessionStorage.setItem('hmRecruiterJobPrefill', JSON.stringify(action.job_prefill));
+                } catch (e) {}
+            }
+            if (action.kind === 'prefill_questions' && action.screening_prefill) {
+                try {
+                    window.sessionStorage.setItem('hmRecruiterScreeningPrefill', JSON.stringify(action.screening_prefill));
+                } catch (e) {}
+            }
             window.location.href = action.url;
+            return;
+        }
+
+        if (action.requires_selection && cardEl) {
+            var selectedIds = Array.prototype.slice.call(cardEl.querySelectorAll('.hm-candidate-select-row input[type="checkbox"]:checked'))
+                .map(function (checkbox) { return checkbox.value; })
+                .filter(Boolean);
+            if (!selectedIds.length) {
+                appendMessage('bot', 'Select at least one candidate first.');
+                return;
+            }
+            var command = (action.command_prefix || '') + selectedIds.map(function (id) {
+                return 'candidate #' + id;
+            }).join(' ');
+            sendMessage(command, { silent: action.silent === true });
+            return;
+        }
+
+        if (action.kind === 'copy' || action.copy_text) {
+            copyActionText(action.copy_text || action.command || '');
             return;
         }
 
@@ -840,7 +1018,17 @@ body.dark .hm-chat-voice.is-speaking {
         rememberJobFromCommand(action.command, action.label || '');
 
         if (action.kind === 'draft') {
-            input.value = action.command;
+            var draftText = typeof action.draft_text === 'string' ? action.draft_text : extractDraftText(action.command);
+            var commandPrefix = Object.prototype.hasOwnProperty.call(action, 'command_prefix')
+                ? action.command_prefix
+                : extractCommandPrefix(action.command);
+            pendingDraft = {
+                commandPrefix: commandPrefix,
+                originalCommand: action.command
+            };
+            input.value = draftText;
+            input.placeholder = 'Edit the message, then press Send';
+            autoResizeInput();
             input.focus();
             if (input.setSelectionRange) {
                 input.setSelectionRange(input.value.length, input.value.length);
@@ -849,6 +1037,94 @@ body.dark .hm-chat-voice.is-speaking {
         }
 
         sendMessage(action.command, { silent: action.silent === true });
+    }
+
+    function looksLikeInternalCommand(value) {
+        return /^(confirm\s+)?(send|message|shortlist|reject)\b/i.test(String(value || ''));
+    }
+
+    function extractCommandPrefix(command) {
+        var value = String(command || '');
+        var colon = value.indexOf(':');
+        return colon >= 0 ? value.slice(0, colon + 1) + ' ' : value + ' ';
+    }
+
+    function extractDraftText(command) {
+        var value = String(command || '');
+        var colon = value.indexOf(':');
+        return colon >= 0 ? value.slice(colon + 1).trim() : value;
+    }
+
+    function autoResizeInput() {
+        if (!input) return;
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+    }
+
+    function copyActionText(text) {
+        var value = String(text || '').trim();
+        if (!value) return;
+
+        function showCopied() {
+            appendMessage('bot', 'Copied.');
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(value).then(showCopied).catch(function () {
+                fallbackCopy(value);
+                showCopied();
+            });
+            return;
+        }
+
+        fallbackCopy(value);
+        showCopied();
+    }
+
+    function fallbackCopy(value) {
+        var area = document.createElement('textarea');
+        area.value = value;
+        area.setAttribute('readonly', 'readonly');
+        area.style.position = 'fixed';
+        area.style.left = '-9999px';
+        document.body.appendChild(area);
+        area.select();
+        try {
+            document.execCommand('copy');
+        } catch (e) {}
+        document.body.removeChild(area);
+    }
+
+    function hydratePageJobContext() {
+        var source = document.querySelector('[data-job-id][data-job-title]');
+        var jobId = 0;
+        var jobTitle = '';
+
+        if (source) {
+            jobId = parseInt(source.getAttribute('data-job-id') || '0', 10) || 0;
+            jobTitle = String(source.getAttribute('data-job-title') || '').trim();
+        }
+
+        if (!jobId) {
+            var match = window.location.pathname.match(/\/(?:applications\/job|jobs\/responses|jobs)\/(\d+)\b/i);
+            if (match) {
+                jobId = parseInt(match[1], 10) || 0;
+            }
+        }
+
+        if (!jobTitle) {
+            var titleEl = document.querySelector('.recruiter-pipeline-page .page-board-title, .page-board-title');
+            if (titleEl) {
+                jobTitle = String(titleEl.textContent || '').trim();
+            }
+        }
+
+        if (jobId || jobTitle) {
+            chatContext.last_job = {
+                job_id: jobId || null,
+                job_title: jobTitle
+            };
+        }
     }
 
     function rememberJobFromCommand(command, label) {
@@ -997,10 +1273,14 @@ body.dark .hm-chat-voice.is-speaking {
     sendBtn.addEventListener('click', sendMessage);
     input.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
+            if (e.shiftKey) {
+                return;
+            }
             e.preventDefault();
             sendMessage();
         }
     });
+    input.addEventListener('input', autoResizeInput);
 
     // Close on Escape
     document.addEventListener('keydown', function (e) {

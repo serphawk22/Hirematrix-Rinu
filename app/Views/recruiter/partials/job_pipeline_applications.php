@@ -368,6 +368,29 @@ body.dark .ats-score-bar { background: #23343A; }
     border-radius: 2px;
     transition: width 0.4s ease;
 }
+.ats-sort-link {
+    align-items: center;
+    color: #50627A;
+    display: inline-flex;
+    gap: 6px;
+    text-decoration: none !important;
+}
+.ats-sort-link:hover,
+.ats-sort-link:focus {
+    color: #0D8A90;
+}
+.ats-sort-link.is-active {
+    color: #0D8A90;
+    font-weight: 800;
+}
+body.dark .ats-sort-link {
+    color: #94A3B8;
+}
+body.dark .ats-sort-link:hover,
+body.dark .ats-sort-link:focus,
+body.dark .ats-sort-link.is-active {
+    color: #5EEAD4;
+}
 
 /* ══════════════════════════════════════════
    ACTIVITY STACK
@@ -1191,6 +1214,21 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
     .pipeline-table thead th { padding: 8px 9px; }
 }
 </style>
+<?php
+$pipelineSort = (string) ($advancedFilters['sort'] ?? 'ats_desc');
+$nextAtsSort = $pipelineSort === 'ats_desc' ? 'ats_asc' : 'ats_desc';
+$sortQueryParams = [];
+foreach (($advancedFilters ?? []) as $filterKey => $filterValue) {
+    if ($filterValue === '' || $filterValue === null) {
+        continue;
+    }
+    $sortQueryParams[$filterKey] = $filterValue;
+}
+$sortQueryParams['stage'] = $safeActiveStage ?? 'all';
+$sortQueryParams['sort'] = $nextAtsSort;
+$atsSortUrl = base_url('recruiter/jobs/view/' . (int) ($job['id'] ?? 0) . '?' . http_build_query($sortQueryParams));
+$atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
+?>
 <?php if (empty($paginatedApplications)): ?>
     <div class="pipeline-empty">
         <i class="fas fa-user-slash"></i>
@@ -1212,7 +1250,13 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
                     <th>Communication</th>
                     <th>Applied</th>
                     <th>Last Active</th>
-                    <th>ATS Match</th>
+                    <th>
+                        <a class="ats-sort-link stage-ajax-link <?= in_array($pipelineSort, ['ats_desc', 'ats_asc'], true) ? 'is-active' : '' ?>"
+                           href="<?= esc($atsSortUrl) ?>"
+                           title="Sort by ATS match">
+                            ATS Match <i class="fas <?= esc($atsSortIcon) ?>"></i>
+                        </a>
+                    </th>
                     <th>Activity</th>
                     <th class="text-right">Actions</th>
                 </tr>
@@ -1438,12 +1482,12 @@ body.dark div.p-3 ul.pagination li.page-item.disabled .page-link {
             <div class="communication-drawer-subtitle" id="communicationDrawerSubtitle"></div>
         </div>
         <div class="communication-drawer-body">
+            <div id="communicationDrawerActions"></div>
             <div id="communicationDrawerOverview"></div>
             <div id="communicationDrawerSkills"></div>
             <div id="communicationDrawerNotes"></div>
             <div class="communication-drawer-stats" id="communicationDrawerStats"></div>
             <div class="communication-timeline" id="communicationDrawerTimeline"></div>
-            <div id="communicationDrawerActions"></div>
         </div>
     </aside>
     <div class="schedule-interview-modal" id="scheduleInterviewModal" aria-hidden="true">
