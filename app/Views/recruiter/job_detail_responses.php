@@ -1715,6 +1715,69 @@ body.dark .recruiter-pipeline-page small { color: #94A3B8; }
 .recruiter-pipeline-page .pipeline-summary-main {
   gap: 10px;
 }
+.recruiter-pipeline-page .pipeline-funnel {
+  background: #FFFFFF;
+  border-bottom: 1px solid #D9ECE5;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(140px, 1fr));
+  gap: 0;
+}
+.recruiter-pipeline-page .pipeline-funnel-step {
+  border-right: 1px solid #E6F1ED;
+  padding: 15px 18px;
+}
+.recruiter-pipeline-page .pipeline-funnel-step:last-child {
+  border-right: 0;
+}
+.recruiter-pipeline-page .pipeline-funnel-label {
+  color: #64748B;
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.recruiter-pipeline-page .pipeline-funnel-count {
+  color: #16212B;
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-top: 6px;
+}
+.recruiter-pipeline-page .pipeline-funnel-bar {
+  background: #E6F1ED;
+  border-radius: 999px;
+  display: block;
+  height: 7px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.recruiter-pipeline-page .pipeline-funnel-bar span {
+  background: #1FB7B5;
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+}
+.recruiter-pipeline-page .pipeline-funnel-meta {
+  color: #64748B;
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  margin-top: 7px;
+}
+.recruiter-pipeline-page .pipeline-funnel-meta.is-leak {
+  color: #B45309;
+}
+@media (max-width: 1100px) {
+  .recruiter-pipeline-page .pipeline-funnel {
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .recruiter-pipeline-page .pipeline-funnel {
+    grid-template-columns: 1fr;
+  }
+}
 .recruiter-pipeline-page .pipeline-summary-title {
   align-items: baseline;
   display: inline-flex;
@@ -1772,6 +1835,7 @@ body.dark .recruiter-pipeline-page .pipeline-job-head,
 body.dark .recruiter-pipeline-page .pipeline-work-nav,
 body.dark .recruiter-pipeline-page .pipeline-board,
 body.dark .recruiter-pipeline-page .pipeline-summary-bar,
+body.dark .recruiter-pipeline-page .pipeline-funnel,
 body.dark .recruiter-pipeline-page .pipeline-stage-rail,
 body.dark .recruiter-pipeline-page .pipeline-toolbar,
 body.dark .recruiter-pipeline-page #advancedFilterCollapse .bg-light {
@@ -1782,6 +1846,22 @@ body.dark .recruiter-pipeline-page #advancedFilterCollapse .bg-light {
 body.dark .recruiter-pipeline-page .pipeline-summary-title strong,
 body.dark .recruiter-pipeline-page .pipeline-summary-title span {
   color: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-funnel-step {
+  border-color: #23343A;
+}
+body.dark .recruiter-pipeline-page .pipeline-funnel-label,
+body.dark .recruiter-pipeline-page .pipeline-funnel-meta {
+  color: #94A3B8;
+}
+body.dark .recruiter-pipeline-page .pipeline-funnel-count {
+  color: #FFFFFF;
+}
+body.dark .recruiter-pipeline-page .pipeline-funnel-bar {
+  background: #23343A;
+}
+body.dark .recruiter-pipeline-page .pipeline-funnel-meta.is-leak {
+  color: #FCD34D;
 }
 body.dark .recruiter-pipeline-page .pipeline-job-status {
   background: #0A0A0A !important;
@@ -2018,6 +2098,25 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                     </div>
                     
                 </div>
+
+                <?php if (!empty($funnelMetrics)): ?>
+                    <div class="pipeline-funnel" aria-label="Hiring funnel conversion">
+                        <?php foreach ($funnelMetrics as $index => $metric): ?>
+                            <?php
+                                $conversion = (int) ($metric['conversion'] ?? 0);
+                                $dropoff = (int) ($metric['dropoff'] ?? 0);
+                            ?>
+                            <div class="pipeline-funnel-step">
+                                <span class="pipeline-funnel-label"><?= esc($metric['label'] ?? '') ?></span>
+                                <span class="pipeline-funnel-count"><?= (int) ($metric['count'] ?? 0) ?></span>
+                                <span class="pipeline-funnel-bar"><span style="width: <?= min(100, max(0, $conversion)) ?>%;"></span></span>
+                                <span class="pipeline-funnel-meta <?= $dropoff >= 50 ? 'is-leak' : '' ?>">
+                                    <?= $index === 0 ? 'Starting pool' : esc($conversion . '% conversion' . ($dropoff >= 50 ? ' · ' . $dropoff . '% drop-off' : '')) ?>
+                                </span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
 
                 <div class="pipeline-stage-rail">
                     <a class="stage-ajax-link <?= $safeActiveStage === 'all' ? 'active' : '' ?>" href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=all') ?>">

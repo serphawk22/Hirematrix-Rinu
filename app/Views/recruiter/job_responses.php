@@ -543,6 +543,92 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
     background:#0D8A90;
     color:#FFFFFF;
 }
+.recruiter-jobs-jobboard .hm-alert-center {
+    background:#FFFFFF;
+    border:1px solid #D9ECE5;
+    border-radius:20px;
+    margin-bottom:16px;
+    overflow:hidden;
+}
+.recruiter-jobs-jobboard .hm-alert-center-head {
+    align-items:center;
+    border-bottom:1px solid #D9ECE5;
+    display:flex;
+    justify-content:space-between;
+    padding:16px 18px;
+}
+.recruiter-jobs-jobboard .hm-alert-center-title {
+    align-items:center;
+    color:#16212B;
+    display:flex;
+    font-size:1rem;
+    font-weight:800;
+    gap:9px;
+    margin:0;
+}
+.recruiter-jobs-jobboard .hm-alert-count {
+    background:#E0F5F0;
+    border:1px solid #B9E8E4;
+    border-radius:999px;
+    color:#008C95;
+    font-size:.76rem;
+    font-weight:800;
+    padding:5px 9px;
+}
+.recruiter-jobs-jobboard .hm-alert-list {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:0;
+}
+.recruiter-jobs-jobboard .hm-alert-item {
+    border-right:1px solid #E6F1ED;
+    color:#16212B;
+    display:block;
+    padding:14px 16px;
+    text-decoration:none !important;
+}
+.recruiter-jobs-jobboard .hm-alert-item:hover,
+.recruiter-jobs-jobboard .hm-alert-item:focus {
+    background:#F8FCFB;
+}
+.recruiter-jobs-jobboard .hm-alert-topline {
+    align-items:center;
+    display:flex;
+    gap:8px;
+    justify-content:space-between;
+}
+.recruiter-jobs-jobboard .hm-alert-title {
+    font-size:.9rem;
+    font-weight:800;
+}
+.recruiter-jobs-jobboard .hm-alert-tone {
+    border-radius:999px;
+    flex:0 0 auto;
+    height:9px;
+    width:9px;
+}
+.recruiter-jobs-jobboard .hm-alert-tone.is-danger { background:#EF4444; }
+.recruiter-jobs-jobboard .hm-alert-tone.is-warning { background:#F59E0B; }
+.recruiter-jobs-jobboard .hm-alert-tone.is-info { background:#1FB7B5; }
+.recruiter-jobs-jobboard .hm-alert-meta,
+.recruiter-jobs-jobboard .hm-alert-detail {
+    color:#64748B;
+    display:block;
+    font-size:.78rem;
+    margin-top:4px;
+}
+.recruiter-jobs-jobboard .hm-alert-action {
+    color:#008C95;
+    display:inline-flex;
+    font-size:.78rem;
+    font-weight:800;
+    margin-top:9px;
+}
+.recruiter-jobs-jobboard .hm-alert-empty {
+    color:#64748B;
+    font-size:.86rem;
+    padding:16px 18px;
+}
 body.dark .recruiter-jobs-jobboard .hm-job-dropdown-menu { background:#111 !important; border-color:#23343A !important; }
 body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item { color:#94A3B8 !important; }
 body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item:hover { background:rgba(31,183,181,.1) !important; color:#F8FAFC !important; }
@@ -553,6 +639,14 @@ body.dark .recruiter-jobs-jobboard .hm-job-match-meta { color:#94A3B8; }
 body.dark .recruiter-jobs-jobboard .hm-attention-summary { color:#94A3B8; }
 body.dark .recruiter-jobs-jobboard .hm-job-quick-action { background:#111; border-color:#23343A; color:#5EEAD4; }
 body.dark .recruiter-jobs-jobboard .hm-job-quick-action.is-primary { background:#1FB7B5; border-color:#1FB7B5; color:#FFFFFF; }
+body.dark .recruiter-jobs-jobboard .hm-alert-center,
+body.dark .recruiter-jobs-jobboard .hm-alert-center-head,
+body.dark .recruiter-jobs-jobboard .hm-alert-item { background:#000; border-color:#23343A; }
+body.dark .recruiter-jobs-jobboard .hm-alert-center-title,
+body.dark .recruiter-jobs-jobboard .hm-alert-title { color:#F8FAFC; }
+body.dark .recruiter-jobs-jobboard .hm-alert-meta,
+body.dark .recruiter-jobs-jobboard .hm-alert-detail,
+body.dark .recruiter-jobs-jobboard .hm-alert-empty { color:#94A3B8; }
 </style> 
 
 <div
@@ -574,6 +668,30 @@ body.dark .recruiter-jobs-jobboard .hm-job-quick-action.is-primary { background:
     </div>
 
     <div id="jobs-list">
+            <section class="hm-alert-center" aria-label="Recruiter alerts">
+                <div class="hm-alert-center-head">
+                    <h2 class="hm-alert-center-title"><i class="fas fa-bell"></i> Attention Inbox</h2>
+                    <span class="hm-alert-count"><?= count((array) ($recruiterAlerts ?? [])) ?> active</span>
+                </div>
+                <?php if (empty($recruiterAlerts)): ?>
+                    <div class="hm-alert-empty">No urgent recruiter alerts right now.</div>
+                <?php else: ?>
+                    <div class="hm-alert-list">
+                        <?php foreach ((array) $recruiterAlerts as $alert): ?>
+                            <a class="hm-alert-item" href="<?= esc($alert['url'] ?? '#') ?>">
+                                <span class="hm-alert-topline">
+                                    <span class="hm-alert-title"><?= esc($alert['title'] ?? '') ?></span>
+                                    <span class="hm-alert-tone is-<?= esc($alert['tone'] ?? 'info') ?>"></span>
+                                </span>
+                                <span class="hm-alert-meta"><?= esc($alert['meta'] ?? '') ?></span>
+                                <span class="hm-alert-detail"><?= esc($alert['detail'] ?? '') ?></span>
+                                <span class="hm-alert-action"><?= esc($alert['action'] ?? 'Open') ?></span>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </section>
+
             <div class="card bg-light recruiter-filter-card">
                 <div class="card-body">
                     <form action="<?= base_url('recruiter/jobs') ?>" method="get" class="recruiter-jobs-filter-grid">
