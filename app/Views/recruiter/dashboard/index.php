@@ -14,6 +14,39 @@ $formatRate = static function ($value): string {
     if ($value === null || $value === '') return 'N/A';
     return number_format((float) $value, 1) . '%';
 };
+
+$stageLabels = [
+    'application_to_screening' => 'Application -> Screening',
+    'screening_to_shortlist' => 'Screening -> Shortlist',
+    'shortlist_to_hr_interview' => 'Shortlist -> HR Interview',
+    'hr_interview_to_selection' => 'HR Interview -> Selection',
+];
+
+$conversionHeadline = [
+    'label' => 'Pipeline Bottleneck',
+    'value' => 'N/A',
+    'caption' => 'Not enough data yet',
+];
+
+$availableRates = [];
+foreach ($stageLabels as $key => $label) {
+    if (isset($conversionMetrics[$key]) && $conversionMetrics[$key] !== null && $conversionMetrics[$key] !== '') {
+        $availableRates[$key] = (float) $conversionMetrics[$key];
+    }
+}
+
+if (!empty($availableRates)) {
+    asort($availableRates);
+    $bottleneckKey = array_key_first($availableRates);
+    $bottleneckRate = $availableRates[$bottleneckKey];
+    $conversionHeadline = [
+        'label' => $bottleneckKey === 'hr_interview_to_selection' ? 'Selection Stage' : 'Pipeline Bottleneck',
+        'value' => number_format($bottleneckRate, 1) . '%',
+        'caption' => $bottleneckKey === 'hr_interview_to_selection' && $bottleneckRate <= 0
+            ? 'No hires recorded yet'
+            : $stageLabels[$bottleneckKey],
+    ];
+}
 ?>
 
 <style>
@@ -241,6 +274,24 @@ body.dark .dash-calendar-day { color: #F8FAFC; }
 }
 .dash-calendar-day.today.has-interview::after {
     background: #fff;
+}
+.dash-calendar-legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 2px 16px;
+    color: #64748B;
+    font-size: .78rem;
+}
+.dash-calendar-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #F59E0B;
+    display: inline-block;
+}
+body.dark .dash-calendar-legend {
+    color: #94A3B8;
 }
 
 /* ── Interview list in sidebar ── */
@@ -502,14 +553,28 @@ body.dark .recruiter-dashboard-subtitle {
     <?php endif; ?>
 
     <?php if (empty($noJobs) && array_sum($pendingActions) > 0): ?>
+    <?php
+        $pendingSummaryItems = [];
+        if ((int)($pendingActions['pending_screening'] ?? 0) > 0) {
+            $count = (int)$pendingActions['pending_screening'];
+            $pendingSummaryItems[] = '<span class="badge badge-warning ml-1">' . $count . '</span> application' . ($count === 1 ? '' : 's') . ' to screen';
+        }
+        if ((int)($pendingActions['stale_jobs'] ?? 0) > 0) {
+            $count = (int)$pendingActions['stale_jobs'];
+            $pendingSummaryItems[] = '<span class="badge badge-danger ml-1">' . $count . '</span> stale job' . ($count === 1 ? '' : 's') . ' with no shortlist';
+        }
+        if ((int)($pendingActions['awaiting_replies'] ?? 0) > 0) {
+            $count = (int)$pendingActions['awaiting_replies'];
+            $pendingSummaryItems[] = '<span class="badge badge-info ml-1">' . $count . '</span> candidate' . ($count === 1 ? '' : 's') . ' awaiting reply 3+ days';
+        }
+        if ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0) {
+            $count = (int)$pendingActions['hr_interviews_today'];
+            $pendingSummaryItems[] = '<span class="badge badge-primary ml-1">' . $count . '</span> interview' . ($count === 1 ? '' : 's') . ' today';
+        }
+    ?>
     <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
         <i class="fas fa-exclamation-triangle"></i> Pending Actions:
-        <?php if ($pendingActions['pending_screening'] > 0): ?>
-            <span class="badge badge-warning ml-1"><?= $pendingActions['pending_screening'] ?></span> applications to screen,
-        <?php endif; ?>
-        <?php if ($pendingActions['hr_interviews_today'] > 0): ?>
-            <span class="badge badge-primary ml-1"><?= $pendingActions['hr_interviews_today'] ?></span> interviews today
-        <?php endif; ?>
+        <?= implode('<span class="mx-1">&middot;</span>', $pendingSummaryItems) ?>
         <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
     </div>
     <?php endif; ?>
@@ -550,9 +615,9 @@ body.dark .recruiter-dashboard-subtitle {
                     <div class="recruiter-dashboard-stat-body d-flex align-items-center">
                         <div class="stat-card-icon"><i class="fas fa-chart-pie"></i></div>
                         <div class="recruiter-dashboard-stat-copy">
-                            <div class="stat-label">Conversion Rate</div>
-                            <div class="stat-value"><?= $conversionMetrics['overall_conversion'] ?? 0 ?>%</div>
-                            <small class="text-muted">Pipeline efficiency</small>
+                            <div class="stat-label"><?= esc($conversionHeadline['label']) ?></div>
+                            <div class="stat-value"><?= esc($conversionHeadline['value']) ?></div>
+                            <small class="text-muted"><?= esc($conversionHeadline['caption']) ?></small>
                         </div>
                     </div>
                 </div>
@@ -613,7 +678,9 @@ body.dark .recruiter-dashboard-subtitle {
                             <div class="pipeline-stat-icon"><i class="fas fa-calendar-check"></i></div>
                             <h3><?= number_format($funnel['interview_slot_booked']) ?></h3>
                             <p class="text-muted mb-0 small">HR Interviews</p>
-                            <small class="text-muted"><?= $funnel['shortlisted'] > 0 ? round(($funnel['interview_slot_booked'] / $funnel['shortlisted']) * 100, 1) : 0 ?>% from shortlisted</small>
+                            <small class="text-muted" title="Booked interview count can exceed current shortlisted count when candidates move into later statuses or book multiple rounds.">
+                                <?= $funnel['shortlisted'] > 0 ? round(($funnel['interview_slot_booked'] / $funnel['shortlisted']) * 100, 1) : 0 ?>% from current shortlisted
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -628,21 +695,30 @@ body.dark .recruiter-dashboard-subtitle {
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
                             <thead class="thead-light">
-                                <tr><th class="pl-3">ID</th><th>Candidate</th><th>Job</th><th>Status</th><th>Applied</th></tr>
+                                <tr><th class="pl-3">ID</th><th>Candidate</th><th>Job</th><th>Status</th><th>Applied</th><th class="text-right pr-3">Action</th></tr>
                             </thead>
                             <tbody>
                                 <?php if (!empty($recentApplications)): ?>
                                     <?php foreach ($recentApplications as $app): ?>
+                                        <?php
+                                            $statusValue = trim((string)($app['status'] ?? ''));
+                                            $statusLabel = $statusValue !== ''
+                                                ? ucwords(str_replace('_', ' ', $statusValue))
+                                                : 'Needs Screening';
+                                        ?>
                                         <tr onclick="window.location='<?= base_url('recruiter/jobs/' . $app['job_id'] . '/leaderboard') ?>'" style="cursor:pointer;">
                                             <td class="pl-3 text-muted">#<?= $app['id'] ?></td>
                                             <td><strong><?= esc($app['candidate_name']) ?></strong></td>
                                             <td><?= esc($app['job_title']) ?></td>
-                                            <td><span class="status-pill"><?= ucwords(str_replace('_', ' ', $app['status'])) ?></span></td>
+                                            <td><span class="status-pill"><?= esc($statusLabel) ?></span></td>
                                             <td class="text-muted"><?= date('M d, Y', strtotime($app['applied_at'])) ?></td>
+                                            <td class="text-right pr-3">
+                                                <a href="<?= base_url('recruiter/jobs/' . $app['job_id'] . '/leaderboard') ?>" class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();">Review</a>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php else: ?>
-                                    <tr><td colspan="5" class="text-center py-4 text-muted">No recent applications</td></tr>
+                                    <tr><td colspan="6" class="text-center py-4 text-muted">No recent applications</td></tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
@@ -656,7 +732,7 @@ body.dark .recruiter-dashboard-subtitle {
                     <h6 class="m-0 font-weight-bold" style="font-weight:600;"><i class="fas fa-bolt"></i> Action Center</h6>
                 </div>
                 <div class="card-body p-0">
-                    <?php $hasActions = ((int)($pendingActions['pending_screening'] ?? 0) > 0) || ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0); ?>
+                    <?php $hasActions = ((int)($pendingActions['pending_screening'] ?? 0) > 0) || ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0) || ((int)($pendingActions['stale_jobs'] ?? 0) > 0) || ((int)($pendingActions['awaiting_replies'] ?? 0) > 0); ?>
                     <?php if ($hasActions): ?>
                         <?php if ((int)($pendingActions['pending_screening'] ?? 0) > 0): ?>
                         <a href="<?= $jobsUrl ?>" class="recruiter-action-center-link d-flex align-items-center justify-content-between p-3">
@@ -665,6 +741,24 @@ body.dark .recruiter-dashboard-subtitle {
                                 <small class="d-block text-muted">Review and shortlist incoming candidates.</small>
                             </div>
                             <span class="badge" style="background:#FFE45C;color:#6B5300;border-radius:20px;font-weight:700;padding:5px 12px;"><?= (int)$pendingActions['pending_screening'] ?></span>
+                        </a>
+                        <?php endif; ?>
+                        <?php if ((int)($pendingActions['stale_jobs'] ?? 0) > 0): ?>
+                        <a href="<?= $jobsUrl ?>" class="recruiter-action-center-link d-flex align-items-center justify-content-between p-3">
+                            <div>
+                                <strong><i class="fas fa-exclamation-circle" style="color:#DC2626;"></i> Jobs Stale With 0 Shortlisted</strong>
+                                <small class="d-block text-muted">Open roles have applications older than 14 days but no shortlist yet.</small>
+                            </div>
+                            <span class="badge" style="background:#FEE2E2;color:#991B1B;border-radius:20px;font-weight:700;padding:5px 12px;"><?= (int)$pendingActions['stale_jobs'] ?></span>
+                        </a>
+                        <?php endif; ?>
+                        <?php if ((int)($pendingActions['awaiting_replies'] ?? 0) > 0): ?>
+                        <a href="<?= base_url('notifications') ?>" class="recruiter-action-center-link d-flex align-items-center justify-content-between p-3">
+                            <div>
+                                <strong><i class="fas fa-comments" style="color:#D97706;"></i> Candidates Awaiting Reply</strong>
+                                <small class="d-block text-muted">Candidate replies have waited 3+ days without a recruiter response.</small>
+                            </div>
+                            <span class="badge" style="background:#FEF3C7;color:#92400E;border-radius:20px;font-weight:700;padding:5px 12px;"><?= (int)$pendingActions['awaiting_replies'] ?></span>
                         </a>
                         <?php endif; ?>
                         <?php if ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0): ?>
@@ -692,6 +786,7 @@ body.dark .recruiter-dashboard-subtitle {
 
         <div class="col-lg-4 recruiter-dashboard-side-stack">
             <div class="dash-calendar" id="dashCalendar"></div>
+            <div class="dash-calendar-legend"><span class="dash-calendar-dot"></span> Interview scheduled</div>
 
             <div class="interview-today-card">
                 <div class="card-header py-2" style="border-radius:14px 14px 0 0;">
@@ -714,7 +809,8 @@ body.dark .recruiter-dashboard-subtitle {
                     <?php endforeach; ?>
                 <?php else: ?>
                     <div class="p-3 text-center text-muted" style="font-size:.85rem;">
-                        <i class="fas fa-check-circle" style="color:#1FB7B5;"></i> No interviews scheduled today
+                        <div class="mb-2"><i class="fas fa-check-circle" style="color:#1FB7B5;"></i> No interviews scheduled today</div>
+                        <a href="<?= $slotsUrl ?>" class="btn btn-outline-primary btn-sm">Suggest interview slots</a>
                     </div>
                 <?php endif; ?>
             </div>
@@ -727,7 +823,7 @@ body.dark .recruiter-dashboard-subtitle {
                 <div class="card-body">
                     <div class="conversion-overall-card">
                         <div>
-                            <span class="conversion-overall-label">Overall Conversion</span>
+                            <span class="conversion-overall-label">Hire Conversion</span>
                             <span class="conversion-overall-value"><?= number_format((float)($conversionMetrics['overall_conversion'] ?? 0), 1) ?>%</span>
                         </div>
                         <div class="conversion-overall-icon">
@@ -738,12 +834,7 @@ body.dark .recruiter-dashboard-subtitle {
                         <thead><tr><th>Stage Transition</th><th class="text-right">Rate</th></tr></thead>
                         <tbody>
                             <?php
-                            $stages = [
-                                'application_to_screening' => 'Application → Screening',
-                                'screening_to_shortlist' => 'Screening → Shortlist',
-                                'shortlist_to_hr_interview' => 'Shortlist → HR Interview',
-                                'hr_interview_to_selection' => 'HR Interview → Selection'
-                            ];
+                            $stages = $stageLabels;
                             foreach ($stages as $key => $label): ?>
                                 <tr>
                                     <td><?= $label ?></td>
@@ -751,7 +842,7 @@ body.dark .recruiter-dashboard-subtitle {
                                 </tr>
                             <?php endforeach; ?>
                             <tr class="font-weight-bold">
-                                <td>Overall</td>
+                                <td>Hire Conversion</td>
                                 <td class="text-right"><span class="status-pill"><?= number_format((float)($conversionMetrics['overall_conversion'] ?? 0), 1) ?>%</span></td>
                             </tr>
                         </tbody>

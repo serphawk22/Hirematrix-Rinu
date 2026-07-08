@@ -62,7 +62,12 @@ class SlotManagementController extends BaseController
                 'slots' => [],
                 'pager' => $slotModel->pager,
                 'jobs' => [],
-                'stats' => ['total_slots' => 0, 'available_slots' => 0, 'fully_booked' => 0, 'total_bookings' => 0],
+                'stats' => [
+                    'upcoming_available' => 0,
+                    'booked_upcoming' => 0,
+                    'needs_review' => 0,
+                    'past_slots' => 0,
+                ],
                 'filters' => [],
                 'noJobs' => true
             ]);
@@ -71,7 +76,8 @@ class SlotManagementController extends BaseController
         // Get filter parameters
         $jobId = $this->request->getGet('job_id');
         $date = $this->request->getGet('date');
-        $status = $this->request->getGet('status');
+        $status = $this->request->getGet('status') ?: 'upcoming';
+        $now = date('Y-m-d H:i:s');
 
         $builder = $slotModel
             ->select('interview_slots.*, jobs.title as job_title, users.name as created_by_name')
@@ -97,13 +103,27 @@ class SlotManagementController extends BaseController
             $builder->where('interview_slots.slot_date', $date);
         }
 
-        if ($status === 'available') {
+        if ($status === 'upcoming') {
+            $builder->where('interview_slots.slot_datetime >=', $now);
+        } elseif ($status === 'available') {
             $builder->where('interview_slots.is_available', 1)
-                ->where('interview_slots.booked_count < interview_slots.capacity');
+                ->where('interview_slots.booked_count < interview_slots.capacity')
+                ->where('interview_slots.slot_datetime >=', $now);
+        } elseif ($status === 'booked') {
+            $builder->where('interview_slots.booked_count >', 0)
+                ->where('interview_slots.slot_datetime >=', $now);
         } elseif ($status === 'full') {
-            $builder->where('interview_slots.is_available', 0);
+            $builder->where('interview_slots.booked_count >= interview_slots.capacity', null, false)
+                ->where('interview_slots.slot_datetime >=', $now);
+        } elseif ($status === 'needs_review') {
+            $needsReviewSlotIds = $this->getNeedsReviewSlotIds($jobIds);
+            if (empty($needsReviewSlotIds)) {
+                $builder->where('interview_slots.id', 0);
+            } else {
+                $builder->whereIn('interview_slots.id', $needsReviewSlotIds);
+            }
         } elseif ($status === 'past') {
-            $builder->where('interview_slots.slot_datetime <', date('Y-m-d H:i:s'));
+            $builder->where('interview_slots.slot_datetime <', $now);
         }
 
         $slots = $builder->paginate(20);
@@ -116,32 +136,7 @@ class SlotManagementController extends BaseController
             $jobs = $jobModel->findAll();
         }
 
-        // Statistics (filtered by recruiter's jobs)
-        $bookingModel = model('InterviewBookingModel');
-
-        if ($jobIds !== null) {
-
-            // Statistics
-            $stats = [
-                'total_slots' => $slotModel->whereIn('job_id', $jobIds)->countAllResults(),
-                'available_slots' => $slotModel->whereIn('job_id', $jobIds)
-                    ->where('is_available', 1)
-                    ->where('slot_datetime >', date('Y-m-d H:i:s'))
-                    ->countAllResults(),
-                'fully_booked' => $slotModel->whereIn('job_id', $jobIds)->where('is_available', 0)->countAllResults(),
-                'total_bookings' => $bookingModel->whereIn('job_id', $jobIds)->countAllResults()
-
-            ];
-        } else {
-            $stats = [
-                'total_slots' => $slotModel->countAll(),
-                'available_slots' => $slotModel->where('is_available', 1)
-                    ->where('slot_datetime >', date('Y-m-d H:i:s'))
-                    ->countAllResults(),
-                'fully_booked' => $slotModel->where('is_available', 0)->countAllResults(),
-                'total_bookings' => $bookingModel->countAll()
-            ];
-        }
+        $stats = $this->getSlotStats($jobIds);
 
         return view('recruiter/slots/index', [
             'slots' => $slots,
@@ -154,6 +149,92 @@ class SlotManagementController extends BaseController
                 'status' => $status
             ]
         ]);
+    }
+
+    private function getNeedsReviewSlotIds($jobIds): array
+    {
+        if (is_array($jobIds) && empty($jobIds)) {
+            return [];
+        }
+
+        $db = \Config\Database::connect();
+        $where = '';
+        if (is_array($jobIds)) {
+            $jobIds = array_values(array_filter(array_map('intval', $jobIds), static fn (int $id): bool => $id > 0));
+            if (empty($jobIds)) {
+                return [];
+            }
+            $where = 'AND interview_bookings.job_id IN (' . implode(',', $jobIds) . ')';
+        }
+
+        $rows = $db->query("
+            SELECT DISTINCT interview_bookings.slot_id
+            FROM interview_bookings
+            LEFT JOIN interview_booking_reviews ON interview_booking_reviews.booking_id = interview_bookings.id
+            WHERE interview_bookings.slot_datetime < NOW()
+              AND interview_bookings.booking_status IN ('booked', 'confirmed', 'rescheduled', 'completed')
+              AND interview_booking_reviews.id IS NULL
+              AND interview_bookings.slot_id IS NOT NULL
+              $where
+        ")->getResultArray();
+
+        return array_values(array_filter(array_map(static fn (array $row): int => (int) ($row['slot_id'] ?? 0), $rows)));
+    }
+
+    private function getSlotStats($jobIds): array
+    {
+        if (is_array($jobIds) && empty($jobIds)) {
+            return [
+                'upcoming_available' => 0,
+                'booked_upcoming' => 0,
+                'needs_review' => 0,
+                'past_slots' => 0,
+            ];
+        }
+
+        $db = \Config\Database::connect();
+        $where = '';
+        if (is_array($jobIds)) {
+            $jobIds = array_values(array_filter(array_map('intval', $jobIds), static fn (int $id): bool => $id > 0));
+            if (empty($jobIds)) {
+                $where = 'WHERE 1 = 0';
+            } else {
+                $where = 'WHERE job_id IN (' . implode(',', $jobIds) . ')';
+            }
+        }
+
+        $slotStats = $db->query("
+            SELECT
+                SUM(CASE WHEN slot_datetime >= NOW() AND is_available = 1 AND booked_count < capacity THEN 1 ELSE 0 END) AS upcoming_available,
+                SUM(CASE WHEN slot_datetime >= NOW() AND booked_count > 0 THEN 1 ELSE 0 END) AS booked_upcoming,
+                SUM(CASE WHEN slot_datetime < NOW() THEN 1 ELSE 0 END) AS past_slots
+            FROM interview_slots
+            $where
+        ")->getRowArray() ?: [];
+
+        $bookingWhere = '';
+        if (is_array($jobIds)) {
+            $bookingWhere = empty($jobIds)
+                ? 'AND 1 = 0'
+                : 'AND interview_bookings.job_id IN (' . implode(',', $jobIds) . ')';
+        }
+
+        $needsReview = $db->query("
+            SELECT COUNT(DISTINCT interview_bookings.id) AS needs_review
+            FROM interview_bookings
+            LEFT JOIN interview_booking_reviews ON interview_booking_reviews.booking_id = interview_bookings.id
+            WHERE interview_bookings.slot_datetime < NOW()
+              AND interview_bookings.booking_status IN ('booked', 'confirmed', 'rescheduled', 'completed')
+              AND interview_booking_reviews.id IS NULL
+              $bookingWhere
+        ")->getRowArray();
+
+        return [
+            'upcoming_available' => (int) ($slotStats['upcoming_available'] ?? 0),
+            'booked_upcoming' => (int) ($slotStats['booked_upcoming'] ?? 0),
+            'needs_review' => (int) ($needsReview['needs_review'] ?? 0),
+            'past_slots' => (int) ($slotStats['past_slots'] ?? 0),
+        ];
     }
 
     /**
@@ -368,6 +449,7 @@ class SlotManagementController extends BaseController
                 'filters' => [
                     'status' => $this->request->getGet('status'),
                     'job_id' => $this->request->getGet('job_id'),
+                    'slot_id' => $this->request->getGet('slot_id'),
                 ],
                 'noJobs' => true,
             ]);
@@ -376,6 +458,7 @@ class SlotManagementController extends BaseController
         // Get filters
         $status = $this->request->getGet('status');
         $jobId = $this->request->getGet('job_id');
+        $slotId = $this->request->getGet('slot_id');
 
         $builder = $bookingModel
             ->select('interview_bookings.*, users.name as candidate_name, users.email, jobs.title as job_title, interview_slots.slot_date, interview_slots.slot_time, interview_booking_reviews.id as review_id, interview_booking_reviews.attendance_status as review_attendance_status, interview_booking_reviews.decision as review_decision, interview_booking_reviews.notes as review_notes, interview_booking_reviews.reviewed_at as review_reviewed_at')
@@ -400,6 +483,10 @@ class SlotManagementController extends BaseController
             $builder->where('interview_bookings.job_id', $jobId);
         }
 
+        if ($slotId) {
+            $builder->where('interview_bookings.slot_id', (int) $slotId);
+        }
+
         $bookings = $builder->paginate(20);
         $pager = $bookingModel->pager;
 
@@ -420,7 +507,8 @@ class SlotManagementController extends BaseController
             'stats' => $stats,
             'filters' => [
                 'status' => $status,
-                'job_id' => $jobId
+                'job_id' => $jobId,
+                'slot_id' => $slotId
             ]
         ]);
     }

@@ -748,6 +748,36 @@ body.dark .slots-filter-input {
     white-space: nowrap;
 }
 .slots-filter-clear:hover { color: #ef4444; }
+.recruiter-slots-table tr.slot-row-past,
+.recruiter-slots-table tr.slot-row-past td {
+    background: #F8FAFC !important;
+    color: #94A3B8 !important;
+}
+.recruiter-slots-table tr.slot-row-past td {
+    opacity: .78;
+}
+.recruiter-slots-table tr.slot-row-past:hover,
+.recruiter-slots-table tr.slot-row-past:hover td {
+    background: #F1F5F9 !important;
+}
+.slot-empty-state {
+    padding: 44px 16px;
+    text-align: center;
+}
+.slot-empty-state h6 {
+    margin-bottom: 6px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #16212B;
+}
+.slot-empty-state p {
+    margin-bottom: 16px;
+    color: #64748B;
+}
+body.dark .slot-empty-state h6,
+body.dark .slot-empty-state p {
+    color: #FFFFFF;
+}
 
 </style>
 <div class="recruiter-slots-jobboard">
@@ -769,23 +799,23 @@ body.dark .slots-filter-input {
         <div class="slots-toolbar">
             <div class="slots-stats">
                 <div class="slots-stat">
-                    <span class="slots-stat-value"><?= $stats['total_slots'] ?></span>
-                    <span class="slots-stat-label">Total</span>
+                    <span class="slots-stat-value" style="color:#1FB7B5;"><?= $stats['upcoming_available'] ?? 0 ?></span>
+                    <span class="slots-stat-label">Upcoming Available</span>
                 </div>
                 <div class="slots-stat-divider"></div>
                 <div class="slots-stat">
-                    <span class="slots-stat-value" style="color:#1FB7B5;"><?= $stats['available_slots'] ?></span>
-                    <span class="slots-stat-label">Available</span>
+                    <span class="slots-stat-value" style="color:#6366f1;"><?= $stats['booked_upcoming'] ?? 0 ?></span>
+                    <span class="slots-stat-label">Booked Upcoming</span>
                 </div>
                 <div class="slots-stat-divider"></div>
                 <div class="slots-stat">
-                    <span class="slots-stat-value" style="color:#f59e0b;"><?= $stats['fully_booked'] ?></span>
-                    <span class="slots-stat-label">Full</span>
+                    <span class="slots-stat-value" style="color:#f59e0b;"><?= $stats['needs_review'] ?? 0 ?></span>
+                    <span class="slots-stat-label">Needs Review</span>
                 </div>
                 <div class="slots-stat-divider"></div>
                 <div class="slots-stat">
-                    <span class="slots-stat-value" style="color:#6366f1;"><?= $stats['total_bookings'] ?></span>
-                    <span class="slots-stat-label">Bookings</span>
+                    <span class="slots-stat-value"><?= $stats['past_slots'] ?? 0 ?></span>
+                    <span class="slots-stat-label">Past Slots</span>
                 </div>
             </div>
 
@@ -798,13 +828,16 @@ body.dark .slots-filter-input {
                 </select>
                 <input type="date" name="date" class="slots-filter-input" value="<?= esc($filters['date'] ?? '') ?>">
                 <select name="status" class="slots-filter-input">
-                    <option value="">All Status</option>
+                    <option value="upcoming" <?= ($filters['status'] ?? 'upcoming') === 'upcoming' ? 'selected' : '' ?>>Upcoming Slots</option>
                     <option value="available" <?= ($filters['status'] ?? '') === 'available' ? 'selected' : '' ?>>Available</option>
-                    <option value="full" <?= ($filters['status'] ?? '') === 'full' ? 'selected' : '' ?>>Fully Booked</option>
-                    <option value="past" <?= ($filters['status'] ?? '') === 'past' ? 'selected' : '' ?>>Past</option>
+                    <option value="booked" <?= ($filters['status'] ?? '') === 'booked' ? 'selected' : '' ?>>Booked Upcoming</option>
+                    <option value="full" <?= ($filters['status'] ?? '') === 'full' ? 'selected' : '' ?>>Full Upcoming</option>
+                    <option value="needs_review" <?= ($filters['status'] ?? '') === 'needs_review' ? 'selected' : '' ?>>Needs Review</option>
+                    <option value="past" <?= ($filters['status'] ?? '') === 'past' ? 'selected' : '' ?>>Past Archive</option>
+                    <option value="all" <?= ($filters['status'] ?? '') === 'all' ? 'selected' : '' ?>>All Slots</option>
                 </select>
                 <button type="submit" class="slots-filter-btn"><i class="fas fa-search"></i></button>
-                <?php if (!empty($filters['job_id']) || !empty($filters['date']) || !empty($filters['status'])): ?>
+                <?php if (!empty($filters['job_id']) || !empty($filters['date']) || (($filters['status'] ?? 'upcoming') !== 'upcoming')): ?>
                     <a href="<?= base_url('recruiter/slots') ?>" class="slots-filter-clear">Clear</a>
                 <?php endif; ?>
             </form>
@@ -827,7 +860,18 @@ body.dark .slots-filter-input {
                 <tbody>
                     <?php if (empty($slots)): ?>
                         <tr>
-                            <td colspan="8" class="text-center py-5">No slots found</td>
+                            <td colspan="8">
+                                <div class="slot-empty-state">
+                                    <?php if (($filters['status'] ?? 'upcoming') === 'upcoming'): ?>
+                                        <h6>No upcoming slots available</h6>
+                                        <p>Create interview slots so shortlisted candidates can book a time.</p>
+                                        <a href="<?= base_url('recruiter/slots/create') ?>" class="btn btn-outline-primary">Create Slots</a>
+                                    <?php else: ?>
+                                        <h6>No slots found</h6>
+                                        <p>Try changing the job, date, or status filter.</p>
+                                    <?php endif; ?>
+                                </div>
+                            </td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($slots as $slot): ?>
@@ -836,7 +880,7 @@ body.dark .slots-filter-input {
                             $isAvailable = $slot['is_available'] && !$isPast;
                             $isFull = $slot['booked_count'] >= $slot['capacity'];
                             ?>
-                            <tr class="<?= $isPast ? 'table-secondary' : ($isFull ? 'table-warning' : '') ?>">
+                            <tr class="<?= $isPast ? 'slot-row-past' : ($isFull ? 'table-warning' : '') ?>">
                                 <td><?= esc($slot['job_title']) ?></td>
                                 <td><?= date('M d, Y', strtotime($slot['slot_date'])) ?></td>
                                 <td><strong><?= date('h:i A', strtotime($slot['slot_time'])) ?></strong></td>
@@ -856,10 +900,14 @@ body.dark .slots-filter-input {
                                 <td><?= esc($slot['created_by_name']) ?></td>
                                 <td>
                                     <?php if ($slot['booked_count'] == 0): ?>
-                                        <a href="<?= base_url('recruiter/slots/edit/' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary">Edit</a>
-                                        <a href="<?= base_url('recruiter/slots/delete/' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary" onclick="return confirm('Delete this slot?')" style="color:#ef4444;border-color:#ef4444;">Delete</a>
+                                        <?php if (!$isPast): ?>
+                                            <a href="<?= base_url('recruiter/slots/edit/' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary">Edit</a>
+                                            <a href="<?= base_url('recruiter/slots/delete/' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary" onclick="return confirm('Delete this slot?')" style="color:#ef4444;border-color:#ef4444;">Delete</a>
+                                        <?php else: ?>
+                                            <span class="text-muted">Archived</span>
+                                        <?php endif; ?>
                                     <?php else: ?>
-                                        <span class="text-muted">Has bookings</span>
+                                        <a href="<?= base_url('recruiter/slots/bookings?slot_id=' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary">View bookings</a>
                                     <?php endif; ?>
                                 </td>
                             </tr>

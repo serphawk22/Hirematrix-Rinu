@@ -38,7 +38,10 @@ class DashboardController extends BaseController
                 'pendingActions' => [
                     'pending_screening' => 0,
                     'hr_interviews_today' => 0,
-                    'pending_offers' => 0
+                    'pending_offers' => 0,
+                    'stale_jobs' => 0,
+                    'unread_messages' => 0,
+                    'awaiting_replies' => 0,
                 ],
                 'recentApplications' => [],
                 'stageTimeAnalytics' => [],
@@ -87,17 +90,25 @@ class DashboardController extends BaseController
             ->where('is_read', 0)
             ->countAllResults();
 
-        $pendingActions = [
-            'pending_screening' => $applicationModel->whereIn('status', ['pending', 'applied', 'ai_interview_completed'])
+        $pendingScreeningCount = $applicationModel->whereIn('status', ['pending', 'applied', 'ai_interview_completed'])
                 ->whereIn('job_id', $jobIds ?: [0])
-                ->countAllResults(),
-            'hr_interviews_today' => model('InterviewBookingModel')
+                ->countAllResults();
+
+        $hrInterviewsTodayCount = model('InterviewBookingModel')
                 ->where('slot_datetime >=', $todayStart)
                 ->where('slot_datetime <=', $todayEnd)
                 ->whereIn('booking_status', ['booked', 'rescheduled', 'confirmed'])
                 ->whereIn('job_id', $jobIds ?: [0])
-                ->countAllResults(),
-            'unread_messages' => $unreadMessagesCount
+                ->countAllResults();
+
+        $staleJobs = $this->getStaleJobsNeedingAttention($jobIds, 14);
+        $awaitingReplies = $this->getCandidateRepliesAwaitingResponse($currentUserId, $jobIds, 3);
+        $pendingActions = [
+            'pending_screening' => $pendingScreeningCount,
+            'hr_interviews_today' => $hrInterviewsTodayCount,
+            'stale_jobs' => count($staleJobs),
+            'unread_messages' => $unreadMessagesCount,
+            'awaiting_replies' => count($awaitingReplies),
             // 'pending_offers' => $applicationModel->where('status', 'selected')
             //                                      ->where('offer_status', 'pending')
             // ->whereIn('job_id', $jobIds ?: [0])
@@ -134,6 +145,17 @@ class DashboardController extends BaseController
                 'link' => base_url('notifications'),
                 'icon' => 'fas fa-comments',
                 'tone' => 'info',
+            ];
+        }
+
+        if (!empty($staleJobs)) {
+            $count = count($staleJobs);
+            $reminders[] = [
+                'label' => $count . ' stale job' . ($count === 1 ? '' : 's') . ' with no shortlist',
+                'description' => 'These open roles have applications but no shortlisted candidates yet.',
+                'link' => base_url('recruiter/jobs'),
+                'icon' => 'fas fa-exclamation-circle',
+                'tone' => 'danger',
             ];
         }
 
@@ -197,7 +219,7 @@ class DashboardController extends BaseController
 
 
         // Conversion Metrics
-        $conversionMetrics = $this->calculateConversionMetrics();
+        $conversionMetrics = $this->calculateConversionMetrics($jobIds);
 
         // Monthly Trends (Last 6 months)
         $monthlyTrends = $this->getMonthlyTrends();
@@ -252,6 +274,8 @@ class DashboardController extends BaseController
             'conversionMetrics' => $conversionMetrics,
             'monthlyTrends' => $monthlyTrends,
             'reminders' => $reminders,
+            'staleJobs' => $staleJobs,
+            'awaitingReplies' => $awaitingReplies,
             'unread_count' => $unreadNotificationsCount,
             'upcomingInterviews' => $upcomingInterviews,
             'interviewDates' => $interviewDates,
@@ -596,6 +620,77 @@ class DashboardController extends BaseController
             'overall_conversion' => $safeRate($selectedCount, $total) ?? 0.0
         ];
 
+    }
+
+    private function getStaleJobsNeedingAttention(array $jobIds, int $daysWithoutShortlist = 14): array
+    {
+        $jobIds = array_values(array_filter(array_map('intval', $jobIds), static fn (int $id): bool => $id > 0));
+        if (empty($jobIds)) {
+            return [];
+        }
+
+        $db = \Config\Database::connect();
+        $jobIdsSql = implode(',', $jobIds);
+        $cutoff = date('Y-m-d H:i:s', strtotime('-' . max(1, $daysWithoutShortlist) . ' days'));
+
+        return $db->query("
+            SELECT
+                jobs.id,
+                jobs.title,
+                COUNT(applications.id) AS application_count,
+                MAX(applications.applied_at) AS latest_application_at
+            FROM jobs
+            JOIN applications ON applications.job_id = jobs.id
+            WHERE jobs.id IN ($jobIdsSql)
+              AND jobs.status = 'open'
+              AND applications.applied_at <= ?
+            GROUP BY jobs.id, jobs.title
+            HAVING SUM(CASE WHEN applications.status IN ('shortlisted', 'interview_slot_booked', 'selected', 'hired') THEN 1 ELSE 0 END) = 0
+            ORDER BY application_count DESC, latest_application_at ASC
+        ", [$cutoff])->getResultArray();
+    }
+
+    private function getCandidateRepliesAwaitingResponse(int $recruiterId, array $jobIds, int $daysWaiting = 3): array
+    {
+        $jobIds = array_values(array_filter(array_map('intval', $jobIds), static fn (int $id): bool => $id > 0));
+        if ($recruiterId <= 0 || empty($jobIds)) {
+            return [];
+        }
+
+        $db = \Config\Database::connect();
+        $jobIdsSql = implode(',', $jobIds);
+        $cutoff = date('Y-m-d H:i:s', strtotime('-' . max(1, $daysWaiting) . ' days'));
+
+        return $db->query("
+            SELECT
+                thread.candidate_id,
+                thread.application_id,
+                thread.job_id,
+                users.name AS candidate_name,
+                jobs.title AS job_title,
+                thread.last_candidate_message_at
+            FROM (
+                SELECT
+                    candidate_id,
+                    application_id,
+                    job_id,
+                    MAX(CASE WHEN sender_role = 'candidate' THEN created_at ELSE NULL END) AS last_candidate_message_at,
+                    MAX(CASE WHEN sender_role = 'recruiter' THEN created_at ELSE NULL END) AS last_recruiter_message_at
+                FROM recruiter_candidate_messages
+                WHERE recruiter_id = ?
+                  AND job_id IN ($jobIdsSql)
+                GROUP BY candidate_id, application_id, job_id
+            ) thread
+            LEFT JOIN users ON users.id = thread.candidate_id
+            LEFT JOIN jobs ON jobs.id = thread.job_id
+            WHERE thread.last_candidate_message_at IS NOT NULL
+              AND thread.last_candidate_message_at <= ?
+              AND (
+                  thread.last_recruiter_message_at IS NULL
+                  OR thread.last_recruiter_message_at < thread.last_candidate_message_at
+              )
+            ORDER BY thread.last_candidate_message_at ASC
+        ", [$recruiterId, $cutoff])->getResultArray();
     }
 
     /**

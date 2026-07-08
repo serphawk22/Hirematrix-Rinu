@@ -118,67 +118,40 @@
         return actor + ' ' + type;
     }
 
-    function renderChipList(items, emptyText, extraClass) {
-        if (!Array.isArray(items) || !items.length) {
-            return '<span class="communication-chip is-muted">' + escapeHtml(emptyText || 'None') + '</span>';
+    function revealCandidateContact(button) {
+        var url = button.getAttribute('data-contact-url') || '';
+        if (!url) {
+            return;
         }
-        return items.map(function (item) {
-            return '<span class="review-chip ' + (extraClass || '') + '">' + escapeHtml(item) + '</span>';
-        }).join('');
-    }
 
-    function renderKeyValue(label, value) {
-        return '<div class="review-key-value"><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(value || '-') + '</strong></div>';
-    }
+        var originalHtml = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading';
 
-    function normalizeStageKey(status) {
-        var key = String(status || '').toLowerCase();
-        var aliases = {
-            hold: 'on_hold',
-            interview_slot_booked: 'interview_scheduled'
-        };
-        return aliases[key] || key;
-    }
-
-    function renderDecisionActions(payload) {
-        var applicationId = escapeHtml(payload.applicationId || '');
-        var currentStatus = normalizeStageKey(payload.stageKey || payload.status || payload.stage);
-        var actionSets = {
-            rejected: [
-                { status: 'applied', label: 'Reopen', icon: 'fa-undo' },
-                { status: 'shortlisted', label: 'Shortlist', icon: 'fa-check-circle' },
-                { schedule: true, label: 'Schedule Interview', icon: 'fa-calendar-plus' },
-                { status: 'hold', label: 'Hold', icon: 'fa-pause-circle' }
-            ],
-            shortlisted: [
-                { schedule: true, label: 'Schedule Interview', icon: 'fa-calendar-plus' },
-                { status: 'hold', label: 'Hold', icon: 'fa-pause-circle' },
-                { status: 'rejected', label: 'Reject', icon: 'fa-times-circle', danger: true }
-            ],
-            interview_scheduled: [
-                { status: 'shortlisted', label: 'Back to Shortlist', icon: 'fa-arrow-left' },
-                { status: 'hold', label: 'Hold', icon: 'fa-pause-circle' },
-                { status: 'rejected', label: 'Reject', icon: 'fa-times-circle', danger: true }
-            ],
-            on_hold: [
-                { status: 'shortlisted', label: 'Shortlist', icon: 'fa-check-circle' },
-                { schedule: true, label: 'Schedule Interview', icon: 'fa-calendar-plus' },
-                { status: 'rejected', label: 'Reject', icon: 'fa-times-circle', danger: true }
-            ]
-        };
-        var actions = actionSets[currentStatus] || [
-            { status: 'shortlisted', label: 'Shortlist', icon: 'fa-check-circle' },
-            { schedule: true, label: 'Schedule Interview', icon: 'fa-calendar-plus' },
-            { status: 'hold', label: 'Hold', icon: 'fa-pause-circle' },
-            { status: 'rejected', label: 'Reject', icon: 'fa-times-circle', danger: true }
-        ];
-
-        return actions.map(function (action) {
-            if (action.schedule) {
-                return '<button type="button" class="review-action-btn js-open-schedule-interview" data-application-id="' + applicationId + '" data-candidate-name="' + escapeHtml(payload.candidateName || 'Candidate') + '" data-candidate-email="' + escapeHtml(payload.candidateEmail || '') + '"><i class="fas ' + escapeHtml(action.icon) + '"></i> ' + escapeHtml(action.label) + '</button>';
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        }).then(function (response) {
+            return response.json();
+        }).then(function (payload) {
+            if (!payload || payload.status !== 'success') {
+                throw new Error((payload && payload.message) || 'Could not load contact details.');
             }
-            return '<button type="button" class="review-action-btn ' + (action.danger ? 'is-danger ' : '') + 'js-review-stage-action" data-application-id="' + applicationId + '" data-status="' + escapeHtml(action.status) + '"><i class="fas ' + escapeHtml(action.icon) + '"></i> ' + escapeHtml(action.label) + '</button>';
-        }).join('');
+            var target = button.closest('.response-contact-reveal');
+            if (!target) {
+                return;
+            }
+            var phone = payload.phone ? '<span class="response-contact-separator">·</span>' + escapeHtml(payload.phone) : '';
+            target.innerHTML = '<span class="response-contact-value">' + escapeHtml(payload.email || 'Not provided') + phone + '</span>';
+        }).catch(function (error) {
+            button.disabled = false;
+            button.innerHTML = originalHtml;
+            showRecruiterAlert(error.message || 'Could not load contact details.', 'error', 'Contact unavailable');
+        });
     }
 
     function openScheduleInterviewModal(button) {
@@ -278,57 +251,16 @@
 
         var title = document.getElementById('communicationDrawerTitle');
         var subtitle = document.getElementById('communicationDrawerSubtitle');
-        var overview = document.getElementById('communicationDrawerOverview');
-        var skills = document.getElementById('communicationDrawerSkills');
-        var notes = document.getElementById('communicationDrawerNotes');
         var stats = document.getElementById('communicationDrawerStats');
         var timeline = document.getElementById('communicationDrawerTimeline');
-        var actions = document.getElementById('communicationDrawerActions');
         var items = Array.isArray(payload.items) ? payload.items : [];
 
-        title.textContent = payload.candidateName || 'Candidate review';
-        subtitle.textContent = (payload.candidateEmail || '') + (payload.stage ? ' - ' + payload.stage : '');
-        overview.innerHTML =
-            '<section class="review-section">' +
-                '<h4 class="review-section-title">Evaluation</h4>' +
-                '<div class="review-metrics">' +
-                    '<div class="review-metric"><strong>' + escapeHtml(payload.atsScore || 0) + '%</strong><span>ATS match</span></div>' +
-                    '<div class="review-metric"><strong>' + escapeHtml(payload.skillMatch || 0) + '%</strong><span>Skills match</span></div>' +
-                    '<div class="review-metric"><strong>' + escapeHtml(payload.experience || '-') + '</strong><span>Experience</span></div>' +
-                '</div>' +
-                '<div class="review-key-values">' +
-                    renderKeyValue('Location', payload.location) +
-                    renderKeyValue('Applied', payload.appliedAt) +
-                    renderKeyValue('Last active', payload.lastActive) +
-                    renderKeyValue('Phone', payload.phone || 'Not shared') +
-                '</div>' +
-                '<div class="review-note-box">' + escapeHtml(payload.atsReason || 'Score is based on job requirements, candidate skills, experience and profile completeness.') + '</div>' +
-            '</section>';
-
-        skills.innerHTML =
-            '<section class="review-section">' +
-                '<h4 class="review-section-title">Job Fit</h4>' +
-                '<div><strong class="communication-latest">Matched requirements</strong><div class="review-chip-list">' +
-                    renderChipList(payload.matchedSkills, 'No required skills matched') +
-                '</div></div>' +
-                '<div><strong class="communication-latest">Missing requirements</strong><div class="review-chip-list">' +
-                    renderChipList(payload.missingSkills, 'No obvious gaps', 'is-missing') +
-                '</div></div>' +
-                '<div><strong class="communication-latest">Candidate skills</strong><div class="review-chip-list">' +
-                    renderChipList(payload.candidateSkills, 'No skills listed') +
-                '</div></div>' +
-            '</section>';
-
-        notes.innerHTML =
-            '<section class="review-section">' +
-                '<h4 class="review-section-title">Recruiter Context</h4>' +
-                '<div class="review-chip-list">' + renderChipList(payload.tags, 'No tags') + '</div>' +
-                '<div class="review-note-box">' + escapeHtml(payload.notes || 'No recruiter notes yet.') + '</div>' +
-            '</section>';
+        title.textContent = payload.candidateName || 'Recruiter conversations';
+        subtitle.textContent = payload.candidateEmail || '';
 
         stats.innerHTML =
             '<section class="review-section">' +
-                '<h4 class="review-section-title">Communication</h4>' +
+                '<h4 class="review-section-title">Recruiter Conversations</h4>' +
                 '<div class="communication-drawer-stats">' +
                     '<span class="communication-chip"><i class="fas fa-at"></i>' + escapeHtml(payload.emailCount || 0) + ' emails</span>' +
                     '<span class="communication-chip"><i class="fas fa-comments"></i>' + escapeHtml(payload.messageCount || 0) + ' messages</span>' +
@@ -354,17 +286,6 @@
         }
         timeline.innerHTML = '<section class="review-section"><h4 class="review-section-title">Recent Timeline</h4>' + timeline.innerHTML + '</section>';
 
-        actions.innerHTML =
-            '<section class="review-section">' +
-                '<h4 class="review-section-title">Decision Actions</h4>' +
-                '<div class="review-actions">' +
-                    renderDecisionActions(payload) +
-                    (payload.resumePreviewUrl ? '<a class="review-action-link" href="' + escapeHtml(payload.resumePreviewUrl) + '" target="_blank" rel="noopener"><i class="fas fa-eye"></i> Preview Resume</a>' : '') +
-                    (payload.resumeUrl ? '<a class="review-action-link" href="' + escapeHtml(payload.resumeUrl) + '"><i class="fas fa-download"></i> Resume</a>' : '') +
-                    '<a class="review-action-link" href="' + escapeHtml(payload.profileUrl || '#') + '"><i class="fas fa-user"></i> Full Profile</a>' +
-                '</div>' +
-            '</section>';
-
         drawer.classList.add('is-open');
         backdrop.classList.add('is-open');
         drawer.setAttribute('aria-hidden', 'false');
@@ -389,10 +310,10 @@
     }
 
     window.togglePipelineCandidates = function (source) {
-        var table = source.closest('table') || document.getElementById('candidatePipelineTable');
-        var checkboxes = table
-            ? table.querySelectorAll('tbody input[name="candidate_ids[]"]')
-            : document.querySelectorAll('#candidatePipelineTable tbody input[name="candidate_ids[]"]');
+        var container = source.closest('#candidatePipelineTable') || document.getElementById('candidatePipelineTable');
+        var checkboxes = container
+            ? container.querySelectorAll('input[name="candidate_ids[]"]')
+            : document.querySelectorAll('#candidatePipelineTable input[name="candidate_ids[]"]');
 
         checkboxes.forEach(function (checkbox) {
             checkbox.checked = source.checked;
@@ -406,7 +327,7 @@
     };
 
     window.updatePipelineSelectAllState = function () {
-        var checkboxes = document.querySelectorAll('#candidatePipelineTable tbody input[name="candidate_ids[]"]');
+        var checkboxes = document.querySelectorAll('#candidatePipelineTable input[name="candidate_ids[]"]');
         var checkedCount = Array.from(checkboxes).filter(function (checkbox) {
             return checkbox.checked;
         }).length;
@@ -425,17 +346,7 @@
             return;
         }
 
-        var checked = $('input[name="candidate_ids[]"]:checked');
-        var count = checked.length;
         window.updatePipelineSelectAllState();
-        if (count > 0) {
-            $('#selectedCount').text(count);
-            $('.js-selected-count').text(count);
-            $('#bulkActionBar').removeClass('d-none');
-        } else {
-            $('.js-selected-count').text('0');
-            $('#bulkActionBar').addClass('d-none');
-        }
     };
 
     window.openBulkMessageModal = function () {
@@ -789,9 +700,9 @@
 
         $(document).on('input', '#candidatePipelineSearch', function () {
             var needle = $(this).val().toLowerCase().trim();
-            $('#candidatePipelineTable tbody tr').each(function () {
-                var rowText = $(this).text().toLowerCase();
-                $(this).toggle(rowText.indexOf(needle) !== -1);
+            $('#candidatePipelineTable [data-application-row]').each(function () {
+                var cardText = $(this).text().toLowerCase();
+                $(this).toggle(cardText.indexOf(needle) !== -1);
             });
         });
 
@@ -819,6 +730,12 @@
                 payload = {};
             }
             openCommunicationDrawer(payload);
+        });
+
+        $(document).on('click', '.js-view-contact', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            revealCandidateContact(this);
         });
 
         $(document).on('click', '.js-review-stage-action', function () {

@@ -350,7 +350,7 @@ body.dark .recruiter-slot-bookings-jobboard .recruiter-bookings-table td {
         <div class="card shadow-sm recruiter-table-card" style="border-radius: 20px !important;overflow: hidden;">
             <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <h6 class="m-0 font-weight-bold">All Bookings</h6>
-                <span class="text-muted">Manage interview actions from one place</span>
+                
             </div>
             <div class="card-body">
                 <div class="table-responsive">
