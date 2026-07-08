@@ -238,6 +238,64 @@ class API_RecruiterController extends ResourceController
         ]);
     }
 
+    
+   
+
+    private function personalizeRecruiterMessageTemplate(string $message, array $candidate, ?array $job = null): string
+    {
+        $candidateName = trim((string) ($candidate['name'] ?? 'Candidate'));
+        $recruiterName = trim((string) (session()->get('user_name') ?? session()->get('name') ?? 'Recruiter'));
+        $jobTitle = trim((string) ($job['title'] ?? 'the role'));
+        $companyName = trim((string) (($job['company'] ?? '') ?: (session()->get('company_name') ?? '')));
+
+        $message = strtr($message, [
+            '{candidate_name}' => $candidateName,
+            '{{candidate_name}}' => $candidateName,
+            '[candidate name]' => $candidateName,
+            '[candidate_name]' => $candidateName,
+            '[candidate\'s name]' => $candidateName,
+            '[Candidate Name]' => $candidateName,
+            '[Candidate\'s Name]' => $candidateName,
+            '{recruiter_name}' => $recruiterName,
+            '{{recruiter_name}}' => $recruiterName,
+            '[recruiter name]' => $recruiterName,
+            '[Recruiter Name]' => $recruiterName,
+            '{job_title}' => $jobTitle,
+            '{{job_title}}' => $jobTitle,
+            '[job title]' => $jobTitle,
+            '[Job Title]' => $jobTitle,
+            '{company_name}' => $companyName,
+            '{{company_name}}' => $companyName,
+            '[company name]' => $companyName,
+            '[Company Name]' => $companyName,
+        ]);
+
+        return trim(preg_replace('/\*\*(Subject|Message|Body):\*\*/i', '$1:', $message) ?? $message);
+    }
+
+    private function prepareRecruiterMessageDelivery(string $message, array $candidate, ?array $job = null): array
+    {
+        $body = trim($message);
+        $subject = '';
+
+        if (preg_match('/^\s*(?:\*\*)?Subject(?:\*\*)?\s*:\s*(.+?)(?:\r?\n|$)(.*)$/is', $body, $matches)) {
+            $subject = trim((string) $matches[1]);
+            $body = trim((string) $matches[2]);
+        }
+
+        $subject = trim(preg_replace('/\*\*/', '', $subject) ?? $subject);
+        if ($subject === '') {
+            $subject = $job
+                ? 'Regarding your application for ' . (string) ($job['title'] ?? 'the role')
+                : 'Message from ' . (string) (session()->get('user_name') ?? session()->get('name') ?? 'Recruiter');
+        }
+
+        return [
+            'subject' => mb_substr($subject, 0, 160),
+            'body' => $body,
+        ];
+    }
+
     public function getJobs()
     {
         $recruiterId = $this->request->getVar('recruiter_id');
@@ -271,6 +329,67 @@ class API_RecruiterController extends ResourceController
                 $status = $this->formatApplicationStatus((string) $row['status']);
                 if (isset($pipeline[$status])) $pipeline[$status] += (int)$row['count'];
             }
+            
+            // Calculate Attention Metrics
+            $allApps = $appModel->where('job_id', $job['id'])->findAll();
+            $atsScores = [];
+            foreach ($allApps as $appRec) {
+                $candForAts = $appRec;
+                $candForAts['candidate_skills'] = $this->getLeaderboardCandidateSkills($appRec['candidate_id']);
+                $candForAts['required_skills'] = $job['required_skills'];
+                $candForAts['experience_level'] = $job['experience_level'];
+                $atsScores[] = $this->calculateLeaderboardAtsScore($candForAts);
+            }
+            $averageAts = !empty($atsScores) ? (int) round(array_sum($atsScores) / count($atsScores)) : 0;
+            
+            $applicantCount = count($allApps);
+            $shortlistedCount = count(array_filter($allApps, fn($a) => in_array($a['status'], ['shortlisted', 'interview_scheduled', 'interviewed', 'offered', 'hired', 'selected'])));
+            
+            $attentionFacts = [];
+            $suggestedActions = [];
+            $priorityScore = 0;
+            $createdAt = strtotime((string) ($job['created_at'] ?? ''));
+            $isOpen = strtolower((string) ($job['status'] ?? '')) === 'open';
+            $jobAgeDays = $createdAt ? max(0, (int) floor((time() - $createdAt) / 86400)) : 0;
+            
+            if ($isOpen && $jobAgeDays >= 14) {
+                $priorityScore += 20;
+                $attentionFacts[] = 'stale ' . $jobAgeDays . 'd';
+            } elseif ($isOpen && $jobAgeDays >= 7) {
+                $priorityScore += 10;
+                $attentionFacts[] = 'stale ' . $jobAgeDays . 'd';
+            }
+            if ($applicantCount > 0 && $shortlistedCount === 0) {
+                $priorityScore += $applicantCount >= 2 ? 30 : 15;
+                $attentionFacts[] = '0 shortlisted';
+                $suggestedActions[] = [
+                    'label' => 'Review Candidates',
+                    'action_key' => 'review',
+                ];
+            }
+            if ($applicantCount > 0) {
+                if ($averageAts < 20) {
+                    $priorityScore += $shortlistedCount > 0 ? 22 : 35;
+                } elseif ($averageAts < 30) {
+                    $priorityScore += $shortlistedCount > 0 ? 14 : 25;
+                } elseif ($averageAts < 40) {
+                    $priorityScore += $shortlistedCount > 0 ? 6 : 12;
+                }
+                if ($averageAts < 30 && $shortlistedCount === 0) {
+                    $attentionFacts[] = 'weak candidate pool';
+                    $suggestedActions[] = [
+                        'label' => 'Edit Requirements',
+                        'action_key' => 'edit',
+                    ];
+                }
+            }
+
+            $job['average_ats_score'] = $averageAts;
+            $job['job_age_days'] = $jobAgeDays;
+            $job['attention_score'] = $priorityScore;
+            $job['attention_facts'] = array_values(array_unique($attentionFacts));
+            $job['suggested_actions'] = $suggestedActions;
+            $job['attention_level'] = 'quiet';
 
             $formattedJobs[] = [
                 'job_id'    => (string)$job['id'],
@@ -299,12 +418,42 @@ class API_RecruiterController extends ResourceController
                 'ai_interview_policy' => $job['ai_interview_policy'] ?? 'REQUIRED_HARD',
                 'min_ai_cutoff_score' => (int)($job['min_ai_cutoff_score'] ?? 0),
                 'application_questionnaire' => $job['application_questionnaire'],
+                'average_ats_score' => $job['average_ats_score'],
+                'job_age_days' => $job['job_age_days'],
+                'attention_score' => $job['attention_score'],
+                'attention_facts' => $job['attention_facts'],
+                'suggested_actions' => $job['suggested_actions'],
+                'attention_level' => $job['attention_level'],
             ];
         }
+        
+        usort($formattedJobs, static function (array $a, array $b): int {
+            $scoreCompare = ((int) ($b['attention_score'] ?? 0)) <=> ((int) ($a['attention_score'] ?? 0));
+            if ($scoreCompare !== 0) {
+                return $scoreCompare;
+            }
+            return strtotime((string) ($b['created_at'] ?? '')) <=> strtotime((string) ($a['created_at'] ?? ''));
+        });
+
+        $visibleAttentionLimit = max(1, min(3, (int) floor(count($formattedJobs) / 2)));
+        foreach ($formattedJobs as $index => &$fj) {
+            $score = (int) ($fj['attention_score'] ?? 0);
+            if ($score < 35 || $index >= $visibleAttentionLimit) {
+                $fj['attention_level'] = 'quiet';
+                continue;
+            }
+            $fj['attention_level'] = $score >= 55 ? 'critical' : 'watch';
+        }
+        unset($fj);
+
+        // Fetch Recruiter Alerts
+        $activeAlertJobs = array_filter($jobs, fn($j) => strtolower($j['status']) === 'open');
+        $recruiterAlerts = $this->buildRecruiterAlertCenter($activeAlertJobs, (int)$recruiterId);
 
         return $this->respond([
             'success' => true,
-            'jobs'    => $formattedJobs
+            'jobs'    => $formattedJobs,
+            'recruiter_alerts' => $recruiterAlerts
         ]);
     }
 
@@ -490,11 +639,14 @@ class API_RecruiterController extends ResourceController
                 $pipelineStats[$formattedStatus] += (int)$row['count'];
             }
         }
+        
+        $funnelMetrics = $this->buildHiringFunnelMetrics($statsData);
 
         return $this->respond([
             'success'        => true,
             'applications'   => $formattedApps,
-            'pipeline_stats' => $pipelineStats
+            'pipeline_stats' => $pipelineStats,
+            'funnel_metrics' => $funnelMetrics
         ]);
     }
 
@@ -1191,6 +1343,85 @@ class API_RecruiterController extends ResourceController
             'Rejected' => 0,
             'Withdrawn' => 0,
         ];
+    }
+
+    /**
+     * Build hiring funnel metrics from $statsData rows.
+     * $statsData is an array of ['status' => string, 'count' => int] rows
+     * returned by a GROUP BY query.
+     */
+    private function buildHiringFunnelMetrics(array $statsData): array
+    {
+        // Build a flat status => count lookup
+        $countByStatus = [];
+        $totalApplied = 0;
+        foreach ($statsData as $row) {
+            $status = strtolower((string) ($row['status'] ?? ''));
+            $count  = (int) ($row['count'] ?? 0);
+            $countByStatus[$status] = ($countByStatus[$status] ?? 0) + $count;
+            $totalApplied += $count;
+        }
+
+        $stageSets = [
+            [
+                'key'      => 'applied',
+                'label'    => 'Applied',
+                'statuses' => ['*'],
+            ],
+            [
+                'key'      => 'shortlisted',
+                'label'    => 'Shortlisted',
+                'statuses' => ['shortlisted', 'interview_scheduled', 'interview_slot_booked', 'interviewed', 'offered', 'hired', 'selected'],
+            ],
+            [
+                'key'      => 'interviewed',
+                'label'    => 'Interviewed',
+                'statuses' => ['interview_scheduled', 'interview_slot_booked', 'interviewed', 'offered', 'hired'],
+            ],
+            [
+                'key'      => 'offered',
+                'label'    => 'Offered',
+                'statuses' => ['offered', 'selected', 'hired'],
+            ],
+            [
+                'key'      => 'hired',
+                'label'    => 'Hired',
+                'statuses' => ['hired'],
+            ],
+        ];
+
+        $metrics       = [];
+        $previousCount = null;
+
+        foreach ($stageSets as $stage) {
+            if (in_array('*', $stage['statuses'], true)) {
+                $count = $totalApplied;
+            } else {
+                $count = 0;
+                foreach ($stage['statuses'] as $s) {
+                    $count += $countByStatus[$s] ?? 0;
+                }
+            }
+
+            $conversion = ($previousCount === null || $previousCount <= 0)
+                ? 100
+                : (int) round(($count / $previousCount) * 100);
+            $dropoff    = ($previousCount === null || $previousCount <= 0)
+                ? 0
+                : max(0, 100 - $conversion);
+
+            $metrics[] = [
+                'key'        => $stage['key'],
+                'label'      => $stage['label'],
+                'count'      => $count,
+                'conversion' => min(100, $conversion),
+                'dropoff'    => $dropoff,
+            ];
+
+            $previousCount = $count;
+        }
+
+        return $metrics;
     }
 
     private function toPublicUrl(string $path): string
@@ -3856,7 +4087,12 @@ class API_RecruiterController extends ResourceController
 
     public function askChatbot()
     {
-        $recruiterId = (int) ($this->request->getVar('recruiter_id') ?? $this->request->getPost('recruiter_id') ?? $this->request->getJSON(true)['recruiter_id'] ?? 0);
+        $json = [];
+        try {
+            $json = $this->request->getJSON(true) ?? [];
+        } catch (\Throwable $e) {}
+        
+        $recruiterId = (int) ($this->request->getVar('recruiter_id') ?? $this->request->getPost('recruiter_id') ?? $json['recruiter_id'] ?? 0);
 
         if (!$recruiterId) {
             return $this->response
@@ -3867,7 +4103,16 @@ class API_RecruiterController extends ResourceController
                 ]);
         }
 
-        $question = trim((string) ($this->request->getPost('question') ?? $this->request->getJSON(true)['question'] ?? ''));
+        $question = trim((string) ($this->request->getPost('question') ?? $json['question'] ?? ''));
+        $contextRaw = (string) ($this->request->getPost('context') ?? ($json['context'] ?? ''));
+        $chatContext = [];
+        if ($contextRaw !== '') {
+            $decodedContext = json_decode($contextRaw, true);
+            $chatContext = is_array($decodedContext) ? $decodedContext : [];
+        } elseif (!empty($json['context']) && is_array($json['context'])) {
+            $chatContext = $json['context'];
+        }
+
         if ($question === '') {
             return $this->response
                 ->setStatusCode(400)
@@ -3878,38 +4123,110 @@ class API_RecruiterController extends ResourceController
         }
 
         $service = new \App\Libraries\RecruiterChatbotService();
-        $result  = $service->answer($recruiterId, $question);
+        $result  = $service->answer($recruiterId, $question, $chatContext);
 
         return $this->response->setJSON([
             'success' => true,
             'answer'  => $result['answer'],
+            'actions' => $result['actions'] ?? [],
+            'meta'    => $result['data_summary'] ?? [],
         ]);
     }
 
     public function getChatbotSuggestions()
     {
-        $recruiterId = (int) ($this->request->getVar('recruiter_id') ?? 0);
+        $json = [];
+        try {
+            $json = $this->request->getJSON(true) ?? [];
+        } catch (\Throwable $e) {}
+        $recruiterId = (int) ($this->request->getVar('recruiter_id') ?? $json['recruiter_id'] ?? 0);
 
         if (!$recruiterId) {
             return $this->response->setStatusCode(401)->setJSON(['success' => false]);
         }
 
-        $suggestions = [
-            ['text' => 'Post job for Front End Developer', 'mode' => 'send'],
-            ['text' => 'Draft job description for PHP Developer', 'mode' => 'send'],
-            ['text' => 'Create screening questions for job #ID', 'mode' => 'edit'],
-            ['text' => 'Shortlist candidates for job #ID with ATS above 70', 'mode' => 'edit'],
-            ['text' => 'Suggest interview slots for job #ID', 'mode' => 'edit'],
-            ['text' => 'Draft shortlist email for job #ID', 'mode' => 'edit'],
-            ['text' => 'Draft rejection email for job #ID', 'mode' => 'edit'],
-            ['text' => 'Export candidate data', 'mode' => 'send'],
-            ['text' => 'Give me a summary of my hiring', 'mode' => 'send'],
-        ];
+        $suggestions = $this->buildRecruiterSuggestions($recruiterId);
 
         return $this->response->setJSON([
             'success'     => true,
             'suggestions' => $suggestions,
         ]);
+    }
+
+    public function getChatbotBrief()
+    {
+        $json = [];
+        try {
+            $json = $this->request->getJSON(true) ?? [];
+        } catch (\Throwable $e) {}
+        $recruiterId = (int) ($this->request->getVar('recruiter_id') ?? $json['recruiter_id'] ?? 0);
+
+        if (!$recruiterId) {
+            return $this->response->setStatusCode(401)->setJSON(['success' => false]);
+        }
+
+        $service = new \App\Libraries\RecruiterChatbotService();
+        $result = $service->buildMorningBrief($recruiterId);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'answer' => $result['answer'],
+            'actions' => $result['actions'] ?? [],
+            'meta' => $result['data_summary'] ?? [],
+        ]);
+    }
+
+    private function buildRecruiterSuggestions(int $recruiterId): array
+    {
+        $jobs = \Config\Database::connect()->table('jobs j')
+            ->select('j.id, j.title, j.status, j.created_at, COUNT(a.id) as application_count')
+            ->join('applications a', 'a.job_id = j.id', 'left')
+            ->where('j.recruiter_id', $recruiterId)
+            ->groupBy('j.id, j.title, j.status, j.created_at')
+            ->orderBy('CASE WHEN j.status IN ("active", "open", "published") THEN 0 ELSE 1 END', 'ASC', false)
+            ->orderBy('application_count', 'DESC')
+            ->orderBy('j.created_at', 'DESC')
+            ->limit(3)
+            ->get()
+            ->getResultArray();
+
+        $recentCandidate = \Config\Database::connect()->table('applications a')
+            ->select('u.name as candidate_name, j.title as job_title')
+            ->join('jobs j', 'j.id = a.job_id', 'inner')
+            ->join('users u', 'u.id = a.candidate_id', 'inner')
+            ->where('j.recruiter_id', $recruiterId)
+            ->orderBy('a.applied_at', 'DESC')
+            ->get(1)
+            ->getRowArray();
+
+        $suggestions = [];
+
+        if (!empty($jobs)) {
+            foreach (array_slice($jobs, 0, 2) as $job) {
+                $title = trim((string) ($job['title'] ?? ''));
+                if ($title === '') {
+                    continue;
+                }
+
+                $quoted = '"' . $title . '"';
+                $suggestions[] = ['text' => 'Draft screening questions for ' . $quoted, 'mode' => 'send'];
+                $suggestions[] = ['text' => 'Shortlist candidates above 70 ATS for ' . $quoted, 'mode' => 'send'];
+                $suggestions[] = ['text' => 'Draft rejection email for ' . $quoted, 'mode' => 'send'];
+            }
+        } else {
+            $suggestions[] = ['text' => 'Post your first job', 'mode' => 'link', 'url' => base_url('recruiter/post_job')];
+            $suggestions[] = ['text' => 'Draft job description for Front End Developer', 'mode' => 'send'];
+        }
+
+        if (!empty($recentCandidate['candidate_name'])) {
+            $suggestions[] = ['text' => 'Send interview invite to ' . (string) $recentCandidate['candidate_name'], 'mode' => 'send'];
+            $suggestions[] = ['text' => 'Suggest interview slots for ' . (string) $recentCandidate['candidate_name'], 'mode' => 'send'];
+        }
+
+        $suggestions[] = ['text' => 'Export candidate data', 'mode' => 'send'];
+        $suggestions[] = ['text' => 'Summary of my hiring this week', 'mode' => 'send'];
+
+        return array_slice($suggestions, 0, 8);
     }
 
 }
