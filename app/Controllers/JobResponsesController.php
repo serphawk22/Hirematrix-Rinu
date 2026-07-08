@@ -48,6 +48,14 @@ class JobResponsesController extends BaseController
             $builder->like('title', $searchQuery);
         }
 
+        $alertJobModel = new JobModel();
+        $alertJobs = $alertJobModel
+            ->where('recruiter_id', $recruiterId)
+            ->where('status', 'open')
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+        $recruiterAlerts = $this->buildRecruiterAlertCenter($alertJobs, $recruiterId);
+
         $jobs = $builder->orderBy('created_at', 'DESC')->paginate(10);
         $pager = $jobModel->pager;
 
@@ -56,11 +64,83 @@ class JobResponsesController extends BaseController
         foreach ($jobs as &$job) {
             $job['applicant_count'] = $applicationModel->where('job_id', $job['id'])->countAllResults();
             $job['shortlisted_count'] = $applicationModel->where('job_id', $job['id'])->where('status', 'shortlisted')->countAllResults();
+
+            $jobApplications = $this->getApplicationsForRecruiterJobs([(int) $job['id']], $recruiterId, false, 'all', ['sort' => 'ats_desc']);
+            $atsScores = array_map(static fn (array $application): int => (int) ($application['ats_score'] ?? 0), $jobApplications);
+            $averageAts = !empty($atsScores) ? (int) round(array_sum($atsScores) / count($atsScores)) : 0;
+            $job['average_ats_score'] = $averageAts;
+
+            $attentionFacts = [];
+            $suggestedActions = [];
+            $priorityScore = 0;
+            $createdAt = strtotime((string) ($job['created_at'] ?? ''));
+            $isOpen = strtolower((string) ($job['status'] ?? '')) === 'open';
+            $jobAgeDays = $createdAt ? max(0, (int) floor((time() - $createdAt) / 86400)) : 0;
+            if ($isOpen && $jobAgeDays >= 14) {
+                $priorityScore += 20;
+                $attentionFacts[] = 'stale ' . $jobAgeDays . 'd';
+            } elseif ($isOpen && $jobAgeDays >= 7) {
+                $priorityScore += 10;
+                $attentionFacts[] = 'stale ' . $jobAgeDays . 'd';
+            }
+            if ((int) $job['applicant_count'] > 0 && (int) $job['shortlisted_count'] === 0) {
+                $priorityScore += (int) $job['applicant_count'] >= 2 ? 30 : 15;
+                $attentionFacts[] = '0 shortlisted';
+                $suggestedActions[] = [
+                    'label' => 'Review Candidates',
+                    'url' => base_url('recruiter/jobs/view/' . (int) $job['id']),
+                    'primary' => true,
+                ];
+            }
+            if ((int) $job['applicant_count'] > 0) {
+                if ($averageAts < 20) {
+                    $priorityScore += (int) $job['shortlisted_count'] > 0 ? 22 : 35;
+                } elseif ($averageAts < 30) {
+                    $priorityScore += (int) $job['shortlisted_count'] > 0 ? 14 : 25;
+                } elseif ($averageAts < 40) {
+                    $priorityScore += (int) $job['shortlisted_count'] > 0 ? 6 : 12;
+                }
+                if ($averageAts < 30 && (int) $job['shortlisted_count'] === 0) {
+                    $attentionFacts[] = 'weak candidate pool';
+                    $suggestedActions[] = [
+                        'label' => 'Edit Job Requirements',
+                        'url' => base_url('recruiter/jobs/edit/' . (int) $job['id']),
+                        'primary' => false,
+                    ];
+                }
+            }
+            $job['job_age_days'] = $jobAgeDays;
+            $job['attention_score'] = $priorityScore;
+            $job['attention_facts'] = array_values(array_unique($attentionFacts));
+            $job['suggested_actions'] = $suggestedActions;
+            $job['attention_level'] = 'quiet';
         }
+        unset($job);
+
+        usort($jobs, static function (array $a, array $b): int {
+            $scoreCompare = ((int) ($b['attention_score'] ?? 0)) <=> ((int) ($a['attention_score'] ?? 0));
+            if ($scoreCompare !== 0) {
+                return $scoreCompare;
+            }
+            return strtotime((string) ($b['created_at'] ?? '')) <=> strtotime((string) ($a['created_at'] ?? ''));
+        });
+
+        $visibleAttentionLimit = max(1, min(3, (int) floor(count($jobs) / 2)));
+        foreach ($jobs as $index => &$job) {
+            $job['attention_rank'] = $index + 1;
+            $score = (int) ($job['attention_score'] ?? 0);
+            if ($score < 35 || $index >= $visibleAttentionLimit) {
+                $job['attention_level'] = 'quiet';
+                continue;
+            }
+            $job['attention_level'] = $score >= 55 ? 'critical' : 'watch';
+        }
+        unset($job);
 
         return view('recruiter/job_responses', [
             'jobs' => $jobs,
             'pager' => $pager,
+            'recruiterAlerts' => $recruiterAlerts,
             'filters' => ['status' => $statusFilter, 'q' => $searchQuery]
         ]);
     }
@@ -81,7 +161,7 @@ class JobResponsesController extends BaseController
             'location'    => trim((string) $this->request->getGet('location')),
             'ats_min'     => $this->request->getGet('ats_min'),
             'ats_max'     => $this->request->getGet('ats_max'),
-            'sort'        => trim((string) $this->request->getGet('sort')),
+            'sort'        => trim((string) $this->request->getGet('sort')) ?: 'ats_desc',
             'last_active' => trim((string) $this->request->getGet('last_active')),
         ];
 
@@ -91,6 +171,7 @@ class JobResponsesController extends BaseController
         $allApplications = $this->getApplicationsForRecruiterJobs([$jobId], $recruiterId, false, 'all', $filters);
         $applicationsByStatus = $this->groupApplicationsByStatus($allApplications);
         $jobScoreboard = $this->calculateScoreboard($recruiterId, $allApplications);
+        $funnelMetrics = $this->buildHiringFunnelMetrics($allApplications);
         
         // Fetch paginated applications for the active stage
         $paginatedApplications = $this->getApplicationsForRecruiterJobs([$jobId], $recruiterId, true, $activeStage, $filters);
@@ -116,6 +197,7 @@ class JobResponsesController extends BaseController
             'interviewBookings' => $interviewBookings,
             'interviewSlots' => $interviewSlots,
             'interviewStats' => $interviewStats,
+            'funnelMetrics' => $funnelMetrics,
             'activeStage' => $activeStage,
             'pager' => $pager,
             'statuses' => [
@@ -136,6 +218,141 @@ class JobResponsesController extends BaseController
         }
 
         return view('recruiter/job_detail_responses', $viewData);
+    }
+
+    private function buildRecruiterAlertCenter(array $jobs, int $recruiterId): array
+    {
+        $alerts = [];
+        $bookingModel = model('InterviewBookingModel');
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+
+        foreach ($jobs as $job) {
+            $jobId = (int) ($job['id'] ?? 0);
+            if ($jobId <= 0) {
+                continue;
+            }
+
+            $applications = $this->getApplicationsForRecruiterJobs([$jobId], $recruiterId, false, 'all', ['sort' => 'ats_desc']);
+            $applicantCount = count($applications);
+            $shortlistedCount = count(array_filter($applications, static function (array $application): bool {
+                return in_array((string) ($application['status'] ?? ''), ['shortlisted', 'interview_scheduled', 'interviewed', 'offered', 'hired'], true);
+            }));
+            $newApplications = count(array_filter($applications, static function (array $application): bool {
+                $appliedAt = strtotime((string) ($application['applied_at'] ?? ''));
+                return $appliedAt && $appliedAt >= strtotime('-2 days');
+            }));
+            $waitingReplies = count(array_filter($applications, static function (array $application): bool {
+                $summary = (array) ($application['communication_summary'] ?? []);
+                $latestAt = strtotime((string) ($summary['latest_at'] ?? ''));
+                $direction = (string) ($summary['latest_direction'] ?? '');
+                return $latestAt && in_array($direction, ['incoming', 'inbound'], true) && $latestAt < strtotime('-2 days');
+            }));
+            $avgMatch = $applicantCount > 0
+                ? (int) round(array_sum(array_map(static fn (array $application): int => (int) ($application['ats_score'] ?? 0), $applications)) / $applicantCount)
+                : 0;
+            $createdAt = strtotime((string) ($job['created_at'] ?? ''));
+            $jobAgeDays = $createdAt ? max(0, (int) floor((time() - $createdAt) / 86400)) : 0;
+
+            if ($newApplications > 0) {
+                $alerts[] = [
+                    'priority' => 70,
+                    'tone' => 'info',
+                    'title' => $newApplications . ' new application' . ($newApplications === 1 ? '' : 's'),
+                    'meta' => (string) ($job['title'] ?? 'Job'),
+                    'detail' => 'Review fresh applicants while they are active.',
+                    'url' => base_url('recruiter/jobs/view/' . $jobId . '?stage=applied'),
+                    'action' => 'Review',
+                ];
+            }
+            if ($waitingReplies > 0) {
+                $alerts[] = [
+                    'priority' => 65,
+                    'tone' => 'warning',
+                    'title' => $waitingReplies . ' candidate repl' . ($waitingReplies === 1 ? 'y' : 'ies') . ' waiting',
+                    'meta' => (string) ($job['title'] ?? 'Job'),
+                    'detail' => 'Candidate response has been idle for more than 2 days.',
+                    'url' => base_url('recruiter/jobs/view/' . $jobId),
+                    'action' => 'Open thread',
+                ];
+            }
+            if ($applicantCount > 0 && $shortlistedCount === 0 && $jobAgeDays >= 7) {
+                $alerts[] = [
+                    'priority' => 85,
+                    'tone' => 'danger',
+                    'title' => 'No shortlist after ' . $jobAgeDays . ' days',
+                    'meta' => (string) ($job['title'] ?? 'Job'),
+                    'detail' => $applicantCount . ' applicants, ' . $avgMatch . '% avg match.',
+                    'url' => base_url('recruiter/jobs/view/' . $jobId),
+                    'action' => 'Review candidates',
+                ];
+            } elseif ($applicantCount > 0 && $avgMatch < 30) {
+                $alerts[] = [
+                    'priority' => 55,
+                    'tone' => 'warning',
+                    'title' => 'Weak candidate pool',
+                    'meta' => (string) ($job['title'] ?? 'Job'),
+                    'detail' => $avgMatch . '% avg match across ' . $applicantCount . ' applicants.',
+                    'url' => base_url('recruiter/jobs/edit/' . $jobId),
+                    'action' => 'Edit requirements',
+                ];
+            }
+        }
+
+        foreach ($bookingModel
+            ->select('interview_bookings.job_id, interview_bookings.slot_datetime, jobs.title as job_title, users.name as candidate_name')
+            ->join('jobs', 'jobs.id = interview_bookings.job_id', 'left')
+            ->join('users', 'users.id = interview_bookings.user_id', 'left')
+            ->where('jobs.recruiter_id', $recruiterId)
+            ->where('interview_bookings.slot_datetime >=', $todayStart)
+            ->where('interview_bookings.slot_datetime <=', $todayEnd)
+            ->orderBy('interview_bookings.slot_datetime', 'ASC')
+            ->findAll() as $booking) {
+            $alerts[] = [
+                'priority' => 90,
+                'tone' => 'info',
+                'title' => 'Interview today',
+                'meta' => trim((string) ($booking['candidate_name'] ?? 'Candidate') . ' - ' . (string) ($booking['job_title'] ?? 'Job')),
+                'detail' => !empty($booking['slot_datetime']) ? date('h:i A', strtotime((string) $booking['slot_datetime'])) : 'Today',
+                'url' => base_url('recruiter/jobs/view/' . (int) ($booking['job_id'] ?? 0) . '#interviews'),
+                'action' => 'View schedule',
+            ];
+        }
+
+        usort($alerts, static fn (array $a, array $b): int => ((int) ($b['priority'] ?? 0)) <=> ((int) ($a['priority'] ?? 0)));
+
+        return array_slice($alerts, 0, 6);
+    }
+
+    private function buildHiringFunnelMetrics(array $applications): array
+    {
+        $stageSets = [
+            ['key' => 'applied', 'label' => 'Applied', 'statuses' => ['*']],
+            ['key' => 'shortlisted', 'label' => 'Shortlisted', 'statuses' => ['shortlisted', 'interview_scheduled', 'interviewed', 'offered', 'hired']],
+            ['key' => 'interviewed', 'label' => 'Interviewed', 'statuses' => ['interview_scheduled', 'interviewed', 'offered', 'hired']],
+            ['key' => 'offered', 'label' => 'Offered', 'statuses' => ['offered', 'hired']],
+            ['key' => 'hired', 'label' => 'Hired', 'statuses' => ['hired']],
+        ];
+        $metrics = [];
+        $previousCount = null;
+
+        foreach ($stageSets as $stage) {
+            $count = in_array('*', $stage['statuses'], true) ? count($applications) : count(array_filter($applications, static function (array $application) use ($stage): bool {
+                return in_array((string) ($application['status'] ?? 'applied'), $stage['statuses'], true);
+            }));
+            $conversion = $previousCount === null || $previousCount <= 0 ? 100 : (int) round(($count / $previousCount) * 100);
+            $dropoff = $previousCount === null || $previousCount <= 0 ? 0 : max(0, 100 - $conversion);
+            $metrics[] = [
+                'key' => $stage['key'],
+                'label' => $stage['label'],
+                'count' => $count,
+                'conversion' => min(100, $conversion),
+                'dropoff' => $dropoff,
+            ];
+            $previousCount = $count;
+        }
+
+        return $metrics;
     }
 
     public function previewJob(int $jobId)
@@ -354,12 +571,11 @@ class JobResponsesController extends BaseController
         }
 
         // Sorting
-        if (!empty($filters['sort'])) {
-            if ($filters['sort'] === 'ats_desc') {
-                usort($applications, fn($a, $b) => $b['ats_score'] <=> $a['ats_score']);
-            } elseif ($filters['sort'] === 'ats_asc') {
-                usort($applications, fn($a, $b) => $a['ats_score'] <=> $b['ats_score']);
-            }
+        $sort = $filters['sort'] ?? 'ats_desc';
+        if ($sort === 'ats_desc') {
+            usort($applications, fn($a, $b) => $b['ats_score'] <=> $a['ats_score']);
+        } elseif ($sort === 'ats_asc') {
+            usort($applications, fn($a, $b) => $a['ats_score'] <=> $b['ats_score']);
         }
 
         return $applications;

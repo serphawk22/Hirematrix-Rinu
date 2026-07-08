@@ -36,6 +36,34 @@
         return Promise.resolve({ isConfirmed: true });
     }
 
+    function setBulkEmailFeedback(message, type) {
+        var $ = window.jQuery;
+        if (!$) {
+            return;
+        }
+
+        var modal = $('#bulkEmailModal');
+        if (!modal.length) {
+            return;
+        }
+
+        var feedback = modal.find('.js-bulk-email-feedback');
+        if (!feedback.length) {
+            feedback = $('<div class="alert js-bulk-email-feedback mb-3" role="alert"></div>');
+            modal.find('.modal-body').prepend(feedback);
+        }
+
+        if (!message) {
+            feedback.addClass('d-none').removeClass('alert-danger alert-success alert-warning').text('');
+            return;
+        }
+
+        feedback
+            .removeClass('d-none alert-danger alert-success alert-warning')
+            .addClass(type === 'success' ? 'alert-success' : (type === 'warning' ? 'alert-warning' : 'alert-danger'))
+            .text(message);
+    }
+
     function refreshApplicationsAjax() {
         var $ = window.jQuery;
         var ajaxTarget = $('#applications-ajax-container');
@@ -443,6 +471,7 @@
         $('#emailRecipientCount').text(emails.length);
         $('#emailSubject').val('');
         $('#emailBody').val('');
+        setBulkEmailFeedback('');
         $('#bulkEmailModal').modal('show');
     };
 
@@ -481,12 +510,14 @@
         var body = $('#emailBody').val().trim();
 
         if (!subject) {
-            alert('Please enter an email subject.');
+            setBulkEmailFeedback('Add an email subject before sending.');
+            $('#emailSubject').trigger('focus');
             return;
         }
 
         if (!body) {
-            alert('Please enter an email message.');
+            setBulkEmailFeedback('Add the email message before sending.');
+            $('#emailBody').trigger('focus');
             return;
         }
 
@@ -499,7 +530,7 @@
         });
 
         if (emails.length === 0) {
-            alert('No valid recipients found.');
+            setBulkEmailFeedback('Select at least one candidate with an email address.');
             return;
         }
 
@@ -523,16 +554,21 @@
             updateCsrf(config, res);
             if (res.status === 'success') {
                 $('#bulkEmailModal').modal('hide');
+                setBulkEmailFeedback('');
                 alert('Email sent successfully to ' + emails.length + ' candidate(s)!');
                 location.reload();
             } else {
-                alert('Error: ' + (res.message || 'Failed to send email'));
+                setBulkEmailFeedback(res.message || 'Failed to send email.');
             }
         }).fail(function (xhr) {
             if (xhr.status === 404 || xhr.status === 405) {
                 window.location.href = 'mailto:' + emails.join(',') + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
             } else {
-                alert('Failed to send email. Please try again.');
+                var messageText = 'Failed to send email. Please try again.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    messageText = xhr.responseJSON.message;
+                }
+                setBulkEmailFeedback(messageText);
             }
         }).always(function () {
             btn.prop('disabled', false)

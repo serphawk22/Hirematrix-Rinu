@@ -52,6 +52,8 @@ class Jobs extends BaseController
             'skills_match'     => $this->request->getGet('skills_match'),
             'sort'             => $this->request->getGet('sort') ?: 'newest',
         ];
+        $filters['employment_type'] = $this->normalizeSelectedFilterValues($filters['employment_type'], 'employment');
+        $filters['experience_level'] = $this->normalizeSelectedFilterValues($filters['experience_level'], 'experience');
 
         $filterContextKeys = [
             'search',
@@ -111,19 +113,11 @@ class Jobs extends BaseController
         }
 
         if (!empty($filters['experience_level'])) {
-            if (is_array($filters['experience_level'])) {
-                $builder->whereIn('experience_level', $filters['experience_level']);
-            } else {
-                $builder->where('experience_level', $filters['experience_level']);
-            }
+            $this->applyNormalizedFieldFilter($builder, 'experience_level', $filters['experience_level'], 'experience');
         }
 
         if (!empty($filters['employment_type'])) {
-            if (is_array($filters['employment_type'])) {
-                $builder->whereIn('employment_type', $filters['employment_type']);
-            } else {
-                $builder->where('employment_type', $filters['employment_type']);
-            }
+            $this->applyNormalizedFieldFilter($builder, 'employment_type', $filters['employment_type'], 'employment');
         }
 
         if (!empty($filters['work_mode'])) {
@@ -196,6 +190,8 @@ class Jobs extends BaseController
             $categories       = $categoryBuilder->groupBy('category')->findAll();
             $employmentTypes  = $employmentTypeBuilder->groupBy('employment_type')->findAll();
             $experienceLevels = $experienceBuilder->groupBy('experience_level')->findAll();
+            $employmentTypes  = $this->buildNormalizedFilterOptions($employmentTypes, 'employment_type', 'employment');
+            $experienceLevels = $this->buildNormalizedFilterOptions($experienceLevels, 'experience_level', 'experience');
         }
 
         $allJobsAreExternal = !empty($jobs) && count(array_filter($jobs, static fn($j) => (int)($j['is_external'] ?? 0) !== 1)) === 0;
@@ -461,6 +457,179 @@ class Jobs extends BaseController
             'hasBaseResume' => $hasBaseResume,
             'primaryResumeId' => $primaryResumeId,
         ]);
+    }
+
+    private function normalizeSelectedFilterValues($value, string $type): array
+    {
+        $values = is_array($value) ? $value : [$value];
+        $normalized = [];
+
+        foreach ($values as $item) {
+            $label = $type === 'employment'
+                ? $this->normalizeEmploymentTypeLabel((string) $item)
+                : $this->normalizeExperienceLevelLabel((string) $item);
+
+            if ($label !== '') {
+                $normalized[$label] = $label;
+            }
+        }
+
+        return array_values($normalized);
+    }
+
+    private function buildNormalizedFilterOptions(array $rows, string $field, string $type): array
+    {
+        $options = [];
+
+        foreach ($rows as $row) {
+            $rawValue = trim((string) ($row[$field] ?? ''));
+            if ($rawValue === '') {
+                continue;
+            }
+
+            $labels = $type === 'employment'
+                ? [$this->normalizeEmploymentTypeLabel($rawValue)]
+                : $this->normalizeExperienceLevelOptionLabels($rawValue);
+
+            foreach ($labels as $label) {
+                if ($label === '') {
+                    continue;
+                }
+
+                $options[$label] = [$field => $label];
+            }
+        }
+
+        $order = $type === 'employment'
+            ? ['Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship', 'Temporary', 'Permanent']
+            : ['Fresher', 'Junior', 'Mid Level', 'Senior'];
+
+        uksort($options, static function (string $a, string $b) use ($order): int {
+            $aIndex = array_search($a, $order, true);
+            $bIndex = array_search($b, $order, true);
+            $aIndex = $aIndex === false ? PHP_INT_MAX : $aIndex;
+            $bIndex = $bIndex === false ? PHP_INT_MAX : $bIndex;
+
+            if ($aIndex === $bIndex) {
+                return strcasecmp($a, $b);
+            }
+
+            return $aIndex <=> $bIndex;
+        });
+
+        return array_values($options);
+    }
+
+    private function applyNormalizedFieldFilter($builder, string $field, $selectedValues, string $type): void
+    {
+        $selectedValues = $this->normalizeSelectedFilterValues($selectedValues, $type);
+        if (empty($selectedValues)) {
+            return;
+        }
+
+        $builder->groupStart();
+        foreach ($selectedValues as $index => $selectedValue) {
+            $aliases = $type === 'employment'
+                ? $this->employmentTypeAliases($selectedValue)
+                : $this->experienceLevelAliases($selectedValue);
+
+            if (empty($aliases)) {
+                continue;
+            }
+
+            $method = $index === 0 ? 'whereIn' : 'orWhereIn';
+            $builder->{$method}($field, $aliases);
+        }
+        $builder->groupEnd();
+    }
+
+    private function normalizeEmploymentTypeLabel(string $value): string
+    {
+        $key = $this->normalizeFilterKey($value);
+
+        $labels = [
+            'full-time' => 'Full-time',
+            'fulltime' => 'Full-time',
+            'part-time' => 'Part-time',
+            'parttime' => 'Part-time',
+            'contract' => 'Contract',
+            'freelance' => 'Freelance',
+            'internship' => 'Internship',
+            'intern' => 'Internship',
+            'temporary' => 'Temporary',
+            'temp' => 'Temporary',
+            'permanent' => 'Permanent',
+        ];
+
+        return $labels[$key] ?? trim($value);
+    }
+
+    private function normalizeExperienceLevelLabel(string $value): string
+    {
+        $labels = $this->normalizeExperienceLevelOptionLabels($value);
+
+        return $labels[0] ?? '';
+    }
+
+    private function normalizeExperienceLevelOptionLabels(string $value): array
+    {
+        $key = $this->normalizeFilterKey($value);
+        if ($key === '' || in_array($key, ['not-specified', 'not-specified-', 'multiple-levels'], true)) {
+            return [];
+        }
+
+        $labels = [];
+        if (strpos($key, 'fresher') !== false || strpos($key, 'entry') !== false) {
+            $labels[] = 'Fresher';
+        }
+        if (strpos($key, 'junior') !== false) {
+            $labels[] = 'Junior';
+        }
+        if (strpos($key, 'mid') !== false || strpos($key, 'middle') !== false) {
+            $labels[] = 'Mid Level';
+        }
+        if (strpos($key, 'senior') !== false || preg_match('/\bsr\b/', $key)) {
+            $labels[] = 'Senior';
+        }
+
+        return array_values(array_unique($labels));
+    }
+
+    private function employmentTypeAliases(string $label): array
+    {
+        $aliases = [
+            'Full-time' => ['Full-time', 'Full Time', 'Full_time', 'full-time', 'full time', 'full_time', 'fulltime'],
+            'Part-time' => ['Part-time', 'Part Time', 'Part_time', 'part-time', 'part time', 'part_time', 'parttime'],
+            'Contract' => ['Contract', 'contract'],
+            'Freelance' => ['Freelance', 'freelance'],
+            'Internship' => ['Internship', 'Intern', 'internship', 'intern'],
+            'Temporary' => ['Temporary', 'Temp', 'temporary', 'temp'],
+            'Permanent' => ['Permanent', 'permanent'],
+        ];
+
+        return $aliases[$label] ?? [$label];
+    }
+
+    private function experienceLevelAliases(string $label): array
+    {
+        $aliases = [
+            'Fresher' => ['Fresher', 'Freshers', 'fresher', 'freshers', 'Entry Level', 'Entry-Level', 'entry_level', 'entry level', 'Fresher/Mid', 'fresher/mid', 'Fresher-Mid'],
+            'Junior' => ['Junior', 'junior', 'Junior/Mid', 'junior/mid', 'Junior-Mid'],
+            'Mid Level' => ['Mid Level', 'Mid-Level', 'Mid level', 'mid level', 'mid-level', 'Mid', 'mid', 'middle', 'Fresher/Mid', 'fresher/mid', 'Fresher-Mid', 'Junior/Mid', 'junior/mid', 'Junior-Mid', 'Mid/Senior', 'mid/senior', 'Mid-Senior'],
+            'Senior' => ['Senior', 'senior', 'Sr', 'sr', 'Mid/Senior', 'mid/senior', 'Mid-Senior'],
+        ];
+
+        return $aliases[$label] ?? [$label];
+    }
+
+    private function normalizeFilterKey(string $value): string
+    {
+        $value = strtolower(trim($value));
+        $value = str_replace(['_', '/', '\\'], ['-', '-', '-'], $value);
+        $value = preg_replace('/\s+/', '-', $value) ?? $value;
+        $value = preg_replace('/-+/', '-', $value) ?? $value;
+
+        return trim($value, '-');
     }
 
     private function getUserSkills($userId)

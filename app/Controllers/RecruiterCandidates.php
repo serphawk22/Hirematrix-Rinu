@@ -578,8 +578,12 @@ class RecruiterCandidates extends BaseController
         $message = trim((string) $this->request->getPost('message'));
         $applicationId = (int) ($this->request->getPost('application_id') ?? 0);
         $jobId = (int) ($this->request->getPost('job_id') ?? 0);
+        $job = $jobId > 0 ? (new JobModel())->find($jobId) : null;
+        $message = $this->personalizeRecruiterMessageTemplate($message, $candidate, $job);
+        $delivery = $this->prepareRecruiterMessageDelivery($message, $candidate, $job);
+        $message = $delivery['body'];
 
-        if ($message === '') {
+        if ($message === '' || preg_match('/[[:alnum:]]/u', $message) !== 1) {
             return redirect()->back()->with('error', 'Message cannot be empty.');
         }
 
@@ -605,8 +609,7 @@ class RecruiterCandidates extends BaseController
             $mailbox = (new \App\Models\RecruiterMailboxConnectionModel())
                 ->getConnectedForRecruiter((int) session()->get('user_id'));
             if ($mailbox && !empty($candidate['email'])) {
-                $job = $jobId > 0 ? (new JobModel())->find($jobId) : null;
-                $subject = $job ? 'Regarding your application for ' . (string) ($job['title'] ?? 'the role') : 'Message from ' . $recruiterName;
+                $subject = $delivery['subject'];
                 (new \App\Libraries\RecruiterMailboxService())->sendForRecruiter(
                     (int) session()->get('user_id'),
                     (string) $candidate['email'],
@@ -632,6 +635,86 @@ class RecruiterCandidates extends BaseController
             . '&show_contact=' . (int) ($this->request->getPost('show_contact') ?? 0);
 
         return redirect()->to($redirectUrl)->with('success', 'Message sent to candidate.');
+    }
+
+    private function personalizeRecruiterMessageTemplate(string $message, array $candidate, ?array $job = null): string
+    {
+        $candidateName = trim((string) ($candidate['name'] ?? 'Candidate'));
+        $recruiterName = trim((string) (session()->get('user_name') ?? 'Recruiter'));
+        $jobTitle = trim((string) ($job['title'] ?? 'the role'));
+        $companyName = trim((string) (($job['company'] ?? '') ?: (session()->get('company_name') ?? '')));
+
+        $message = strtr($message, [
+            '{candidate_name}' => $candidateName,
+            '{{candidate_name}}' => $candidateName,
+            '[candidate name]' => $candidateName,
+            '[candidate_name]' => $candidateName,
+            '[candidate\'s name]' => $candidateName,
+            '[Candidate Name]' => $candidateName,
+            '[Candidate\'s Name]' => $candidateName,
+            '{recruiter_name}' => $recruiterName,
+            '{{recruiter_name}}' => $recruiterName,
+            '[recruiter name]' => $recruiterName,
+            '[Recruiter Name]' => $recruiterName,
+            '{job_title}' => $jobTitle,
+            '{{job_title}}' => $jobTitle,
+            '[job title]' => $jobTitle,
+            '[Job Title]' => $jobTitle,
+            '{company_name}' => $companyName,
+            '{{company_name}}' => $companyName,
+            '[company name]' => $companyName,
+            '[Company Name]' => $companyName,
+        ]);
+
+        return trim(preg_replace('/\*\*(Subject|Message|Body):\*\*/i', '$1:', $message) ?? $message);
+    }
+
+    /**
+     * @return array{subject: string, body: string}
+     */
+    private function prepareRecruiterMessageDelivery(string $message, array $candidate, ?array $job = null): array
+    {
+        $body = trim($message);
+        $subject = '';
+
+        if (preg_match('/^\s*(?:\*\*)?Subject(?:\*\*)?\s*:\s*(.+?)(?:\r?\n|$)(.*)$/is', $body, $matches)) {
+            $subject = trim((string) $matches[1]);
+            $body = trim((string) $matches[2]);
+        }
+
+        $subject = trim(preg_replace('/\*\*/', '', $subject) ?? $subject);
+        if ($subject === '') {
+            $subject = $job
+                ? 'Regarding your application for ' . (string) ($job['title'] ?? 'the role')
+                : 'Message from ' . (string) (session()->get('user_name') ?? 'Recruiter');
+        }
+
+        return [
+            'subject' => mb_substr($subject, 0, 160),
+            'body' => $body,
+        ];
+    }
+
+    private function buildRecruiterEmailHtml(string $body, string $recruiterName, string $companyName): string
+    {
+        return '
+            <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;padding:20px;color:#0f172a;">
+                <div style="background:#1FB7B5;color:#ffffff;padding:20px;border-radius:10px 10px 0 0;">
+                    <h2 style="margin:0;font-size:22px;">Message from HireMatrix</h2>
+                </div>
+                <div style="padding:28px;background:#ffffff;border:1px solid #d9ece5;border-top:none;">
+                    <p style="margin:0;color:#334155;line-height:1.8;">' . nl2br(esc($body)) . '</p>
+                    <hr style="border:none;border-top:1px solid #e2e8f0;margin:28px 0;">
+                    <p style="margin:0;color:#64748b;font-size:14px;line-height:1.7;">
+                        <strong>Best regards,</strong><br>
+                        ' . esc($recruiterName) . '<br>
+                        ' . esc($companyName) . '
+                    </p>
+                </div>
+                <div style="padding:14px;background:#f8fafc;text-align:center;color:#94a3b8;font-size:12px;border:1px solid #d9ece5;border-top:none;border-radius:0 0 10px 10px;">
+                    This email was sent via HireMatrix Recruitment Portal.
+                </div>
+            </div>';
     }
 
     public function saveNotes($candidateId)
@@ -814,25 +897,6 @@ class RecruiterCandidates extends BaseController
         $failedCount = 0;
         $recruiterName = (string) (session()->get('user_name') ?? session()->get('name') ?? 'Recruiter');
         $companyName = (string) (session()->get('company_name') ?? 'Recruiting Team');
-        $htmlBody = '
-            <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;padding:20px;color:#0f172a;">
-                <div style="background:#1FB7B5;color:#ffffff;padding:20px;border-radius:10px 10px 0 0;">
-                    <h2 style="margin:0;font-size:22px;">Message from HireMatrix</h2>
-                </div>
-                <div style="padding:28px;background:#ffffff;border:1px solid #d9ece5;border-top:none;">
-                    <p style="margin:0;color:#334155;line-height:1.8;">' . nl2br(esc($body)) . '</p>
-                    <hr style="border:none;border-top:1px solid #e2e8f0;margin:28px 0;">
-                    <p style="margin:0;color:#64748b;font-size:14px;line-height:1.7;">
-                        <strong>Best regards,</strong><br>
-                        ' . esc($recruiterName) . '<br>
-                        ' . esc($companyName) . '
-                    </p>
-                </div>
-                <div style="padding:14px;background:#f8fafc;text-align:center;color:#94a3b8;font-size:12px;border:1px solid #d9ece5;border-top:none;border-radius:0 0 10px 10px;">
-                    This email was sent via HireMatrix Recruitment Portal.
-                </div>
-            </div>';
-
         try {
             $mailboxService = null;
             if (\Config\Database::connect()->tableExists('recruiter_mailbox_connections')) {
@@ -844,7 +908,10 @@ class RecruiterCandidates extends BaseController
 
             if ($mailboxService !== null) {
                 foreach ($candidates as $candidateId => $candidate) {
-                    $sent = $mailboxService->sendForRecruiter($recruiterId, (string) $candidate['email'], $subject, $htmlBody, [
+                    $personalSubject = $this->personalizeRecruiterMessageTemplate($subject, $candidate);
+                    $personalBody = $this->personalizeRecruiterMessageTemplate($body, $candidate);
+                    $htmlBody = $this->buildRecruiterEmailHtml($personalBody, $recruiterName, $companyName);
+                    $sent = $mailboxService->sendForRecruiter($recruiterId, (string) $candidate['email'], $personalSubject, $htmlBody, [
                         'candidate_id' => (int) $candidateId,
                         'application_id' => null,
                         'job_id' => null,
@@ -855,13 +922,16 @@ class RecruiterCandidates extends BaseController
                 $emailConfig = config('Email');
                 $email = \Config\Services::email(null, false);
                 foreach ($candidates as $candidate) {
+                    $personalSubject = $this->personalizeRecruiterMessageTemplate($subject, $candidate);
+                    $personalBody = $this->personalizeRecruiterMessageTemplate($body, $candidate);
+                    $htmlBody = $this->buildRecruiterEmailHtml($personalBody, $recruiterName, $companyName);
                     $email->clear(true);
                     $email->setMailType('html');
                     if ($emailConfig->fromEmail !== '') {
                         $email->setFrom($emailConfig->fromEmail, $emailConfig->fromName ?: 'HireMatrix');
                     }
                     $email->setTo((string) $candidate['email']);
-                    $email->setSubject($subject);
+                    $email->setSubject($personalSubject);
                     $email->setMessage($htmlBody);
                     $email->send(false) ? $sentCount++ : $failedCount++;
                 }
