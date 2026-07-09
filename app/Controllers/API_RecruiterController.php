@@ -209,6 +209,15 @@ class API_RecruiterController extends ResourceController
             }));
         }
 
+        $dashboardController = new \App\Controllers\DashboardController();
+        $staleJobs = $dashboardController->getStaleJobsNeedingAttention($jobIds, 14);
+        $awaitingReplies = $dashboardController->getCandidateRepliesAwaitingResponse((int)$recruiterId, $jobIds, 3);
+        $unreadMessagesCount = model('NotificationModel')
+            ->where('user_id', $recruiterId)
+            ->where('type', 'candidate_message_reply')
+            ->where('is_read', 0)
+            ->countAllResults();
+
         return $this->respond([
             'success' => true,
             'recruiter' => [
@@ -229,7 +238,14 @@ class API_RecruiterController extends ResourceController
                 'conversion_rate' => $conversionRate . '%',
                 'time_to_hire' => $timeToHire,
                 'need_review' => $pipeline['Applied'] + $pipeline['Screening'],
-                'application_trends' => $trends
+                'application_trends' => $trends,
+                'pending_actions' => [
+                    'pending_screening' => $pipeline['Applied'] + $pipeline['Screening'],
+                    'hr_interviews_today' => count($todayInterviews),
+                    'stale_jobs' => count($staleJobs),
+                    'unread_messages' => $unreadMessagesCount,
+                    'awaiting_replies' => count($awaitingReplies),
+                ]
             ],
             'pipeline_stats' => $pipeline,
             'upcomingInterviews' => $upcomingInterviews,
@@ -491,6 +507,7 @@ class API_RecruiterController extends ResourceController
                 applications.*,
                 users.name as candidate_name,
                 users.email as candidate_email,
+                users.phone as candidate_phone,
                 jobs.title as job_title,
                 jobs.recruiter_id,
                 jobs.company_id,
@@ -572,9 +589,12 @@ class API_RecruiterController extends ResourceController
 
         $apps = $appsBuilder->orderBy('applications.applied_at', 'DESC')->findAll();
 
+        // ── Pre-build communication summaries for all apps in batch ──────────
+        $commSummaries = $this->buildApiCommunicationSummaries($apps, (int)$recruiterId, $jobId > 0 ? [$jobId] : []);
+
         $formattedApps = [];
         foreach ($apps as $app) {
-            $skills = $this->splitSkills((string) ($app['key_skills'] ?? ''));
+            $skills = $this->getLeaderboardCandidateSkills($app['candidate_id']);
 
             $candForAts = $app;
             $candForAts['candidate_skills'] = $this->getLeaderboardCandidateSkills($app['candidate_id']);
@@ -582,24 +602,58 @@ class API_RecruiterController extends ResourceController
             $candForAts['experience_level'] = $app['experience_level'];
             $atsScore = $this->calculateLeaderboardAtsScore($candForAts);
 
+            // Skill match vs required skills
+            $reqSkills  = $this->splitSkills((string) ($app['required_skills'] ?? ''));
+            $skillsLower = array_map('strtolower', $skills);
+            $matchedSkills = [];
+            $missingSkills = [];
+            foreach ($reqSkills as $req) {
+                if (in_array(strtolower($req), $skillsLower, true)) {
+                    $matchedSkills[] = $req;
+                } else {
+                    $missingSkills[] = $req;
+                }
+            }
+            $skillMatchPct = count($reqSkills) > 0
+                ? (int) round((count($matchedSkills) / count($reqSkills)) * 100)
+                : 0;
+
+            $commSummary = $commSummaries[(int)$app['id']] ?? [
+                'email_count'      => 0,
+                'message_count'    => 0,
+                'latest_type'      => '',
+                'latest_direction' => '',
+                'latest_at'        => null,
+                'latest_subject'   => '',
+                'latest_preview'   => '',
+                'items'            => [],
+            ];
+
+            $expStr = $this->formatExperienceDisplay((int) ($app['total_experience_months'] ?? 0));
+
             $formattedApps[] = [
-                'application_id' => (string)$app['id'],
-                'candidate_id'   => (string)$app['candidate_id'],
-                'candidate_name' => $app['candidate_name'],
-                'candidate_email'=> $app['candidate_email'],
-                'job_id'         => (string)$app['job_id'],
-                'recruiter_id'   => (string)$app['recruiter_id'],
-                'company_id'     => (string)$app['company_id'],
-                'job_title'      => $app['job_title'],
-                'status'         => $this->formatApplicationStatus((string) $app['status']),
-                'status_key'     => $this->normalizeApplicationStatus((string) $app['status']),
-                'match_score'    => (string)$atsScore,
-                'experience'     => $app['is_fresher_candidate'] ? 'Fresher' : 'Experienced',
-                'skills'         => $skills,
-                'resume_link'    => $app['resume_path'] ?? '',
-                'resume_url'     => $this->toPublicUrl((string) ($app['resume_path'] ?? '')),
-                'location'       => $app['candidate_location'] ?: ($app['job_location'] ?? ''),
-                'applied_at'     => $app['applied_at'],
+                'application_id'    => (string)$app['id'],
+                'candidate_id'      => (string)$app['candidate_id'],
+                'candidate_name'    => $app['candidate_name'],
+                'candidate_email'   => $app['candidate_email'],
+                'candidate_phone'   => (string)($app['candidate_phone'] ?? ''),
+                'job_id'            => (string)$app['job_id'],
+                'recruiter_id'      => (string)$app['recruiter_id'],
+                'company_id'        => (string)$app['company_id'],
+                'job_title'         => $app['job_title'],
+                'status'            => $this->formatApplicationStatus((string) $app['status']),
+                'status_key'        => $this->normalizeApplicationStatus((string) $app['status']),
+                'match_score'       => (string)$atsScore,
+                'experience'        => $expStr,
+                'skills'            => $skills,
+                'matched_skills'    => $matchedSkills,
+                'missing_skills'    => $missingSkills,
+                'skill_match_pct'   => $skillMatchPct,
+                'resume_link'       => $app['resume_path'] ?? '',
+                'resume_url'        => $this->toPublicUrl((string) ($app['resume_path'] ?? '')),
+                'location'          => $app['candidate_location'] ?: ($app['job_location'] ?? ''),
+                'applied_at'        => $app['applied_at'],
+                'communication'     => $commSummary,
             ];
         }
 
@@ -1424,6 +1478,130 @@ class API_RecruiterController extends ResourceController
         return $metrics;
     }
 
+    /**
+     * Build recruiter alert centre for the mobile API.
+     * Self-contained version: queries applications & bookings directly.
+     * $jobs must be raw job rows (with at least 'id', 'title', 'created_at').
+     */
+    private function buildRecruiterAlertCenter(array $jobs, int $recruiterId): array
+    {
+        $alerts       = [];
+        $db           = \Config\Database::connect();
+        $bookingModel = model('InterviewBookingModel');
+        $todayStart   = date('Y-m-d 00:00:00');
+        $todayEnd     = date('Y-m-d 23:59:59');
+
+        foreach ($jobs as $job) {
+            $jobId = (int) ($job['id'] ?? 0);
+            if ($jobId <= 0) {
+                continue;
+            }
+
+            // Fetch lightweight application rows for this job
+            $appRows = $db->table('applications')
+                ->select('applications.status, applications.applied_at, candidate_profiles.key_skills, jobs.required_skills, jobs.experience_level')
+                ->join('jobs', 'jobs.id = applications.job_id', 'left')
+                ->join('candidate_profiles', 'candidate_profiles.user_id = applications.candidate_id', 'left')
+                ->where('applications.job_id', $jobId)
+                ->get()->getResultArray();
+
+            $applicantCount   = count($appRows);
+            $shortlistedCount = 0;
+            $newApplications  = 0;
+            $atsTotal         = 0;
+
+            foreach ($appRows as $appRow) {
+                $status = strtolower((string) ($appRow['status'] ?? ''));
+                if (in_array($status, ['shortlisted', 'interview_scheduled', 'interview_slot_booked', 'interviewed', 'offered', 'hired', 'selected'], true)) {
+                    $shortlistedCount++;
+                }
+
+                $appliedAt = strtotime((string) ($appRow['applied_at'] ?? ''));
+                if ($appliedAt && $appliedAt >= strtotime('-2 days')) {
+                    $newApplications++;
+                }
+
+                // Quick ATS via skill overlap
+                $candidateSkills = $this->splitSkills((string) ($appRow['key_skills'] ?? ''));
+                $requiredRaw     = (string) ($appRow['required_skills'] ?? '');
+                $requiredSkills  = $this->splitSkills($requiredRaw);
+                if (!empty($requiredSkills)) {
+                    $matched  = count(array_intersect(
+                        array_map('strtolower', $candidateSkills),
+                        array_map('strtolower', $requiredSkills)
+                    ));
+                    $atsTotal += (int) round(($matched / count($requiredSkills)) * 100);
+                }
+            }
+
+            $avgMatch  = $applicantCount > 0 ? (int) round($atsTotal / $applicantCount) : 0;
+            $createdAt = strtotime((string) ($job['created_at'] ?? ''));
+            $jobAgeDays = $createdAt ? max(0, (int) floor((time() - $createdAt) / 86400)) : 0;
+
+            if ($newApplications > 0) {
+                $alerts[] = [
+                    'job_id'   => (string) $jobId,
+                    'priority' => 70,
+                    'tone'     => 'info',
+                    'title'    => $newApplications . ' new application' . ($newApplications === 1 ? '' : 's'),
+                    'meta'     => (string) ($job['title'] ?? 'Job'),
+                    'detail'   => 'Review fresh applicants while they are active.',
+                    'url'      => base_url('recruiter/jobs/view/' . $jobId . '?stage=applied'),
+                    'action'   => 'Review',
+                ];
+            }
+            if ($applicantCount > 0 && $shortlistedCount === 0 && $jobAgeDays >= 7) {
+                $alerts[] = [
+                    'job_id'   => (string) $jobId,
+                    'priority' => 85,
+                    'tone'     => 'danger',
+                    'title'    => 'No shortlist after ' . $jobAgeDays . ' days',
+                    'meta'     => (string) ($job['title'] ?? 'Job'),
+                    'detail'   => $applicantCount . ' applicants, ' . $avgMatch . '% avg match.',
+                    'url'      => base_url('recruiter/jobs/view/' . $jobId),
+                    'action'   => 'Review candidates',
+                ];
+            } elseif ($applicantCount > 0 && $avgMatch < 30) {
+                $alerts[] = [
+                    'job_id'   => (string) $jobId,
+                    'priority' => 55,
+                    'tone'     => 'warning',
+                    'title'    => 'Weak candidate pool',
+                    'meta'     => (string) ($job['title'] ?? 'Job'),
+                    'detail'   => $avgMatch . '% avg match across ' . $applicantCount . ' applicants.',
+                    'url'      => base_url('recruiter/jobs/edit/' . $jobId),
+                    'action'   => 'Edit requirements',
+                ];
+            }
+        }
+
+        // Today's interviews
+        foreach ($bookingModel
+            ->select('interview_bookings.job_id, interview_bookings.slot_datetime, jobs.title as job_title, users.name as candidate_name')
+            ->join('jobs', 'jobs.id = interview_bookings.job_id', 'left')
+            ->join('users', 'users.id = interview_bookings.user_id', 'left')
+            ->where('jobs.recruiter_id', $recruiterId)
+            ->where('interview_bookings.slot_datetime >=', $todayStart)
+            ->where('interview_bookings.slot_datetime <=', $todayEnd)
+            ->orderBy('interview_bookings.slot_datetime', 'ASC')
+            ->findAll() as $booking) {
+            $alerts[] = [
+                'job_id'   => (string) ($booking['job_id'] ?? 0),
+                'priority' => 90,
+                'tone'     => 'info',
+                'title'    => 'Interview today',
+                'meta'     => trim((string) ($booking['candidate_name'] ?? 'Candidate') . ' - ' . (string) ($booking['job_title'] ?? 'Job')),
+                'detail'   => !empty($booking['slot_datetime']) ? date('h:i A', strtotime((string) $booking['slot_datetime'])) : 'Today',
+                'url'      => base_url('recruiter/jobs/view/' . (int) ($booking['job_id'] ?? 0) . '#interviews'),
+                'action'   => 'View schedule',
+            ];
+        }
+
+        usort($alerts, static fn (array $a, array $b): int => ((int) ($b['priority'] ?? 0)) <=> ((int) ($a['priority'] ?? 0)));
+
+        return array_slice($alerts, 0, 6);
+    }
+
     private function toPublicUrl(string $path): string
     {
         $path = trim($path);
@@ -1436,6 +1614,102 @@ class API_RecruiterController extends ResourceController
     {
         $parts = preg_split('/[,|\/]+/', $skills) ?: [];
         return array_values(array_filter(array_map('trim', $parts), static fn($skill) => $skill !== ''));
+    }
+
+    /**
+     * Build lightweight communication summaries (email + message counts, latest preview)
+     * for a batch of applications — mirrors JobResponsesController::getCommunicationSummaries().
+     */
+    private function buildApiCommunicationSummaries(array $apps, int $recruiterId, array $jobIds): array
+    {
+        $db             = \Config\Database::connect();
+        $applicationIds = array_values(array_filter(array_map('intval', array_column($apps, 'id'))));
+        $candidateToApp = [];
+        $summaries      = [];
+
+        foreach ($apps as $app) {
+            $appId  = (int)($app['id'] ?? 0);
+            $candId = (int)($app['candidate_id'] ?? 0);
+            if ($appId <= 0) continue;
+            if ($candId > 0) $candidateToApp[$candId] = $appId;
+            $summaries[$appId] = [
+                'email_count'      => 0,
+                'message_count'    => 0,
+                'latest_type'      => '',
+                'latest_direction' => '',
+                'latest_at'        => null,
+                'latest_subject'   => '',
+                'latest_preview'   => '',
+                'items'            => [],
+            ];
+        }
+
+        if (empty($summaries)) return [];
+
+        // Messages
+        if ($db->tableExists('recruiter_candidate_messages') && !empty($applicationIds)) {
+            $rows = $db->table('recruiter_candidate_messages')
+                ->select('application_id, sender_role, message, created_at')
+                ->where('recruiter_id', $recruiterId)
+                ->whereIn('application_id', $applicationIds)
+                ->orderBy('created_at', 'DESC')
+                ->get()->getResultArray();
+
+            foreach ($rows as $row) {
+                $appId = (int)($row['application_id'] ?? 0);
+                if (!isset($summaries[$appId])) continue;
+                $summaries[$appId]['message_count']++;
+                $direction = (string)($row['sender_role'] ?? '') === 'candidate' ? 'incoming' : 'outgoing';
+                $entry = ['type' => 'message', 'direction' => $direction, 'at' => $row['created_at'] ?? null, 'subject' => '', 'preview' => substr((string)($row['message'] ?? ''), 0, 120)];
+                $this->apiSetLatestComm($summaries[$appId], $entry);
+                $summaries[$appId]['items'][] = $entry;
+            }
+        }
+
+        // Emails
+        if ($db->tableExists('recruiter_email_activities')) {
+            $builder = $db->table('recruiter_email_activities')
+                ->select('application_id, candidate_id, direction, subject, body_text, occurred_at, created_at')
+                ->where('recruiter_id', $recruiterId);
+            if (!empty($jobIds)) $builder->whereIn('job_id', array_values(array_filter(array_map('intval', $jobIds))));
+            $builder->groupStart();
+            if (!empty($applicationIds)) $builder->whereIn('application_id', $applicationIds);
+            if (!empty($candidateToApp)) $builder->orWhereIn('candidate_id', array_keys($candidateToApp));
+            $builder->groupEnd();
+            $rows = $builder->orderBy('COALESCE(occurred_at, created_at)', 'DESC', false)->get()->getResultArray();
+
+            foreach ($rows as $row) {
+                $appId = (int)($row['application_id'] ?? 0);
+                if ($appId <= 0) $appId = $candidateToApp[(int)($row['candidate_id'] ?? 0)] ?? 0;
+                if (!isset($summaries[$appId])) continue;
+                $summaries[$appId]['email_count']++;
+                $preview = preg_replace('/\s+/', ' ', strip_tags((string)($row['body_text'] ?? '')));
+                $preview = substr(trim($preview), 0, 120);
+                $entry = ['type' => 'email', 'direction' => (string)($row['direction'] ?? ''), 'at' => $row['occurred_at'] ?? $row['created_at'] ?? null, 'subject' => substr((string)($row['subject'] ?? ''), 0, 80), 'preview' => $preview];
+                $this->apiSetLatestComm($summaries[$appId], $entry);
+                $summaries[$appId]['items'][] = $entry;
+            }
+        }
+
+        foreach ($summaries as &$s) {
+            usort($s['items'], static fn($a, $b) => strtotime((string)($b['at'] ?? '')) <=> strtotime((string)($a['at'] ?? '')));
+            $s['items'] = array_slice($s['items'], 0, 8);
+        }
+        unset($s);
+
+        return $summaries;
+    }
+
+    private function apiSetLatestComm(array &$summary, array $entry): void
+    {
+        $entryTs   = !empty($entry['at']) ? strtotime((string)$entry['at']) : 0;
+        $currentTs = !empty($summary['latest_at']) ? strtotime((string)$summary['latest_at']) : 0;
+        if ($entryTs < $currentTs) return;
+        $summary['latest_type']      = (string)($entry['type'] ?? '');
+        $summary['latest_direction'] = (string)($entry['direction'] ?? '');
+        $summary['latest_at']        = $entry['at'] ?? null;
+        $summary['latest_subject']   = substr((string)($entry['subject'] ?? ''), 0, 70);
+        $summary['latest_preview']   = substr((string)($entry['preview'] ?? ''), 0, 95);
     }
 
     private function calculateMobileMatchScore(array $candidateSkills, string $requiredSkills): int

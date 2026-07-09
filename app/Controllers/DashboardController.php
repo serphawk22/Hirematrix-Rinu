@@ -622,7 +622,7 @@ class DashboardController extends BaseController
 
     }
 
-    private function getStaleJobsNeedingAttention(array $jobIds, int $daysWithoutShortlist = 14): array
+    public function getStaleJobsNeedingAttention(array $jobIds, int $daysWithoutShortlist = 14): array
     {
         $jobIds = array_values(array_filter(array_map('intval', $jobIds), static fn (int $id): bool => $id > 0));
         if (empty($jobIds)) {
@@ -650,7 +650,7 @@ class DashboardController extends BaseController
         ", [$cutoff])->getResultArray();
     }
 
-    private function getCandidateRepliesAwaitingResponse(int $recruiterId, array $jobIds, int $daysWaiting = 3): array
+    public function getCandidateRepliesAwaitingResponse(int $recruiterId, array $jobIds, int $daysWaiting = 3): array
     {
         $jobIds = array_values(array_filter(array_map('intval', $jobIds), static fn (int $id): bool => $id > 0));
         if ($recruiterId <= 0 || empty($jobIds)) {
