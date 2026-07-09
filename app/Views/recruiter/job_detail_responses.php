@@ -1888,6 +1888,412 @@ body.dark .recruiter-pipeline-page .pipeline-table-wrap::-webkit-scrollbar-thumb
   border: 2px solid #0A0A0A;
   border-radius: 999px;
 }
+body.dark .recruiter-pipeline-page,
+body.dark .recruiter-pipeline-page .pipeline-shell {
+  background: #000000 !important;
+  color: #F8FAFC !important;
+}
+body.dark .recruiter-pipeline-page .response-console,
+body.dark .recruiter-pipeline-page .response-workspace,
+body.dark .recruiter-pipeline-page .response-filter-panel,
+body.dark .recruiter-pipeline-page .response-job-row,
+body.dark .recruiter-pipeline-page .response-tabs,
+body.dark .recruiter-pipeline-page .response-chip-row,
+body.dark .recruiter-pipeline-page .response-toolbar,
+body.dark .recruiter-pipeline-page .response-bulk-strip {
+  background: #000000 !important;
+  border-color: #23343A !important;
+  box-shadow: none !important;
+}
+body.dark .recruiter-pipeline-page .response-card,
+body.dark .recruiter-pipeline-page .response-match-box,
+body.dark .recruiter-pipeline-page .communication-stack {
+  background: #0A0F12 !important;
+  border-color: #23343A !important;
+  color: #E6F0F3 !important;
+  box-shadow: none !important;
+}
+body.dark .recruiter-pipeline-page .response-card:hover {
+  background: #10181C !important;
+  border-color: #2C464B !important;
+}
+body.dark .recruiter-pipeline-page .response-filter-head strong,
+body.dark .recruiter-pipeline-page .response-filter-group > label,
+body.dark .recruiter-pipeline-page .response-toolbar strong,
+body.dark .recruiter-pipeline-page .response-name-row h3,
+body.dark .recruiter-pipeline-page .response-detail-value,
+body.dark .recruiter-pipeline-page .response-contact-value,
+body.dark .recruiter-pipeline-page .response-match-box strong,
+body.dark .recruiter-pipeline-page .communication-latest strong,
+body.dark .recruiter-pipeline-page .response-breadcrumb span {
+  color: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page .response-filter-check,
+body.dark .recruiter-pipeline-page .response-filter-subcheck,
+body.dark .recruiter-pipeline-page .response-breadcrumb,
+body.dark .recruiter-pipeline-page .response-field-label,
+body.dark .recruiter-pipeline-page .response-meta-line,
+body.dark .recruiter-pipeline-page .response-headline,
+body.dark .recruiter-pipeline-page .response-match-meta,
+body.dark .recruiter-pipeline-page .response-contact-hint,
+body.dark .recruiter-pipeline-page .pipeline-note-preview,
+body.dark .recruiter-pipeline-page .communication-latest,
+body.dark .recruiter-pipeline-page .response-muted-line,
+body.dark .recruiter-pipeline-page .text-muted {
+  color: #A8B0BC !important;
+}
+body.dark .recruiter-pipeline-page .response-filter-group,
+body.dark .recruiter-pipeline-page .response-fit-summary,
+body.dark .recruiter-pipeline-page .response-card-side,
+body.dark .recruiter-pipeline-page .communication-drawer-head,
+body.dark .recruiter-pipeline-page .schedule-interview-head,
+body.dark .recruiter-pipeline-page .schedule-interview-foot {
+  border-color: #23343A !important;
+}
+body.dark .recruiter-pipeline-page .response-filter-group input,
+body.dark .recruiter-pipeline-page .response-filter-group select,
+body.dark .recruiter-pipeline-page .pipeline-search,
+body.dark .recruiter-pipeline-page .pipeline-search input,
+body.dark .recruiter-pipeline-page .schedule-field input,
+body.dark .recruiter-pipeline-page .schedule-field select,
+body.dark .recruiter-pipeline-page .schedule-field textarea,
+body.dark .recruiter-pipeline-page .hm-status-drop-menu,
+body.dark .recruiter-pipeline-page .communication-drawer,
+body.dark .recruiter-pipeline-page .schedule-interview-dialog {
+  background: #000000 !important;
+  border-color: #23343A !important;
+  color: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page .response-filter-group input:focus,
+body.dark .recruiter-pipeline-page .response-filter-group select:focus,
+body.dark .recruiter-pipeline-page .pipeline-search:focus-within,
+body.dark .recruiter-pipeline-page .schedule-field input:focus,
+body.dark .recruiter-pipeline-page .schedule-field select:focus,
+body.dark .recruiter-pipeline-page .schedule-field textarea:focus {
+  border-color: #1FB7B5 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+body.dark .recruiter-pipeline-page .response-filter-group input::placeholder,
+body.dark .recruiter-pipeline-page .pipeline-search input::placeholder,
+body.dark .recruiter-pipeline-page .schedule-field textarea::placeholder {
+  color: #7A8B96 !important;
+}
+body.dark .recruiter-pipeline-page .response-tabs .stage-ajax-link,
+body.dark .recruiter-pipeline-page .response-chip,
+body.dark .recruiter-pipeline-page .response-edit-link,
+body.dark .recruiter-pipeline-page .response-export-link,
+body.dark .recruiter-pipeline-page .response-bulk-action,
+body.dark .recruiter-pipeline-page .response-action-icon,
+body.dark .recruiter-pipeline-page .response-contact-button,
+body.dark .recruiter-pipeline-page .review-action-btn,
+body.dark .recruiter-pipeline-page .review-action-link {
+  background: #0A0F12 !important;
+  border-color: #2C464B !important;
+  color: #5EEAD4 !important;
+}
+body.dark .recruiter-pipeline-page .response-tabs .stage-ajax-link:hover,
+body.dark .recruiter-pipeline-page .response-chip:hover,
+body.dark .recruiter-pipeline-page .response-edit-link:hover,
+body.dark .recruiter-pipeline-page .response-export-link:hover,
+body.dark .recruiter-pipeline-page .response-bulk-action:hover,
+body.dark .recruiter-pipeline-page .response-action-icon:hover,
+body.dark .recruiter-pipeline-page .response-contact-button:hover,
+body.dark .recruiter-pipeline-page .review-action-btn:hover,
+body.dark .recruiter-pipeline-page .review-action-link:hover {
+  background: #102125 !important;
+  border-color: #1FB7B5 !important;
+  color: #7DF6E8 !important;
+}
+body.dark .recruiter-pipeline-page .response-tabs .stage-ajax-link.active,
+body.dark .recruiter-pipeline-page .response-chip.is-active {
+  background: #1FB7B5 !important;
+  border-color: #1FB7B5 !important;
+  color: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page .status-pill,
+body.dark .recruiter-pipeline-page .communication-chip {
+  background: rgba(31, 183, 181, 0.14) !important;
+  border-color: rgba(94, 234, 212, 0.24) !important;
+  color: #5EEAD4 !important;
+}
+body.dark .recruiter-pipeline-page .status-pill.is-muted,
+body.dark .recruiter-pipeline-page .communication-chip.is-muted {
+  background: #0A0F12 !important;
+  border-color: #23343A !important;
+  color: #A8B0BC !important;
+}
+body.dark .recruiter-pipeline-page .ats-score-bar {
+  background: #D8F5EF !important;
+}
+body.dark .recruiter-pipeline-page .response-action-icon.is-danger,
+body.dark .recruiter-pipeline-page .review-action-btn.is-danger {
+  border-color: #7F1D1D !important;
+  color: #FCA5A5 !important;
+}
+body.dark .recruiter-pipeline-page .hm-status-drop-item,
+body.dark .recruiter-pipeline-page .communication-drawer-title,
+body.dark .recruiter-pipeline-page .communication-timeline-subject,
+body.dark .recruiter-pipeline-page .schedule-interview-title {
+  color: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page .hm-status-drop-item:hover {
+  background: #102125 !important;
+  color: #5EEAD4 !important;
+}
+body.dark .recruiter-pipeline-page .communication-drawer-subtitle,
+body.dark .recruiter-pipeline-page .communication-timeline-preview,
+body.dark .recruiter-pipeline-page .communication-empty-state,
+body.dark .recruiter-pipeline-page .schedule-interview-subtitle,
+body.dark .recruiter-pipeline-page .schedule-field label,
+body.dark .recruiter-pipeline-page .schedule-check {
+  color: #A8B0BC !important;
+}
+body.dark .recruiter-pipeline-page .communication-timeline-item {
+  background: #0A0F12 !important;
+  border-color: #23343A !important;
+}
+body.dark .recruiter-pipeline-page .communication-drawer-close,
+body.dark .recruiter-pipeline-page .schedule-interview-close {
+  background: #0A0F12 !important;
+  border-color: #23343A !important;
+  color: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page {
+  --pipeline-dark-bg: #000000;
+  --pipeline-dark-panel: #0A0A0A;
+  --pipeline-dark-panel-soft: #111111;
+  --pipeline-dark-panel-hover: #171717;
+  --pipeline-dark-line: #2B2B2B;
+  --pipeline-dark-line-strong: #3A3A3A;
+  --pipeline-dark-ink: #F5F5F5;
+  --pipeline-dark-muted: #A3A3A3;
+  --pipeline-dark-faint: #737373;
+}
+body.dark .recruiter-pipeline-page,
+body.dark .recruiter-pipeline-page .pipeline-shell,
+body.dark .recruiter-pipeline-page .pipeline-job-head,
+body.dark .recruiter-pipeline-page .pipeline-work-nav,
+body.dark .recruiter-pipeline-page .pipeline-board,
+body.dark .recruiter-pipeline-page .pipeline-summary-bar,
+body.dark .recruiter-pipeline-page .pipeline-funnel,
+body.dark .recruiter-pipeline-page .pipeline-stage-rail,
+body.dark .recruiter-pipeline-page .pipeline-toolbar,
+body.dark .recruiter-pipeline-page .response-console,
+body.dark .recruiter-pipeline-page .response-workspace,
+body.dark .recruiter-pipeline-page .response-filter-panel,
+body.dark .recruiter-pipeline-page .response-job-row,
+body.dark .recruiter-pipeline-page .response-tabs,
+body.dark .recruiter-pipeline-page .response-chip-row,
+body.dark .recruiter-pipeline-page .response-toolbar,
+body.dark .recruiter-pipeline-page .response-bulk-strip,
+body.dark .recruiter-pipeline-page .card,
+body.dark .recruiter-pipeline-page .card-header,
+body.dark .recruiter-pipeline-page .card-body,
+body.dark .recruiter-pipeline-page .table,
+body.dark .recruiter-pipeline-page tr,
+body.dark .recruiter-pipeline-page td,
+body.dark .recruiter-pipeline-page th {
+  background: var(--pipeline-dark-bg) !important;
+  background-color: var(--pipeline-dark-bg) !important;
+  border-color: var(--pipeline-dark-line) !important;
+  box-shadow: none !important;
+}
+body.dark .recruiter-pipeline-page .response-card,
+body.dark .recruiter-pipeline-page .response-match-box,
+body.dark .recruiter-pipeline-page .communication-stack,
+body.dark .recruiter-pipeline-page .communication-timeline-item,
+body.dark .recruiter-pipeline-page .pipeline-card-panel {
+  background: var(--pipeline-dark-panel-soft) !important;
+  border-color: var(--pipeline-dark-line) !important;
+  color: var(--pipeline-dark-ink) !important;
+  box-shadow: none !important;
+}
+body.dark .recruiter-pipeline-page .response-card:hover,
+body.dark .recruiter-pipeline-page .communication-stack:hover {
+  background: var(--pipeline-dark-panel-hover) !important;
+  border-color: var(--pipeline-dark-line-strong) !important;
+}
+body.dark .recruiter-pipeline-page h1,
+body.dark .recruiter-pipeline-page h2,
+body.dark .recruiter-pipeline-page h3,
+body.dark .recruiter-pipeline-page h4,
+body.dark .recruiter-pipeline-page h5,
+body.dark .recruiter-pipeline-page h6,
+body.dark .recruiter-pipeline-page strong,
+body.dark .recruiter-pipeline-page .page-board-title,
+body.dark .recruiter-pipeline-page .pipeline-summary-title strong,
+body.dark .recruiter-pipeline-page .pipeline-summary-main,
+body.dark .recruiter-pipeline-page .pipeline-summary-main strong,
+body.dark .recruiter-pipeline-page .response-filter-head strong,
+body.dark .recruiter-pipeline-page .response-filter-group > label,
+body.dark .recruiter-pipeline-page .response-toolbar strong,
+body.dark .recruiter-pipeline-page .response-name-row h3,
+body.dark .recruiter-pipeline-page .response-detail-value,
+body.dark .recruiter-pipeline-page .response-contact-value,
+body.dark .recruiter-pipeline-page .response-match-box strong,
+body.dark .recruiter-pipeline-page .communication-latest strong,
+body.dark .recruiter-pipeline-page .communication-drawer-title,
+body.dark .recruiter-pipeline-page .communication-timeline-subject,
+body.dark .recruiter-pipeline-page .schedule-interview-title,
+body.dark .recruiter-pipeline-page .hm-status-drop-item,
+body.dark .recruiter-pipeline-page .response-breadcrumb span {
+  color: var(--pipeline-dark-ink) !important;
+}
+body.dark .recruiter-pipeline-page .pipeline-meta,
+body.dark .recruiter-pipeline-page .pipeline-meta span,
+body.dark .recruiter-pipeline-page .page-board-subtitle,
+body.dark .recruiter-pipeline-page .pipeline-summary-title span,
+body.dark .recruiter-pipeline-page .pipeline-funnel-label,
+body.dark .recruiter-pipeline-page .pipeline-funnel-meta,
+body.dark .recruiter-pipeline-page .response-filter-check,
+body.dark .recruiter-pipeline-page .response-filter-subcheck,
+body.dark .recruiter-pipeline-page .response-breadcrumb,
+body.dark .recruiter-pipeline-page .response-field-label,
+body.dark .recruiter-pipeline-page .response-meta-line,
+body.dark .recruiter-pipeline-page .response-headline,
+body.dark .recruiter-pipeline-page .response-match-meta,
+body.dark .recruiter-pipeline-page .response-contact-hint,
+body.dark .recruiter-pipeline-page .pipeline-note-preview,
+body.dark .recruiter-pipeline-page .communication-latest,
+body.dark .recruiter-pipeline-page .communication-drawer-subtitle,
+body.dark .recruiter-pipeline-page .communication-timeline-preview,
+body.dark .recruiter-pipeline-page .communication-empty-state,
+body.dark .recruiter-pipeline-page .schedule-interview-subtitle,
+body.dark .recruiter-pipeline-page .schedule-field label,
+body.dark .recruiter-pipeline-page .schedule-check,
+body.dark .recruiter-pipeline-page .response-muted-line,
+body.dark .recruiter-pipeline-page small,
+body.dark .recruiter-pipeline-page .text-muted {
+  color: var(--pipeline-dark-muted) !important;
+}
+body.dark .recruiter-pipeline-page a,
+body.dark .recruiter-pipeline-page .text-primary,
+body.dark .recruiter-pipeline-page .card-header .text-primary,
+body.dark .recruiter-pipeline-page .response-breadcrumb a {
+  color: var(--pipeline-dark-ink) !important;
+}
+body.dark .recruiter-pipeline-page .btn-primary,
+body.dark .recruiter-pipeline-page .btn-outline-primary,
+body.dark .recruiter-pipeline-page .btn-outline-secondary,
+body.dark .recruiter-pipeline-page .response-tabs .stage-ajax-link,
+body.dark .recruiter-pipeline-page .response-chip,
+body.dark .recruiter-pipeline-page .response-edit-link,
+body.dark .recruiter-pipeline-page .response-export-link,
+body.dark .recruiter-pipeline-page .response-bulk-action,
+body.dark .recruiter-pipeline-page .response-action-icon,
+body.dark .recruiter-pipeline-page .response-action-ai,
+body.dark .recruiter-pipeline-page .response-contact-button,
+body.dark .recruiter-pipeline-page .review-action-btn,
+body.dark .recruiter-pipeline-page .review-action-link,
+body.dark .recruiter-pipeline-page .pipeline-icon-btn,
+body.dark .recruiter-pipeline-page .pipeline-tool-btn,
+body.dark .recruiter-pipeline-page .pipeline-select-all-control,
+body.dark .recruiter-pipeline-page .pipeline-job-status,
+body.dark .recruiter-pipeline-page .status-pill,
+body.dark .recruiter-pipeline-page .communication-chip,
+body.dark .recruiter-pipeline-page .stage-pill {
+  background: var(--pipeline-dark-panel) !important;
+  border: 1px solid var(--pipeline-dark-line-strong) !important;
+  color: #E5E5E5 !important;
+  box-shadow: none !important;
+}
+body.dark .recruiter-pipeline-page .btn-primary:hover,
+body.dark .recruiter-pipeline-page .btn-outline-primary:hover,
+body.dark .recruiter-pipeline-page .btn-outline-secondary:hover,
+body.dark .recruiter-pipeline-page .response-tabs .stage-ajax-link:hover,
+body.dark .recruiter-pipeline-page .response-chip:hover,
+body.dark .recruiter-pipeline-page .response-edit-link:hover,
+body.dark .recruiter-pipeline-page .response-export-link:hover,
+body.dark .recruiter-pipeline-page .response-bulk-action:hover,
+body.dark .recruiter-pipeline-page .response-action-icon:hover,
+body.dark .recruiter-pipeline-page .response-action-ai:hover,
+body.dark .recruiter-pipeline-page .response-contact-button:hover,
+body.dark .recruiter-pipeline-page .review-action-btn:hover,
+body.dark .recruiter-pipeline-page .review-action-link:hover,
+body.dark .recruiter-pipeline-page .pipeline-icon-btn:hover,
+body.dark .recruiter-pipeline-page .pipeline-tool-btn:hover,
+body.dark .recruiter-pipeline-page .pipeline-select-all-control:hover {
+  background: #1F1F1F !important;
+  border-color: #525252 !important;
+  color: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page .response-tabs .stage-ajax-link.active,
+body.dark .recruiter-pipeline-page .response-chip.is-active,
+body.dark .recruiter-pipeline-page .pipeline-work-nav .nav-link.active,
+body.dark .recruiter-pipeline-page .pipeline-work-nav .nav-link:hover,
+body.dark .recruiter-pipeline-page .pipeline-tool-btn.active,
+body.dark .recruiter-pipeline-page .page-item.active .page-link {
+  background: #2F2F2F !important;
+  border-color: #737373 !important;
+  color: #FFFFFF !important;
+  box-shadow: none !important;
+}
+body.dark .recruiter-pipeline-page .response-filter-submit,
+body.dark .recruiter-pipeline-page .btn-primary {
+  background: #2F2F2F !important;
+  border-color: #737373 !important;
+  color: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page .response-action-icon.is-danger,
+body.dark .recruiter-pipeline-page .review-action-btn.is-danger {
+  background: var(--pipeline-dark-panel) !important;
+  border-color: #525252 !important;
+  color: #E5E5E5 !important;
+}
+body.dark .recruiter-pipeline-page .response-filter-group input,
+body.dark .recruiter-pipeline-page .response-filter-group select,
+body.dark .recruiter-pipeline-page .pipeline-search,
+body.dark .recruiter-pipeline-page .pipeline-search input,
+body.dark .recruiter-pipeline-page .pipeline-bulk-controls select,
+body.dark .recruiter-pipeline-page .pipeline-status-select,
+body.dark .recruiter-pipeline-page .schedule-field input,
+body.dark .recruiter-pipeline-page .schedule-field select,
+body.dark .recruiter-pipeline-page .schedule-field textarea,
+body.dark .recruiter-pipeline-page .hm-status-drop-menu,
+body.dark .recruiter-pipeline-page .communication-drawer,
+body.dark .recruiter-pipeline-page .schedule-interview-dialog {
+  background: #000000 !important;
+  border-color: var(--pipeline-dark-line-strong) !important;
+  color: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page .response-filter-group input:focus,
+body.dark .recruiter-pipeline-page .response-filter-group select:focus,
+body.dark .recruiter-pipeline-page .pipeline-search:focus-within,
+body.dark .recruiter-pipeline-page .pipeline-bulk-controls select:focus,
+body.dark .recruiter-pipeline-page .pipeline-status-select:focus,
+body.dark .recruiter-pipeline-page .schedule-field input:focus,
+body.dark .recruiter-pipeline-page .schedule-field select:focus,
+body.dark .recruiter-pipeline-page .schedule-field textarea:focus {
+  border-color: #737373 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+body.dark .recruiter-pipeline-page .response-filter-group input::placeholder,
+body.dark .recruiter-pipeline-page .pipeline-search input::placeholder,
+body.dark .recruiter-pipeline-page .schedule-field textarea::placeholder {
+  color: var(--pipeline-dark-faint) !important;
+}
+body.dark .recruiter-pipeline-page .ats-score-bar,
+body.dark .recruiter-pipeline-page .pipeline-funnel-bar {
+  background: #2B2B2B !important;
+}
+body.dark .recruiter-pipeline-page .ats-score-bar span,
+body.dark .recruiter-pipeline-page .pipeline-funnel-bar span,
+body.dark .recruiter-pipeline-page .score-fill {
+  background: #BDBDBD !important;
+  background-image: none !important;
+}
+body.dark .recruiter-pipeline-page .hm-status-drop-item:hover {
+  background: #1F1F1F !important;
+  color: #FFFFFF !important;
+}
+body.dark .recruiter-pipeline-page .communication-drawer-close,
+body.dark .recruiter-pipeline-page .schedule-interview-close {
+  background: var(--pipeline-dark-panel) !important;
+  border-color: var(--pipeline-dark-line-strong) !important;
+  color: #FFFFFF !important;
+}
 @media (max-width: 768px) {
   .recruiter-pipeline-page .pipeline-job-head {
     border-radius: 20px !important;
@@ -1897,6 +2303,304 @@ body.dark .recruiter-pipeline-page .pipeline-table-wrap::-webkit-scrollbar-thumb
     display: flex;
     overflow-x: auto;
     width: 100%;
+  }
+}
+
+/* Match the candidate pages on iPad/mobile: full-width content, compact cards. */
+@media (max-width: 991.98px) {
+  body.recruiter-jobboard main > .recruiter-pipeline-page {
+    padding: 16px !important;
+  }
+  .recruiter-pipeline-page .pipeline-shell.container-fluid,
+  .recruiter-pipeline-page .container-fluid {
+    margin: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+  .recruiter-pipeline-page .pipeline-job-head {
+    border-radius: 20px !important;
+    display: grid !important;
+    gap: 16px !important;
+    margin: 0 0 12px !important;
+    padding: 22px !important;
+  }
+  .recruiter-pipeline-page .pipeline-job-head .page-board-copy {
+    align-self: start !important;
+    min-width: 0 !important;
+  }
+  .recruiter-pipeline-page .page-board-title {
+    font-size: 1.55rem !important;
+    line-height: 1.18 !important;
+    overflow-wrap: anywhere;
+  }
+  .recruiter-pipeline-page .pipeline-meta {
+    gap: 6px 10px !important;
+  }
+  .recruiter-pipeline-page .pipeline-head-actions {
+    display: grid !important;
+    gap: 10px !important;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+    width: 100% !important;
+  }
+  .recruiter-pipeline-page .pipeline-head-actions .btn {
+    justify-content: center !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .recruiter-pipeline-page .pipeline-work-nav {
+    border-radius: 18px !important;
+    display: grid !important;
+    gap: 8px !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    margin: 0 0 12px !important;
+    overflow: visible !important;
+    padding: 8px !important;
+    width: 100% !important;
+  }
+  .recruiter-pipeline-page .pipeline-work-nav .nav-link {
+    justify-content: center !important;
+    min-width: 0 !important;
+    padding: 10px 8px !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+  .recruiter-pipeline-page .response-console {
+    border-radius: 20px !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    overflow: hidden !important;
+    width: 100% !important;
+  }
+  .recruiter-pipeline-page .response-filter-panel {
+    border-bottom: 1px solid #D9ECE5 !important;
+    border-right: 0 !important;
+    padding: 18px !important;
+    position: static !important;
+    width: 100% !important;
+  }
+  .recruiter-pipeline-page .response-filter-form {
+    display: grid !important;
+    gap: 14px !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .recruiter-pipeline-page .response-filter-check,
+  .recruiter-pipeline-page .response-filter-submit {
+    grid-column: 1 / -1 !important;
+  }
+  .recruiter-pipeline-page .response-workspace {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .recruiter-pipeline-page .response-tabs,
+  .recruiter-pipeline-page .response-chip-row,
+  .recruiter-pipeline-page .pipeline-bulk-controls {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .recruiter-pipeline-page .response-tabs .stage-ajax-link,
+  .recruiter-pipeline-page .response-chip,
+  .recruiter-pipeline-page .response-bulk-action {
+    flex: 0 0 auto !important;
+  }
+  .recruiter-pipeline-page .response-toolbar {
+    align-items: stretch !important;
+    gap: 14px !important;
+  }
+  .recruiter-pipeline-page .response-toolbar-actions {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .recruiter-pipeline-page .response-toolbar .pipeline-search {
+    flex: 1 1 260px !important;
+    min-width: 0 !important;
+  }
+  .recruiter-pipeline-page .response-card {
+    border-radius: 16px !important;
+    grid-template-columns: 28px minmax(0, 1fr) !important;
+    margin: 10px !important;
+    padding: 16px !important;
+  }
+  .recruiter-pipeline-page .response-card-main,
+  .recruiter-pipeline-page .response-profile-snapshot,
+  .recruiter-pipeline-page .response-fit-panel {
+    grid-template-columns: 1fr !important;
+  }
+  .recruiter-pipeline-page .response-card-side {
+    border-left: 0 !important;
+    border-top: 1px solid #EEF2F7 !important;
+    grid-column: 2 !important;
+    padding-left: 0 !important;
+    padding-top: 14px !important;
+  }
+  body.dark .recruiter-pipeline-page .response-filter-panel,
+  body.dark .recruiter-pipeline-page .response-card-side {
+    border-top-color: #2F2F2F !important;
+    border-bottom-color: #2F2F2F !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  body.recruiter-jobboard main > .recruiter-pipeline-page {
+    padding: 10px !important;
+  }
+  .recruiter-pipeline-page .pipeline-job-head {
+    border-radius: 18px !important;
+    padding: 18px !important;
+  }
+  .recruiter-pipeline-page .page-board-title {
+    font-size: 1.28rem !important;
+  }
+  .recruiter-pipeline-page .pipeline-job-status {
+    font-size: 0.68rem !important;
+    padding: 4px 9px !important;
+  }
+  .recruiter-pipeline-page .pipeline-meta span {
+    font-size: 0.76rem !important;
+  }
+  .recruiter-pipeline-page .pipeline-meta span::after {
+    margin-left: 6px !important;
+  }
+  .recruiter-pipeline-page .pipeline-head-actions,
+  .recruiter-pipeline-page .pipeline-work-nav,
+  .recruiter-pipeline-page .response-filter-form {
+    grid-template-columns: 1fr !important;
+  }
+  .recruiter-pipeline-page .pipeline-work-nav .nav-link {
+    min-height: 42px !important;
+  }
+  .recruiter-pipeline-page .response-filter-panel,
+  .recruiter-pipeline-page .response-tabs,
+  .recruiter-pipeline-page .response-chip-row,
+  .recruiter-pipeline-page .response-toolbar,
+  .recruiter-pipeline-page .pipeline-bulk-controls {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+  .recruiter-pipeline-page .response-toolbar-actions {
+    display: grid !important;
+    gap: 10px !important;
+    grid-template-columns: 1fr !important;
+  }
+  .recruiter-pipeline-page .response-toolbar .pipeline-search,
+  .recruiter-pipeline-page .response-export-link {
+    width: 100% !important;
+  }
+  .recruiter-pipeline-page .response-export-link {
+    justify-content: center !important;
+  }
+  .recruiter-pipeline-page .response-card {
+    position: relative !important;
+    grid-template-columns: 24px minmax(0, 1fr) !important;
+    margin: 8px !important;
+    padding: 14px !important;
+  }
+  .recruiter-pipeline-page .response-card,
+  .recruiter-pipeline-page .response-card * {
+    min-width: 0 !important;
+  }
+  .recruiter-pipeline-page .response-candidate-head {
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+  .recruiter-pipeline-page .response-avatar {
+    height: 42px !important;
+    width: 42px !important;
+  }
+  .recruiter-pipeline-page .response-profile-snapshot,
+  .recruiter-pipeline-page .response-fit-panel,
+  .recruiter-pipeline-page .response-card-side > * {
+    padding: 12px !important;
+  }
+  .recruiter-pipeline-page .response-card-side {
+    grid-column: 1 / -1 !important;
+  }
+  .recruiter-pipeline-page .response-icon-actions {
+    grid-template-columns: repeat(4, minmax(36px, 1fr)) !important;
+  }
+  .recruiter-pipeline-page .response-action-icon,
+  .recruiter-pipeline-page .response-action-ai {
+    width: 100% !important;
+  }
+  .recruiter-pipeline-page .communication-drawer {
+    max-width: 100vw !important;
+    width: 100vw !important;
+  }
+  .recruiter-pipeline-page .communication-drawer-head,
+  .recruiter-pipeline-page .communication-drawer-body {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .recruiter-pipeline-page .response-card {
+    grid-template-columns: 1fr !important;
+    padding: 14px 12px !important;
+  }
+  .recruiter-pipeline-page .response-card-check {
+    left: 14px !important;
+    padding: 0 !important;
+    position: absolute !important;
+    top: 18px !important;
+    z-index: 2;
+  }
+  .recruiter-pipeline-page .response-card-main,
+  .recruiter-pipeline-page .response-card-side {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+  }
+  .recruiter-pipeline-page .response-candidate-head {
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+    padding-left: 30px !important;
+  }
+  .recruiter-pipeline-page .response-name-row {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+  }
+  .recruiter-pipeline-page .response-name-row h3,
+  .recruiter-pipeline-page .response-headline,
+  .recruiter-pipeline-page .response-detail-value,
+  .recruiter-pipeline-page .communication-preview {
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
+  .recruiter-pipeline-page .response-meta-line {
+    display: grid !important;
+    gap: 6px !important;
+    grid-template-columns: 1fr !important;
+  }
+  .recruiter-pipeline-page .response-meta-line span {
+    align-items: flex-start !important;
+    white-space: normal !important;
+  }
+  .recruiter-pipeline-page .response-profile-snapshot,
+  .recruiter-pipeline-page .response-fit-panel {
+    border-radius: 12px !important;
+    gap: 12px !important;
+  }
+  .recruiter-pipeline-page .pipeline-skill-list,
+  .recruiter-pipeline-page .pipeline-tag-list,
+  .recruiter-pipeline-page .communication-counts {
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+  .recruiter-pipeline-page .status-pill,
+  .recruiter-pipeline-page .communication-chip {
+    max-width: 100% !important;
+    white-space: normal !important;
+  }
+  .recruiter-pipeline-page .response-card-side {
+    display: grid !important;
+    gap: 10px !important;
+    padding-top: 12px !important;
+  }
+  .recruiter-pipeline-page .response-match-box,
+  .recruiter-pipeline-page .communication-stack {
+    width: 100% !important;
   }
 }
 </style>
@@ -2078,10 +2782,6 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                         <div class="response-filter-group">
                             <label for="responseSkills">Keywords</label>
                             <input type="text" id="responseSkills" name="skills" placeholder="Search keywords in profile" value="<?= esc($advancedFilters['skills'] ?? '') ?>">
-                            <label class="response-filter-subcheck">
-                                <input type="checkbox" disabled>
-                                <span>Search in key skills only</span>
-                            </label>
                         </div>
 
                         <div class="response-filter-group">
@@ -2126,15 +2826,6 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                 </aside>
 
                 <div class="response-workspace">
-                    <div class="response-job-row">
-                        <div class="response-breadcrumb">
-                            <a href="<?= base_url('recruiter/jobs') ?>"><i class="fas fa-briefcase"></i> All jobs</a>
-                            <span><?= esc($job['title']) ?></span>
-                            <em><?= esc($statusLabel) ?></em>
-                        </div>
-                        <a href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>" class="response-edit-link">Edit job</a>
-                    </div>
-
                     <div class="response-tabs">
                         <?php
                             $responseStageTabs = [
@@ -2153,20 +2844,23 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                             ];
                         ?>
                         <?php foreach ($responseStageTabs as $stageKey => $stageTab): ?>
-                            <a class="stage-ajax-link <?= $safeActiveStage === $stageKey ? 'active' : '' ?>" href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=' . $stageKey) ?>">
+                            <a class="stage-ajax-link <?= $safeActiveStage === $stageKey ? 'active' : '' ?>" href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=' . $stageKey) ?>" data-stage="<?= esc($stageKey) ?>" data-label="<?= esc($stageTab['label']) ?>" data-count="<?= (int) $stageTab['count'] ?>">
                                 <?= esc($stageTab['label']) ?> (<?= (int) $stageTab['count'] ?>)
                             </a>
                         <?php endforeach; ?>
                     </div>
 
+                    <?php
+                        $activeStageMeta = $responseStageTabs[$safeActiveStage] ?? $responseStageTabs['all'];
+                        $activeStageCount = $safeActiveStage === 'all' ? $allApplicationsLabel : (int) ($activeStageMeta['count'] ?? 0);
+                    ?>
                     <div class="response-chip-row">
-                        <span class="response-chip is-active">All <?= $allApplicationsLabel ?></span>
                         <span class="response-chip"><?= max(0, $openings) ?> openings</span>
                         <span class="response-chip"><?= $avgMatch ?>% avg match</span>
                     </div>
 
                     <div class="response-toolbar">
-                        <strong>Showing <?= $safeActiveStage === 'all' ? $allApplicationsLabel : count($applicationsByStatus[$safeActiveStage] ?? []) ?> responses</strong>
+                        <strong id="responseShowingCount">Showing <?= $activeStageCount ?> <?= $activeStageCount === 1 ? 'response' : 'responses' ?></strong>
                         <div class="response-toolbar-actions">
                             <div class="pipeline-search">
                                 <i class="fas fa-search"></i>
@@ -2423,6 +3117,19 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                             <p class="text-muted mb-0">No candidates found for this leaderboard</p>
                         </div>
                     <?php else: ?>
+                        <?php
+                            $showAiScoreColumns = false;
+                            foreach ($leaderboard as $scoreCandidate) {
+                                if (
+                                    $scoreCandidate['technical_score'] !== null
+                                    || $scoreCandidate['communication_score'] !== null
+                                    || $scoreCandidate['overall_rating'] !== null
+                                ) {
+                                    $showAiScoreColumns = true;
+                                    break;
+                                }
+                            }
+                        ?>
                         <div class="table-responsive">
                             <table class="table table-hover leaderboard-table">
                                 <thead class="thead-dark">
@@ -2432,9 +3139,11 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                         <th>Job Position</th>
                                         <th>Skills</th>
                                         <th>GitHub Stack</th>
-                                        <th class="text-center">Technical</th>
-                                        <th class="text-center">Communication</th>
-                                        <th class="text-center">Overall Rating</th>
+                                        <?php if ($showAiScoreColumns): ?>
+                                            <th class="text-center">Technical</th>
+                                            <th class="text-center">Communication</th>
+                                            <th class="text-center">Overall Rating</th>
+                                        <?php endif; ?>
                                         <th class="text-center">ATS</th>
                                         <th class="text-center">Status</th>
                                         <th class="text-center">Review</th>
@@ -2447,9 +3156,9 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                             $candidateSkills = $candidate['candidate_skills'] ?? [];
                                             $requiredSkills = $candidate['required_skills'] ?? [];
                                             $candidateSkillsLower = array_map('strtolower', $candidateSkills);
-                                            $technicalScore = (float) ($candidate['technical_score'] ?? 0);
-                                            $communicationScore = (float) ($candidate['communication_score'] ?? 0);
-                                            $overallRating = (float) ($candidate['overall_rating'] ?? 0);
+                                            $technicalScore = $candidate['technical_score'] !== null ? (float) $candidate['technical_score'] : null;
+                                            $communicationScore = $candidate['communication_score'] !== null ? (float) $candidate['communication_score'] : null;
+                                            $overallRating = $candidate['overall_rating'] !== null ? (float) $candidate['overall_rating'] : null;
                                             $atsScore = (int) ($candidate['ats_score'] ?? 0);
                                             $status = (string) ($candidate['status'] ?? 'applied');
                                             $statusColors = [
@@ -2531,30 +3240,43 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                                     <span class="text-muted">No GitHub stack</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td class="text-center">
-                                                <div class="score-display">
-                                                    <span class="score-value <?= $technicalScore >= 80 ? 'text-success' : ($technicalScore >= 60 ? 'text-warning' : 'text-danger') ?>">
-                                                        <?= number_format($technicalScore, 1) ?>
-                                                    </span>
-                                                    <div class="score-bar"><div class="score-fill" style="width: <?= min(100, max(0, $technicalScore)) ?>%"></div></div>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="score-display">
-                                                    <span class="score-value <?= $communicationScore >= 80 ? 'text-success' : ($communicationScore >= 60 ? 'text-warning' : 'text-danger') ?>">
-                                                        <?= number_format($communicationScore, 1) ?>
-                                                    </span>
-                                                    <div class="score-bar"><div class="score-fill" style="width: <?= min(100, max(0, $communicationScore)) ?>%"></div></div>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="overall-rating">
-                                                    <span class="status-pill">
-                                                        <?= number_format($overallRating, 1) ?>
-                                                    </span>
-                                                    
-                                                </div>
-                                            </td>
+                                            <?php if ($showAiScoreColumns): ?>
+                                                <td class="text-center">
+                                                    <?php if ($technicalScore !== null): ?>
+                                                        <div class="score-display">
+                                                            <span class="score-value <?= $technicalScore >= 80 ? 'text-success' : ($technicalScore >= 60 ? 'text-warning' : 'text-danger') ?>">
+                                                                <?= number_format($technicalScore, 1) ?>
+                                                            </span>
+                                                            <div class="score-bar"><div class="score-fill" style="width: <?= min(100, max(0, $technicalScore)) ?>%"></div></div>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <span class="text-muted">No score</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="text-center">
+                                                    <?php if ($communicationScore !== null): ?>
+                                                        <div class="score-display">
+                                                            <span class="score-value <?= $communicationScore >= 80 ? 'text-success' : ($communicationScore >= 60 ? 'text-warning' : 'text-danger') ?>">
+                                                                <?= number_format($communicationScore, 1) ?>
+                                                            </span>
+                                                            <div class="score-bar"><div class="score-fill" style="width: <?= min(100, max(0, $communicationScore)) ?>%"></div></div>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <span class="text-muted">No score</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="text-center">
+                                                    <?php if ($overallRating !== null): ?>
+                                                        <div class="overall-rating">
+                                                            <span class="status-pill">
+                                                                <?= number_format($overallRating, 1) ?>
+                                                            </span>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <span class="text-muted">No score</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                            <?php endif; ?>
                                             <td class="text-center">
                                                 <div class="score-display">
                                                     <span class="score-value <?= $atsScore >= 80 ? 'text-success' : ($atsScore >= 60 ? 'text-warning' : 'text-danger') ?>">

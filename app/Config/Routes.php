@@ -180,6 +180,7 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     $routes->post('candidates/send-bulk-email', 'RecruiterCandidates::sendBulkEmail');
     $routes->get('jobs/edit/(:num)', 'RecruiterJobs::edit/$1');
     $routes->post('jobs/update/(:num)', 'RecruiterJobs::update/$1');
+    $routes->post('jobs/bulk-close', 'RecruiterJobs::bulkClose');
     $routes->get('jobs/close/(:num)', 'RecruiterJobs::close/$1');
     $routes->get('jobs/reopen/(:num)', 'RecruiterJobs::reopen/$1');
     $routes->get('company-profile', 'CompanyProfile::edit');
