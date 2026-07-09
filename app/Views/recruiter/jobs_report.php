@@ -241,7 +241,7 @@ body.dark {
           </div>
         </div>
 
-        <p class="note">Note: data is available for the maximum of the last 12 months. Reports can be generated up to yesterday.</p>
+        
 
         <hr class="divider">
 
