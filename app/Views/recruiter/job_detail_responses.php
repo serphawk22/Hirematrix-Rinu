@@ -442,19 +442,6 @@ body.dark .recruiter-pipeline-page .table-bordered th {
 /* ══════════════════════════════════════════
    BULK ACTION BAR
 ══════════════════════════════════════════ */
-.recruiter-pipeline-page #bulkActionBar {
-  border-radius: 8px !important;
-}
-.recruiter-pipeline-page #bulkActionBar .small {
-  font-size: 0.9rem;
-  color: #16212B !important;
-}
-body.dark .recruiter-pipeline-page #bulkActionBar .small { color: #FFFFFF !important; }
-.recruiter-pipeline-page #bulkActionBar #selectedCount {
-  color: #FFFFFF !important;
-  font-weight: 700;
-}
-
 /* ══════════════════════════════════════════
    PIPELINE SUMMARY BAR
 ══════════════════════════════════════════ */
@@ -1988,21 +1975,6 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#leaderboard" role="tab"><i class="fas fa-trophy"></i> Leaderboard</a></li>
     </ul>
 
-    <!-- Bulk Action Bar (Shared across Applications and Leaderboard) -->
-    <div id="bulkActionBar" class="card shadow-sm mt-3 mb-2 d-none">
-        <div class="card-body py-2 d-flex align-items-center justify-content-between">
-            <div class="small">
-                <span id="selectedCount" class="font-weight-bold text-primary">0</span> candidates selected
-            </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="openBulkEmailModal()"> Mail</button>
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="openBulkMessageModal()">  Message</button>
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="executeBulkAction('shortlist')">  Shortlist</button>
-                <button type="button" class="btn btn-sm btn-outline-danger" onclick="executeBulkAction('reject')"><i class="fas fa-times-circle mr-1"></i> Reject</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Bulk Message Modal -->
     <div class="modal fade" id="bulkMessageModal" tabindex="-1" role="dialog" aria-labelledby="bulkMessageModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -2086,134 +2058,136 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
     <div class="tab-content" id="jobDetailTabContent">
         <!-- Applications List Tab -->
         <div class="tab-pane fade show active" id="applications-list" role="tabpanel">
-            <div class="pipeline-board">
-                <div class="pipeline-summary-bar">
-                    <div class="pipeline-summary-main">
-                        <span class="pipeline-summary-title">
-                            <strong><?= $allApplicationsLabel ?> Candidates</strong>
-                            <span><?= $safeActiveStage === 'all' ? 'All stages' : esc($statuses[$safeActiveStage] ?? ucwords(str_replace('_', ' ', $safeActiveStage))) ?></span>
-                        </span>
-                        <span class="pipeline-hiring-chip"><i class="fas fa-users"></i> <?= max(0, $openings) ?> openings</span>
-                        <span class="pipeline-hiring-chip"><i class="fas fa-bullseye"></i> <?= $avgMatch ?>% avg match</span>
+            <div class="pipeline-board response-console">
+                <aside class="response-filter-panel" aria-label="Response filters">
+                    <div class="response-filter-head">
+                        <strong>Filters</strong>
+                        <?php if ($hasActiveFilters): ?>
+                            <a href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=' . $safeActiveStage) ?>">Clear</a>
+                        <?php endif; ?>
                     </div>
-                    
-                </div>
+                    <form method="get" action="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>" class="response-filter-form">
+                        <input type="hidden" name="stage" value="<?= esc($safeActiveStage) ?>">
 
-                <?php if (!empty($funnelMetrics)): ?>
-                    <div class="pipeline-funnel" aria-label="Hiring funnel conversion">
-                        <?php foreach ($funnelMetrics as $index => $metric): ?>
-                            <?php
-                                $conversion = (int) ($metric['conversion'] ?? 0);
-                                $dropoff = (int) ($metric['dropoff'] ?? 0);
-                            ?>
-                            <div class="pipeline-funnel-step">
-                                <span class="pipeline-funnel-label"><?= esc($metric['label'] ?? '') ?></span>
-                                <span class="pipeline-funnel-count"><?= (int) ($metric['count'] ?? 0) ?></span>
-                                <span class="pipeline-funnel-bar"><span style="width: <?= min(100, max(0, $conversion)) ?>%;"></span></span>
-                                <span class="pipeline-funnel-meta <?= $dropoff >= 50 ? 'is-leak' : '' ?>">
-                                    <?= $index === 0 ? 'Starting pool' : esc($conversion . '% conversion' . ($dropoff >= 50 ? ' · ' . $dropoff . '% drop-off' : '')) ?>
-                                </span>
+                        <label class="response-filter-check">
+                            <input type="checkbox" checked disabled>
+                            <span>AI recommendations</span>
+                            <em><?= $avgMatch ?>%</em>
+                        </label>
+
+                        <div class="response-filter-group">
+                            <label for="responseSkills">Keywords</label>
+                            <input type="text" id="responseSkills" name="skills" placeholder="Search keywords in profile" value="<?= esc($advancedFilters['skills'] ?? '') ?>">
+                            <label class="response-filter-subcheck">
+                                <input type="checkbox" disabled>
+                                <span>Search in key skills only</span>
+                            </label>
+                        </div>
+
+                        <div class="response-filter-group">
+                            <label for="responseLocation">Location</label>
+                            <input type="text" id="responseLocation" name="location" placeholder="City or region" value="<?= esc($advancedFilters['location'] ?? '') ?>">
+                        </div>
+
+                        <div class="response-filter-group">
+                            <label for="responseExperience">Experience</label>
+                            <input type="text" id="responseExperience" name="experience" placeholder="e.g. 2" value="<?= esc($advancedFilters['experience'] ?? '') ?>">
+                        </div>
+
+                        <div class="response-filter-group">
+                            <label for="responseLastActive">Last active</label>
+                            <select id="responseLastActive" name="last_active">
+                                <option value="">Any time</option>
+                                <option value="7" <?= ($advancedFilters['last_active'] ?? '') === '7' ? 'selected' : '' ?>>Last 7 days</option>
+                                <option value="30" <?= ($advancedFilters['last_active'] ?? '') === '30' ? 'selected' : '' ?>>Last 30 days</option>
+                                <option value="90" <?= ($advancedFilters['last_active'] ?? '') === '90' ? 'selected' : '' ?>>Last 90 days</option>
+                            </select>
+                        </div>
+
+                        <div class="response-filter-group">
+                            <label>Match score</label>
+                            <div class="response-score-range">
+                                <input type="number" name="ats_min" min="0" max="100" placeholder="Min" value="<?= esc($advancedFilters['ats_min'] ?? '') ?>">
+                                <input type="number" name="ats_max" min="0" max="100" placeholder="Max" value="<?= esc($advancedFilters['ats_max'] ?? '') ?>">
                             </div>
+                        </div>
+
+                        <div class="response-filter-group">
+                            <label for="responseSort">Sort by</label>
+                            <select id="responseSort" name="sort">
+                                <option value="applied_desc" <?= ($advancedFilters['sort'] ?? '') === 'applied_desc' ? 'selected' : '' ?>>Most recent application</option>
+                                <option value="ats_desc" <?= ($advancedFilters['sort'] ?? 'ats_desc') === 'ats_desc' ? 'selected' : '' ?>>Highest ATS match</option>
+                                <option value="ats_asc" <?= ($advancedFilters['sort'] ?? '') === 'ats_asc' ? 'selected' : '' ?>>Lowest ATS match</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="response-filter-submit">Apply filters</button>
+                    </form>
+                </aside>
+
+                <div class="response-workspace">
+                    <div class="response-job-row">
+                        <div class="response-breadcrumb">
+                            <a href="<?= base_url('recruiter/jobs') ?>"><i class="fas fa-briefcase"></i> All jobs</a>
+                            <span><?= esc($job['title']) ?></span>
+                            <em><?= esc($statusLabel) ?></em>
+                        </div>
+                        <a href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>" class="response-edit-link">Edit job</a>
+                    </div>
+
+                    <div class="response-tabs">
+                        <?php
+                            $responseStageTabs = [
+                                'all' => ['label' => 'All', 'count' => $allApplicationsLabel],
+                                'applied' => ['label' => 'Applied', 'count' => count($applicationsByStatus['applied'] ?? [])],
+                                'ai_interview_completed' => ['label' => 'AI Interview Completed', 'count' => count($applicationsByStatus['ai_interview_completed'] ?? [])],
+                                'shortlisted' => ['label' => 'Shortlisted', 'count' => count($applicationsByStatus['shortlisted'] ?? [])],
+                                'interview_scheduled' => ['label' => 'Interview Scheduled', 'count' => count($applicationsByStatus['interview_scheduled'] ?? [])],
+                                'interviewed' => ['label' => 'Interviewed', 'count' => count($applicationsByStatus['interviewed'] ?? [])],
+                                'offered' => ['label' => 'Offered', 'count' => count($applicationsByStatus['offered'] ?? [])],
+                                'hired' => ['label' => 'Hired', 'count' => count($applicationsByStatus['hired'] ?? [])],
+                                'rejected' => ['label' => 'Rejected', 'count' => count($applicationsByStatus['rejected'] ?? [])],
+                                'withdrawn' => ['label' => 'Withdrawn', 'count' => count($applicationsByStatus['withdrawn'] ?? [])],
+                                'on_hold' => ['label' => 'On Hold', 'count' => count($applicationsByStatus['on_hold'] ?? [])],
+                                'filtered_out' => ['label' => 'Filtered Out', 'count' => count($applicationsByStatus['filtered_out'] ?? [])],
+                            ];
+                        ?>
+                        <?php foreach ($responseStageTabs as $stageKey => $stageTab): ?>
+                            <a class="stage-ajax-link <?= $safeActiveStage === $stageKey ? 'active' : '' ?>" href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=' . $stageKey) ?>">
+                                <?= esc($stageTab['label']) ?> (<?= (int) $stageTab['count'] ?>)
+                            </a>
                         <?php endforeach; ?>
                     </div>
-                <?php endif; ?>
 
-                <div class="pipeline-stage-rail">
-                    <a class="stage-ajax-link <?= $safeActiveStage === 'all' ? 'active' : '' ?>" href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=all') ?>">
-                        <span class="stage-label">All (<?= $allApplicationsLabel ?>)</span>
-                    </a>
-                    <?php foreach ($statuses as $key => $label): ?>
-                        <a class="stage-ajax-link <?= $safeActiveStage === $key ? 'active' : '' ?>" href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=' . $key) ?>">
-                            <span class="stage-label"><?= esc($label) ?> (<?= count($applicationsByStatus[$key] ?? []) ?>)</span>
-                        </a>
-                    <?php endforeach; ?>
-                    
-                </div>
-
-                <div class="pipeline-toolbar">
-                    <div class="pipeline-search">
-                        <i class="fas fa-search"></i>
-                        <input type="search" id="candidatePipelineSearch" placeholder="Search candidates..." autocomplete="off">
+                    <div class="response-chip-row">
+                        <span class="response-chip is-active">All <?= $allApplicationsLabel ?></span>
+                        <span class="response-chip"><?= max(0, $openings) ?> openings</span>
+                        <span class="response-chip"><?= $avgMatch ?>% avg match</span>
                     </div>
-                    <button type="button" class="btn btn-outline-primary" data-toggle="collapse" data-target="#advancedFilterCollapse" aria-expanded="<?= $hasActiveFilters ? 'true' : 'false' ?>" aria-controls="advancedFilterCollapse">
-                        Advanced Filters
-                        <?php if ($hasActiveFilters): ?>
-                            <span class="badge badge-primary ml-1"><?= count(array_filter($advancedFilters, function($v) { return $v !== '' && $v !== null; })) ?></span>
-                        <?php endif; ?>
-                    </button>
-                    <a href="<?= base_url('recruiter/dashboard/export-excel?type=detailed&job_id=' . (int) $job['id']) ?>" class="btn btn-outline-primary">
-                        <i class="fas fa-file-excel"></i> Export Applicants
-                    </a>
-                </div>
 
-                <!-- Advanced Filter Collapsible -->
-                <div class="collapse <?= $hasActiveFilters ? 'show' : '' ?>" id="advancedFilterCollapse">
-                    <div class="px-4 py-3 border-bottom bg-light">
-                        <form method="get" action="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>">
-                            <input type="hidden" name="stage" value="<?= esc($safeActiveStage) ?>">
-                            <div class="row">
-                                <div class="form-group col-md-3">
-                                    <label class="small font-weight-bold text-muted">Skills</label>
-                                    <input type="text" name="skills" class="form-control form-control-sm" placeholder="e.g. PHP, React" value="<?= esc($advancedFilters['skills'] ?? '') ?>">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label class="small font-weight-bold text-muted">Location</label>
-                                    <input type="text" name="location" class="form-control form-control-sm" placeholder="e.g. Bangalore" value="<?= esc($advancedFilters['location'] ?? '') ?>">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label class="small font-weight-bold text-muted">Experience (Years)</label>
-                                    <input type="text" name="experience" class="form-control form-control-sm" placeholder="e.g. 2" value="<?= esc($advancedFilters['experience'] ?? '') ?>">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label class="small font-weight-bold text-muted">Last Active</label>
-                                    <select name="last_active" class="form-control form-control-sm">
-                                        <option value="">Any time</option>
-                                        <option value="7" <?= ($advancedFilters['last_active'] ?? '') === '7' ? 'selected' : '' ?>>Last 7 days</option>
-                                        <option value="30" <?= ($advancedFilters['last_active'] ?? '') === '30' ? 'selected' : '' ?>>Last 30 days</option>
-                                        <option value="90" <?= ($advancedFilters['last_active'] ?? '') === '90' ? 'selected' : '' ?>>Last 90 days</option>
-                                    </select>
-                                </div>
+                    <div class="response-toolbar">
+                        <strong>Showing <?= $safeActiveStage === 'all' ? $allApplicationsLabel : count($applicationsByStatus[$safeActiveStage] ?? []) ?> responses</strong>
+                        <div class="response-toolbar-actions">
+                            <div class="pipeline-search">
+                                <i class="fas fa-search"></i>
+                                <input type="search" id="candidatePipelineSearch" placeholder="Search candidates..." autocomplete="off">
                             </div>
-                            <div class="row align-items-end">
-                                <div class="form-group col-md-3">
-                                    <label class="small font-weight-bold text-muted">ATS Score (Min %)</label>
-                                    <input type="number" name="ats_min" class="form-control form-control-sm" min="0" max="100" value="<?= esc($advancedFilters['ats_min'] ?? '') ?>">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label class="small font-weight-bold text-muted">ATS Score (Max %)</label>
-                                    <input type="number" name="ats_max" class="form-control form-control-sm" min="0" max="100" value="<?= esc($advancedFilters['ats_max'] ?? '') ?>">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label class="small font-weight-bold text-muted">Sort By</label>
-                                    <select name="sort" class="form-control form-control-sm">
-                                        <option value="applied_desc" <?= ($advancedFilters['sort'] ?? '') === 'applied_desc' ? 'selected' : '' ?>>Most recent application</option>
-                                        <option value="ats_desc" <?= ($advancedFilters['sort'] ?? 'ats_desc') === 'ats_desc' ? 'selected' : '' ?>>Highest ATS Match</option>
-                                        <option value="ats_asc" <?= ($advancedFilters['sort'] ?? '') === 'ats_asc' ? 'selected' : '' ?>>Lowest ATS Match</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <div class="d-flex" style="gap: 8px;">
-                                        <button type="submit" class="btn btn-outline-primary btn-sm flex-grow-1 ">Apply Filters</button>
-                                        <?php if ($hasActiveFilters): ?>
-                                            <a href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=' . $safeActiveStage) ?>" class="btn btn-outline-primary btn-sm" title="Clear all filters">Clear</a>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+                            <a href="<?= base_url('recruiter/dashboard/export-excel?type=detailed&job_id=' . (int) $job['id']) ?>" class="response-export-link">
+                                <i class="fas fa-file-excel"></i> Export
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="applications-table-wrapper">
+                        <div class="tab-pane fade show active" id="applications-ajax-container">
+                            <?= view('recruiter/partials/job_pipeline_applications', get_defined_vars()) ?>
+                        </div>
                     </div>
                 </div>
-
-            <div class="tab-content" id="applications-table-wrapper">
-                <div class="tab-pane fade show active" id="applications-ajax-container">
-                    <?= view('recruiter/partials/job_pipeline_applications', get_defined_vars()) ?>
-                </div>
-            </div>
             </div>
         </div>
 
-        
-        <!-- Interviews Tab -->
+                <!-- Interviews Tab -->
         <div class="tab-pane fade" id="interviews" role="tabpanel">
             <?php
             $interviewStats = $interviewStats ?? [

@@ -444,17 +444,26 @@ class JobResponsesController extends BaseController
                 MAX(COALESCE(interview_sessions.communication_score, 0)) as communication_score'
             : '0 as overall_rating, 0 as technical_score, 0 as communication_score';
         $experienceSubQuery = '(SELECT user_id, SUM(TIMESTAMPDIFF(MONTH, start_date, COALESCE(NULLIF(end_date, \'\'), CURDATE()))) AS total_experience_months FROM work_experiences GROUP BY user_id) candidate_experience';
+        $workSummarySubQuery = "(SELECT user_id,
+                SUBSTRING_INDEX(GROUP_CONCAT(CASE WHEN COALESCE(is_current, 0) = 1 THEN CONCAT_WS(' at ', NULLIF(job_title, ''), NULLIF(company_name, '')) END ORDER BY start_date DESC SEPARATOR '||'), '||', 1) AS current_role_summary,
+                SUBSTRING_INDEX(GROUP_CONCAT(CASE WHEN COALESCE(is_current, 0) = 0 THEN CONCAT_WS(' at ', NULLIF(job_title, ''), NULLIF(company_name, '')) END ORDER BY COALESCE(NULLIF(end_date, ''), start_date) DESC SEPARATOR '||'), '||', 1) AS previous_role_summary
+            FROM work_experiences GROUP BY user_id) candidate_work_summary";
+        $educationSummarySubQuery = "(SELECT user_id,
+                SUBSTRING_INDEX(GROUP_CONCAT(TRIM(CONCAT_WS(' ', NULLIF(degree, ''), NULLIF(field_of_study, ''), NULLIF(institution, ''))) ORDER BY COALESCE(NULLIF(end_year, ''), NULLIF(start_year, '')) DESC SEPARATOR '||'), '||', 1) AS latest_education_summary
+            FROM education GROUP BY user_id) candidate_education_summary";
         $lastLoginSubQuery = '(SELECT user_id, MAX(login_at) as last_login FROM user_login_performance_logs GROUP BY user_id) last_login_table';
         $lastLoginSelect = $hasLoginLogs ? 'last_login_table.last_login' : 'NULL as last_login';
         $notesSelect = $hasRecruiterNotes ? 'recruiter_candidate_notes.tags as recruiter_tags, recruiter_candidate_notes.notes as recruiter_notes' : 'NULL as recruiter_tags, NULL as recruiter_notes';
 
         $applications = $applicationModel
-            ->select('applications.*, jobs.title as job_title, jobs.company as job_company, jobs.location as job_location, jobs.experience_level, jobs.required_skills, users.name as candidate_name, users.email as candidate_email, users.phone as candidate_phone, candidate_profiles.resume_path, candidate_profiles.location as candidate_location, COALESCE(candidate_experience.total_experience_months, 0) as total_experience_months, ' . $lastLoginSelect . ', ' . $notesSelect . ', ' . $ratingSelect)
+            ->select('applications.*, jobs.title as job_title, jobs.company as job_company, jobs.location as job_location, jobs.experience_level, jobs.required_skills, users.name as candidate_name, users.email as candidate_email, users.phone as candidate_phone, candidate_profiles.resume_path, candidate_profiles.profile_photo, candidate_profiles.headline as candidate_headline, candidate_profiles.location as candidate_location, candidate_profiles.preferred_locations, candidate_profiles.notice_period, candidate_profiles.current_salary, candidate_profiles.expected_salary, COALESCE(candidate_experience.total_experience_months, 0) as total_experience_months, candidate_work_summary.current_role_summary, candidate_work_summary.previous_role_summary, candidate_education_summary.latest_education_summary, ' . $lastLoginSelect . ', ' . $notesSelect . ', ' . $ratingSelect)
             ->join('jobs', 'jobs.id = applications.job_id', 'left')
             ->join('users', 'users.id = applications.candidate_id', 'left')
             ->join('candidate_profiles', 'candidate_profiles.user_id = applications.candidate_id', 'left')
             ->join('candidate_skills', 'candidate_skills.candidate_id = applications.candidate_id', 'left')
             ->join($experienceSubQuery, 'candidate_experience.user_id = applications.candidate_id', 'left', false)
+            ->join($workSummarySubQuery, 'candidate_work_summary.user_id = applications.candidate_id', 'left', false)
+            ->join($educationSummarySubQuery, 'candidate_education_summary.user_id = applications.candidate_id', 'left', false)
             ->whereIn('applications.job_id', $recruiterJobIds);
         if ($hasInterviewSessions) {
             $applicationModel->join('interview_sessions', 'interview_sessions.application_id = applications.id', 'left');

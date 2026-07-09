@@ -433,6 +433,16 @@ class RecruiterCandidates extends BaseController
             );
         }
 
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'status' => 'success',
+                'email' => (string) ($candidate['email'] ?? ''),
+                'phone' => (string) ($candidate['phone'] ?? ''),
+                'logged' => $wasLogged,
+                'csrf_hash' => csrf_hash(),
+            ]);
+        }
+
         $redirectUrl = base_url('recruiter/candidate/' . $candidateId)
             . '?show_contact=1'
             . '&application_id=' . $applicationId
