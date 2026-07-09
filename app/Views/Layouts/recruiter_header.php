@@ -2197,6 +2197,11 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                     <i class="fas fa-file-excel sb-icon"></i>
                     <span class="sb-label">Export Data</span>
                 </a>
+                 <a href="<?= base_url('recruiter/reports') ?>"
+                   class="hm-sb-subitem <?= $isActive('recruiter/reports') ?>">
+                    <i class="fas fa-file-excel sb-icon"></i>
+                    <span class="sb-label">Export Jobs</span>
+                </a>
                 <a href="<?= base_url('recruiter/settings') ?>"
                    class="hm-sb-subitem <?= $isActive('recruiter/settings') ?>">
                     <i class="fas fa-cog sb-icon"></i>

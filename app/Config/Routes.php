@@ -16,6 +16,8 @@ $routes->get('portal-trailer', function() {
     }
     return service('response')->setBody(file_get_contents($path))->setContentType('text/html');
 });
+//ReportController
+$routes->get('recruiter/reports', 'ReportController::index');
 // app/Config/Routes.php  ← route goes HERE, not in the controller file
 $routes->post('job/mark-visited/(:num)', 'JobController::markVisited/$1');
 // Login
