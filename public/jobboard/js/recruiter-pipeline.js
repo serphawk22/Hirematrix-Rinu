@@ -791,9 +791,18 @@
                         var currentStage = response.activeStage || urlParams.get('stage') || 'all';
 
                         $('.stage-ajax-link').removeClass('active');
-                        $('.stage-ajax-link').filter(function () {
+                        var activeStageLink = $('.stage-ajax-link').filter(function () {
                             return new URL($(this).attr('href'), window.location.origin).searchParams.get('stage') === currentStage;
-                        }).addClass('active');
+                        }).addClass('active').first();
+
+                        if (activeStageLink.length) {
+                            var stageLabel = activeStageLink.data('label') || activeStageLink.text().replace(/\s*\(\d+\)\s*$/, '').trim();
+                            var stageCount = parseInt(activeStageLink.data('count'), 10);
+                            if (Number.isNaN(stageCount)) {
+                                stageCount = $('#applications-ajax-container [data-application-row]').length;
+                            }
+                            $('#responseShowingCount').text('Showing ' + stageCount + ' ' + (stageCount === 1 ? 'response' : 'responses'));
+                        }
 
                         window.history.pushState({ path: url }, '', url);
                     } else {

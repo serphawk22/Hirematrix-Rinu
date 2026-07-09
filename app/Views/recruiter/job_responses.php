@@ -629,16 +629,259 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
     font-size:.86rem;
     padding:16px 18px;
 }
-body.dark .recruiter-jobs-jobboard .hm-job-dropdown-menu { background:#111 !important; border-color:#23343A !important; }
-body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item { color:#94A3B8 !important; }
-body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item:hover { background:rgba(31,183,181,.1) !important; color:#F8FAFC !important; }
+.recruiter-jobs-jobboard .recruiter-jobs-list-card {
+    background:#FFFFFF;
+    border:1px solid #DDE7EF;
+    border-radius:12px;
+    box-shadow:0 10px 28px rgba(15,23,42,.05);
+    overflow:visible;
+}
+.recruiter-jobs-jobboard .jobs-bulkbar {
+    align-items:center;
+    background:#FFFFFF;
+    border-bottom:1px solid #E6EDF4;
+    display:flex;
+    gap:18px;
+    justify-content:space-between;
+    min-height:52px;
+    padding:10px 16px;
+}
+.recruiter-jobs-jobboard .jobs-bulkbar-left,
+.recruiter-jobs-jobboard .jobs-bulkbar-right {
+    align-items:center;
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+}
+.recruiter-jobs-jobboard .jobs-select-control {
+    align-items:center;
+    color:#475569;
+    cursor:pointer;
+    display:inline-flex;
+    font-size:.84rem;
+    font-weight:700;
+    gap:8px;
+    margin:0;
+}
+.recruiter-jobs-jobboard .jobs-select-control input,
+.recruiter-jobs-jobboard .job-row-check {
+    accent-color:#0F766E;
+    cursor:pointer;
+    height:16px;
+    width:16px;
+}
+.recruiter-jobs-jobboard .jobs-selected-count {
+    color:#64748B;
+    font-size:.82rem;
+    font-weight:700;
+}
+.recruiter-jobs-jobboard .jobs-bulk-close {
+    align-items:center;
+    background:#FFFFFF;
+    border:1px solid #CBD5E1;
+    border-radius:8px;
+    color:#334155;
+    display:inline-flex;
+    font-size:.82rem;
+    font-weight:800;
+    gap:7px;
+    min-height:34px;
+    padding:7px 12px;
+}
+.recruiter-jobs-jobboard .jobs-bulk-close:not(:disabled):hover {
+    border-color:#EF4444;
+    color:#DC2626;
+}
+.recruiter-jobs-jobboard .jobs-bulk-close:disabled {
+    cursor:not-allowed;
+    opacity:.45;
+}
+.recruiter-jobs-jobboard .recruiter-jobs-table {
+    border:0 !important;
+    margin:0;
+}
+.recruiter-jobs-jobboard .recruiter-jobs-table thead th {
+    background:#FBFCFE;
+    border-bottom:1px solid #DDE7EF;
+    color:#64748B;
+    font-size:.74rem;
+    font-weight:800;
+    letter-spacing:.04em;
+    padding:13px 16px;
+    text-transform:uppercase;
+}
+.recruiter-jobs-jobboard .recruiter-jobs-table tbody td {
+    border-top:1px solid #E8EEF5;
+    padding:18px 16px;
+    vertical-align:middle;
+}
+.recruiter-jobs-jobboard .hm-job-row {
+    background:#FFFFFF;
+    cursor:pointer;
+}
+.recruiter-jobs-jobboard .hm-job-row:hover {
+    background:#FAFBFC;
+}
+.recruiter-jobs-jobboard .job-select-cell {
+    text-align:center;
+    width:44px;
+}
+.recruiter-jobs-jobboard .job-title-cell {
+    min-width:360px;
+}
+.recruiter-jobs-jobboard .job-title-row {
+    align-items:center;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+.recruiter-jobs-jobboard .job-title {
+    color:#0F172A;
+    font-size:1rem;
+    font-weight:800;
+    line-height:1.25;
+}
+.recruiter-jobs-jobboard .job-subtitle {
+    align-items:center;
+    color:#64748B;
+    display:flex;
+    flex-wrap:wrap;
+    font-size:.82rem;
+    gap:8px;
+    margin-top:4px;
+}
+.recruiter-jobs-jobboard .job-dot {
+    color:#CBD5E1;
+}
+.recruiter-jobs-jobboard .job-status-pill {
+    align-items:center;
+    border:1px solid #CBD5E1;
+    border-radius:999px;
+    color:#475569;
+    display:inline-flex;
+    font-size:.78rem;
+    font-weight:800;
+    min-width:76px;
+    justify-content:center;
+    padding:6px 11px;
+}
+.recruiter-jobs-jobboard .job-status-pill.is-open {
+    background:#ECFDF5;
+    border-color:#A7F3D0;
+    color:#047857;
+}
+.recruiter-jobs-jobboard .job-status-pill.is-closed {
+    background:#F8FAFC;
+    border-color:#CBD5E1;
+    color:#64748B;
+}
+.recruiter-jobs-jobboard .job-response-count {
+    color:#0F172A;
+    display:block;
+    font-size:1.05rem;
+    font-weight:850;
+    line-height:1.1;
+}
+.recruiter-jobs-jobboard .job-response-meta {
+    color:#64748B;
+    display:block;
+    font-size:.8rem;
+    line-height:1.45;
+}
+.recruiter-jobs-jobboard .hm-job-more-btn {
+    align-items:center;
+    background:#FFFFFF !important;
+    border:1px solid #CBD5E1 !important;
+    border-radius:8px !important;
+    color:#334155 !important;
+    display:inline-flex;
+    height:32px;
+    justify-content:center;
+    padding:0 !important;
+    width:42px;
+}
+.recruiter-jobs-jobboard .hm-job-more-btn:hover,
+.recruiter-jobs-jobboard .hm-job-more-btn:focus {
+    background:#F8FAFC !important;
+    border-color:#94A3B8 !important;
+}
+.recruiter-jobs-jobboard .hm-job-dropdown {
+    display:inline-block;
+    position:relative;
+}
+.recruiter-jobs-jobboard .hm-job-dropdown-menu {
+    background:#FFFFFF;
+    border:1px solid #DDE7EF;
+    border-radius:10px;
+    box-shadow:0 18px 40px rgba(15,23,42,.16);
+    min-width:174px;
+    padding:6px 0;
+    position:absolute;
+    right:0;
+    top:calc(100% + 6px);
+    z-index:99999;
+}
+.recruiter-jobs-jobboard .hm-job-dropdown-separator {
+    background:#E8EEF5;
+    height:1px;
+    margin:6px 0;
+}
+.recruiter-jobs-jobboard .hm-job-dropdown-item.is-danger {
+    color:#DC2626;
+}
+body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card,
+body.dark .recruiter-jobs-jobboard .jobs-bulkbar,
+body.dark .recruiter-jobs-jobboard .hm-job-row {
+    background:#050505;
+    border-color:#262626;
+}
+body.dark .recruiter-jobs-jobboard .recruiter-jobs-table thead th {
+    background:#0A0A0A;
+    border-color:#262626;
+    color:#A3A3A3;
+}
+body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody td {
+    border-color:#262626;
+}
+body.dark .recruiter-jobs-jobboard .hm-job-row:hover {
+    background:#0F0F0F;
+}
+body.dark .recruiter-jobs-jobboard .job-title,
+body.dark .recruiter-jobs-jobboard .job-response-count {
+    color:#F5F5F5;
+}
+body.dark .recruiter-jobs-jobboard .job-subtitle,
+body.dark .recruiter-jobs-jobboard .job-response-meta,
+body.dark .recruiter-jobs-jobboard .jobs-selected-count,
+body.dark .recruiter-jobs-jobboard .jobs-select-control {
+    color:#A3A3A3;
+}
+body.dark .recruiter-jobs-jobboard .jobs-bulk-close,
+body.dark .recruiter-jobs-jobboard .hm-job-more-btn {
+    background:#0A0A0A !important;
+    border-color:#3F3F46 !important;
+    color:#D4D4D8 !important;
+}
+body.dark .recruiter-jobs-jobboard .job-status-pill.is-open {
+    background:#101010;
+    border-color:#525252;
+    color:#E5E5E5;
+}
+body.dark .recruiter-jobs-jobboard .job-status-pill.is-closed {
+    background:#0A0A0A;
+    border-color:#3F3F46;
+    color:#A3A3A3;
+}
+body.dark .recruiter-jobs-jobboard .hm-job-dropdown-menu { background:#111 !important; border-color:#333 !important; }
+body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item { color:#A3A3A3 !important; }
+body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item:hover { background:#1A1A1A !important; color:#F8FAFC !important; }
 body.dark .recruiter-jobs-jobboard .hm-attention-pill { background:rgba(251,146,60,.12); border-color:rgba(251,146,60,.38); color:#FDBA74; }
 body.dark .recruiter-jobs-jobboard .hm-attention-pill.is-critical { background:rgba(248,113,113,.12); border-color:rgba(248,113,113,.38); color:#FCA5A5; }
 body.dark .recruiter-jobs-jobboard .hm-attention-pill.is-watch { background:rgba(245,158,11,.12); border-color:rgba(245,158,11,.42); color:#FCD34D; }
 body.dark .recruiter-jobs-jobboard .hm-job-match-meta { color:#94A3B8; }
 body.dark .recruiter-jobs-jobboard .hm-attention-summary { color:#94A3B8; }
-body.dark .recruiter-jobs-jobboard .hm-job-quick-action { background:#111; border-color:#23343A; color:#5EEAD4; }
-body.dark .recruiter-jobs-jobboard .hm-job-quick-action.is-primary { background:#1FB7B5; border-color:#1FB7B5; color:#FFFFFF; }
+body.dark .recruiter-jobs-jobboard .hm-job-quick-action { background:#111; border-color:#333; color:#E5E5E5; }
+body.dark .recruiter-jobs-jobboard .hm-job-quick-action.is-primary { background:#262626; border-color:#525252; color:#FFFFFF; }
 body.dark .recruiter-jobs-jobboard .hm-alert-center,
 body.dark .recruiter-jobs-jobboard .hm-alert-center-head,
 body.dark .recruiter-jobs-jobboard .hm-alert-item { background:#000; border-color:#23343A; }
@@ -647,6 +890,211 @@ body.dark .recruiter-jobs-jobboard .hm-alert-title { color:#F8FAFC; }
 body.dark .recruiter-jobs-jobboard .hm-alert-meta,
 body.dark .recruiter-jobs-jobboard .hm-alert-detail,
 body.dark .recruiter-jobs-jobboard .hm-alert-empty { color:#94A3B8; }
+
+/* Jobs list final shell polish: avoid nested/double borders */
+.recruiter-jobs-jobboard .recruiter-jobs-list-card {
+    border:1px solid #DDE7EF !important;
+    border-radius:14px !important;
+    overflow:visible !important;
+}
+.recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-table-card,
+.recruiter-jobs-jobboard .recruiter-jobs-list-card .table-responsive.recruiter-table-card {
+    background:transparent !important;
+    border:0 !important;
+    border-radius:0 0 14px 14px !important;
+    box-shadow:none !important;
+    overflow:visible !important;
+}
+.recruiter-jobs-jobboard .recruiter-jobs-list-card .jobs-bulkbar {
+    border-radius:14px 14px 0 0 !important;
+}
+.recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-table {
+    border:0 !important;
+}
+.recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-table thead tr {
+    border-bottom:1px solid #DDE7EF !important;
+}
+.recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius:14px;
+}
+.recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius:14px;
+}
+body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card {
+    border-color:#262626 !important;
+}
+body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-table-card,
+body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .table-responsive.recruiter-table-card {
+    border:0 !important;
+}
+body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-table thead tr {
+    border-bottom-color:#262626 !important;
+}
+
+@media (max-width: 640px) {
+    body.recruiter-jobboard main > .recruiter-jobs-jobboard {
+        padding: 10px !important;
+    }
+    .recruiter-jobs-jobboard .container-fluid {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    .recruiter-jobs-jobboard .page-board-header {
+        border-radius: 18px !important;
+        padding: 20px 18px !important;
+    }
+    .recruiter-jobs-jobboard .page-board-title {
+        font-size: 1.45rem !important;
+    }
+    .recruiter-jobs-jobboard .recruiter-jobs-list-card {
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+    .recruiter-jobs-jobboard .jobs-bulkbar {
+        border: 1px solid #DDE7EF !important;
+        border-radius: 14px !important;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding: 12px !important;
+    }
+    .recruiter-jobs-jobboard .jobs-bulkbar-left,
+    .recruiter-jobs-jobboard .jobs-bulkbar-right {
+        justify-content: space-between;
+        width: 100%;
+    }
+    .recruiter-jobs-jobboard .jobs-bulk-close {
+        justify-content: center;
+        width: 100%;
+    }
+    .recruiter-jobs-jobboard .recruiter-table-card {
+        overflow: visible !important;
+    }
+    .recruiter-jobs-jobboard .recruiter-jobs-table,
+    .recruiter-jobs-jobboard .recruiter-jobs-table tbody,
+    .recruiter-jobs-jobboard .recruiter-jobs-table tr,
+    .recruiter-jobs-jobboard .recruiter-jobs-table td {
+        display: block !important;
+        width: 100% !important;
+    }
+    .recruiter-jobs-jobboard .recruiter-jobs-table thead {
+        display: none !important;
+    }
+    .recruiter-jobs-jobboard .recruiter-jobs-table tbody {
+        display: grid !important;
+        gap: 10px !important;
+    }
+    .recruiter-jobs-jobboard .hm-job-row {
+        background: #FFFFFF !important;
+        border: 1px solid #DDE7EF !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .045);
+        display: grid !important;
+        gap: 10px !important;
+        padding: 14px !important;
+        position: relative;
+    }
+    .recruiter-jobs-jobboard .recruiter-jobs-table tbody td {
+        border: 0 !important;
+        padding: 0 !important;
+    }
+    .recruiter-jobs-jobboard .job-select-cell {
+        left: 14px;
+        position: absolute;
+        top: 18px;
+        width: auto !important;
+        z-index: 2;
+    }
+    .recruiter-jobs-jobboard .job-title-cell {
+        min-width: 0 !important;
+        padding-left: 28px !important;
+    }
+    .recruiter-jobs-jobboard .job-title-row {
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .recruiter-jobs-jobboard .job-title {
+        font-size: 1rem;
+        overflow-wrap: anywhere;
+    }
+    .recruiter-jobs-jobboard .job-subtitle {
+        gap: 5px 7px;
+        line-height: 1.45;
+    }
+    .recruiter-jobs-jobboard .hm-attention-summary {
+        display: block;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+    }
+    .recruiter-jobs-jobboard .hm-job-quick-actions {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 12px;
+    }
+    .recruiter-jobs-jobboard .hm-job-quick-action {
+        justify-content: center;
+        min-width: 0;
+        padding: 9px 10px;
+        text-align: center;
+        white-space: normal;
+    }
+    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(3),
+    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(4),
+    .recruiter-jobs-jobboard .hm-job-actions-cell {
+        align-items: center;
+        border-top: 1px solid #EEF2F7 !important;
+        display: grid !important;
+        gap: 10px;
+        grid-template-columns: 88px minmax(0, 1fr);
+        padding-top: 10px !important;
+        text-align: left !important;
+    }
+    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(3)::before,
+    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(4)::before,
+    .recruiter-jobs-jobboard .hm-job-actions-cell::before {
+        color: #64748B;
+        font-size: .68rem;
+        font-weight: 850;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(3)::before { content: "Status"; }
+    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(4)::before { content: "Responses"; }
+    .recruiter-jobs-jobboard .hm-job-actions-cell::before { content: "Actions"; }
+    .recruiter-jobs-jobboard .job-status-pill {
+        justify-self: start;
+    }
+    .recruiter-jobs-jobboard .job-response-count {
+        display: inline-block;
+        margin-right: 5px;
+    }
+    .recruiter-jobs-jobboard .hm-job-dropdown {
+        justify-self: start;
+    }
+    .recruiter-jobs-jobboard .hm-job-dropdown-menu {
+        left: 0;
+        right: auto;
+    }
+    body.dark .recruiter-jobs-jobboard .jobs-bulkbar,
+    body.dark .recruiter-jobs-jobboard .hm-job-row {
+        background: #050505 !important;
+        border-color: #262626 !important;
+    }
+    body.dark .recruiter-jobs-jobboard .hm-job-row > td:nth-child(3),
+    body.dark .recruiter-jobs-jobboard .hm-job-row > td:nth-child(4),
+    body.dark .recruiter-jobs-jobboard .hm-job-actions-cell {
+        border-top-color: #262626 !important;
+    }
+    body.dark .recruiter-jobs-jobboard .hm-job-row > td:nth-child(3)::before,
+    body.dark .recruiter-jobs-jobboard .hm-job-row > td:nth-child(4)::before,
+    body.dark .recruiter-jobs-jobboard .hm-job-actions-cell::before {
+        color: #A3A3A3;
+    }
+}
 </style> 
 
 <div
@@ -717,19 +1165,38 @@ body.dark .recruiter-jobs-jobboard .hm-alert-empty { color:#94A3B8; }
             <?php if (empty($jobs)): ?>
                 <div class="alert alert-info">No jobs found matching your criteria.</div>
             <?php else: ?>
-                <div class="table-responsive recruiter-table-card" style="border-radius:20px !important;overflow:visible !important;">
-                    <table class="table table-hover bg-white border rounded recruiter-jobs-table" style="overflow:visible;">
-                        <thead class="bg-light">
+                <form method="post" action="<?= base_url('recruiter/jobs/bulk-close') ?>" id="jobsBulkCloseForm" class="recruiter-jobs-list-card">
+                    <?= csrf_field() ?>
+                    <div class="jobs-bulkbar">
+                        <div class="jobs-bulkbar-left">
+                            <label class="jobs-select-control" for="jobsSelectAll">
+                                <input type="checkbox" id="jobsSelectAll">
+                                <span>Select all open jobs</span>
+                            </label>
+                            <span class="jobs-selected-count" id="jobsSelectedCount">0 selected</span>
+                        </div>
+                        <div class="jobs-bulkbar-right">
+                            <button type="submit" class="jobs-bulk-close" id="jobsBulkCloseButton" disabled>
+                                <i class="fas fa-ban" aria-hidden="true"></i>
+                                <span>Close selected</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive recruiter-table-card">
+                    <table class="table table-hover bg-white recruiter-jobs-table">
+                        <thead>
                             <tr>
-                                <th>Job Title</th>
+                                <th class="job-select-cell"></th>
+                                <th>Job title</th>
                                 <th>Status</th>
-                                <th>Applicants</th>
+                                <th>Responses</th>
                                 <th class="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($jobs as $job): ?>
                                 <?php
+                                    $isOpen = ($job['status'] ?? '') === 'open';
                                     $attentionLevel = (string) ($job['attention_level'] ?? 'quiet');
                                     $showAttention = in_array($attentionLevel, ['critical', 'watch'], true);
                                     $attentionLabel = $attentionLevel === 'critical' ? 'Critical priority' : 'Watch';
@@ -741,56 +1208,72 @@ body.dark .recruiter-jobs-jobboard .hm-alert-empty { color:#94A3B8; }
                                         $attentionSummaryParts[] = (int) ($job['average_ats_score'] ?? 0) . '% avg match';
                                     }
                                     $attentionSummaryParts = array_merge($attentionSummaryParts, $attentionFacts);
+                                    $postedAt = !empty($job['created_at']) ? date('d M Y', strtotime((string) $job['created_at'])) : null;
                                 ?>
-                                <tr class="hm-job-row" data-href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>" style="cursor:pointer;">
-                                    <td>
-                                        <div class="job-title"><?= esc($job['title']) ?></div>
-                                        <small class="text-muted"><?= esc($job['location']) ?></small>
-                                        <?php if ($showAttention): ?>
-                                            <div class="hm-attention-stack" aria-label="Needs attention">
+                                <tr class="hm-job-row" data-href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>">
+                                    <td class="job-select-cell">
+                                        <input
+                                            type="checkbox"
+                                            class="job-row-check"
+                                            name="job_ids[]"
+                                            value="<?= (int) $job['id'] ?>"
+                                            aria-label="Select <?= esc($job['title']) ?>"
+                                            <?= $isOpen ? '' : 'disabled' ?>
+                                        >
+                                    </td>
+                                    <td class="job-title-cell">
+                                        <div class="job-title-row">
+                                            <span class="job-title"><?= esc($job['title']) ?></span>
+                                            <?php if ($showAttention): ?>
                                                 <span class="hm-attention-pill is-<?= esc($attentionLevel) ?>"><?= esc($attentionLabel) ?></span>
-                                            </div>
-                                            <span class="hm-attention-summary"><?= esc(implode(' · ', array_unique($attentionSummaryParts))) ?></span>
-                                            <?php if (!empty($job['suggested_actions'])): ?>
-                                                <div class="hm-job-quick-actions">
-                                                    <?php foreach (array_slice((array) $job['suggested_actions'], 0, 2) as $action): ?>
-                                                        <a class="hm-job-quick-action <?= !empty($action['primary']) ? 'is-primary' : '' ?>"
-                                                           href="<?= esc($action['url'] ?? '#') ?>">
-                                                            <?= esc($action['label'] ?? 'Open') ?>
-                                                        </a>
-                                                    <?php endforeach; ?>
-                                                </div>
                                             <?php endif; ?>
+                                        </div>
+                                        <div class="job-subtitle">
+                                            <span><?= esc($job['location']) ?></span>
+                                            <?php if ($postedAt): ?>
+                                                <span class="job-dot">&bull;</span>
+                                                <span>Posted <?= esc($postedAt) ?></span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <?php if ($showAttention): ?>
+                                            <span class="hm-attention-summary"><?= esc(implode(' - ', array_unique($attentionSummaryParts))) ?></span>
                                         <?php endif; ?>
+                                        <div class="hm-job-quick-actions">
+                                            <a class="hm-job-quick-action is-primary" href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>">
+                                                Review Candidates
+                                            </a>
+                                            <a class="hm-job-quick-action" href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>">
+                                                Edit Job
+                                            </a>
+                                        </div>
                                     </td>
                                     <td>
-                                        <?php $statusColor = $job['status'] == 'open' ? '#1FB7B5' : '#ef4444'; ?>
-                                        <span style="color:<?= $statusColor ?>;font-weight:600;"><?= ucfirst($job['status']) ?></span>
+                                        <span class="job-status-pill <?= $isOpen ? 'is-open' : 'is-closed' ?>"><?= esc(ucfirst((string) $job['status'])) ?></span>
                                     </td>
                                     <td>
-                                        <strong><?= $job['applicant_count'] ?></strong>
-                                        <small class="text-muted d-block"><?= $job['shortlisted_count'] ?> shortlisted</small>
+                                        <span class="job-response-count"><?= (int) ($job['applicant_count'] ?? 0) ?></span>
+                                        <span class="job-response-meta">Total responses</span>
+                                        <span class="job-response-meta"><?= (int) ($job['shortlisted_count'] ?? 0) ?> shortlisted</span>
                                         <?php if ((int) ($job['applicant_count'] ?? 0) > 0): ?>
-                                            <span class="hm-job-match-meta"><?= (int) ($job['average_ats_score'] ?? 0) ?>% avg match</span>
+                                            <span class="job-response-meta"><?= (int) ($job['average_ats_score'] ?? 0) ?>% avg match</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="text-right hm-job-actions-cell" style="overflow:visible;">
-                                        <div class="hm-job-dropdown" style="position:relative;display:inline-block;">
-                                            <button class="btn btn-sm btn-outline-primary hm-job-more-btn" type="button" title="More actions" style="padding:5px 11px;border:1.5px solid #1FB7B5 !important;border-radius:6px !important;">
-                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                                    <td class="text-right hm-job-actions-cell">
+                                        <div class="hm-job-dropdown">
+                                            <button class="btn btn-sm hm-job-more-btn" type="button" title="More actions" aria-label="More actions for <?= esc($job['title']) ?>">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
   <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
   <circle cx="13" cy="8" r="1.5" fill="currentColor"/>
 </svg>
                                             </button>
-                                            <div class="hm-job-dropdown-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);min-width:160px;background:#fff;border:1px solid #D9ECE5;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:99999;padding:4px 0;">
+                                            <div class="hm-job-dropdown-menu">
                                                 <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>">View Pipeline</a>
-                                                <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/' . $job['id'] . '/leaderboard') ?>">Leaderboard</a>
-                                                <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>">Edit Job</a>
+                                                <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>#leaderboard">Leaderboard</a>
                                                 <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/preview/' . $job['id']) ?>" target="_blank">Preview</a>
-                                                <div style="height:1px;background:#D9ECE5;margin:4px 0;"></div>
-                                                <?php if ($job['status'] === 'open'): ?>
-                                                <a class="hm-job-dropdown-item" style="color:#ef4444;" href="<?= base_url('recruiter/jobs/close/' . $job['id']) ?>" onclick="return confirm('Close this job?')">Close Job</a>
+                                                <div class="hm-job-dropdown-separator"></div>
+                                                <?php if ($isOpen): ?>
+                                                <a class="hm-job-dropdown-item is-danger" href="<?= base_url('recruiter/jobs/close/' . $job['id']) ?>" onclick="return confirm('Close this job?')">Close Job</a>
                                                 <?php else: ?>
                                                 <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/reopen/' . $job['id']) ?>">Reopen Job</a>
                                                 <?php endif; ?>
@@ -801,7 +1284,8 @@ body.dark .recruiter-jobs-jobboard .hm-alert-empty { color:#94A3B8; }
                             <?php endforeach; ?>
                         </tbody>
                     </table>
-                </div>
+                    </div>
+                </form>
 
                 <?php if ($pager->getPageCount() > 1): ?>
                     <div class="mt-4">
@@ -819,12 +1303,68 @@ document.addEventListener('DOMContentLoaded', function () {
     // Row click → pipeline (skip actions cell)
     document.querySelectorAll('.hm-job-row').forEach(function (row) {
         row.addEventListener('click', function (e) {
-            if (e.target.closest('.hm-job-actions-cell') || e.target.closest('.hm-job-quick-action')) return;
+            if (
+                e.target.closest('.hm-job-actions-cell') ||
+                e.target.closest('.hm-job-quick-action') ||
+                e.target.closest('.job-row-check') ||
+                e.target.closest('.jobs-select-control') ||
+                e.target.closest('a') ||
+                e.target.closest('button') ||
+                e.target.closest('input')
+            ) {
+                return;
+            }
             window.location = row.dataset.href;
         });
     });
 
     // … button toggle
+    var bulkForm = document.getElementById('jobsBulkCloseForm');
+    var selectAll = document.getElementById('jobsSelectAll');
+    var selectedCount = document.getElementById('jobsSelectedCount');
+    var bulkButton = document.getElementById('jobsBulkCloseButton');
+    var rowChecks = Array.prototype.slice.call(document.querySelectorAll('.job-row-check:not(:disabled)'));
+
+    function updateBulkState() {
+        var checked = rowChecks.filter(function (input) { return input.checked; }).length;
+        if (selectedCount) {
+            selectedCount.textContent = checked + ' selected';
+        }
+        if (bulkButton) {
+            bulkButton.disabled = checked === 0;
+        }
+        if (selectAll) {
+            selectAll.checked = rowChecks.length > 0 && checked === rowChecks.length;
+            selectAll.indeterminate = checked > 0 && checked < rowChecks.length;
+            selectAll.disabled = rowChecks.length === 0;
+        }
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function () {
+            rowChecks.forEach(function (input) {
+                input.checked = selectAll.checked;
+            });
+            updateBulkState();
+        });
+    }
+
+    rowChecks.forEach(function (input) {
+        input.addEventListener('change', updateBulkState);
+        input.addEventListener('click', function (e) { e.stopPropagation(); });
+    });
+
+    if (bulkForm) {
+        bulkForm.addEventListener('submit', function (e) {
+            var checked = rowChecks.filter(function (input) { return input.checked; }).length;
+            if (checked === 0 || !confirm('Close ' + checked + ' selected job' + (checked === 1 ? '?' : 's?'))) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    updateBulkState();
+
     document.addEventListener('click', function (e) {
         var btn = e.target.closest('.hm-job-more-btn');
         if (btn) {

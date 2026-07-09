@@ -153,8 +153,13 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                     }
                     $noticePeriod = trim((string) ($app['notice_period'] ?? ''));
                     $salaryText = trim((string) ($app['current_salary'] ?? ''));
+                    $salaryLabel = 'Current CTC';
                     if ($salaryText === '') {
                         $salaryText = trim((string) ($app['expected_salary'] ?? ''));
+                        $salaryLabel = 'Expected CTC';
+                    }
+                    if ($salaryText !== '' && is_numeric($salaryText)) {
+                        $salaryText = number_format((float) $salaryText, 2) . ' LPA';
                     }
                 ?>
                 <article class="response-card is-reviewable js-open-candidate-review" data-application-row="<?= (int) $app['id'] ?>" data-review="<?= $communicationJson ?>">
@@ -179,7 +184,7 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                                 <div class="response-meta-line">
                                     <span><i class="fas fa-briefcase"></i> <?= esc($app['experience_display'] ?? '-') ?></span>
                                     <?php if ($salaryText !== ''): ?>
-                                        <span><i class="fas fa-wallet"></i> <?= esc($salaryText) ?></span>
+                                        <span><i class="fas fa-wallet"></i> <?= esc($salaryLabel) ?> <?= esc($salaryText) ?></span>
                                     <?php endif; ?>
                                     <?php if ($noticePeriod !== ''): ?>
                                         <span><i class="far fa-clock"></i> <?= esc($noticePeriod) ?></span>
