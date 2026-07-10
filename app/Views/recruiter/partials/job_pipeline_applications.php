@@ -104,11 +104,37 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                     if ($latestPreview === '') {
                         $latestPreview = trim((string) ($communication['latest_preview'] ?? ''));
                     }
+                    $hasUnreadCommunication = !empty($communication['has_unread']);
+                    $needsFollowUp = !empty($communication['needs_followup']);
+                    $hasCommunication = ($emailCount + $messageCount) > 0;
+                    $communicationState = 'No contact';
+                    $communicationStateClass = 'is-muted';
+                    $communicationStateIcon = 'fa-minus-circle';
+                    if ($hasUnreadCommunication) {
+                        $communicationState = 'Unread reply';
+                        $communicationStateClass = 'is-unread';
+                        $communicationStateIcon = 'fa-circle';
+                    } elseif (in_array($latestDirection, ['incoming', 'inbound'], true)) {
+                        $communicationState = 'Candidate replied';
+                        $communicationStateClass = 'is-replied';
+                        $communicationStateIcon = 'fa-reply';
+                    } elseif ($needsFollowUp) {
+                        $communicationState = 'Needs follow-up';
+                        $communicationStateClass = 'is-followup';
+                        $communicationStateIcon = 'fa-clock';
+                    } elseif ($hasCommunication) {
+                        $communicationState = 'Contacted';
+                        $communicationStateClass = 'is-contacted';
+                        $communicationStateIcon = 'fa-check-circle';
+                    }
                     $communicationPayload = [
                         'candidateName' => (string) ($app['candidate_name'] ?? '-'),
                         'candidateEmail' => '',
                         'emailCount' => $emailCount,
                         'messageCount' => $messageCount,
+                        'stateLabel' => $communicationState,
+                        'hasUnread' => $hasUnreadCommunication,
+                        'needsFollowUp' => $needsFollowUp,
                         'latestPreview' => $latestPreview,
                         'items' => array_values((array) ($communication['items'] ?? [])),
                     ];
@@ -314,6 +340,12 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                         </div>
 
                         <button type="button" class="communication-stack js-open-communication-drawer" data-communication="<?= $communicationJson ?>" aria-label="Open communication history for <?= esc($app['candidate_name'] ?? 'candidate') ?>">
+                            <div class="communication-status-line">
+                                <span class="communication-state <?= esc($communicationStateClass) ?>">
+                                    <i class="fas <?= esc($communicationStateIcon) ?>"></i>
+                                    <?= esc($communicationState) ?>
+                                </span>
+                            </div>
                             <div class="communication-counts">
                                 <span class="communication-chip"><i class="fas fa-at"></i><?= $emailCount ?> email<?= $emailCount === 1 ? '' : 's' ?></span>
                                 <span class="communication-chip"><i class="fas fa-comments"></i><?= $messageCount ?> msg<?= $messageCount === 1 ? '' : 's' ?></span>

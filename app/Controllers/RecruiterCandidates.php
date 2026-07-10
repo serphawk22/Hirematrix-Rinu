@@ -126,7 +126,6 @@ class RecruiterCandidates extends BaseController
                 ->orWhere('candidate_profiles.resume_path =', '')
                 ->groupEnd();
         }
-
         $candidates = $builder->paginate(12);
         $pager = $userModel->pager;
 
@@ -186,7 +185,6 @@ class RecruiterCandidates extends BaseController
                     ->orWhere('candidate_profiles.resume_path =', '')
                     ->groupEnd();
             }
-
             $candidatePool = $suggestionBuilder->limit(120)->findAll();
             $atsScoreService = new AtsScoreService();
             foreach ($candidatePool as &$poolRow) {

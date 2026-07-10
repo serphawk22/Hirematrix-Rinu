@@ -1158,3 +1158,4 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <?= view('Layouts/recruiter_footer') ?>
+

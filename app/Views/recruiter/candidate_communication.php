@@ -62,8 +62,8 @@ if ($profileParams !== []) {
     background: #f3f7fb;
 }
 .recruiter-message-bubble--highlight {
-    border-color: #0db8bd;
-    box-shadow: 0 0 0 3px rgba(13, 184, 189, .12);
+    border-color: #737373;
+    box-shadow: 0 0 0 3px rgba(115, 115, 115, .14);
 }
 .recruiter-message-meta {
     align-items: center;
@@ -113,8 +113,130 @@ if ($profileParams !== []) {
     resize: vertical;
 }
 .recruiter-message-card textarea.form-control:focus {
-    border-color: #1fb7b5;
+    border-color: #64748b;
     box-shadow: none;
+}
+body.dark .recruiter-messages-jobboard,
+body.recruiter-jobboard.dark-mode .recruiter-messages-jobboard {
+    background: #000 !important;
+    color: #f8fafc !important;
+}
+body.dark .recruiter-messages-jobboard .page-board-header,
+body.recruiter-jobboard.dark-mode .recruiter-messages-jobboard .page-board-header {
+    background: #000 !important;
+    border-color: #262626 !important;
+    box-shadow: none !important;
+}
+body.dark .recruiter-messages-jobboard .page-board-title,
+body.dark .recruiter-messages-jobboard .page-board-subtitle,
+body.dark .recruiter-messages-jobboard .page-board-kicker,
+body.recruiter-jobboard.dark-mode .recruiter-messages-jobboard .page-board-title,
+body.recruiter-jobboard.dark-mode .recruiter-messages-jobboard .page-board-subtitle,
+body.recruiter-jobboard.dark-mode .recruiter-messages-jobboard .page-board-kicker {
+    color: #f8fafc !important;
+}
+body.dark .recruiter-messages-jobboard .page-board-subtitle,
+body.recruiter-jobboard.dark-mode .recruiter-messages-jobboard .page-board-subtitle {
+    color: #93a7b3 !important;
+}
+body.dark .recruiter-message-card,
+body.recruiter-jobboard.dark-mode .recruiter-message-card {
+    background: #050505 !important;
+    border-color: #262626 !important;
+    box-shadow: none !important;
+}
+body.dark .recruiter-message-card .card-header,
+body.dark .recruiter-message-card .card-footer,
+body.recruiter-jobboard.dark-mode .recruiter-message-card .card-header,
+body.recruiter-jobboard.dark-mode .recruiter-message-card .card-footer {
+    background: #050505 !important;
+    border-color: #262626 !important;
+}
+body.dark .recruiter-message-card .card-header h5,
+body.recruiter-jobboard.dark-mode .recruiter-message-card .card-header h5 {
+    color: #f8fafc !important;
+}
+body.dark .recruiter-message-card .text-muted,
+body.recruiter-jobboard.dark-mode .recruiter-message-card .text-muted {
+    color: #93a7b3 !important;
+}
+body.dark .recruiter-message-list,
+body.recruiter-jobboard.dark-mode .recruiter-message-list {
+    background: #000 !important;
+    scrollbar-color: #5f6b74 #111 !important;
+}
+body.dark .recruiter-message-bubble,
+body.recruiter-jobboard.dark-mode .recruiter-message-bubble {
+    color: #e8f3f5 !important;
+}
+body.dark .recruiter-message-bubble--self,
+body.recruiter-jobboard.dark-mode .recruiter-message-bubble--self {
+    background: #181818 !important;
+    border-color: #343434 !important;
+}
+body.dark .recruiter-message-bubble--other,
+body.recruiter-jobboard.dark-mode .recruiter-message-bubble--other {
+    background: #101010 !important;
+    border-color: #2c2c2c !important;
+}
+body.dark .recruiter-message-bubble--highlight,
+body.recruiter-jobboard.dark-mode .recruiter-message-bubble--highlight {
+    border-color: #737373 !important;
+    box-shadow: 0 0 0 3px rgba(115, 115, 115, .18) !important;
+}
+body.dark .recruiter-message-meta,
+body.recruiter-jobboard.dark-mode .recruiter-message-meta {
+    color: #a3a3a3 !important;
+}
+body.dark .recruiter-message-chip--email,
+body.recruiter-jobboard.dark-mode .recruiter-message-chip--email {
+    background: #2b2618 !important;
+    color: #f5d36a !important;
+}
+body.dark .recruiter-message-chip--portal,
+body.recruiter-jobboard.dark-mode .recruiter-message-chip--portal {
+    background: #272727 !important;
+    color: #e5e5e5 !important;
+}
+body.dark .recruiter-message-subject,
+body.recruiter-jobboard.dark-mode .recruiter-message-subject {
+    color: #f8fafc !important;
+}
+body.dark .recruiter-message-body,
+body.recruiter-jobboard.dark-mode .recruiter-message-body {
+    color: #e8f3f5 !important;
+}
+body.dark .recruiter-message-empty,
+body.recruiter-jobboard.dark-mode .recruiter-message-empty {
+    color: #93a7b3 !important;
+}
+body.dark .recruiter-message-card textarea.form-control,
+body.recruiter-jobboard.dark-mode .recruiter-message-card textarea.form-control {
+    background: #000 !important;
+    border-color: #3a3a3a !important;
+    color: #f8fafc !important;
+}
+body.dark .recruiter-message-card textarea.form-control::placeholder,
+body.recruiter-jobboard.dark-mode .recruiter-message-card textarea.form-control::placeholder {
+    color: #78909c !important;
+}
+body.dark .recruiter-messages-jobboard .btn-outline-secondary,
+body.recruiter-jobboard.dark-mode .recruiter-messages-jobboard .btn-outline-secondary {
+    background: #050505 !important;
+    border-color: #3a3a3a !important;
+    color: #d4d4d4 !important;
+}
+body.dark .recruiter-messages-jobboard .btn-outline-secondary:hover,
+body.recruiter-jobboard.dark-mode .recruiter-messages-jobboard .btn-outline-secondary:hover {
+    background: #171717 !important;
+    border-color: #737373 !important;
+    color: #fff !important;
+}
+body.dark .recruiter-message-card .btn-primary,
+body.recruiter-jobboard.dark-mode .recruiter-message-card .btn-primary {
+    background: #e5e7eb !important;
+    border-color: #e5e7eb !important;
+    color: #030712 !important;
 }
 @media (max-width: 991px) {
     .recruiter-messages-jobboard .container {

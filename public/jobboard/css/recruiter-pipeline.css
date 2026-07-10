@@ -1364,6 +1364,113 @@ body.dark .recruiter-pipeline-page .communication-stack {
     border-color: #262626 !important;
 }
 
+.recruiter-pipeline-page .communication-status-line {
+    display: flex;
+    min-width: 0;
+}
+.recruiter-pipeline-page .communication-state {
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #dbe4ec;
+    border-radius: 999px;
+    color: #475569;
+    display: inline-flex;
+    font-size: 10.5px;
+    font-weight: 900;
+    gap: 5px;
+    line-height: 1;
+    max-width: 100%;
+    padding: 5px 8px;
+    white-space: nowrap;
+}
+.recruiter-pipeline-page .communication-state.is-unread {
+    background: #fff7ed;
+    border-color: #fdba74;
+    color: #c2410c;
+}
+.recruiter-pipeline-page .communication-state.is-replied {
+    background: #ecfdf5;
+    border-color: #86efac;
+    color: #047857;
+}
+.recruiter-pipeline-page .communication-state.is-followup {
+    background: #fff7ed;
+    border-color: #fed7aa;
+    color: #b45309;
+}
+.recruiter-pipeline-page .communication-state.is-contacted {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #1d4ed8;
+}
+.recruiter-pipeline-page .communication-latest {
+    border-top: 1px solid #edf2f7;
+    display: grid !important;
+    gap: 3px;
+    min-width: 0;
+    padding-top: 8px;
+}
+.recruiter-pipeline-page .communication-latest strong {
+    color: #1f2937;
+    display: block;
+    font-size: 11px;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.recruiter-pipeline-page .communication-preview {
+    color: #64748b;
+    display: block;
+    font-size: 11px;
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+body.recruiter-jobboard.dark-mode .recruiter-pipeline-page .communication-state,
+body.dark .recruiter-pipeline-page .communication-state {
+    background: #151515 !important;
+    border-color: #333333 !important;
+    color: #d4d4d8 !important;
+}
+body.recruiter-jobboard.dark-mode .recruiter-pipeline-page .communication-state.is-unread,
+body.dark .recruiter-pipeline-page .communication-state.is-unread {
+    background: rgba(245, 158, 11, .14) !important;
+    border-color: rgba(245, 158, 11, .36) !important;
+    color: #fbbf24 !important;
+}
+body.recruiter-jobboard.dark-mode .recruiter-pipeline-page .communication-state.is-replied,
+body.dark .recruiter-pipeline-page .communication-state.is-replied {
+    background: rgba(34, 197, 94, .12) !important;
+    border-color: rgba(34, 197, 94, .35) !important;
+    color: #86efac !important;
+}
+body.recruiter-jobboard.dark-mode .recruiter-pipeline-page .communication-state.is-followup,
+body.dark .recruiter-pipeline-page .communication-state.is-followup {
+    background: rgba(251, 146, 60, .13) !important;
+    border-color: rgba(251, 146, 60, .35) !important;
+    color: #fdba74 !important;
+}
+body.recruiter-jobboard.dark-mode .recruiter-pipeline-page .communication-state.is-contacted,
+body.dark .recruiter-pipeline-page .communication-state.is-contacted {
+    background: rgba(96, 165, 250, .12) !important;
+    border-color: rgba(96, 165, 250, .32) !important;
+    color: #93c5fd !important;
+}
+body.recruiter-jobboard.dark-mode .recruiter-pipeline-page .communication-latest,
+body.dark .recruiter-pipeline-page .communication-latest {
+    border-color: #262626 !important;
+}
+body.recruiter-jobboard.dark-mode .recruiter-pipeline-page .communication-latest strong,
+body.dark .recruiter-pipeline-page .communication-latest strong {
+    color: #f5f5f5 !important;
+}
+body.recruiter-jobboard.dark-mode .recruiter-pipeline-page .communication-preview,
+body.dark .recruiter-pipeline-page .communication-preview {
+    color: #b4b4b8 !important;
+}
+
 @media (max-width: 1180px) {
     .recruiter-pipeline-page .response-card {
         grid-template-columns: 28px minmax(0, 1fr);

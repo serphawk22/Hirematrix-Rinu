@@ -705,6 +705,8 @@ class JobResponsesController extends BaseController
             $app['communication_summary'] = $communicationSummaries[(int) $app['id']] ?? [
                 'email_count' => 0,
                 'message_count' => 0,
+                'has_unread' => false,
+                'needs_followup' => false,
                 'latest_type' => '',
                 'latest_direction' => '',
                 'latest_at' => null,
@@ -785,6 +787,8 @@ class JobResponsesController extends BaseController
             $summaries[$applicationId] = [
                 'email_count' => 0,
                 'message_count' => 0,
+                'has_unread' => false,
+                'needs_followup' => false,
                 'latest_type' => '',
                 'latest_direction' => '',
                 'latest_at' => null,
@@ -871,11 +875,40 @@ class JobResponsesController extends BaseController
             }
         }
 
+        if ($db->tableExists('notifications')) {
+            $unreadRows = $db->table('notifications')
+                ->select('application_id, action_link')
+                ->where('user_id', $recruiterId)
+                ->where('is_read', 0)
+                ->whereIn('type', ['candidate_message_reply', 'candidate_email_reply'])
+                ->get()
+                ->getResultArray();
+
+            foreach ($unreadRows as $row) {
+                $applicationId = (int) ($row['application_id'] ?? 0);
+                if ($applicationId <= 0) {
+                    $actionLink = (string) ($row['action_link'] ?? '');
+                    if (preg_match('~/recruiter/messages/(\d+)~', $actionLink, $matches)) {
+                        $applicationId = $candidateToApplication[(int) $matches[1]] ?? 0;
+                    }
+                }
+
+                if (isset($summaries[$applicationId])) {
+                    $summaries[$applicationId]['has_unread'] = true;
+                }
+            }
+        }
+
         foreach ($summaries as &$summary) {
             usort($summary['items'], static function (array $a, array $b): int {
                 return strtotime((string) ($b['at'] ?? '')) <=> strtotime((string) ($a['at'] ?? ''));
             });
             $summary['items'] = array_slice($summary['items'], 0, 8);
+            $latestDirection = (string) ($summary['latest_direction'] ?? '');
+            $latestAt = !empty($summary['latest_at']) ? strtotime((string) $summary['latest_at']) : 0;
+            $summary['needs_followup'] = in_array($latestDirection, ['outgoing', 'outbound'], true)
+                && $latestAt > 0
+                && $latestAt <= strtotime('-2 days');
         }
         unset($summary);
 
