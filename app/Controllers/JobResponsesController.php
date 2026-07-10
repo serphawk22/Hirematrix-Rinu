@@ -34,18 +34,35 @@ class JobResponsesController extends BaseController
 
         $statusFilter = $this->request->getGet('status') ?: 'active';
         $searchQuery = $this->request->getGet('q');
+        $postedByFilter = trim((string) ($this->request->getGet('posted_by') ?: 'me'));
 
         $jobModel = model(JobModel::class);
-        $builder = $jobModel->where('recruiter_id', $recruiterId);
+        $recruiter = (new UserModel())->findRecruiterWithProfile($recruiterId) ?? [];
+        $companyId = (int) ($recruiter['company_id'] ?? 0);
+        $postedByOptions = $this->getCompanyRecruiterOptions($recruiterId, $companyId);
+        $allowedRecruiterIds = array_map(static fn (array $option): int => (int) $option['id'], $postedByOptions);
+
+        $builder = $jobModel
+            ->select('jobs.*, posted_by_user.name as posted_by_name, posted_by_user.email as posted_by_email')
+            ->join('users posted_by_user', 'posted_by_user.id = jobs.recruiter_id', 'left');
+
+        if ($postedByFilter === 'all' && count($allowedRecruiterIds) > 1) {
+            $builder->whereIn('jobs.recruiter_id', $allowedRecruiterIds);
+        } elseif (ctype_digit($postedByFilter) && in_array((int) $postedByFilter, $allowedRecruiterIds, true)) {
+            $builder->where('jobs.recruiter_id', (int) $postedByFilter);
+        } else {
+            $postedByFilter = 'me';
+            $builder->where('jobs.recruiter_id', $recruiterId);
+        }
 
         if ($statusFilter === 'active') {
-            $builder->where('status', 'open');
+            $builder->where('jobs.status', 'open');
         } elseif ($statusFilter === 'closed') {
-            $builder->where('status', 'closed');
+            $builder->where('jobs.status', 'closed');
         }
 
         if ($searchQuery) {
-            $builder->like('title', $searchQuery);
+            $builder->like('jobs.title', $searchQuery);
         }
 
         $alertJobModel = new JobModel();
@@ -56,7 +73,7 @@ class JobResponsesController extends BaseController
             ->findAll();
         $recruiterAlerts = $this->buildRecruiterAlertCenter($alertJobs, $recruiterId);
 
-        $jobs = $builder->orderBy('created_at', 'DESC')->paginate(10);
+        $jobs = $builder->orderBy('jobs.created_at', 'DESC')->paginate(10);
         $pager = $jobModel->pager;
 
         // applicant counts for list view
@@ -141,8 +158,61 @@ class JobResponsesController extends BaseController
             'jobs' => $jobs,
             'pager' => $pager,
             'recruiterAlerts' => $recruiterAlerts,
-            'filters' => ['status' => $statusFilter, 'q' => $searchQuery]
+            'postedByOptions' => $postedByOptions,
+            'filters' => ['status' => $statusFilter, 'q' => $searchQuery, 'posted_by' => $postedByFilter]
         ]);
+    }
+
+    private function getCompanyRecruiterOptions(int $recruiterId, int $companyId): array
+    {
+        $db = \Config\Database::connect();
+        $userModel = new UserModel();
+        $builder = $userModel
+            ->select('users.id, users.name, users.email')
+            ->where('users.role', 'recruiter');
+
+        if ($companyId > 0 && $db->fieldExists('company_id', 'users')) {
+            $builder->groupStart()
+                ->where('users.company_id', $companyId);
+
+            if ($db->tableExists('recruiter_company_map')) {
+                $builder->orWhere(
+                    'users.id IN (SELECT recruiter_user_id FROM recruiter_company_map WHERE company_id = ' . $db->escape($companyId) . ')',
+                    null,
+                    false
+                );
+            }
+
+            $builder->groupEnd();
+        } else {
+            $builder->where('users.id', $recruiterId);
+        }
+
+        $options = $builder
+            ->orderBy('users.name', 'ASC')
+            ->findAll();
+
+        $hasCurrentRecruiter = false;
+        foreach ($options as $option) {
+            if ((int) ($option['id'] ?? 0) === $recruiterId) {
+                $hasCurrentRecruiter = true;
+                break;
+            }
+        }
+
+        if (!$hasCurrentRecruiter) {
+            $currentRecruiter = $userModel
+                ->select('users.id, users.name, users.email')
+                ->where('users.id', $recruiterId)
+                ->where('users.role', 'recruiter')
+                ->first();
+
+            if ($currentRecruiter) {
+                array_unshift($options, $currentRecruiter);
+            }
+        }
+
+        return $options;
     }
 
     public function viewJob(int $jobId)
@@ -150,8 +220,7 @@ class JobResponsesController extends BaseController
         if (session()->get('role') !== 'recruiter') return redirect()->to(base_url('login'));
 
         $recruiterId = (int) session()->get('user_id');
-        $jobModel = model(JobModel::class);
-        $job = $jobModel->where('id', $jobId)->where('recruiter_id', $recruiterId)->first();
+        $job = $this->findAccessibleRecruiterJob($jobId, $recruiterId);
 
         if (!$job) return redirect()->to(base_url('recruiter/jobs'))->with('error', 'Job not found.');
 
@@ -163,6 +232,13 @@ class JobResponsesController extends BaseController
             'ats_max'     => $this->request->getGet('ats_max'),
             'sort'        => trim((string) $this->request->getGet('sort')) ?: 'ats_desc',
             'last_active' => trim((string) $this->request->getGet('last_active')),
+            'notice_period' => trim((string) $this->request->getGet('notice_period')),
+            'salary_min'  => trim((string) $this->request->getGet('salary_min')),
+            'salary_max'  => trim((string) $this->request->getGet('salary_max')),
+            'education'   => trim((string) $this->request->getGet('education')),
+            'diversity'   => trim((string) $this->request->getGet('diversity')),
+            'company'     => trim((string) $this->request->getGet('company')),
+            'designation' => trim((string) $this->request->getGet('designation')),
         ];
 
         $activeStage = $this->request->getGet('stage') ?: 'all';
@@ -362,8 +438,7 @@ class JobResponsesController extends BaseController
         }
 
         $recruiterId = (int) session()->get('user_id');
-        $jobModel = model(JobModel::class);
-        $job = $jobModel->where('id', $jobId)->where('recruiter_id', $recruiterId)->first();
+        $job = $this->findAccessibleRecruiterJob($jobId, $recruiterId);
 
         if (!$job) {
             return redirect()->to(base_url('recruiter/jobs'))->with('error', 'Job not found.');
@@ -407,6 +482,25 @@ class JobResponsesController extends BaseController
         ]);
     }
 
+    private function findAccessibleRecruiterJob(int $jobId, int $recruiterId): ?array
+    {
+        $recruiter = (new UserModel())->findRecruiterWithProfile($recruiterId) ?? [];
+        $companyId = (int) ($recruiter['company_id'] ?? 0);
+        $postedByOptions = $this->getCompanyRecruiterOptions($recruiterId, $companyId);
+        $allowedRecruiterIds = array_values(array_unique(array_map(static fn (array $option): int => (int) $option['id'], $postedByOptions)));
+
+        if (empty($allowedRecruiterIds)) {
+            $allowedRecruiterIds = [$recruiterId];
+        }
+
+        $job = model(JobModel::class)
+            ->where('id', $jobId)
+            ->whereIn('recruiter_id', $allowedRecruiterIds)
+            ->first();
+
+        return $job ?: null;
+    }
+
     private function decodeApplicationQuestionnaire(string $rawQuestionnaire): array
     {
         if (trim($rawQuestionnaire) === '') {
@@ -432,6 +526,23 @@ class JobResponsesController extends BaseController
             return [];
         }
 
+        $filters = array_merge([
+            'skills'        => '',
+            'experience'    => '',
+            'location'      => '',
+            'last_active'   => '',
+            'notice_period' => '',
+            'salary_min'    => '',
+            'salary_max'    => '',
+            'education'     => '',
+            'diversity'     => '',
+            'company'       => '',
+            'designation'   => '',
+            'ats_min'       => '',
+            'ats_max'       => '',
+            'sort'          => 'ats_desc',
+        ], $filters);
+
         $applicationModel = model(ApplicationModel::class);
         $actionModel = model(RecruiterCandidateActionModel::class);
         $db = \Config\Database::connect();
@@ -456,7 +567,7 @@ class JobResponsesController extends BaseController
         $notesSelect = $hasRecruiterNotes ? 'recruiter_candidate_notes.tags as recruiter_tags, recruiter_candidate_notes.notes as recruiter_notes' : 'NULL as recruiter_tags, NULL as recruiter_notes';
 
         $applications = $applicationModel
-            ->select('applications.*, jobs.title as job_title, jobs.company as job_company, jobs.location as job_location, jobs.experience_level, jobs.required_skills, users.name as candidate_name, users.email as candidate_email, users.phone as candidate_phone, candidate_profiles.resume_path, candidate_profiles.profile_photo, candidate_profiles.headline as candidate_headline, candidate_profiles.location as candidate_location, candidate_profiles.preferred_locations, candidate_profiles.notice_period, candidate_profiles.current_salary, candidate_profiles.expected_salary, COALESCE(candidate_experience.total_experience_months, 0) as total_experience_months, candidate_work_summary.current_role_summary, candidate_work_summary.previous_role_summary, candidate_education_summary.latest_education_summary, ' . $lastLoginSelect . ', ' . $notesSelect . ', ' . $ratingSelect)
+            ->select('applications.*, jobs.title as job_title, jobs.company as job_company, jobs.location as job_location, jobs.experience_level, jobs.required_skills, users.name as candidate_name, users.email as candidate_email, users.phone as candidate_phone, candidate_profiles.resume_path, candidate_profiles.profile_photo, candidate_profiles.headline as candidate_headline, candidate_profiles.location as candidate_location, candidate_profiles.preferred_locations, candidate_profiles.notice_period, candidate_profiles.current_salary, candidate_profiles.expected_salary, candidate_profiles.gender as candidate_gender, COALESCE(candidate_experience.total_experience_months, 0) as total_experience_months, candidate_work_summary.current_role_summary, candidate_work_summary.previous_role_summary, candidate_education_summary.latest_education_summary, ' . $lastLoginSelect . ', ' . $notesSelect . ', ' . $ratingSelect)
             ->join('jobs', 'jobs.id = applications.job_id', 'left')
             ->join('users', 'users.id = applications.candidate_id', 'left')
             ->join('candidate_profiles', 'candidate_profiles.user_id = applications.candidate_id', 'left')
@@ -509,6 +620,56 @@ class JobResponsesController extends BaseController
         if (!empty($filters['last_active'])) {
             $days = (int)$filters['last_active'];
             $applicationModel->where('last_login_table.last_login >= DATE_SUB(NOW(), INTERVAL ' . $days . ' DAY)', null, false);
+        }
+
+        if (!empty($filters['notice_period'])) {
+            $noticePeriod = strtolower((string) $filters['notice_period']);
+            if ($noticePeriod === 'immediate') {
+                $applicationModel->groupStart()
+                    ->like('candidate_profiles.notice_period', 'Immediate')
+                    ->orLike('candidate_profiles.notice_period', '0')
+                    ->groupEnd();
+            } else {
+                $applicationModel->like('candidate_profiles.notice_period', $noticePeriod);
+            }
+        }
+
+        $salaryExpression = 'COALESCE(CAST(NULLIF(candidate_profiles.current_salary, \'\') AS DECIMAL(10,2)), CAST(NULLIF(candidate_profiles.expected_salary, \'\') AS DECIMAL(10,2)))';
+        if ($filters['salary_min'] !== '' && is_numeric($filters['salary_min'])) {
+            $applicationModel->where($salaryExpression . ' >= ' . (float) $filters['salary_min'], null, false);
+        }
+        if ($filters['salary_max'] !== '' && is_numeric($filters['salary_max'])) {
+            $applicationModel->where($salaryExpression . ' <= ' . (float) $filters['salary_max'], null, false);
+        }
+
+        if (!empty($filters['education'])) {
+            $applicationModel->where(
+                'candidate_education_summary.latest_education_summary LIKE ' . $db->escape('%' . $filters['education'] . '%'),
+                null,
+                false
+            );
+        }
+
+        if (!empty($filters['diversity'])) {
+            $applicationModel->where('LOWER(candidate_profiles.gender)', strtolower((string) $filters['diversity']));
+        }
+
+        if (!empty($filters['company'])) {
+            $company = '%' . $filters['company'] . '%';
+            $applicationModel->where(
+                '(candidate_work_summary.current_role_summary LIKE ' . $db->escape($company) . ' OR candidate_work_summary.previous_role_summary LIKE ' . $db->escape($company) . ')',
+                null,
+                false
+            );
+        }
+
+        if (!empty($filters['designation'])) {
+            $designation = '%' . $filters['designation'] . '%';
+            $applicationModel->where(
+                '(candidate_work_summary.current_role_summary LIKE ' . $db->escape($designation) . ' OR candidate_work_summary.previous_role_summary LIKE ' . $db->escape($designation) . ' OR candidate_profiles.headline LIKE ' . $db->escape($designation) . ')',
+                null,
+                false
+            );
         }
 
         $applicationModel->orderBy('applications.applied_at', 'DESC');

@@ -2770,14 +2770,8 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                             <a href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=' . $safeActiveStage) ?>">Clear</a>
                         <?php endif; ?>
                     </div>
-                    <form method="get" action="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>" class="response-filter-form">
+                    <form method="get" action="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>" class="response-filter-form is-collapsible">
                         <input type="hidden" name="stage" value="<?= esc($safeActiveStage) ?>">
-
-                        <label class="response-filter-check">
-                            <input type="checkbox" checked disabled>
-                            <span>AI recommendations</span>
-                            <em><?= $avgMatch ?>%</em>
-                        </label>
 
                         <div class="response-filter-group">
                             <label for="responseSkills">Keywords</label>
@@ -2792,6 +2786,51 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                         <div class="response-filter-group">
                             <label for="responseExperience">Experience</label>
                             <input type="text" id="responseExperience" name="experience" placeholder="e.g. 2" value="<?= esc($advancedFilters['experience'] ?? '') ?>">
+                        </div>
+
+                        <div class="response-filter-group">
+                            <label for="responseNoticePeriod">Notice period</label>
+                            <select id="responseNoticePeriod" name="notice_period">
+                                <option value="">Any availability</option>
+                                <option value="immediate" <?= ($advancedFilters['notice_period'] ?? '') === 'immediate' ? 'selected' : '' ?>>Immediate</option>
+                                <option value="15" <?= ($advancedFilters['notice_period'] ?? '') === '15' ? 'selected' : '' ?>>0-15 days</option>
+                                <option value="30" <?= ($advancedFilters['notice_period'] ?? '') === '30' ? 'selected' : '' ?>>30 days</option>
+                                <option value="60" <?= ($advancedFilters['notice_period'] ?? '') === '60' ? 'selected' : '' ?>>60 days</option>
+                                <option value="90" <?= ($advancedFilters['notice_period'] ?? '') === '90' ? 'selected' : '' ?>>90 days</option>
+                            </select>
+                        </div>
+
+                        <div class="response-filter-group">
+                            <label>Salary / CTC</label>
+                            <div class="response-score-range">
+                                <input type="number" name="salary_min" min="0" step="0.1" placeholder="Min LPA" value="<?= esc($advancedFilters['salary_min'] ?? '') ?>">
+                                <input type="number" name="salary_max" min="0" step="0.1" placeholder="Max LPA" value="<?= esc($advancedFilters['salary_max'] ?? '') ?>">
+                            </div>
+                        </div>
+
+                        <div class="response-filter-group">
+                            <label for="responseEducation">Education</label>
+                            <input type="text" id="responseEducation" name="education" placeholder="Degree or college" value="<?= esc($advancedFilters['education'] ?? '') ?>">
+                        </div>
+
+                        <div class="response-filter-group">
+                            <label for="responseDiversity">Diversity</label>
+                            <select id="responseDiversity" name="diversity">
+                                <option value="">Any candidate</option>
+                                <option value="female" <?= ($advancedFilters['diversity'] ?? '') === 'female' ? 'selected' : '' ?>>Female candidates</option>
+                                <option value="male" <?= ($advancedFilters['diversity'] ?? '') === 'male' ? 'selected' : '' ?>>Male candidates</option>
+                                <option value="other" <?= ($advancedFilters['diversity'] ?? '') === 'other' ? 'selected' : '' ?>>Other / non-binary</option>
+                            </select>
+                        </div>
+
+                        <div class="response-filter-group">
+                            <label for="responseCompany">Company</label>
+                            <input type="text" id="responseCompany" name="company" placeholder="Current or previous company" value="<?= esc($advancedFilters['company'] ?? '') ?>">
+                        </div>
+
+                        <div class="response-filter-group">
+                            <label for="responseDesignation">Designation</label>
+                            <input type="text" id="responseDesignation" name="designation" placeholder="Role title or headline" value="<?= esc($advancedFilters['designation'] ?? '') ?>">
                         </div>
 
                         <div class="response-filter-group">
@@ -3337,6 +3376,75 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    var filterGroups = document.querySelectorAll('.response-filter-form.is-collapsible .response-filter-group');
+
+    function getGroupLabel(group) {
+        for (var i = 0; i < group.children.length; i++) {
+            if (group.children[i].tagName && group.children[i].tagName.toLowerCase() === 'label') {
+                return group.children[i];
+            }
+        }
+        return null;
+    }
+
+    function groupHasActiveValue(group) {
+        var fields = group.querySelectorAll('input, select, textarea');
+
+        for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+            var value = (field.value || '').trim();
+
+            if (field.type === 'hidden') {
+                continue;
+            }
+
+            if ((field.type === 'checkbox' || field.type === 'radio') && !field.checked) {
+                continue;
+            }
+
+            if (field.name === 'sort' && (value === '' || value === 'ats_desc')) {
+                continue;
+            }
+
+            if (value !== '') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    filterGroups.forEach(function (group) {
+        var label = getGroupLabel(group);
+
+        if (!label) {
+            return;
+        }
+
+        if (groupHasActiveValue(group)) {
+            group.classList.add('is-open');
+        }
+
+        label.setAttribute('role', 'button');
+        label.setAttribute('tabindex', '0');
+        label.setAttribute('aria-expanded', group.classList.contains('is-open') ? 'true' : 'false');
+
+        function toggleGroup(event) {
+            event.preventDefault();
+            var isOpen = group.classList.toggle('is-open');
+            label.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+
+        label.addEventListener('click', toggleGroup);
+        label.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                toggleGroup(event);
+            }
+        });
+    });
+});
+
 document.addEventListener('click', function (e) {
     const btn = e.target.closest('.view-ai-report-btn');
     if (!btn) return;

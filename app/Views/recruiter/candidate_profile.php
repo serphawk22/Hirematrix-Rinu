@@ -159,6 +159,9 @@ body.dark div{
         . '&job_id=' . $jobId;
     $resumeUrl = base_url('recruiter/candidate/' . $candidate['id'] . '/download-resume');
     $resumeUrl .= '?application_id=' . $applicationId . '&job_id=' . $jobId;
+    $communicationUrl = base_url('recruiter/messages/' . $candidate['id'])
+        . '?application_id=' . $applicationId
+        . '&job_id=' . $jobId;
     $introVideoPath = trim((string) ($candidate['intro_video_path'] ?? ''));
     $introVideoUrl = $introVideoPath !== ''
         ? (preg_match('/^https?:\/\//i', $introVideoPath) ? $introVideoPath : base_url($introVideoPath))
@@ -229,6 +232,9 @@ body.dark div{
             </p>
         </div>
         <div class="page-board-actions candidate-profile-actions">
+            <a href="<?= $communicationUrl ?>" class="btn btn-outline-primary">
+                Communication
+            </a>
             <?php if (!$showContact): ?>
                 <a href="<?= $contactViewUrl ?>" class="btn btn-outline-primary">
                     View Contact

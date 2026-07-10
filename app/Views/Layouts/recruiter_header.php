@@ -1990,19 +1990,27 @@ html.hm-dark-preload .loader .spinner-border {
     body.recruiter-jobboard .hm-sidebar .hm-sb-body {
         display: flex !important;
         flex-direction: column !important;
+        align-items: center !important;
         gap: 10px !important;
         padding: 14px 0 !important;
         overflow: visible !important;
     }
     body.recruiter-jobboard .hm-sidebar .hm-sb-item,
-    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle {
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle,
+    body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-item,
+    body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle,
+    body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle:hover,
+    body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle.active {
         justify-content: center !important;
-        margin: 0 !important;
+        gap: 0 !important;
+        margin: 0 auto !important;
         min-height: 48px !important;
         padding: 0 !important;
         width: var(--sb-width-mini) !important;
     }
-    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle .sb-icon {
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle .sb-icon,
+    body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle .sb-icon,
+    body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle.active .sb-icon {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -2282,6 +2290,7 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
         sidebar.classList.toggle('sb-collapsed', collapsed);
         document.body.classList.toggle('sb-collapsed-body', collapsed);
     }
+
     applyCollapsed();
  
     toggleArea.addEventListener('click', function () {

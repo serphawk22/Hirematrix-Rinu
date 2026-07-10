@@ -102,7 +102,7 @@ body.dark .recruiter-jobs-jobboard .form-control::placeholder {
     align-items: end;
     display: grid;
     gap: 10px;
-    grid-template-columns: minmax(260px, 1fr) minmax(180px, 0.7fr) auto;
+    grid-template-columns: minmax(240px, 1fr) minmax(170px, 0.6fr) minmax(210px, 0.7fr) auto;
 }
 .recruiter-jobs-filter-grid .form-control {
     min-height: 40px !important;
@@ -236,11 +236,11 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody td .text-muted {
 }
 
 /* ── Applicant count ── */
-.recruiter-jobs-jobboard .recruiter-jobs-table tbody td:nth-child(3) {
+.recruiter-jobs-jobboard .recruiter-jobs-table tbody td:nth-child(5) {
     color: #64748B !important;
     font-size: 1rem;
 }
-body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody td:nth-child(3) {
+body.dark .recruiter-jobs-jobboard .recruiter-jobs-table tbody td:nth-child(5) {
     color: #FFFFFF !important;
 }
 
@@ -473,7 +473,7 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
     display:flex;
     flex-wrap:wrap;
     gap:6px;
-    margin-top:8px;
+    margin-top:7px;
 }
 .recruiter-jobs-jobboard .hm-attention-pill {
     align-items:center;
@@ -486,6 +486,11 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
     font-weight:700;
     line-height:1;
     padding:6px 9px;
+}
+.recruiter-jobs-jobboard .hm-attention-pill.is-soft {
+    background:#F8FAFC;
+    border-color:#DDE7EF;
+    color:#475569;
 }
 .recruiter-jobs-jobboard .hm-attention-pill.is-critical {
     background:#FEF2F2;
@@ -509,39 +514,6 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
     font-size:.8rem;
     font-weight:500;
     margin-top:6px;
-}
-.recruiter-jobs-jobboard .hm-job-quick-actions {
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:10px;
-}
-.recruiter-jobs-jobboard .hm-job-quick-action {
-    align-items:center;
-    background:#FFFFFF;
-    border:1px solid #B9E8E4;
-    border-radius:999px;
-    color:#008C95;
-    display:inline-flex;
-    font-size:.78rem;
-    font-weight:700;
-    padding:7px 11px;
-    text-decoration:none !important;
-}
-.recruiter-jobs-jobboard .hm-job-quick-action.is-primary {
-    background:#1FB7B5;
-    border-color:#1FB7B5;
-    color:#FFFFFF;
-}
-.recruiter-jobs-jobboard .hm-job-quick-action:hover,
-.recruiter-jobs-jobboard .hm-job-quick-action:focus {
-    border-color:#0D8A90;
-    color:#0D8A90;
-}
-.recruiter-jobs-jobboard .hm-job-quick-action.is-primary:hover,
-.recruiter-jobs-jobboard .hm-job-quick-action.is-primary:focus {
-    background:#0D8A90;
-    color:#FFFFFF;
 }
 .recruiter-jobs-jobboard .hm-alert-center {
     background:#FFFFFF;
@@ -809,6 +781,15 @@ body.dark .recruiter-jobs-jobboard ul.pagination li.page-item.disabled .page-lin
     display:inline-block;
     position:relative;
 }
+.recruiter-jobs-jobboard .hm-job-actions-cell {
+    white-space:nowrap;
+}
+.recruiter-jobs-jobboard .hm-job-action-group {
+    align-items:center;
+    display:inline-flex;
+    gap:8px;
+    justify-content:flex-end;
+}
 .recruiter-jobs-jobboard .hm-job-dropdown-menu {
     background:#FFFFFF;
     border:1px solid #DDE7EF;
@@ -878,10 +859,9 @@ body.dark .recruiter-jobs-jobboard .hm-job-dropdown-item:hover { background:#1A1
 body.dark .recruiter-jobs-jobboard .hm-attention-pill { background:rgba(251,146,60,.12); border-color:rgba(251,146,60,.38); color:#FDBA74; }
 body.dark .recruiter-jobs-jobboard .hm-attention-pill.is-critical { background:rgba(248,113,113,.12); border-color:rgba(248,113,113,.38); color:#FCA5A5; }
 body.dark .recruiter-jobs-jobboard .hm-attention-pill.is-watch { background:rgba(245,158,11,.12); border-color:rgba(245,158,11,.42); color:#FCD34D; }
+body.dark .recruiter-jobs-jobboard .hm-attention-pill.is-soft { background:#111827; border-color:#334155; color:#CBD5E1; }
 body.dark .recruiter-jobs-jobboard .hm-job-match-meta { color:#94A3B8; }
 body.dark .recruiter-jobs-jobboard .hm-attention-summary { color:#94A3B8; }
-body.dark .recruiter-jobs-jobboard .hm-job-quick-action { background:#111; border-color:#333; color:#E5E5E5; }
-body.dark .recruiter-jobs-jobboard .hm-job-quick-action.is-primary { background:#262626; border-color:#525252; color:#FFFFFF; }
 body.dark .recruiter-jobs-jobboard .hm-alert-center,
 body.dark .recruiter-jobs-jobboard .hm-alert-center-head,
 body.dark .recruiter-jobs-jobboard .hm-alert-item { background:#000; border-color:#23343A; }
@@ -1024,26 +1004,12 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-tab
         gap: 5px 7px;
         line-height: 1.45;
     }
-    .recruiter-jobs-jobboard .hm-attention-summary {
-        display: block;
-        line-height: 1.45;
-        overflow-wrap: anywhere;
-    }
-    .recruiter-jobs-jobboard .hm-job-quick-actions {
-        display: grid;
-        gap: 8px;
-        grid-template-columns: 1fr 1fr;
-        margin-top: 12px;
-    }
-    .recruiter-jobs-jobboard .hm-job-quick-action {
-        justify-content: center;
-        min-width: 0;
-        padding: 9px 10px;
-        text-align: center;
-        white-space: normal;
+    .recruiter-jobs-jobboard .hm-attention-stack {
+        gap: 6px;
     }
     .recruiter-jobs-jobboard .hm-job-row > td:nth-child(3),
     .recruiter-jobs-jobboard .hm-job-row > td:nth-child(4),
+    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(5),
     .recruiter-jobs-jobboard .hm-job-actions-cell {
         align-items: center;
         border-top: 1px solid #EEF2F7 !important;
@@ -1055,6 +1021,7 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-tab
     }
     .recruiter-jobs-jobboard .hm-job-row > td:nth-child(3)::before,
     .recruiter-jobs-jobboard .hm-job-row > td:nth-child(4)::before,
+    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(5)::before,
     .recruiter-jobs-jobboard .hm-job-actions-cell::before {
         color: #64748B;
         font-size: .68rem;
@@ -1062,8 +1029,9 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-tab
         letter-spacing: .04em;
         text-transform: uppercase;
     }
-    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(3)::before { content: "Status"; }
-    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(4)::before { content: "Responses"; }
+    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(3)::before { content: "Posted by"; }
+    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(4)::before { content: "Status"; }
+    .recruiter-jobs-jobboard .hm-job-row > td:nth-child(5)::before { content: "Responses"; }
     .recruiter-jobs-jobboard .hm-job-actions-cell::before { content: "Actions"; }
     .recruiter-jobs-jobboard .job-status-pill {
         justify-self: start;
@@ -1086,11 +1054,13 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-tab
     }
     body.dark .recruiter-jobs-jobboard .hm-job-row > td:nth-child(3),
     body.dark .recruiter-jobs-jobboard .hm-job-row > td:nth-child(4),
+    body.dark .recruiter-jobs-jobboard .hm-job-row > td:nth-child(5),
     body.dark .recruiter-jobs-jobboard .hm-job-actions-cell {
         border-top-color: #262626 !important;
     }
     body.dark .recruiter-jobs-jobboard .hm-job-row > td:nth-child(3)::before,
     body.dark .recruiter-jobs-jobboard .hm-job-row > td:nth-child(4)::before,
+    body.dark .recruiter-jobs-jobboard .hm-job-row > td:nth-child(5)::before,
     body.dark .recruiter-jobs-jobboard .hm-job-actions-cell::before {
         color: #A3A3A3;
     }
@@ -1155,6 +1125,30 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-tab
                                 <option value="all" <?= $filters['status'] === 'all' ? 'selected' : '' ?>>All Jobs</option>
                             </select>
                         </div>
+                        <div>
+                            <label class="sr-only">Job posted by</label>
+                            <select name="posted_by" class="form-control">
+                                <option value="me" <?= ($filters['posted_by'] ?? 'me') === 'me' ? 'selected' : '' ?>>Posted by me</option>
+                                <?php if (!empty($postedByOptions) && count($postedByOptions) > 1): ?>
+                                    <option value="all" <?= ($filters['posted_by'] ?? 'me') === 'all' ? 'selected' : '' ?>>All company recruiters</option>
+                                    <?php foreach ($postedByOptions as $postedByRecruiter): ?>
+                                        <?php
+                                            $postedById = (int) ($postedByRecruiter['id'] ?? 0);
+                                            if ($postedById === (int) session()->get('user_id')) {
+                                                continue;
+                                            }
+                                            $postedByLabel = trim((string) ($postedByRecruiter['name'] ?? ''));
+                                            if ($postedByLabel === '') {
+                                                $postedByLabel = (string) ($postedByRecruiter['email'] ?? 'Recruiter');
+                                            }
+                                        ?>
+                                        <option value="<?= $postedById ?>" <?= (string) ($filters['posted_by'] ?? 'me') === (string) $postedById ? 'selected' : '' ?>>
+                                            <?= esc($postedByLabel) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </div>
                         <div class="recruiter-jobs-filter-actions">
                             <button type="submit" class="btn btn-primary">Filter</button>
                         </div>
@@ -1188,6 +1182,7 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-tab
                             <tr>
                                 <th class="job-select-cell"></th>
                                 <th>Job title</th>
+                                <th>Posted by</th>
                                 <th>Status</th>
                                 <th>Responses</th>
                                 <th class="text-right">Actions</th>
@@ -1199,16 +1194,21 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-tab
                                     $isOpen = ($job['status'] ?? '') === 'open';
                                     $attentionLevel = (string) ($job['attention_level'] ?? 'quiet');
                                     $showAttention = in_array($attentionLevel, ['critical', 'watch'], true);
-                                    $attentionLabel = $attentionLevel === 'critical' ? 'Critical priority' : 'Watch';
+                                    $attentionLabel = $attentionLevel === 'critical' ? 'Needs review' : 'Watch';
                                     $attentionFacts = array_values((array) ($job['attention_facts'] ?? []));
-                                    $attentionSummaryParts = [
-                                        (int) ($job['shortlisted_count'] ?? 0) . ' shortlisted',
-                                    ];
+                                    $attentionChips = [];
+                                    $shortlistedCount = (int) ($job['shortlisted_count'] ?? 0);
+                                    $applicantCount = (int) ($job['applicant_count'] ?? 0);
+                                    $averageAtsScore = (int) ($job['average_ats_score'] ?? 0);
+                                    $attentionChips[] = $shortlistedCount . ' shortlisted';
                                     if ((int) ($job['applicant_count'] ?? 0) > 0) {
-                                        $attentionSummaryParts[] = (int) ($job['average_ats_score'] ?? 0) . '% avg match';
+                                        $attentionChips[] = $averageAtsScore . '% avg match';
                                     }
-                                    $attentionSummaryParts = array_merge($attentionSummaryParts, $attentionFacts);
+                                    $attentionChips = array_slice(array_values(array_unique(array_merge($attentionChips, $attentionFacts))), 0, 3);
                                     $postedAt = !empty($job['created_at']) ? date('d M Y', strtotime((string) $job['created_at'])) : null;
+                                    $postedByName = trim((string) ($job['posted_by_name'] ?? ''));
+                                    $postedByEmail = trim((string) ($job['posted_by_email'] ?? ''));
+                                    $isOwnJob = (int) ($job['recruiter_id'] ?? 0) === (int) session()->get('user_id');
                                 ?>
                                 <tr class="hm-job-row" data-href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>">
                                     <td class="job-select-cell">
@@ -1218,7 +1218,7 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-tab
                                             name="job_ids[]"
                                             value="<?= (int) $job['id'] ?>"
                                             aria-label="Select <?= esc($job['title']) ?>"
-                                            <?= $isOpen ? '' : 'disabled' ?>
+                                            <?= ($isOpen && $isOwnJob) ? '' : 'disabled' ?>
                                         >
                                     </td>
                                     <td class="job-title-cell">
@@ -1236,16 +1236,18 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-tab
                                             <?php endif; ?>
                                         </div>
                                         <?php if ($showAttention): ?>
-                                            <span class="hm-attention-summary"><?= esc(implode(' - ', array_unique($attentionSummaryParts))) ?></span>
+                                            <div class="hm-attention-stack">
+                                                <?php foreach ($attentionChips as $chip): ?>
+                                                    <span class="hm-attention-pill is-soft"><?= esc($chip) ?></span>
+                                                <?php endforeach; ?>
+                                            </div>
                                         <?php endif; ?>
-                                        <div class="hm-job-quick-actions">
-                                            <a class="hm-job-quick-action is-primary" href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>">
-                                                Review Candidates
-                                            </a>
-                                            <a class="hm-job-quick-action" href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>">
-                                                Edit Job
-                                            </a>
-                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="job-response-meta"><?= $isOwnJob ? 'Me' : esc($postedByName !== '' ? $postedByName : 'Recruiter') ?></span>
+                                        <?php if (!$isOwnJob && $postedByEmail !== ''): ?>
+                                            <span class="job-response-meta"><?= esc($postedByEmail) ?></span>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <span class="job-status-pill <?= $isOpen ? 'is-open' : 'is-closed' ?>"><?= esc(ucfirst((string) $job['status'])) ?></span>
@@ -1259,24 +1261,29 @@ body.dark .recruiter-jobs-jobboard .recruiter-jobs-list-card .recruiter-jobs-tab
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-right hm-job-actions-cell">
-                                        <div class="hm-job-dropdown">
-                                            <button class="btn btn-sm hm-job-more-btn" type="button" title="More actions" aria-label="More actions for <?= esc($job['title']) ?>">
-                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
-  <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
-  <circle cx="13" cy="8" r="1.5" fill="currentColor"/>
-</svg>
-                                            </button>
-                                            <div class="hm-job-dropdown-menu">
-                                                <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>">View Pipeline</a>
-                                                <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>#leaderboard">Leaderboard</a>
-                                                <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/preview/' . $job['id']) ?>" target="_blank">Preview</a>
-                                                <div class="hm-job-dropdown-separator"></div>
-                                                <?php if ($isOpen): ?>
-                                                <a class="hm-job-dropdown-item is-danger" href="<?= base_url('recruiter/jobs/close/' . $job['id']) ?>" onclick="return confirm('Close this job?')">Close Job</a>
-                                                <?php else: ?>
-                                                <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/reopen/' . $job['id']) ?>">Reopen Job</a>
-                                                <?php endif; ?>
+                                        <div class="hm-job-action-group">
+                                            <div class="hm-job-dropdown">
+                                                <button class="btn btn-sm hm-job-more-btn" type="button" title="More actions" aria-label="More actions for <?= esc($job['title']) ?>">
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
+      <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+      <circle cx="13" cy="8" r="1.5" fill="currentColor"/>
+    </svg>
+                                                </button>
+                                                <div class="hm-job-dropdown-menu">
+                                                    <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>">View Pipeline</a>
+                                                    <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/view/' . $job['id']) ?>#leaderboard">Leaderboard</a>
+                                                    <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/preview/' . $job['id']) ?>" target="_blank">Preview</a>
+                                                    <?php if ($isOwnJob): ?>
+                                                        <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>">Edit Job</a>
+                                                        <div class="hm-job-dropdown-separator"></div>
+                                                        <?php if ($isOpen): ?>
+                                                        <a class="hm-job-dropdown-item is-danger" href="<?= base_url('recruiter/jobs/close/' . $job['id']) ?>" onclick="return confirm('Close this job?')">Close Job</a>
+                                                        <?php else: ?>
+                                                        <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/reopen/' . $job['id']) ?>">Reopen Job</a>
+                                                        <?php endif; ?>
+                                                    <?php endif; ?>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -1305,7 +1312,6 @@ document.addEventListener('DOMContentLoaded', function () {
         row.addEventListener('click', function (e) {
             if (
                 e.target.closest('.hm-job-actions-cell') ||
-                e.target.closest('.hm-job-quick-action') ||
                 e.target.closest('.job-row-check') ||
                 e.target.closest('.jobs-select-control') ||
                 e.target.closest('a') ||

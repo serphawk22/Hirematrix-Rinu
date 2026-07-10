@@ -184,7 +184,7 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                                 <div class="response-meta-line">
                                     <span><i class="fas fa-briefcase"></i> <?= esc($app['experience_display'] ?? '-') ?></span>
                                     <?php if ($salaryText !== ''): ?>
-                                        <span><i class="fas fa-wallet"></i> <?= esc($salaryLabel) ?> <?= esc($salaryText) ?></span>
+                                        <span title="<?= esc($salaryLabel) ?>"><i class="fas fa-rupee-sign"></i> <?= esc($salaryText) ?></span>
                                     <?php endif; ?>
                                     <?php if ($noticePeriod !== ''): ?>
                                         <span><i class="far fa-clock"></i> <?= esc($noticePeriod) ?></span>
@@ -194,6 +194,26 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                                 </div>
                                 <?php if (!empty($app['candidate_headline'])): ?>
                                     <div class="response-headline"><?= esc($app['candidate_headline']) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($tags) || $note !== ''): ?>
+                                    <div class="response-recruiter-insight">
+                                        <span class="response-insight-label"><i class="fas fa-sticky-note"></i> Notes</span>
+                                        <?php if (!empty($tags)): ?>
+                                            <div class="pipeline-tag-list">
+                                                <?php foreach (array_slice($tags, 0, 2) as $tag): ?>
+                                                    <span class="status-pill is-note-tag"><?= esc($tag) ?></span>
+                                                <?php endforeach; ?>
+                                                <?php if (count($tags) > 2): ?>
+                                                    <span class="status-pill is-muted">+<?= count($tags) - 2 ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <?php if ($note !== ''): ?>
+                                            <span class="pipeline-note-preview" title="<?= esc($note) ?>"><?= esc($notePreview) ?></span>
+                                        <?php else: ?>
+                                            <span class="response-muted-line">Tagged for follow-up</span>
+                                        <?php endif; ?>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -262,57 +282,33 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                                 <?php endif; ?>
                             </div>
 
-                            <?php if (!empty($tags) || $note !== ''): ?>
-                                <div class="response-note-row">
-                                    <?php if (!empty($tags)): ?>
-                                        <div class="pipeline-tag-list">
-                                            <?php foreach (array_slice($tags, 0, 3) as $tag): ?>
-                                                <span class="status-pill"><?= esc($tag) ?></span>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    <?php if ($note !== ''): ?>
-                                        <span class="pipeline-note-preview" title="<?= esc($note) ?>"><?= esc($notePreview) ?></span>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endif; ?>
-
                             <div class="response-fit-summary">
                                 <div>
-                                    <span class="response-field-label">Matched requirements</span>
+                                    <span class="response-field-label">Requirements</span>
                                     <div class="pipeline-skill-list">
-                                        <?php if (!empty($matchedSkills)): ?>
-                                            <?php foreach (array_slice($matchedSkills, 0, 4) as $skill): ?>
-                                                <span class="status-pill"><?= esc($skill) ?></span>
-                                            <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <span class="status-pill is-muted">No required skills matched</span>
+                                        <span class="status-pill"><?= count($matchedSkills) ?> of <?= count($allRequiredSkills) ?> matched</span>
+                                        <?php foreach (array_slice($matchedSkills, 0, 3) as $skill): ?>
+                                            <span class="status-pill"><?= esc($skill) ?></span>
+                                        <?php endforeach; ?>
+                                        <?php foreach (array_slice($missingSkills, 0, 3) as $skill): ?>
+                                            <span class="status-pill is-muted"><?= esc($skill) ?></span>
+                                        <?php endforeach; ?>
+                                        <?php if (count($matchedSkills) + count($missingSkills) > 6): ?>
+                                            <span class="status-pill is-muted">+<?= count($matchedSkills) + count($missingSkills) - 6 ?></span>
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                                <?php if (!empty($missingSkills)): ?>
-                                    <div>
-                                        <span class="response-field-label">Missing requirements</span>
-                                        <div class="pipeline-skill-list">
-                                            <?php foreach (array_slice($missingSkills, 0, 4) as $skill): ?>
-                                                <span class="status-pill is-muted"><?= esc($skill) ?></span>
-                                            <?php endforeach; ?>
-                                            <?php if (count($missingSkills) > 4): ?>
-                                                <span class="status-pill is-muted">+<?= count($missingSkills) - 4 ?></span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
 
                     <aside class="response-card-side">
                         <div class="response-match-box">
-                            <span class="response-field-label">Match</span>
-                            <strong><?= $atsScore ?>%</strong>
-                            <span class="ats-score-bar"><span style="width: <?= min(100, max(0, $atsScore)) ?>%;"></span></span>
+                            <div class="response-match-ring" style="--match-score: <?= min(100, max(0, $atsScore)) ?>%;">
+                                <strong><?= $atsScore ?>%</strong>
+                            </div>
                             <div class="response-match-meta">
+                                <span class="response-field-label">Match</span>
                                 <span><?= (int) ($app['skill_match'] ?? 0) ?>% skills</span>
                             </div>
                         </div>
@@ -331,34 +327,38 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                         </button>
 
                         <div class="response-actions response-icon-actions" aria-label="Candidate actions">
-                            <button type="button" class="response-action-icon js-review-stage-action" data-application-id="<?= (int) $app['id'] ?>" data-status="shortlisted" title="Shortlist" aria-label="Shortlist <?= esc($app['candidate_name'] ?? 'candidate') ?>">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button type="button" class="response-action-icon js-open-schedule-interview" data-application-id="<?= (int) $app['id'] ?>" data-candidate-name="<?= esc($app['candidate_name'] ?? 'Candidate') ?>" data-candidate-email="<?= esc($app['candidate_email'] ?? '') ?>" title="Schedule interview" aria-label="Schedule interview">
-                                <i class="fas fa-calendar-plus"></i>
-                            </button>
-                            <button type="button" class="response-action-icon js-review-stage-action" data-application-id="<?= (int) $app['id'] ?>" data-status="hold" title="Hold" aria-label="Put on hold">
-                                <i class="fas fa-pause"></i>
-                            </button>
-                            <button type="button" class="response-action-icon is-danger js-review-stage-action" data-application-id="<?= (int) $app['id'] ?>" data-status="rejected" title="Reject" aria-label="Reject <?= esc($app['candidate_name'] ?? 'candidate') ?>">
-                                <i class="fas fa-times"></i>
-                            </button>
-                            <a href="<?= base_url('recruiter/candidate/' . (int) $app['candidate_id'] . '?application_id=' . (int) $app['id'] . '&job_id=' . (int) $job['id']) ?>" class="response-action-icon" title="Full profile" aria-label="Full profile">
-                                <i class="fas fa-user"></i>
-                            </a>
-                            <?php if (!empty($app['resume_path'])): ?>
-                                <a href="<?= base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '/preview-resume?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0)) ?>" class="response-action-icon" target="_blank" rel="noopener" title="Preview resume" aria-label="Preview resume">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="<?= base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '/download-resume?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0)) ?>" class="response-action-icon" title="Download resume" aria-label="Download resume">
-                                    <i class="fas fa-download"></i>
-                                </a>
-                            <?php endif; ?>
-                            <?php if ($appStatus === 'ai_interview_completed'): ?>
-                                <button type="button" class="response-action-icon response-action-ai view-ai-report-btn" data-candidate-id="<?= (int) ($app['candidate_id'] ?? 0) ?>" data-jobrole="<?= esc($job['title'] ?? '') ?>" data-candidate-name="<?= esc($app['candidate_name'] ?? '-') ?>" title="AI interview report" aria-label="AI interview report">
-                                    <span>AI</span>
+                            <div class="response-action-cluster is-decision">
+                                <button type="button" class="response-action-icon js-review-stage-action" data-application-id="<?= (int) $app['id'] ?>" data-status="shortlisted" title="Shortlist" aria-label="Shortlist <?= esc($app['candidate_name'] ?? 'candidate') ?>">
+                                    <i class="fas fa-check"></i>
                                 </button>
-                            <?php endif; ?>
+                                <button type="button" class="response-action-icon js-open-schedule-interview" data-application-id="<?= (int) $app['id'] ?>" data-candidate-name="<?= esc($app['candidate_name'] ?? 'Candidate') ?>" data-candidate-email="<?= esc($app['candidate_email'] ?? '') ?>" title="Schedule interview" aria-label="Schedule interview">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </button>
+                                <button type="button" class="response-action-icon js-review-stage-action" data-application-id="<?= (int) $app['id'] ?>" data-status="hold" title="Hold" aria-label="Put on hold">
+                                    <i class="fas fa-pause"></i>
+                                </button>
+                                <button type="button" class="response-action-icon is-danger js-review-stage-action" data-application-id="<?= (int) $app['id'] ?>" data-status="rejected" title="Reject" aria-label="Reject <?= esc($app['candidate_name'] ?? 'candidate') ?>">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="response-action-cluster is-profile">
+                                <a href="<?= base_url('recruiter/candidate/' . (int) $app['candidate_id'] . '?application_id=' . (int) $app['id'] . '&job_id=' . (int) $job['id']) ?>" class="response-action-icon" title="Full profile" aria-label="Full profile">
+                                    <i class="fas fa-user"></i>
+                                </a>
+                                <?php if (!empty($app['resume_path'])): ?>
+                                    <a href="<?= base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '/preview-resume?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0)) ?>" class="response-action-icon" target="_blank" rel="noopener" title="Preview resume" aria-label="Preview resume">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="<?= base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '/download-resume?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0)) ?>" class="response-action-icon" title="Download resume" aria-label="Download resume">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                <?php endif; ?>
+                                <?php if ($appStatus === 'ai_interview_completed'): ?>
+                                    <button type="button" class="response-action-icon response-action-ai view-ai-report-btn" data-candidate-id="<?= (int) ($app['candidate_id'] ?? 0) ?>" data-jobrole="<?= esc($job['title'] ?? '') ?>" data-candidate-name="<?= esc($app['candidate_name'] ?? '-') ?>" title="AI interview report" aria-label="AI interview report">
+                                        <span>AI</span>
+                                    </button>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </aside>
                 </article>
