@@ -76,6 +76,36 @@ class API_RecruiterController extends ResourceController
         }
     }
 
+    public function exportJobsReport()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) {
+            return $this->fail('Recruiter ID required');
+        }
+
+        $period = $this->request->getVar('period');
+        
+        $filters = [
+            'recruiter_id'    => $recruiterId,
+            'status'          => $this->request->getVar('status'),
+            'category'        => $this->request->getVar('category'),
+            'employment_type' => $this->request->getVar('employment_type'),
+            'keyword'         => $this->request->getVar('keyword'),
+            'date_from'       => $this->request->getVar('date_from'),
+            'date_to'         => $this->request->getVar('date_to'),
+        ];
+
+        $reportController = new \App\Controllers\ReportController();
+        if ($period) {
+            [$from, $to] = $reportController->resolvePeriod($period);
+            $filters['date_from'] = $from;
+            $filters['date_to']   = $to;
+        }
+
+        $reportController->streamExcel($filters);
+        exit;
+    }
+
     public function getDashboard()
     {
         $recruiterId = $this->request->getVar('recruiter_id');

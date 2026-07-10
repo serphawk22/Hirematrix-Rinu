@@ -82,7 +82,7 @@ class ReportController extends BaseController
      *
      * (Candidate Fee Allowed intentionally removed.)
      */
-    private function streamExcel(array $filters): void
+    public function streamExcel(array $filters): void
     {
         $jobs = $this->jobModel->getReportRows($filters);
 
@@ -175,7 +175,7 @@ class ReportController extends BaseController
     /**
      * Converts a "One Click Report" period into a [from, to] date pair.
      */
-    private function resolvePeriod(string $period): array
+    public function resolvePeriod(string $period): array
     {
         $today = new \DateTime();
 

@@ -185,6 +185,7 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         $routes->get('chatbot/brief', 'API_RecruiterController::getChatbotBrief');
         $routes->get('dashboard', 'API_RecruiterController::getDashboard');
         $routes->get('export/excel', 'API_RecruiterController::exportExcel');
+        $routes->get('export-jobs-report', 'API_RecruiterController::exportJobsReport');
         $routes->get('dashboard/leaderboard', 'API_RecruiterController::getLeaderboard');
         $routes->get('jobs', 'API_RecruiterController::getJobs');
         $routes->post('jobs/add', 'API_RecruiterController::addJob');
