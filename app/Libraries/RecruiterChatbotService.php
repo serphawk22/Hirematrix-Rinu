@@ -1034,7 +1034,7 @@ class RecruiterChatbotService
                 [
                     'label' => 'Review List',
                     'kind' => 'link',
-                    'url' => $jobId > 0 ? base_url('recruiter/applications/job/' . $jobId) : base_url('recruiter/dashboard/leaderboard'),
+                    'url' => $jobId > 0 ? base_url('recruiter/jobs/view/' . $jobId) : base_url('recruiter/jobs'),
                 ],
             ],
         ]]);
@@ -1295,7 +1295,7 @@ class RecruiterChatbotService
                 [
                     'label' => 'Review First',
                     'kind' => 'link',
-                    'url' => $jobId > 0 ? base_url('recruiter/applications/job/' . $jobId) : base_url('recruiter/dashboard/leaderboard'),
+                    'url' => $jobId > 0 ? base_url('recruiter/jobs/view/' . $jobId) : base_url('recruiter/jobs'),
                 ],
             ],
         ]];
@@ -2638,7 +2638,7 @@ class RecruiterChatbotService
                 'buttons' => [[
                     'label' => 'Review new candidates',
                     'kind' => 'link',
-                    'url' => base_url('recruiter/dashboard/leaderboard'),
+                    'url' => base_url('recruiter/jobs'),
                 ]],
             ];
         }

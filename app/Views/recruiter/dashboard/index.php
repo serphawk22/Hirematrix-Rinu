@@ -8,7 +8,6 @@ $conversionUrl   = base_url('recruiter/dashboard') . '#conversion-metrics';
 $bookingsUrl     = base_url('recruiter/slots/bookings');
 $postJobUrl      = base_url('recruiter/post_job');
 $slotsUrl        = base_url('recruiter/slots');
-$leaderboardUrl  = base_url('recruiter/dashboard/leaderboard');
 
 $formatRate = static function ($value): string {
     if ($value === null || $value === '') return 'N/A';
@@ -520,8 +519,97 @@ body.dark .recruiter-dashboard-subtitle {
     color: #C8D7E3 !important;
 }
 
+@media (max-width: 640px) {
+    .recruiter-dashboard-main { padding: 12px !important; }
+    .recruiter-dashboard-jobboard .recent-applications-card .card-header {
+        align-items: center !important;
+        flex-direction: row !important;
+        gap: 10px !important;
+        padding: 14px 16px !important;
+    }
+    .recruiter-dashboard-jobboard .recent-applications-card .card-header .btn {
+        flex: 0 0 auto;
+        padding: 7px 14px !important;
+    }
+    .recruiter-dashboard-jobboard .recent-applications-table-wrap {
+        overflow: visible !important;
+    }
+    .recruiter-dashboard-jobboard .recent-applications-table,
+    .recruiter-dashboard-jobboard .recent-applications-table tbody,
+    .recruiter-dashboard-jobboard .recent-applications-table tr,
+    .recruiter-dashboard-jobboard .recent-applications-table td {
+        display: block !important;
+        width: 100% !important;
+    }
+    .recruiter-dashboard-jobboard .recent-applications-table thead {
+        display: none !important;
+    }
+    .recruiter-dashboard-jobboard .recent-applications-table tbody {
+        background: #F8FAFC;
+        display: grid !important;
+        gap: 10px;
+        padding: 12px;
+    }
+    .recruiter-dashboard-jobboard .recent-applications-table tbody tr {
+        background: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 14px;
+        box-shadow: 0 8px 18px rgba(15, 23, 42, .04);
+        padding: 12px;
+    }
+    .recruiter-dashboard-jobboard .recent-applications-table tbody td {
+        align-items: flex-start;
+        background: transparent !important;
+        border: 0 !important;
+        color: #16212B !important;
+        display: grid !important;
+        gap: 10px;
+        grid-template-columns: 86px minmax(0, 1fr);
+        padding: 5px 0 !important;
+        text-align: left !important;
+        white-space: normal !important;
+        word-break: break-word;
+    }
+    .recruiter-dashboard-jobboard .recent-applications-table tbody td::before {
+        color: #64748B;
+        content: attr(data-label);
+        font-size: .68rem;
+        font-weight: 800;
+        letter-spacing: .04em;
+        line-height: 1.4;
+        text-transform: uppercase;
+    }
+    .recruiter-dashboard-jobboard .recent-applications-table tbody td:nth-child(1)::before { content: "ID"; }
+    .recruiter-dashboard-jobboard .recent-applications-table tbody td:nth-child(2)::before { content: "Candidate"; }
+    .recruiter-dashboard-jobboard .recent-applications-table tbody td:nth-child(3)::before { content: "Job"; }
+    .recruiter-dashboard-jobboard .recent-applications-table tbody td:nth-child(4)::before { content: "Status"; }
+    .recruiter-dashboard-jobboard .recent-applications-table tbody td:nth-child(5)::before { content: "Applied"; }
+    .recruiter-dashboard-jobboard .recent-applications-table tbody td:nth-child(6)::before { content: "Action"; }
+    .recruiter-dashboard-jobboard .recent-applications-table .status-pill {
+        max-width: 100%;
+        white-space: normal;
+    }
+    .recruiter-dashboard-jobboard .recent-applications-table .btn {
+        justify-content: center;
+        width: 100%;
+    }
+    body.dark .recruiter-dashboard-jobboard .recent-applications-table tbody {
+        background: #000000;
+    }
+    body.dark .recruiter-dashboard-jobboard .recent-applications-table tbody tr {
+        background: #080808 !important;
+        border-color: #262626 !important;
+    }
+    body.dark .recruiter-dashboard-jobboard .recent-applications-table tbody td {
+        color: #F8FAFC !important;
+    }
+    body.dark .recruiter-dashboard-jobboard .recent-applications-table tbody td::before {
+        color: #A3A3A3;
+    }
+}
+
 @media (max-width: 480px) {
-    .recruiter-dashboard-main { padding: 16px !important; }
+    .recruiter-dashboard-main { padding: 12px !important; }
     .hm-quick-actions { gap: 6px; }
     .hm-qa-btn { padding: 7px 14px; font-size: 12px; }
 }
@@ -686,14 +774,14 @@ body.dark .recruiter-dashboard-subtitle {
                 </div>
             </div>
 
-            <div class="card" style="border-radius:16px;">
+            <div class="card recent-applications-card" style="border-radius:16px;">
                 <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <h6 class="m-0 font-weight-bold" style="font-weight:600;">Recent Applications</h6>
                     <a href="<?= $applicationsUrl ?>" class="btn btn-outline-primary btn-sm">View All</a>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                    <div class="table-responsive recent-applications-table-wrap">
+                        <table class="table table-hover mb-0 recent-applications-table">
                             <thead class="thead-light">
                                 <tr><th class="pl-3">ID</th><th>Candidate</th><th>Job</th><th>Status</th><th>Applied</th><th class="text-right pr-3">Action</th></tr>
                             </thead>
@@ -706,14 +794,14 @@ body.dark .recruiter-dashboard-subtitle {
                                                 ? ucwords(str_replace('_', ' ', $statusValue))
                                                 : 'Needs Screening';
                                         ?>
-                                        <tr onclick="window.location='<?= base_url('recruiter/jobs/' . $app['job_id'] . '/leaderboard') ?>'" style="cursor:pointer;">
+                                        <tr onclick="window.location='<?= base_url('recruiter/jobs/view/' . $app['job_id']) ?>#leaderboard'" style="cursor:pointer;">
                                             <td class="pl-3 text-muted">#<?= $app['id'] ?></td>
                                             <td><strong><?= esc($app['candidate_name']) ?></strong></td>
                                             <td><?= esc($app['job_title']) ?></td>
                                             <td><span class="status-pill"><?= esc($statusLabel) ?></span></td>
                                             <td class="text-muted"><?= date('M d, Y', strtotime($app['applied_at'])) ?></td>
                                             <td class="text-right pr-3">
-                                                <a href="<?= base_url('recruiter/jobs/' . $app['job_id'] . '/leaderboard') ?>" class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();">Review</a>
+                                                <a href="<?= base_url('recruiter/jobs/view/' . $app['job_id']) ?>#leaderboard" class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();">Review</a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

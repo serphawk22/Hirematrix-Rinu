@@ -156,7 +156,7 @@ class JobModel extends Model
 
         $profile = $userModel->findCandidateWithProfile($candidateId) ?? [];
         $skillRow = $skillsModel->where('candidate_id', $candidateId)->first();
-        
+
         // 1. Aggregate skills from all sources (Profile table, Bio, and Primary Resume)
         $profileSkills = $this->tokenizeCsv((string) ($skillRow['skill_name'] ?? ''));
         $metaSkills = $this->tokenizeCsv((string) ($profile['key_skills'] ?? ''));
@@ -167,7 +167,7 @@ class JobModel extends Model
                 $resumeSkills = $this->tokenizeCsv((string)($primary['highlight_skills'] ?? ''));
             }
         }
-        
+
         $allCandidateSkills = array_values(array_unique(array_merge($profileSkills, $metaSkills, $resumeSkills)));
 
         $preferredJobTitles = $this->tokenizeCsv((string) ($profile['preferred_job_titles'] ?? ''));
@@ -194,7 +194,7 @@ class JobModel extends Model
         foreach ($jobs as $job) {
             $jobTitle = strtolower(trim((string) ($job['title'] ?? '')));
             $requiredSkills = $this->tokenizeCsv((string) ($job['required_skills'] ?? ''));
-            
+
             // 1. Title/Role Match (30%) - New logic to align with user intent
             $titleScore = 0.0;
             if (empty($preferredJobTitles)) {
@@ -237,12 +237,12 @@ class JobModel extends Model
             foreach ($remoteKeywords as $kw) {
                 if (str_contains($jobLocation, $kw)) $isRemoteJob = true;
             }
-            
+
             $candidatePrefersRemote = !empty($preferredLocations) && (in_array('remote', $preferredLocations) || in_array('anywhere', $preferredLocations));
 
             if ($jobLocation === '' || empty($preferredLocations) || $isRemoteJob || $candidatePrefersRemote) {
                 // If no preference or no job location, assume neutral
-                $locationScore = 12.5; 
+                $locationScore = 12.5;
             } else {
                 foreach ($preferredLocations as $preferredLocation) {
                     if ($preferredLocation !== '' && (str_contains($jobLocation, $preferredLocation) || str_contains($preferredLocation, $jobLocation))) {
@@ -416,7 +416,7 @@ class JobModel extends Model
             $leftLower = strtolower($left);
             foreach ($b as $right) {
                 $rightLower = strtolower($right);
-                
+
                 // Direct match (crucial for short tech) or fuzzy match
                 if ($leftLower === $rightLower ||
                    ($leftLower !== '' && strlen($leftLower) >= 2 && (str_contains($rightLower, $leftLower) || str_contains($leftLower, $rightLower)))) {
@@ -456,4 +456,77 @@ class JobModel extends Model
 
         return null;
     }
+
+    // =====================================================================
+    // Report support (added for ReportController / recruiter/reports view)
+    // =====================================================================
+
+    /**
+     * Base query for the recruiter's Job Posting report. Left-joins `users`
+     * to resolve recruiter_name (jobs.recruiter_id -> users.id). Shared by
+     * both the in-browser preview and the Excel export so they never drift.
+     *
+     * $filters keys:
+     *   recruiter_id     (int)    required - scopes to session('user_id')
+     *   status            (string) 'open' | 'closed'
+     *   category          (string)
+     *   employment_type   (string)
+     *   keyword           (string) matched against title, company, location
+     *   date_from         (Y-m-d)
+     *   date_to           (Y-m-d)
+     */
+    public function getReportQuery(array $filters)
+    {
+        $builder = $this->builder();
+
+        $builder->select('jobs.*, users.name as recruiter_name')
+                ->join('users', 'users.id = jobs.recruiter_id', 'left');
+
+        if (!empty($filters['recruiter_id'])) {
+            $builder->where('jobs.recruiter_id', $filters['recruiter_id']);
+        }
+
+        if (!empty($filters['status'])) {
+            $builder->where('jobs.status', $filters['status']);
+        }
+
+        if (!empty($filters['category'])) {
+            $builder->where('jobs.category', $filters['category']);
+        }
+
+        if (!empty($filters['employment_type'])) {
+            $builder->where('jobs.employment_type', $filters['employment_type']);
+        }
+
+        if (!empty($filters['keyword'])) {
+            $kw = $filters['keyword'];
+            $builder->groupStart()
+                    ->like('jobs.title', $kw)
+                    ->orLike('jobs.company', $kw)
+                    ->orLike('jobs.location', $kw)
+                    ->groupEnd();
+        }
+
+        if (!empty($filters['date_from'])) {
+            $builder->where('jobs.created_at >=', $filters['date_from'] . ' 00:00:00');
+        }
+
+        if (!empty($filters['date_to'])) {
+            $builder->where('jobs.created_at <=', $filters['date_to'] . ' 23:59:59');
+        }
+
+        $builder->orderBy('jobs.created_at', 'DESC');
+
+        return $builder;
+    }
+
+    /**
+     * Full result set for the report (used for both browser preview and Excel export).
+     */
+    public function getReportRows(array $filters): array
+    {
+        return $this->getReportQuery($filters)->get()->getResultArray();
+    }
+
+    
 }

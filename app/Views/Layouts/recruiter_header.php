@@ -1806,6 +1806,55 @@ body.dark.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle.
     background: #181818 !important;
 }
 
+/* Recruiter nav icon rule: top-level group headers only. */
+body.recruiter-jobboard .hm-sidebar .hm-sb-subitem .sb-icon,
+body.dark.recruiter-jobboard .hm-sidebar .hm-sb-subitem .sb-icon,
+body.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-subitem .sb-icon,
+body.dark.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-subitem .sb-icon {
+    display: none !important;
+}
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-subitem,
+body.dark.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-subitem {
+    padding-left: 17px !important;
+}
+body.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle .sb-icon,
+body.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-group-toggle .sb-icon,
+body.dark.recruiter-jobboard .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle .sb-icon,
+body.dark.recruiter-jobboard .hm-sidebar.sb-collapsed .hm-sb-group-toggle .sb-icon {
+    display: inline-flex !important;
+}
+body.recruiter-jobboard:not(.dark) .hm-sidebar:not(.sb-collapsed) .hm-sb-group-toggle .sb-icon {
+    width: 32px !important;
+    height: 32px !important;
+    flex: 0 0 32px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    background: rgba(31, 183, 181, 0.11) !important;
+    color: var(--hm-primary-dark) !important;
+    font-size: 14px !important;
+}
+body.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-group-toggle .sb-icon,
+body.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-group-toggle .sb-icon,
+body.dark.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-group-toggle .sb-icon,
+body.dark.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-group-toggle .sb-icon {
+    width: 32px !important;
+    height: 32px !important;
+    flex: 0 0 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    background: rgba(31, 183, 181, 0.11) !important;
+    color: var(--hm-primary-dark) !important;
+    font-size: 14px !important;
+}
+body.dark.recruiter-jobboard .hm-sidebar.sb-collapsed:hover .hm-sb-group-toggle .sb-icon,
+body.dark.recruiter-jobboard .hm-sidebar.sb-collapsed:focus-within .hm-sb-group-toggle .sb-icon {
+    background: rgba(31, 183, 181, 0.14) !important;
+    color: #2dd4d1 !important;
+}
+
 .hm-sb-theme-row {
     display: flex;
     align-items: center;
@@ -1891,6 +1940,134 @@ body.recruiter-jobboard .loader .spinner-border.text-primary,
 body.recruiter-jobboard .loader .spinner-border.text-success,
 html.hm-dark-preload .loader .spinner-border {
     color: var(--hm-primary, #1FB7B5) !important;
+}
+
+/* Keep a left rail on tablet / narrow desktop widths. */
+@media (min-width: 768px) and (max-width: 991px) {
+    body.recruiter-jobboard {
+        --recruiter-page-gutter: 24px;
+    }
+    body.recruiter-jobboard .hm-sidebar {
+        transform: none !important;
+        width: var(--sb-width-mini) !important;
+    }
+    body.recruiter-jobboard .hm-main {
+        margin-left: var(--sb-width-mini) !important;
+    }
+    body.recruiter-jobboard .hm-mobile-toggle,
+    body.recruiter-jobboard .hm-sb-overlay {
+        display: none !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-brand,
+    body.recruiter-jobboard .hm-sidebar .sb-label,
+    body.recruiter-jobboard .hm-sidebar .sb-arrow,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-section,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-chevron,
+    body.recruiter-jobboard .hm-sidebar .sb-badge,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-profile-info,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-profile-chevron {
+        opacity: 0 !important;
+        max-width: 0 !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        pointer-events: none !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-sub,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-sub.sb-open {
+        display: none !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-head,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-profile {
+        justify-content: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        width: var(--sb-width-mini) !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-logo,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-profile-avatar {
+        margin: 0 !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-body {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        padding: 14px 0 !important;
+        overflow: visible !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-item,
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle {
+        justify-content: center !important;
+        margin: 0 !important;
+        min-height: 48px !important;
+        padding: 0 !important;
+        width: var(--sb-width-mini) !important;
+    }
+    body.recruiter-jobboard .hm-sidebar .hm-sb-group-toggle .sb-icon {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 40px !important;
+        height: 40px !important;
+        flex: 0 0 40px !important;
+        border-radius: 10px !important;
+        background: rgba(31, 183, 181, 0.11) !important;
+        color: var(--hm-primary-dark) !important;
+        font-size: 17px !important;
+    }
+}
+
+/* Phone widths use a compact topbar to open the off-canvas recruiter nav. */
+body.recruiter-jobboard .hm-topbar {
+    display: none !important;
+}
+@media (max-width: 767.98px) {
+    body.recruiter-jobboard .hm-topbar {
+        display: flex !important;
+    }
+    body.recruiter-jobboard .hm-mobile-toggle {
+        display: inline-flex !important;
+    }
+    body.recruiter-jobboard .hm-sidebar.sb-mobile-open {
+        width: min(300px, 86vw) !important;
+    }
+    body.recruiter-jobboard .hm-sidebar.sb-mobile-open .hm-sb-brand,
+    body.recruiter-jobboard .hm-sidebar.sb-mobile-open .sb-label,
+    body.recruiter-jobboard .hm-sidebar.sb-mobile-open .sb-arrow,
+    body.recruiter-jobboard .hm-sidebar.sb-mobile-open .hm-sb-profile-info,
+    body.recruiter-jobboard .hm-sidebar.sb-mobile-open .hm-sb-profile-chevron {
+        display: inline-flex !important;
+        opacity: 1 !important;
+        max-height: none !important;
+        max-width: none !important;
+        overflow: visible !important;
+        pointer-events: auto !important;
+    }
+    body.recruiter-jobboard .hm-sidebar.sb-mobile-open .hm-sb-sub {
+        display: block !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+    }
+    body.recruiter-jobboard .hm-sidebar.sb-mobile-open .hm-sb-sub.sb-open {
+        display: block !important;
+        max-height: 260px !important;
+    }
+    body.recruiter-jobboard .hm-sidebar.sb-mobile-open .hm-sb-group-toggle {
+        justify-content: flex-start !important;
+        padding: 12px 16px 4px !important;
+        width: calc(100% - 16px) !important;
+    }
+    body.recruiter-jobboard .hm-sidebar.sb-mobile-open .hm-sb-group-toggle .sb-icon {
+        display: inline-flex !important;
+        width: 32px !important;
+        height: 32px !important;
+        flex: 0 0 32px !important;
+    }
+    body.recruiter-jobboard .hm-sidebar.sb-mobile-open .hm-sb-group-toggle.sb-open .sb-arrow {
+        transform: rotate(180deg) !important;
+    }
+    body.recruiter-jobboard .hm-sidebar.sb-mobile-open .hm-sb-subitem {
+        display: flex !important;
+    }
 }
 
     </style>
@@ -2020,6 +2197,11 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                     <i class="fas fa-file-excel sb-icon"></i>
                     <span class="sb-label">Export Data</span>
                 </a>
+                 <a href="<?= base_url('recruiter/reports') ?>"
+                   class="hm-sb-subitem <?= $isActive('recruiter/reports') ?>">
+                    <i class="fas fa-file-excel sb-icon"></i>
+                    <span class="sb-label">Export Jobs</span>
+                </a>
                 <a href="<?= base_url('recruiter/settings') ?>"
                    class="hm-sb-subitem <?= $isActive('recruiter/settings') ?>">
                     <i class="fas fa-cog sb-icon"></i>
@@ -2063,6 +2245,13 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
 
     <!-- ═══════════ MAIN ═══════════ -->
     <div class="hm-main" id="hmMain"> 
+
+        <div class="hm-topbar" aria-label="Recruiter mobile navigation">
+            <button class="hm-mobile-toggle" id="hmMobileToggle" type="button" aria-label="Open navigation">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <span class="hm-topbar-title">Recruiter Portal</span>
+        </div>
 
         <div class="hm-page-content">
         <main>

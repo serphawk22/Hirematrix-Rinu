@@ -16,6 +16,8 @@ $routes->get('portal-trailer', function() {
     }
     return service('response')->setBody(file_get_contents($path))->setContentType('text/html');
 });
+//ReportController
+$routes->get('recruiter/reports', 'ReportController::index');
 // app/Config/Routes.php  ← route goes HERE, not in the controller file
 $routes->post('job/mark-visited/(:num)', 'JobController::markVisited/$1');
 // Login
@@ -360,6 +362,7 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     $routes->post('candidates/send-bulk-email', 'RecruiterCandidates::sendBulkEmail');
     $routes->get('jobs/edit/(:num)', 'RecruiterJobs::edit/$1');
     $routes->post('jobs/update/(:num)', 'RecruiterJobs::update/$1');
+    $routes->post('jobs/bulk-close', 'RecruiterJobs::bulkClose');
     $routes->get('jobs/close/(:num)', 'RecruiterJobs::close/$1');
     $routes->get('jobs/reopen/(:num)', 'RecruiterJobs::reopen/$1');
     $routes->get('company-profile', 'CompanyProfile::edit');

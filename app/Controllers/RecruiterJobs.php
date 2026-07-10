@@ -193,6 +193,37 @@ class RecruiterJobs extends BaseController
         return redirect()->to('recruiter/jobs')->with('success', 'Job closed successfully');
     }
 
+    public function bulkClose()
+    {
+        $jobModel = model('JobModel');
+        $currentUserId = (int) session()->get('user_id');
+        $jobIds = array_values(array_unique(array_filter(array_map('intval', (array) $this->request->getPost('job_ids')))));
+
+        if (empty($jobIds)) {
+            return redirect()->to('recruiter/jobs')->with('error', 'Select at least one job to close.');
+        }
+
+        $jobs = $jobModel
+            ->select('id')
+            ->where('recruiter_id', $currentUserId)
+            ->where('status', 'open')
+            ->whereIn('id', $jobIds)
+            ->findAll();
+
+        $allowedIds = array_map(static fn (array $job): int => (int) $job['id'], $jobs);
+        if (empty($allowedIds)) {
+            return redirect()->to('recruiter/jobs')->with('error', 'No open jobs were selected.');
+        }
+
+        $jobModel
+            ->where('recruiter_id', $currentUserId)
+            ->whereIn('id', $allowedIds)
+            ->set(['status' => 'closed'])
+            ->update();
+
+        return redirect()->to('recruiter/jobs')->with('success', count($allowedIds) . ' job(s) closed successfully.');
+    }
+
     public function reopen($jobId)
     {
         $jobModel = model('JobModel');

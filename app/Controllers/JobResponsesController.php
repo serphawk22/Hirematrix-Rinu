@@ -439,10 +439,10 @@ class JobResponsesController extends BaseController
         $hasLoginLogs = $db->tableExists('user_login_performance_logs');
         $hasRecruiterNotes = $db->tableExists('recruiter_candidate_notes');
         $ratingSelect = $hasInterviewSessions
-            ? 'MAX(COALESCE(interview_sessions.overall_rating, 0)) as overall_rating,
-                MAX(COALESCE(interview_sessions.technical_score, 0)) as technical_score,
-                MAX(COALESCE(interview_sessions.communication_score, 0)) as communication_score'
-            : '0 as overall_rating, 0 as technical_score, 0 as communication_score';
+            ? 'MAX(interview_sessions.overall_rating) as overall_rating,
+                MAX(interview_sessions.technical_score) as technical_score,
+                MAX(interview_sessions.communication_score) as communication_score'
+            : 'NULL as overall_rating, NULL as technical_score, NULL as communication_score';
         $experienceSubQuery = '(SELECT user_id, SUM(TIMESTAMPDIFF(MONTH, start_date, COALESCE(NULLIF(end_date, \'\'), CURDATE()))) AS total_experience_months FROM work_experiences GROUP BY user_id) candidate_experience';
         $workSummarySubQuery = "(SELECT user_id,
                 SUBSTRING_INDEX(GROUP_CONCAT(CASE WHEN COALESCE(is_current, 0) = 1 THEN CONCAT_WS(' at ', NULLIF(job_title, ''), NULLIF(company_name, '')) END ORDER BY start_date DESC SEPARATOR '||'), '||', 1) AS current_role_summary,
