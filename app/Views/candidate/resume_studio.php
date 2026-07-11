@@ -67,7 +67,7 @@ $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' 
                 <div class="resume-studio-main">
 
                     <?php if (!empty($activeTransition)): ?>
-                        <form method="post" action="<?= base_url('candidate/resume/sync-transition') ?>" id="syncTransitionForm" style="display:none;">
+                        <form method="post" action="<?= base_url('candidate/resume/sync-transition') ?>" id="syncTransitionForm" class="candidate-hidden-form">
                             <?= csrf_field() ?>
                         </form>
                         <div class="dashboard-panel resume-transition-panel mb-4">
@@ -96,14 +96,14 @@ $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' 
                                 <div class="generation-mode-grid mb-3">
                                     <label class="generation-mode-option">
                                         <input type="radio" name="generation_mode" value="role" <?= $prefillGenerationMode === 'role' ? 'checked' : '' ?>>
-                                        <span class="generation-mode-card" style="text-align:left">
+                                        <span class="generation-mode-card candidate-text-left">
                                             <strong>By Role</strong>
                                             <small>Create a resume for a target role you enter manually.</small>
                                         </span>
                                     </label>
                                     <label class="generation-mode-option">
                                         <input type="radio" name="generation_mode" value="job" <?= $prefillGenerationMode === 'job' ? 'checked' : '' ?>>
-                                        <span class="generation-mode-card" style="text-align:left">
+                                        <span class="generation-mode-card candidate-text-left">
                                             <strong>For a Specific Job</strong>
                                             <small>Create a version tailored to one selected job posting.</small>
                                         </span>
@@ -136,7 +136,7 @@ $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' 
                                             <?php $previewClass = (string) ($template['preview_class'] ?? 'modern'); ?>
                                             <label class="template-option <?= $isTemplateDisabled ? 'is-disabled' : '' ?>">
                                                 <input type="radio" name="template_key" value="<?= esc($templateKey) ?>" <?= $templateKey === 'modern_professional' ? 'checked' : '' ?> <?= $isTemplateDisabled ? 'disabled' : '' ?>>
-                                                <span class="template-card" style="text-align:left">
+                                                <span class="template-card candidate-text-left">
                                                     <span class="template-preview <?= esc($previewClass) ?>"></span>
                                                     <strong class="d-block mb-1"><?= esc($template['label']) ?></strong>
                                                     <small class="text-muted d-block"><?= esc($template['description']) ?></small>
@@ -168,7 +168,7 @@ $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' 
                 <aside class="resume-studio-side">
                     <div class="dashboard-panel resume-how-panel">
                         <div class="panel-header">
-                            <h3 class="section-title mb-0" style="font-size:1rem;">How It Works</h3>
+                            <h3 class="section-title mb-0 candidate-heading-compact">How It Works</h3>
                         </div>
                         <div class="panel-body">
                             <ul class="resume-studio-tip-list">

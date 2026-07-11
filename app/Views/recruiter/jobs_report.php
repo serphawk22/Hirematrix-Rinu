@@ -22,139 +22,6 @@ $jobCategoryOptions = [
 $employmentTypeOptions = ['Full-time', 'Part-time', 'Contract', 'Internship'];
 ?>
 
-<style>
-/* ===========================================================
-   HireMatrix visual system — light (default) + dark (body.dark)
-   =========================================================== */
-:root {
-  --primary: #1FB7B5;
-  --primary-dark: #0D8A90;
-
-  --secondary: #53B86C;
-  --secondary-dark: #3F9E58;
-
-  --accent: #B5D84E;
-  --accent-dark: #9DC23D;
-
-  --background: #F8FCFB;
-  --foreground: #16212B;
-
-  --card: #FFFFFF;
-
-  --muted: #EDF8F5;
-  --muted-foreground: #64748B;
-
-  --border: #D9ECE5;
-  --text-light: #94A3B8;
-
-  --gradient-primary: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
-  --gradient-soft: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%);
-}
-
-/* Dark theme applied via a class on <body>, not <html> */
-body.dark {
-  --primary: #1FB7B5;
-  --primary-dark: #0D8A90;
-
-  --secondary: #53B86C;
-  --secondary-dark: #3F9E58;
-
-  --accent: #B5D84E;
-  --accent-dark: #9DC23D;
-
-  --background: #0E1619;
-  --foreground: #F8FAFC;
-
-  --card: #162327;
-
-  --muted: #1B2A2F;
-  --muted-foreground: #94A3B8;
-
-  --border: #23343A;
-  --text-light: #7A8B96;
-
-  --gradient-primary: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
-  --gradient-soft: linear-gradient(135deg, #162327 0%, #1B2A2F 100%);
-}
-
-* { box-sizing: border-box; }
-
-/* Page background per spec: soft gradient in light mode, solid black in dark mode */
-body {
-  background: var(--gradient-soft);
-}
-body.dark {
-  background: #000000 !important;
-}
-
-.recruiter-reports-wrap {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: var(--foreground);
-}
-
-.page-heading { font-size: 24px; font-weight: 700; margin: 0 0 4px; }
-.page-sub { color: var(--muted-foreground); font-size: 14px; margin: 0 0 24px; }
-
-/* ---------- Cards ---------- */
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-}
-.card-title { font-size: 16px; font-weight: 700; margin: 0 0 18px; }
-
-/* ---------- Form controls ---------- */
-.field-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; margin-bottom: 4px; }
-.field { display: flex; flex-direction: column; gap: 6px; min-width: 160px; }
-.field label { font-size: 12px; font-weight: 600; color: var(--muted-foreground); }
-.field input[type="text"],
-.field input[type="date"],
-.field select {
-  background: var(--background);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 9px 12px;
-  font-size: 13px;
-  color: var(--foreground);
-  min-width: 160px;
-}
-.field input:focus, .field select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(31,183,181,0.15);
-}
-
-/* Bootstrap form-check radios, tinted with brand color */
-.form-check-input:checked {
-  background-color: var(--primary);
-  border-color: var(--primary);
-}
-.form-check-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 0.2rem rgba(31,183,181,0.15);
-}
-.form-check-label {
-  font-size: 13px;
-  color: var(--foreground);
-}
-
-.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
-
-.btn {
-  border: none; border-radius: 9px; padding: 10px 20px;
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  display: inline-flex; align-items: center; gap: 6px;
-}
-.btn-primary { background: var(--gradient-primary); color: #fff; }
-.btn-primary:hover { filter: brightness(1.05); }
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--foreground); }
-.btn-outline:hover { background: var(--muted); }
-
-.note { font-size: 12px; color: var(--text-light); margin: 8px 0 18px; }
-</style>
-
 <div class="recruiter-reports-wrap">
   <div class="container-fluid py-5">
 
@@ -185,7 +52,7 @@ body.dark {
             </div>
           </div>
         </div>
-        <div style="margin-top:18px;">
+        <div class="recruiter-mt-18">
           <button type="submit" name="generate" value="1" class="btn btn-primary">
             ⬇ Download Excel
           </button>
@@ -235,7 +102,7 @@ body.dark {
               <?php endforeach; ?>
             </select>
           </div>
-          <div class="field" style="flex:1;">
+          <div class="field recruiter-flex-1">
             <label>Keyword</label>
             <input type="text" name="keyword" placeholder="Title, company or location" value="<?= esc($filters['keyword'] ?? '') ?>">
           </div>
@@ -245,7 +112,7 @@ body.dark {
 
         <hr class="divider">
 
-        <div style="text-align:right;">
+        <div class="recruiter-text-right">
           <button type="submit" name="generate" value="1" class="btn btn-primary">⬇ Download Excel</button>
           <a href="<?= site_url('recruiter/reports') ?>" class="btn btn-outline">Reset</a>
         </div>
