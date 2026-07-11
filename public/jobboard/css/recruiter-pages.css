@@ -14701,3 +14701,37 @@ body.dark.recruiter-jobboard .recruiter-notification-card > .card-body {
 body.dark.recruiter-jobboard .recruiter-notification-card {
     border: 1px solid #2a2a2a !important;
 }
+
+/* Chatbot header: keep title readable in dark mode */
+body.dark.recruiter-jobboard .hm-chat-header,
+body.recruiter-jobboard .hm-chat-header {
+    background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 100%) !important;
+    color: #ffffff !important;
+}
+
+body.dark.recruiter-jobboard .hm-chat-header-title,
+body.dark.recruiter-jobboard .hm-chat-header-icon,
+body.dark.recruiter-jobboard .hm-chat-header-icon svg,
+body.dark.recruiter-jobboard .hm-chat-header-close,
+body.recruiter-jobboard .hm-chat-header-title,
+body.recruiter-jobboard .hm-chat-header-icon,
+body.recruiter-jobboard .hm-chat-header-icon svg,
+body.recruiter-jobboard .hm-chat-header-close {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    stroke: currentColor !important;
+}
+
+body.dark.recruiter-jobboard .hm-chat-header-icon,
+body.recruiter-jobboard .hm-chat-header-icon {
+    background: rgba(255, 255, 255, .22) !important;
+    border: 0 !important;
+}
+
+/* Jobs filter: remove nested wrapper outline while keeping field borders */
+body.recruiter-jobboard .recruiter-jobs-jobboard .recruiter-filter-card > .card-body,
+body.dark.recruiter-jobboard .recruiter-jobs-jobboard .recruiter-filter-card > .card-body {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
