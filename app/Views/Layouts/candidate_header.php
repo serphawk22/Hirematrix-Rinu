@@ -62,6 +62,7 @@
     <noscript><link rel="stylesheet" href="<?= $candidateBundleHref ?>"></noscript>
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.min.css')) ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/portal-ui-system.css?v=' . @filemtime(FCPATH . 'jobboard/css/portal-ui-system.css')) ?>">
     <?php if ($candidateNeedsAtsCircle): ?>
         <!-- CSS Circle Progress (Required for visual ATS Score) -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/css-percentage-circle/0.0.3/css/circle.min.css">
@@ -403,13 +404,13 @@
                         <span>Job Search Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="hm-drawer-link <?= $isCareerTransitionActive ? 'is-active' : '' ?>">
-                        <span class="cand-leftnav__icon"><i class="fas fa-rocket" style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;"></i></span>
-                        <span style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">Career Transition AI</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-rocket portal-gradient-text"></i></span>
+                        <span class="portal-gradient-text">Career Transition AI</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($resumeStudioUrl) ?>" class="hm-drawer-link <?= $isResumeStudioActive ? 'is-active' : '' ?>">
-                        <span class="cand-leftnav__icon"><i class="fas fa-file-alt" style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;"></i></span>
-                        <span style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">Resume Studio</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-file-alt portal-gradient-text"></i></span>
+                        <span class="portal-gradient-text">Resume Studio</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
                 </div>

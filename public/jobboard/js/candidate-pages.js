@@ -271,15 +271,35 @@
         return true;
     }
 
+    function getRecommendationLabel(recType) {
+        var activeTab = document.querySelector('.jobs-page-jobboard .tab-pill[data-rec-type="' + recType + '"]');
+        if (!activeTab) {
+            return 'this recommendation view';
+        }
+
+        var clone = activeTab.cloneNode(true);
+        clone.querySelectorAll('.pill-count').forEach(function (countNode) {
+            countNode.remove();
+        });
+
+        return clone.textContent.replace(/\s+/g, ' ').trim() || 'this recommendation view';
+    }
+
+    function waitForMinimumLoading(startedAt, minMs) {
+        var elapsed = Date.now() - startedAt;
+        var remaining = Math.max(0, minMs - elapsed);
+        return new Promise(function (resolve) {
+            window.setTimeout(resolve, remaining);
+        });
+    }
+
     function showRecommendationLoading(recType) {
         var stage = document.querySelector('.jobs-page-jobboard .recommended-jobs-stage');
         if (!stage) {
             return;
         }
 
-        var activeTab = document.querySelector('.jobs-page-jobboard .tab-pill[data-rec-type="' + recType + '"]');
-        var label = activeTab ? activeTab.textContent.replace(/\s+/g, ' ').trim() : 'recommended jobs';
-        label = label.replace(/\d+$/, '').trim() || 'recommended jobs';
+        var label = getRecommendationLabel(recType);
 
         stage.innerHTML = [
             '<div class="recommended-tab-loading" role="status" aria-live="polite">',
@@ -295,9 +315,7 @@
             return;
         }
 
-        var activeTab = document.querySelector('.jobs-page-jobboard .tab-pill[data-rec-type="' + recType + '"]');
-        var label = activeTab ? activeTab.textContent.replace(/\s+/g, ' ').replace(/\d+$/, '').trim() : 'this recommendation view';
-        label = label || 'this recommendation view';
+        var label = getRecommendationLabel(recType);
 
         stage.innerHTML = [
             '<div class="recommended-job-pane" data-rec-pane="' + recType + '" data-rec-loaded="1">',
@@ -322,7 +340,7 @@
             return;
         }
 
-        var hasCards = !!activePane.querySelector('.recommended-job-card');
+        var hasCards = !!activePane.querySelector('.job-card, .recommended-job-card');
         var hasEmptyState = !!activePane.querySelector('.empty-state');
         if (!hasCards && !hasEmptyState) {
             showRecommendationEmpty(recType);
@@ -1402,9 +1420,15 @@
         var url = new URL(getBaseUrl() + '/jobs', window.location.origin);
         url.searchParams.set('tab', 'recommended');
         url.searchParams.set('rec', recType);
+        var loadingStartedAt = Date.now();
         showRecommendationLoading(recType);
         setJobsLoadingState(true);
         fetchHtml(url.toString())
+            .then(function (html) {
+                return waitForMinimumLoading(loadingStartedAt, 260).then(function () {
+                    return html;
+                });
+            })
             .then(function (html) {
                 if (!replaceJobsMainFromHtml(html, url.toString())) {
                     window.location.href = url.toString();

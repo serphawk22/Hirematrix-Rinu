@@ -180,12 +180,13 @@ $recommendationLabels = [
     'preferences' => 'Preferences / Interests',
     'ai' => 'Other Recommendations',
 ];
-$recommendationCountLabel = static function (string $type, array $jobs) use ($recommendationCounts): string {
-    if (array_key_exists($type, $recommendationCounts) && $recommendationCounts[$type] !== null) {
-        return (string) (int) $recommendationCounts[$type];
+$recommendationCountLabel = static function (string $type, array $jobs): string {
+    $visibleCount = count($jobs);
+    if ($visibleCount > 0) {
+        return (string) $visibleCount;
     }
 
-    return $jobs !== [] ? (string) count($jobs) : '';
+    return '';
 };
 $jobsHeroTitle = $showFilters ? 'Browse Jobs' : 'Jobs Matching Your Profile';
 $jobsHeroSubtitle = $showFilters

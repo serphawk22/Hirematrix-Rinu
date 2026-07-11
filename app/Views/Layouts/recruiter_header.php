@@ -35,6 +35,7 @@
     <?php foreach ((array) ($pageStyles ?? []) as $pageStyle): ?>
         <link rel="stylesheet" href="<?= esc($pageStyle, 'attr') ?>">
     <?php endforeach; ?>
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/portal-ui-system.css?v=' . @filemtime(FCPATH . 'jobboard/css/portal-ui-system.css')) ?>">
 
     <style>
     /* ═══════════════════════════════════════════
