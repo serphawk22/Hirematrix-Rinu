@@ -90,6 +90,17 @@ body.dark {
 .recruiter-reports-wrap {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: var(--foreground);
+  width: 100%;
+}
+
+/* recruiter_header.php targets `main > [class*="-jobboard"]` to strip
+   max-width / padding from .container / .container-fluid and stretch
+   content to fill .hm-main. The class below (recruiter-reports-jobboard)
+   opts this page into that existing full-width mechanism — no need to
+   fight the layout with viewport-width hacks. */
+.recruiter-reports-wrap .container-fluid {
+  width: 100%;
+  max-width: 100%;
 }
 
 .page-heading { font-size: 24px; font-weight: 700; margin: 0 0 4px; }
@@ -155,7 +166,7 @@ body.dark {
 .note { font-size: 12px; color: var(--text-light); margin: 8px 0 18px; }
 </style>
 
-<div class="recruiter-reports-wrap">
+<div class="recruiter-reports-wrap recruiter-reports-jobboard">
   <div class="container-fluid py-5">
 
     <h1 class="page-heading">Job Posting Report</h1>
@@ -240,8 +251,6 @@ body.dark {
             <input type="text" name="keyword" placeholder="Title, company or location" value="<?= esc($filters['keyword'] ?? '') ?>">
           </div>
         </div>
-
-        
 
         <hr class="divider">
 
