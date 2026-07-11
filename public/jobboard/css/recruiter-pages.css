@@ -14735,3 +14735,23 @@ body.dark.recruiter-jobboard .recruiter-jobs-jobboard .recruiter-filter-card > .
     border: 0 !important;
     box-shadow: none !important;
 }
+
+/* Recruiter sections: card owns the outline; body stays as content padding only */
+body.recruiter-jobboard .card > .card-body,
+body.dark.recruiter-jobboard .card > .card-body,
+body.recruiter-jobboard .recruiter-form-card > .card-body,
+body.recruiter-jobboard .recruiter-help-card > .card-body,
+body.recruiter-jobboard .recruiter-info-card > .card-body,
+body.recruiter-jobboard .recruiter-summary-card > .card-body,
+body.recruiter-jobboard .recruiter-filter-card > .card-body,
+body.recruiter-jobboard .recruiter-table-card > .card-body,
+body.dark.recruiter-jobboard .recruiter-form-card > .card-body,
+body.dark.recruiter-jobboard .recruiter-help-card > .card-body,
+body.dark.recruiter-jobboard .recruiter-info-card > .card-body,
+body.dark.recruiter-jobboard .recruiter-summary-card > .card-body,
+body.dark.recruiter-jobboard .recruiter-filter-card > .card-body,
+body.dark.recruiter-jobboard .recruiter-table-card > .card-body {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}

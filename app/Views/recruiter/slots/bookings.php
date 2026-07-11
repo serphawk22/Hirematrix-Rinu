@@ -13,85 +13,56 @@
             </div>
         </div>
 
-        <div class="card shadow-sm recruiter-summary-card mb-4 recruiter-rounded-hidden">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                        <div class="recruiter-summary-item">
-                            <h6 class="m-0 font-weight-bold">Total Bookings</h6>
-                           <?= number_format($stats['total_bookings']) ?> 
-                        </div>
+        <div class="card shadow-sm recruiter-table-card recruiter-rounded-visible">
+            <div class="slots-toolbar">
+                <div class="slots-stats">
+                    <div class="slots-stat">
+                        <span class="slots-stat-value recruiter-brand-icon"><?= number_format($stats['total_bookings']) ?></span>
+                        <span class="slots-stat-label">Total Bookings</span>
                     </div>
-                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                        <div class="recruiter-summary-item">
-                            <h6 class="m-0 font-weight-bold">Upcoming</h6>
-                            <?= number_format($stats['upcoming']) ?> 
-                        </div>
+                    <div class="slots-stat-divider"></div>
+                    <div class="slots-stat">
+                        <span class="slots-stat-value recruiter-indigo-text"><?= number_format($stats['upcoming']) ?></span>
+                        <span class="slots-stat-label">Upcoming</span>
                     </div>
-                    <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                        <div class="recruiter-summary-item">
-                            <h6 class="m-0 font-weight-bold">Completed</h6>
-                             <?= number_format($stats['completed']) ?> 
-                        </div>
+                    <div class="slots-stat-divider"></div>
+                    <div class="slots-stat">
+                        <span class="slots-stat-value recruiter-brand-icon"><?= number_format($stats['completed']) ?></span>
+                        <span class="slots-stat-label">Completed</span>
                     </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="recruiter-summary-item">
-                            <h6 class="m-0 font-weight-bold">Rescheduled</h6>
-                          <?= number_format($stats['rescheduled']) ?> 
-                        </div>
+                    <div class="slots-stat-divider"></div>
+                    <div class="slots-stat">
+                        <span class="slots-stat-value recruiter-amber-text"><?= number_format($stats['rescheduled']) ?></span>
+                        <span class="slots-stat-label">Rescheduled</span>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="card shadow-sm recruiter-filter-card recruiter-rounded-hidden">
-            <div class="card-body">
-                <div class="recruiter-booking-filter-head">
-                    <h6 class="recruiter-booking-filter-title">Filters</h6>
-                    
-                </div>
-                <form method="get" action="<?= base_url('recruiter/slots/bookings') ?>" class="recruiter-job-form">
-                    <div class="recruiter-booking-filter-grid">
-                        <div>
-                            <label class="sr-only">Job</label>
-                            <select name="job_id" class="form-control">
-                                <option value="">All Jobs</option>
-                                <?php foreach ($jobs as $job): ?>
-                                    <option value="<?= $job['id'] ?>" <?= ($filters['job_id'] ?? '') == $job['id'] ? 'selected' : '' ?>>
-                                        <?= esc($job['title']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="sr-only">Status</label>
-                            <select name="status" class="form-control">
-                                <option value="">All Status</option>
-                                <option value="confirmed" <?= ($filters['status'] ?? '') === 'confirmed' ? 'selected' : '' ?>>Confirmed</option>
-                                <option value="completed" <?= ($filters['status'] ?? '') === 'completed' ? 'selected' : '' ?>>Completed</option>
-                                <option value="rescheduled" <?= ($filters['status'] ?? '') === 'rescheduled' ? 'selected' : '' ?>>Rescheduled</option>
-                                <option value="no_show" <?= ($filters['status'] ?? '') === 'no_show' ? 'selected' : '' ?>>No Show</option>
-                                <option value="cancelled" <?= ($filters['status'] ?? '') === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                            </select>
-                        </div>
-                        <div class="recruiter-booking-filter-actions">
-                            <button type="submit" class="btn btn-outline-first">
-                                Filter
-                            </button>
-                        </div>
-                    </div>
+                <form method="get" action="<?= base_url('recruiter/slots/bookings') ?>" class="slots-filters">
+                    <select name="job_id" class="slots-filter-input">
+                        <option value="">All Jobs</option>
+                        <?php foreach ($jobs as $job): ?>
+                            <option value="<?= $job['id'] ?>" <?= ($filters['job_id'] ?? '') == $job['id'] ? 'selected' : '' ?>>
+                                <?= esc($job['title']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <select name="status" class="slots-filter-input">
+                        <option value="">All Status</option>
+                        <option value="confirmed" <?= ($filters['status'] ?? '') === 'confirmed' ? 'selected' : '' ?>>Confirmed</option>
+                        <option value="completed" <?= ($filters['status'] ?? '') === 'completed' ? 'selected' : '' ?>>Completed</option>
+                        <option value="rescheduled" <?= ($filters['status'] ?? '') === 'rescheduled' ? 'selected' : '' ?>>Rescheduled</option>
+                        <option value="no_show" <?= ($filters['status'] ?? '') === 'no_show' ? 'selected' : '' ?>>No Show</option>
+                        <option value="cancelled" <?= ($filters['status'] ?? '') === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                    </select>
+                    <button type="submit" class="slots-filter-btn"><i class="fas fa-search"></i></button>
+                    <?php if (!empty($filters['job_id']) || !empty($filters['status'])): ?>
+                        <a href="<?= base_url('recruiter/slots/bookings') ?>" class="slots-filter-clear">Clear</a>
+                    <?php endif; ?>
                 </form>
             </div>
-        </div>
 
-        <div class="card shadow-sm recruiter-table-card recruiter-rounded-hidden">
-            <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <h6 class="m-0 font-weight-bold">All Bookings</h6>
-                
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover recruiter-bookings-table">
+            <div class="table-responsive">
+                    <table class="table table-hover recruiter-bookings-table mb-0">
                         <thead class="thead-light">
                             <tr>
                                 <th>ID</th>
@@ -190,7 +161,7 @@
                 </div>
 
                 <?php if (isset($pager) && is_object($pager) && method_exists($pager, 'links') && $pager->getPageCount() > 1): ?>
-                    <div class="mt-3">
+                    <div class="px-3 py-2">
                         <?= $pager->links('default', 'portal_full') ?>
                     </div>
                 <?php endif; ?>
