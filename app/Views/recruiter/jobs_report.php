@@ -164,6 +164,9 @@ body.dark {
 .btn-outline:hover { background: var(--muted); }
 
 .note { font-size: 12px; color: var(--text-light); margin: 8px 0 18px; }
+body.dark h2.card-title{
+  color:#1FB7B5;
+}
 </style>
 
 <div class="recruiter-reports-wrap recruiter-reports-jobboard">
