@@ -28,6 +28,11 @@ class RecruiterCandidates extends BaseController
 
     public function index()
     {
+        // The standalone candidate database was consolidated into Resdex.
+        // Keep direct controller calls aligned with the legacy route redirect.
+        return redirect()->to(base_url('recruiter/resdex'));
+
+        /* Legacy implementation retained temporarily below for migration history.
         if (session()->get('role') !== 'recruiter') {
             return redirect()->to(base_url('login'))->with('error', 'Unauthorized');
         }
@@ -217,6 +222,7 @@ class RecruiterCandidates extends BaseController
                 'job_id' => $filters['job_id'],
             ],
         ]);
+        */
     }
 
     public function viewProfile($candidateId)
