@@ -193,6 +193,9 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     $routes->get('jobs/preview/(:num)', 'JobResponsesController::previewJob/$1');
     $routes->post('applications/update-status/(:num)', 'JobResponsesController::updateApplicationStatus/$1');
     $routes->post('applications/schedule-interview/(:num)', 'JobResponsesController::scheduleInterview/$1');
+    $routes->post('applications/(:num)/notes', 'JobResponsesController::saveInlineNotes/$1');
+    $routes->post('applications/(:num)/follow-up', 'JobResponsesController::setFollowUp/$1');
+    $routes->post('applications/(:num)/communication-outcome', 'JobResponsesController::logCommunicationOutcome/$1');
     $routes->post('jobs/(:num)/send-bulk-email', 'JobResponsesController::sendBulkEmail/$1');
     
     // Candidate database functionality now lives in Resdex. Keep the old URL

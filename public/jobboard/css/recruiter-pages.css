@@ -10795,14 +10795,9 @@ body.dark .recruiter-dashboard-subtitle {
     .recruiter-dashboard-jobboard .recent-applications-table tbody td:nth-child(3)::before { content: "Job"; }
     .recruiter-dashboard-jobboard .recent-applications-table tbody td:nth-child(4)::before { content: "Status"; }
     .recruiter-dashboard-jobboard .recent-applications-table tbody td:nth-child(5)::before { content: "Applied"; }
-    .recruiter-dashboard-jobboard .recent-applications-table tbody td:nth-child(6)::before { content: "Action"; }
     .recruiter-dashboard-jobboard .recent-applications-table .status-pill {
         max-width: 100%;
         white-space: normal;
-    }
-    .recruiter-dashboard-jobboard .recent-applications-table .btn {
-        justify-content: center;
-        width: 100%;
     }
     body.dark .recruiter-dashboard-jobboard .recent-applications-table tbody {
         background: #000000;
