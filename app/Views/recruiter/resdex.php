@@ -144,6 +144,41 @@
   font-weight: 600; cursor: pointer; text-decoration: underline; white-space: nowrap;
 }
 
+/* ---- No-folder warning states ---- */
+.folder-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #B45309;
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  border-radius: 8px;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+.folder-warning a { color: #B45309 !important; text-decoration: underline; font-weight: 700; }
+body.dark .folder-warning {
+  background: #78350F30;
+  border-color: #78350F60;
+  color: #FCD34D;
+}
+body.dark .folder-warning a { color: #FCD34D !important; }
+
+.folder-warning-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #B45309 !important;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.folder-warning-inline:hover { text-decoration: underline; }
+body.dark .folder-warning-inline { color: #FCD34D !important; }
+
 .candidate-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -480,17 +515,26 @@ body.dark .alert-danger {
           <!-- Bulk action bar: hidden until at least one candidate is checked -->
           <div class="bulk-action-bar" id="bulkActionBar">
             <div class="bulk-count"><span id="bulkSelectedCount">0</span> selected</div>
-            <span class="folder-select-wrap">
-              <select id="bulkFolderSelect">
-                <option value="">Select Folder</option>
-                <?php foreach ($folders as $folder): ?>
-                  <option value="<?= (int) $folder['id'] ?>"><?= esc($folder['folder_name']) ?></option>
-                <?php endforeach; ?>
-              </select>
-            </span>
-            <button type="button" class="btn btn-primary btn-sm" id="bulkSaveBtn">
-              <i class="fas fa-folder-plus"></i> Save to Folder
-            </button>
+
+            <?php if (!empty($folders)): ?>
+              <span class="folder-select-wrap">
+                <select id="bulkFolderSelect">
+                  <option value="">Select Folder</option>
+                  <?php foreach ($folders as $folder): ?>
+                    <option value="<?= (int) $folder['id'] ?>"><?= esc($folder['folder_name']) ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </span>
+              <button type="button" class="btn btn-primary btn-sm" id="bulkSaveBtn">
+                <i class="fas fa-folder-plus"></i> Save to Folder
+              </button>
+            <?php else: ?>
+              <span class="folder-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                No folders yet — <a href="<?= site_url('recruiter/resdex/folders') ?>">create one first</a>
+              </span>
+            <?php endif; ?>
+
             <div class="spacer"></div>
             <button type="button" class="bulk-clear-btn" id="bulkClearBtn">Clear selection</button>
           </div>
@@ -506,11 +550,13 @@ body.dark .alert-danger {
                   It carries the current search filters PLUS candidate_id/candidate_name,
                   so each card's save is independent and doesn't affect the others. -->
           <?php foreach ($results['results'] as $candidate): ?>
+              <?php if (!empty($folders)): ?>
               <form id="folderForm_<?= (int) $candidate['user_id'] ?>" method="post"
                     action="<?= site_url('recruiter/resdex/folder/add') ?>">
                   <?= csrf_field() ?>
                   <input type="hidden" name="candidate_id" value="<?= (int) $candidate['user_id'] ?>">
               </form>
+              <?php endif; ?>
 
               <form id="saveSearchForm_<?= (int) $candidate['user_id'] ?>" method="post"
                     action="<?= site_url('recruiter/resdex/save-search') ?>">
@@ -575,17 +621,23 @@ body.dark .alert-danger {
     
                   <span class="action-divider"></span>
 
-               <span class="folder-select-wrap">
-  <select name="folder_id" form="folderForm_<?= (int) $candidate['user_id'] ?>">
-      <option value="">Select Folder</option>
-      <?php foreach ($folders as $folder): ?>
-          <option value="<?= (int) $folder['id'] ?>"><?= esc($folder['folder_name']) ?></option>
-      <?php endforeach; ?>
-  </select>
-</span>
-                  <button type="submit" form="folderForm_<?= (int) $candidate['user_id'] ?>" class="btn btn-primary btn-sm">
-                      Save 
-                  </button>
+                  <?php if (!empty($folders)): ?>
+                    <span class="folder-select-wrap">
+                      <select name="folder_id" form="folderForm_<?= (int) $candidate['user_id'] ?>">
+                          <option value="">Select Folder</option>
+                          <?php foreach ($folders as $folder): ?>
+                              <option value="<?= (int) $folder['id'] ?>"><?= esc($folder['folder_name']) ?></option>
+                          <?php endforeach; ?>
+                      </select>
+                    </span>
+                    <button type="submit" form="folderForm_<?= (int) $candidate['user_id'] ?>" class="btn btn-primary btn-sm">
+                        Save 
+                    </button>
+                  <?php else: ?>
+                    <a href="<?= site_url('recruiter/resdex/folders') ?>" class="folder-warning-inline" title="No folders yet. Create one first.">
+                        <i class="fas fa-exclamation-triangle"></i> Create folder
+                    </a>
+                  <?php endif; ?>
 
                   <span class="action-divider"></span>
 
@@ -694,8 +746,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const selectAll   = document.getElementById('selectAllCandidates');
   const bar         = document.getElementById('bulkActionBar');
   const countEl     = document.getElementById('bulkSelectedCount');
-  const folderSelect = document.getElementById('bulkFolderSelect');
-  const saveBtn     = document.getElementById('bulkSaveBtn');
+  const folderSelect = document.getElementById('bulkFolderSelect'); // may be null if no folders exist
+  const saveBtn     = document.getElementById('bulkSaveBtn');       // may be null if no folders exist
   const clearBtn    = document.getElementById('bulkClearBtn');
   const bulkForm    = document.getElementById('bulkFolderForm');
 
@@ -734,7 +786,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  if (saveBtn) {
+  // Only wired up when folders exist — if there are no folders, the button/select
+  // aren't rendered at all and a warning message shows instead.
+  if (saveBtn && folderSelect) {
     saveBtn.addEventListener('click', async function () {
       const selected = getSelected().map(function (cb) { return cb.value; });
       const folderId = folderSelect.value;
