@@ -508,7 +508,7 @@ $interviewNudge = [
 <div class="modal fade" id="coverLetterModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content border-0">
-            <div class="modal-header text-white" style="background:#1FB7B5 !important;">
+            <div class="modal-header text-white candidate-brand-modal-header">
                 <h5 class="modal-title font-weight-bold"><i class="fas fa-magic mr-2"></i>AI Cover Letter Draft</h5>
                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -588,99 +588,6 @@ function copyCoverLetter() {
 }
 </script>
 <?php if ($showInterviewNudge): ?>
-<style>
-#aiNudge-backdrop{
-  position:fixed;inset:0;z-index:9998;
-  background:rgba(22,33,43,0.55);
-  display:none;align-items:center;justify-content:center;padding:20px;
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-}
-#aiNudge-backdrop.visible{display:flex;animation:aiNudgeFadeIn .22s ease;}
-@keyframes aiNudgeFadeIn{from{opacity:0}to{opacity:1}}
-
-#aiNudge-modal{
-  background:var(--card,#fff);
-  border:1px solid var(--border,#D9ECE5);
-  border-radius:10px;
-  width:100%;max-width:520px;
-  overflow:hidden;
-  animation:aiNudgePop .3s cubic-bezier(.34,1.56,.64,1);
-  box-shadow:0 24px 60px rgba(0,0,0,.12);
-}
-@keyframes aiNudgePop{from{opacity:0;transform:scale(.93) translateY(18px)}to{opacity:1;transform:none}}
-
-.ain-header{padding:18px 20px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
-.ain-header-left{display:flex;flex-direction:column;gap:4px;}
-.ain-eyebrow{
-  font-size:18px !important;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;
-  color:var(--primary,#1FB7B5);
-}
-.ain-counter{font-size:10px;font-weight:600;color:var(--text-light,#94A3B8);letter-spacing:.04em;}
-.ain-close-x{
-  width:26px;height:26px;border-radius:5px;flex-shrink:0;
-  border:1px solid var(--border,#D9ECE5);background:transparent;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--text-light,#94A3B8);font-size:13px;margin-top:1px;
-  transition:background .15s,color .15s,border-color .15s;
-  outline:none;-webkit-tap-highlight-color:transparent;
-}
-.ain-close-x:hover{background:var(--muted,#EDF8F5);color:var(--foreground,#16212B);border-color:var(--primary,#1FB7B5);}
-.ain-close-x:focus{outline:none;}
-.ain-close-x:focus-visible{outline:2px solid var(--primary,#1FB7B5);outline-offset:2px;}
-
-.ain-body{padding:16px 20px 0;}
-.ain-slide-title{font-size:19px;font-weight:700;color:var(--foreground,#16212B);line-height:1.3;margin-bottom:10px;}
-
-.ain-video-wrap{
-  position:relative;border-radius:8px;overflow:hidden;
-  background:#0F1A20;margin-bottom:16px;border:1px solid var(--border,#D9ECE5);
-}
-.ain-video-wrap video{width:100%;display:block;max-height:260px;background:#000;}
-.ain-video-title{
-  font-size:11px;font-weight:600;color:var(--muted-foreground,#64748B);
-  margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;
-}
-
-.ain-rows{list-style:none;margin:0 0 18px;padding:0;}
-.ain-rows li{
-  display:flex;align-items:flex-start;gap:8px;
-  font-size:13px;color:var(--foreground,#16212B);
-  padding:7px 0;border-bottom:1px solid var(--border,#EDF8F5);
-}
-.ain-rows li:last-child{border-bottom:none;}
-.ain-rows li i{color:var(--primary,#1FB7B5);margin-top:2px;font-size:12px;flex-shrink:0;}
-
-.ain-divider{height:1px;background:var(--border,#D9ECE5);}
-
-.ain-footer{padding:14px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.ain-btn-primary{
-  padding:8px 18px;border-radius:6px;
-  background:var(--gradient-primary,linear-gradient(135deg,#1FB7B5,#53B86C,#B5D84E));
-  color:#fff !important;font-size:13px;font-weight:600;border:none;cursor:pointer;
-  text-decoration:none !important;display:inline-block;white-space:nowrap;
-  transition:opacity .15s,transform .15s;
-}
-.ain-btn-primary:hover{opacity:.88;transform:translateY(-1px);}
-.ain-btn-maybe{
-  padding:8px 16px;border-radius:6px;background:transparent;
-  border:1px solid var(--border,#D9ECE5);color:var(--muted-foreground,#64748B);
-  font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;
-  transition:border-color .15s,color .15s,background .15s;
-}
-.ain-btn-maybe:hover{border-color:var(--primary,#1FB7B5);color:var(--primary,#1FB7B5);background:var(--muted,#EDF8F5);}
-
-body.dark #aiNudge-modal{background:var(--card,#162327) !important;border-color:var(--border,#23343A);}
-body.dark .ain-close-x{border-color:var(--border,#23343A);color:var(--text-light,#7A8B96);}
-body.dark .ain-close-x:hover{background:var(--muted,#1B2A2F);color:var(--foreground,#F8FAFC);border-color:var(--primary,#1FB7B5);}
-body.dark .ain-slide-title{color:var(--foreground,#F8FAFC);}
-body.dark .ain-video-wrap{border-color:var(--border,#23343A);}
-body.dark .ain-rows li{color:var(--foreground,#F8FAFC);border-color:var(--border,#23343A);}
-body.dark .ain-divider{background:var(--border,#23343A);}
-body.dark .ain-btn-maybe{border-color:var(--border,#23343A);color:var(--muted-foreground,#94A3B8);}
-body.dark .ain-btn-maybe:hover{border-color:var(--primary,#1FB7B5);color:var(--primary,#1FB7B5);background:var(--muted,#1B2A2F);}
-</style>
-
 <div id="aiNudge-backdrop" role="dialog" aria-modal="true" aria-label="AI Interview practice suggestion">
   <div id="aiNudge-modal">
     <div class="ain-header">

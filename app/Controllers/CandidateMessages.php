@@ -68,7 +68,7 @@ class CandidateMessages extends BaseController
         ]);
 
         $candidateName = (string) (session()->get('user_name') ?? 'Candidate');
-        $recruiterThreadLink = base_url('recruiter/candidate/' . $candidateId)
+        $recruiterThreadLink = base_url('recruiter/messages/' . $candidateId)
             . '?application_id=' . $applicationId
             . '&show_contact=1';
 

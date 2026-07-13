@@ -252,6 +252,8 @@ $routes->post('candidate/add-interest', 'Candidate::addInterest', ['filter' => '
 $routes->get('candidate/delete-interest/(:any)', 'Candidate::deleteInterest/$1', ['filter' => 'candidate']);
 
 $routes->get('recruiter/candidate/(:num)', 'RecruiterCandidates::viewProfile/$1', ['filter' => 'recruiter']);
+$routes->get('recruiter/messages/(:num)', 'RecruiterCandidates::communication/$1', ['filter' => 'recruiter']);
+$routes->get('recruiter/candidate/(:num)/communication', 'RecruiterCandidates::redirectCommunication/$1', ['filter' => 'recruiter']);
 $routes->get('recruiter/candidate/(:num)/view-contact', 'RecruiterCandidates::viewContact/$1', ['filter' => 'recruiter']);
 $routes->get('recruiter/candidate/(:num)/download-resume', 'RecruiterCandidates::downloadResume/$1', ['filter' => 'recruiter']);
 $routes->get('recruiter/candidate/(:num)/preview-resume', 'RecruiterCandidates::previewResume/$1', ['filter' => 'recruiter']);

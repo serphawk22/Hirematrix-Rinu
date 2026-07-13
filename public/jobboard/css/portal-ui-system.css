@@ -1,0 +1,272 @@
+/* Shared portal UI layer: keeps cards, filters, badges, actions, and dark mode consistent. */
+:root {
+    --portal-font: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --portal-bg: #f4f7fb;
+    --portal-card: #ffffff;
+    --portal-card-soft: #f8fbfd;
+    --portal-text: #16212b;
+    --portal-muted: #64748b;
+    --portal-border: #dfe7ef;
+    --portal-border-soft: #edf2f7;
+    --portal-primary: #1fb7b5;
+    --portal-primary-dark: #0d8a90;
+    --portal-success: #047857;
+    --portal-warning: #b45309;
+    --portal-danger: #dc2626;
+    --portal-info: #2563eb;
+    --portal-radius-card: 8px;
+    --portal-radius-control: 8px;
+    --portal-shadow-card: 0 10px 24px rgba(15, 23, 42, .055);
+    --portal-shadow-hover: 0 14px 30px rgba(15, 23, 42, .075);
+}
+
+body.dark,
+body.dark.candidate-app,
+body.dark.recruiter-jobboard,
+html.hm-dark-preload body {
+    --portal-bg: #050505;
+    --portal-card: #111111;
+    --portal-card-soft: #171717;
+    --portal-text: #f5f5f5;
+    --portal-muted: #a3a3a3;
+    --portal-border: #2b2b2b;
+    --portal-border-soft: #222222;
+    --portal-shadow-card: none;
+    --portal-shadow-hover: none;
+}
+
+body.candidate-app,
+body.recruiter-jobboard {
+    background: var(--portal-bg);
+    color: var(--portal-text);
+    font-family: var(--portal-font);
+}
+
+body.candidate-app .card,
+body.candidate-app .job-card,
+body.candidate-app .dashboard-panel,
+body.candidate-app .profile-section,
+body.candidate-app .settings-card,
+body.candidate-app .notification-card,
+body.candidate-app .empty-state,
+body.recruiter-jobboard .card,
+body.recruiter-jobboard .response-card,
+body.recruiter-jobboard .dashboard-panel,
+body.recruiter-jobboard .recruiter-card,
+body.recruiter-jobboard .settings-card,
+body.recruiter-jobboard .notification-card,
+body.recruiter-jobboard .empty-state {
+    background: var(--portal-card);
+    border: 1px solid var(--portal-border);
+    border-radius: var(--portal-radius-card);
+    box-shadow: none;
+    color: var(--portal-text);
+}
+
+body.candidate-app .job-card:hover,
+body.candidate-app .dashboard-panel:hover,
+body.recruiter-jobboard .response-card:hover,
+body.recruiter-jobboard .recruiter-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: var(--portal-shadow-hover);
+}
+
+body.dark.candidate-app .card,
+body.dark.candidate-app .job-card,
+body.dark.candidate-app .dashboard-panel,
+body.dark.candidate-app .profile-section,
+body.dark.candidate-app .settings-card,
+body.dark.candidate-app .notification-card,
+body.dark.candidate-app .empty-state,
+body.dark.recruiter-jobboard .card,
+body.dark.recruiter-jobboard .response-card,
+body.dark.recruiter-jobboard .dashboard-panel,
+body.dark.recruiter-jobboard .recruiter-card,
+body.dark.recruiter-jobboard .settings-card,
+body.dark.recruiter-jobboard .notification-card,
+body.dark.recruiter-jobboard .empty-state {
+    background: var(--portal-card) !important;
+    border-color: var(--portal-border) !important;
+    color: var(--portal-text) !important;
+}
+
+body.candidate-app .page-board-title,
+body.candidate-app .section-title,
+body.recruiter-jobboard .page-board-title,
+body.recruiter-jobboard .section-title {
+    color: var(--portal-text);
+    font-weight: 750;
+    letter-spacing: 0;
+}
+
+body.candidate-app .page-board-subtitle,
+body.candidate-app .section-subtitle,
+body.candidate-app .text-muted,
+body.recruiter-jobboard .page-board-subtitle,
+body.recruiter-jobboard .section-subtitle,
+body.recruiter-jobboard .text-muted {
+    color: var(--portal-muted) !important;
+}
+
+body.candidate-app .btn,
+body.recruiter-jobboard .btn,
+body.candidate-app button,
+body.recruiter-jobboard button {
+    border-radius: var(--portal-radius-control);
+    letter-spacing: 0;
+}
+
+body.candidate-app .btn:focus,
+body.candidate-app .btn:focus-visible,
+body.candidate-app button:focus,
+body.candidate-app button:focus-visible,
+body.recruiter-jobboard .btn:focus,
+body.recruiter-jobboard .btn:focus-visible,
+body.recruiter-jobboard button:focus,
+body.recruiter-jobboard button:focus-visible {
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, .14);
+    outline: 0;
+}
+
+body.candidate-app .badge,
+body.candidate-app .status-pill,
+body.candidate-app .pill-count,
+body.candidate-app .interest-chip,
+body.candidate-app .skill-chip,
+body.recruiter-jobboard .badge,
+body.recruiter-jobboard .status-pill,
+body.recruiter-jobboard .pill-count,
+body.recruiter-jobboard .communication-chip {
+    align-items: center;
+    background: rgba(31, 183, 181, .1);
+    border: 1px solid rgba(31, 183, 181, .22);
+    border-radius: 999px;
+    color: var(--portal-primary-dark);
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 800;
+    gap: 5px;
+    line-height: 1;
+    min-height: 24px;
+    padding: 5px 9px;
+    text-transform: none;
+    white-space: nowrap;
+}
+
+body.dark.candidate-app .badge,
+body.dark.candidate-app .status-pill,
+body.dark.candidate-app .pill-count,
+body.dark.candidate-app .interest-chip,
+body.dark.candidate-app .skill-chip,
+body.dark.recruiter-jobboard .badge,
+body.dark.recruiter-jobboard .status-pill,
+body.dark.recruiter-jobboard .pill-count,
+body.dark.recruiter-jobboard .communication-chip {
+    background: #171717 !important;
+    border-color: #333333 !important;
+    color: #e5e5e5 !important;
+}
+
+body.candidate-app .tab-pill,
+body.recruiter-jobboard .stage-ajax-link,
+body.recruiter-jobboard .response-chip {
+    align-items: center;
+    background: var(--portal-card);
+    border: 1px solid var(--portal-border);
+    border-radius: 999px;
+    color: var(--portal-text);
+    display: inline-flex;
+    font-size: 13px;
+    font-weight: 800;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 14px;
+    text-decoration: none;
+}
+
+body.candidate-app .tab-pill.active,
+body.recruiter-jobboard .stage-ajax-link.active,
+body.recruiter-jobboard .response-chip.is-active {
+    background: rgba(31, 183, 181, .11);
+    border-color: var(--portal-primary);
+    color: var(--portal-primary-dark);
+}
+
+body.dark.candidate-app .tab-pill,
+body.dark.recruiter-jobboard .stage-ajax-link,
+body.dark.recruiter-jobboard .response-chip {
+    background: #111111 !important;
+    border-color: #2b2b2b !important;
+    color: #f5f5f5 !important;
+}
+
+body.dark.candidate-app .tab-pill.active,
+body.dark.recruiter-jobboard .stage-ajax-link.active,
+body.dark.recruiter-jobboard .response-chip.is-active {
+    background: #171717 !important;
+    border-color: #555555 !important;
+    color: #ffffff !important;
+}
+
+body.candidate-app .filter-section,
+body.recruiter-jobboard .filter-section,
+body.recruiter-jobboard .response-filter-group {
+    border-bottom: 1px solid var(--portal-border-soft);
+    padding: 14px 0;
+}
+
+body.candidate-app .filter-section select,
+body.candidate-app .filter-section input,
+body.recruiter-jobboard .filter-section select,
+body.recruiter-jobboard .filter-section input,
+body.recruiter-jobboard .response-filter-group select,
+body.recruiter-jobboard .response-filter-group input {
+    background: var(--portal-card);
+    border: 1px solid var(--portal-border);
+    border-radius: var(--portal-radius-control);
+    color: var(--portal-text);
+    min-height: 40px;
+}
+
+body.dark.candidate-app .filter-section select,
+body.dark.candidate-app .filter-section input,
+body.dark.recruiter-jobboard .filter-section select,
+body.dark.recruiter-jobboard .filter-section input,
+body.dark.recruiter-jobboard .response-filter-group select,
+body.dark.recruiter-jobboard .response-filter-group input {
+    background: #111111 !important;
+    border-color: #333333 !important;
+    color: #f5f5f5 !important;
+}
+
+body.candidate-app .empty-state,
+body.recruiter-jobboard .empty-state {
+    align-items: center;
+    display: grid;
+    justify-items: center;
+    min-height: 180px;
+    padding: 34px 20px;
+    text-align: center;
+}
+
+body.candidate-app .empty-state i,
+body.recruiter-jobboard .empty-state i {
+    color: #dbe3ec;
+    font-size: 42px;
+    margin-bottom: 8px;
+}
+
+body.candidate-app .empty-state h5,
+body.recruiter-jobboard .empty-state h5 {
+    color: var(--portal-text);
+    font-size: 15px;
+    font-weight: 800;
+    margin: 0 0 6px;
+}
+
+body.candidate-app .empty-state p,
+body.recruiter-jobboard .empty-state p {
+    color: var(--portal-muted);
+    margin: 0;
+}
+

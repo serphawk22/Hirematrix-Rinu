@@ -62,95 +62,13 @@
     <noscript><link rel="stylesheet" href="<?= $candidateBundleHref ?>"></noscript>
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.min.css')) ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/portal-ui-system.css?v=' . @filemtime(FCPATH . 'jobboard/css/portal-ui-system.css')) ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/candidate-pages.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-pages.css')) ?>">
     <?php if ($candidateNeedsAtsCircle): ?>
         <!-- CSS Circle Progress (Required for visual ATS Score) -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/css-percentage-circle/0.0.3/css/circle.min.css">
     <?php endif; ?>
-    <style>
-        html.hm-dark-preload,
-        html.hm-dark-preload body,
-        body.dark.candidate-app {
-            background: #0f0f0f;
-        }
-        html.hm-dark-preload #overlayer,
-        body.dark.candidate-app #overlayer {
-            background: #0f0f0f !important;
-        }
-        html.hm-dark-preload .loader .spinner-border,
-        body.dark.candidate-app .loader .spinner-border {
-            color: #1FB7B5 !important;
-        }
-        body.candidate-app .cand-leftnav__user-dropdown a.is-active,
-        body.candidate-app .cand-topbar__user-dropdown a.is-active {
-            background: var(--candidate-nav-active, #E0F5F0) !important;
-            color: var(--candidate-nav-primary-dark, #0D8A90) !important;
-            font-weight: 800 !important;
-            box-shadow: inset 3px 0 0 var(--candidate-nav-primary, #1FB7B5) !important;
-        }
-        body.candidate-app .cand-leftnav__user-dropdown a.is-active i,
-        body.candidate-app .cand-topbar__user-dropdown a.is-active i {
-            background: rgba(31, 183, 181, 0.16) !important;
-            color: var(--candidate-nav-primary-dark, #0D8A90) !important;
-        }
-        body.candidate-app .candidate-search-suggest-wrap {
-            position: relative !important;
-            overflow: visible !important;
-        }
-        body.candidate-app .candidate-search-suggestions {
-            background: #fff !important;
-            border: 1px solid rgba(148, 163, 184, .22) !important;
-            border-radius: 8px !important;
-            box-shadow: 0 18px 40px rgba(15, 23, 42, .14) !important;
-            display: none;
-            left: 0;
-            max-height: 310px;
-            overflow: auto;
-            padding: 8px 0 !important;
-            position: absolute;
-            right: 0;
-            top: calc(100% + 8px);
-            z-index: 1200;
-        }
-        body.candidate-app .candidate-search-suggestions.is-open {
-            display: block;
-        }
-        body.candidate-app .candidate-search-suggestion {
-            align-items: center;
-            background: transparent;
-            border: 0;
-            color: #142033;
-            cursor: pointer;
-            display: flex;
-            font-size: 14px;
-            font-weight: 700;
-            justify-content: flex-start;
-            line-height: 1.3;
-            min-height: 38px;
-            padding: 9px 14px;
-            text-align: left;
-            width: 100%;
-        }
-        body.candidate-app .candidate-search-suggestion:hover,
-        body.candidate-app .candidate-search-suggestion.is-active {
-            background: rgba(31, 183, 181, .09);
-            color: #007d83;
-        }
-        body.dark.candidate-app .candidate-search-suggestions {
-            background: #141414 !important;
-            border-color: #272727 !important;
-            box-shadow: 0 18px 40px rgba(0, 0, 0, .36) !important;
-        }
-        body.dark.candidate-app .candidate-search-suggestion {
-            color: #f4f4f5;
-        }
-        body.dark.candidate-app .candidate-search-suggestion:hover,
-        body.dark.candidate-app .candidate-search-suggestion.is-active {
-            background: rgba(31, 183, 181, .16);
-            color: #28d7d4;
-        }
- 
-    </style>
-</head>
+    </head>
 <body id="top" class="hirematrix-app candidate-app">
 
 <div id="overlayer"></div>
@@ -403,13 +321,13 @@
                         <span>Job Search Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="hm-drawer-link <?= $isCareerTransitionActive ? 'is-active' : '' ?>">
-                        <span class="cand-leftnav__icon"><i class="fas fa-rocket" style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;"></i></span>
-                        <span style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">Career Transition AI</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-rocket portal-gradient-text"></i></span>
+                        <span class="portal-gradient-text">Career Transition AI</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
                     <a href="<?= esc($resumeStudioUrl) ?>" class="hm-drawer-link <?= $isResumeStudioActive ? 'is-active' : '' ?>">
-                        <span class="cand-leftnav__icon"><i class="fas fa-file-alt" style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;"></i></span>
-                        <span style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">Resume Studio</span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-file-alt portal-gradient-text"></i></span>
+                        <span class="portal-gradient-text">Resume Studio</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
                 </div>

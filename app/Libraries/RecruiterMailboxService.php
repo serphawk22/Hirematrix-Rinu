@@ -484,7 +484,7 @@ class RecruiterMailboxService
         $candidateName = trim((string) ($candidate['name'] ?? 'Candidate')) ?: 'Candidate';
         $applicationId = !empty($context['application_id']) ? (int) $context['application_id'] : null;
         $jobId = !empty($context['job_id']) ? (int) $context['job_id'] : null;
-        $link = base_url('recruiter/candidate/' . $candidateId)
+        $link = base_url('recruiter/messages/' . $candidateId)
             . '?application_id=' . (int) ($applicationId ?? 0)
             . '&job_id=' . (int) ($jobId ?? 0)
             . (!empty($activity['id']) ? '&email_activity_id=' . (int) $activity['id'] : '');
@@ -525,7 +525,7 @@ class RecruiterMailboxService
         $applicationId = !empty($context['application_id']) ? (int) $context['application_id'] : null;
         $jobId = !empty($context['job_id']) ? (int) $context['job_id'] : null;
         $link = (string) ($activity['action_link'] ?? (
-            base_url('recruiter/candidate/' . $candidateId)
+            base_url('recruiter/messages/' . $candidateId)
             . '?application_id=' . (int) ($applicationId ?? 0)
             . '&job_id=' . (int) ($jobId ?? 0)
             . (!empty($activity['id']) ? '&email_activity_id=' . (int) $activity['id'] : '')

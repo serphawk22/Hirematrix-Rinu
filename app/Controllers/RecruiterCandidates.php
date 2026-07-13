@@ -126,7 +126,6 @@ class RecruiterCandidates extends BaseController
                 ->orWhere('candidate_profiles.resume_path =', '')
                 ->groupEnd();
         }
-
         $candidates = $builder->paginate(12);
         $pager = $userModel->pager;
 
@@ -186,7 +185,6 @@ class RecruiterCandidates extends BaseController
                     ->orWhere('candidate_profiles.resume_path =', '')
                     ->groupEnd();
             }
-
             $candidatePool = $suggestionBuilder->limit(120)->findAll();
             $atsScoreService = new AtsScoreService();
             foreach ($candidatePool as &$poolRow) {
@@ -241,6 +239,15 @@ class RecruiterCandidates extends BaseController
         $applicationId = (int) ($this->request->getGet('application_id') ?? 0);
         $jobId = (int) ($this->request->getGet('job_id') ?? 0);
         $recruiterId = (int) session()->get('user_id');
+        $emailActivityId = (int) ($this->request->getGet('email_activity_id') ?? 0);
+        if ($emailActivityId > 0) {
+            return redirect()->to(base_url('recruiter/messages/' . (int) $candidateId) . '?' . http_build_query([
+                'application_id' => $applicationId,
+                'job_id' => $jobId,
+                'email_activity_id' => $emailActivityId,
+            ]));
+        }
+
         $actionModel = new RecruiterCandidateActionModel();
         $applicationContext = null;
         $applicationId = $this->resolveApplicationIdForCandidateJob((int) $candidateId, $recruiterId, $applicationId, $jobId);
@@ -356,6 +363,130 @@ class RecruiterCandidates extends BaseController
             'jobInvitations' => $this->getCandidateInvitationStatusMap((int) $candidateId, $recruiterId),
             'applicationContext' => $applicationContext,
         ]);
+    }
+
+    public function communication($candidateId)
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return redirect()->to(base_url('login'))->with('error', 'Unauthorized');
+        }
+
+        $candidateId = (int) $candidateId;
+        $recruiterId = (int) session()->get('user_id');
+        $userModel = new UserModel();
+        $candidate = $userModel->findCandidateWithProfile($candidateId) ?? $userModel->find($candidateId);
+        if (!$candidate || ($candidate['role'] ?? '') !== 'candidate') {
+            return redirect()->back()->with('error', 'Candidate not found');
+        }
+
+        if (!$this->canRecruiterAccessCandidate($candidateId, $recruiterId)) {
+            return redirect()->back()->with('error', 'This candidate profile is private unless they apply to your jobs.');
+        }
+
+        $applicationId = (int) ($this->request->getGet('application_id') ?? 0);
+        $jobId = (int) ($this->request->getGet('job_id') ?? 0);
+        $applicationId = $this->resolveApplicationIdForCandidateJob($candidateId, $recruiterId, $applicationId, $jobId);
+
+        $applicationContext = null;
+        if ($applicationId > 0) {
+            $applicationContext = (new ApplicationModel())
+                ->select('applications.id, applications.job_id, jobs.title as job_title')
+                ->join('jobs', 'jobs.id = applications.job_id', 'left')
+                ->where('applications.id', $applicationId)
+                ->where('applications.candidate_id', $candidateId)
+                ->where('jobs.recruiter_id', $recruiterId)
+                ->first();
+            $jobId = (int) ($applicationContext['job_id'] ?? $jobId);
+        }
+
+        $messages = (new RecruiterCandidateMessageModel())->getThread(
+            $candidateId,
+            $recruiterId,
+            $applicationId > 0 ? $applicationId : null
+        );
+
+        if (\Config\Database::connect()->tableExists('recruiter_mailbox_connections')) {
+            try {
+                (new \App\Libraries\RecruiterMailboxService())->syncRecruiterIfStale($recruiterId, 300);
+            } catch (\Throwable $e) {
+                log_message('error', 'Recruiter mailbox auto-sync failed on communication page: ' . $e->getMessage());
+            }
+        }
+
+        $emailActivities = [];
+        if (\Config\Database::connect()->tableExists('recruiter_email_activities')) {
+            $emailBuilder = (new \App\Models\RecruiterEmailActivityModel())
+                ->where('candidate_id', $candidateId)
+                ->where('recruiter_id', $recruiterId);
+            if ($applicationId > 0) {
+                $emailBuilder->where('application_id', $applicationId);
+            }
+            $emailActivities = $emailBuilder->orderBy('occurred_at', 'ASC')->findAll(100);
+        }
+
+        $trimQuotedEmail = static function (string $body): string {
+            $body = trim($body);
+            foreach ([
+                '/\n\s*On\s.+?wrote:\s*/is',
+                '/\n\s*From:\s.+/is',
+                '/\n\s*-{2,}\s*Original Message\s*-{2,}.*/is',
+            ] as $pattern) {
+                $body = preg_replace($pattern, '', $body) ?? $body;
+            }
+            return trim($body);
+        };
+
+        $communicationItems = [];
+        foreach ($messages as $msg) {
+            $isRecruiterMsg = ($msg['sender_role'] ?? '') === 'recruiter';
+            $communicationItems[] = [
+                'id' => 'message-' . (int) ($msg['id'] ?? 0),
+                'source' => 'Portal Message',
+                'direction' => $isRecruiterMsg ? 'outbound' : 'inbound',
+                'sender' => $isRecruiterMsg ? 'You' : (string) ($candidate['name'] ?? 'Candidate'),
+                'subject' => '',
+                'body' => (string) ($msg['message'] ?? ''),
+                'time' => (string) ($msg['created_at'] ?? date('Y-m-d H:i:s')),
+            ];
+        }
+        foreach ($emailActivities as $emailActivity) {
+            $isOutboundEmail = ($emailActivity['direction'] ?? '') === 'outbound';
+            $communicationItems[] = [
+                'id' => 'email-' . (int) ($emailActivity['id'] ?? 0),
+                'source' => 'Email',
+                'direction' => $isOutboundEmail ? 'outbound' : 'inbound',
+                'sender' => $isOutboundEmail ? 'You' : (string) ($candidate['name'] ?? 'Candidate'),
+                'subject' => (string) ($emailActivity['subject'] ?? ''),
+                'body' => $trimQuotedEmail((string) ($emailActivity['body_text'] ?? '')),
+                'time' => (string) ($emailActivity['occurred_at'] ?? date('Y-m-d H:i:s')),
+            ];
+        }
+        usort($communicationItems, static fn (array $a, array $b): int => strtotime($a['time']) <=> strtotime($b['time']));
+
+        return view('recruiter/candidate_communication', [
+            'candidate' => $candidate,
+            'applicationId' => $applicationId,
+            'jobId' => $jobId,
+            'applicationContext' => $applicationContext,
+            'communicationItems' => $communicationItems,
+            'emailActivityId' => (int) ($this->request->getGet('email_activity_id') ?? 0),
+            'returnUrl' => current_url() . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''),
+        ]);
+    }
+
+    public function redirectCommunication($candidateId)
+    {
+        if (session()->get('role') !== 'recruiter') {
+            return redirect()->to(base_url('login'))->with('error', 'Unauthorized');
+        }
+
+        $query = (string) ($_SERVER['QUERY_STRING'] ?? '');
+        $target = base_url('recruiter/messages/' . (int) $candidateId);
+        if ($query !== '') {
+            $target .= '?' . $query;
+        }
+
+        return redirect()->to($target);
     }
 
     /**
@@ -635,10 +766,16 @@ class RecruiterCandidates extends BaseController
             base_url('candidate/messages/' . (int) session()->get('user_id') . ($applicationId > 0 ? '?application_id=' . $applicationId : ''))
         );
 
-        $redirectUrl = base_url('recruiter/candidate/' . $candidateId)
-            . '?application_id=' . $applicationId
-            . '&job_id=' . $jobId
-            . '&show_contact=' . (int) ($this->request->getPost('show_contact') ?? 0);
+        $returnTo = trim((string) ($this->request->getPost('return_to') ?? ''));
+        $baseUrl = rtrim(base_url(), '/');
+        if ($returnTo !== '' && str_starts_with($returnTo, $baseUrl)) {
+            $redirectUrl = $returnTo;
+        } else {
+            $redirectUrl = base_url('recruiter/candidate/' . $candidateId)
+                . '?application_id=' . $applicationId
+                . '&job_id=' . $jobId
+                . '&show_contact=' . (int) ($this->request->getPost('show_contact') ?? 0);
+        }
 
         return redirect()->to($redirectUrl)->with('success', 'Message sent to candidate.');
     }

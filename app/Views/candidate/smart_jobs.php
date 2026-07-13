@@ -1,130 +1,4 @@
 <?= view('Layouts/candidate_header', ['title' => 'Find Jobs']) ?>
-<style>
-    body.dark .div.job-card.js-clickable-card,
-    body.dark.candidate-app .jobs-page-jobboard .job-card {
-        background-color: var(--card) !important;
-        border: 1px solid #23343A !important;
-    }
-
-    .candidate-app .job-card-footer,
-    div.jobs-page-jobboard.saved-jobs-jobboard .job-card-footer {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        margin-top: 5px !important;
-        padding-top: 5px !important;
-        border-top: none !important;
-    }
-
-    .candidate-app .job-card-posted {
-        font-size: 12.5px !important;
-        color: var(--muted-foreground, #8a94a0) !important;
-    }
-
-    .candidate-app .job-card-company {
-        font-size: 0.94rem !important;
-        line-height: 1 !important;
-        letter-spacing: 0 !important;
-        text-transform: none !important;
-    }
-
-    .candidate-app .jobs-page-jobboard .recommended-job-card,
-    .candidate-app .jobs-page-jobboard .job-card {
-        gap: 2px !important;
-        height: 100% !important;
-        min-height: 0 !important;
-        width: 100% !important;
-        position: relative !important;
-        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease !important;
-    }
-
-    .jobs-page-jobboard .job-card-body {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0rem;
-    }
-
-    .job-card-tools-wrapper {
-        position: absolute;
-        bottom: none !important;
-        right: 34px !important;
-        /* Positioned side-by-side with the save button */
-        z-index: 100;
-        /* Ensure wrapper is above card content */
-        display: block;
-    }
-
-    .job-card-saveing-btn {
-        background: none;
-        border: none !important;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 13.5px;
-        font-weight: 600;
-        color: var(--foreground, #12181f);
-        cursor: pointer;
-        padding: 0;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-
-    .job-card-actions-group {
-        display: flex !important;
-        align-items: center !important;
-        gap: 6px !important;
-    }
-
-    div.jobs-page-jobboard .recommended-job-pane .row.g-4,
-    .row.g-4.mb-4 {
-        --bs-gutter-x: 16px !important;
-        --bs-gutter-y: 16px !important;
-        margin-left: calc(-1 * var(--bs-gutter-x) / 2) !important;
-        margin-right: calc(-1 * var(--bs-gutter-x) / 2) !important;
-        padding-top: 10px !important;
-        /* gives translateY(-2px) room to breathe */
-    }
-
-    div.jobs-page-jobboard .recommended-job-pane .row.g-4,
-    .row.g-4.mb-4>[class*="col-"] {
-        padding-left: calc(var(--bs-gutter-x) / 2) !important;
-        padding-right: calc(var(--bs-gutter-x) / 2) !important;
-        margin-bottom: 10px !important;
-        /* was 24px, and no longer stacked with g-4's own gutter-y */
-    }
-
-    .candidate-app .jobs-page-jobboard .recommended-tab-loading {
-        align-items: center !important;
-        background: var(--candidate-surface, #fff) !important;
-        border: 1px solid var(--candidate-line, #d7e5f2) !important;
-        border-radius: 8px !important;
-        color: var(--candidate-muted, #64748b) !important;
-        display: flex !important;
-        gap: 10px !important;
-        justify-content: center !important;
-        min-height: 180px !important;
-        padding: 28px !important;
-        width: 100% !important;
-    }
-
-    .candidate-app .jobs-page-jobboard .recommended-tab-spinner {
-        animation: recommendedTabSpin .75s linear infinite !important;
-        border: 2px solid rgba(31, 183, 181, .2) !important;
-        border-radius: 999px !important;
-        border-top-color: var(--primary, #1FB7B5) !important;
-        flex: 0 0 20px !important;
-        height: 20px !important;
-        width: 20px !important;
-    }
-
-    @keyframes recommendedTabSpin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-</style>
 <?php
 $allJobsAreExternal = $allJobsAreExternal ?? false;
 
@@ -180,12 +54,13 @@ $recommendationLabels = [
     'preferences' => 'Preferences / Interests',
     'ai' => 'Other Recommendations',
 ];
-$recommendationCountLabel = static function (string $type, array $jobs) use ($recommendationCounts): string {
-    if (array_key_exists($type, $recommendationCounts) && $recommendationCounts[$type] !== null) {
-        return (string) (int) $recommendationCounts[$type];
+$recommendationCountLabel = static function (string $type, array $jobs): string {
+    $visibleCount = count($jobs);
+    if ($visibleCount > 0) {
+        return (string) $visibleCount;
     }
 
-    return $jobs !== [] ? (string) count($jobs) : '';
+    return '';
 };
 $jobsHeroTitle = $showFilters ? 'Browse Jobs' : 'Jobs Matching Your Profile';
 $jobsHeroSubtitle = $showFilters
@@ -416,8 +291,8 @@ $renderRecommendedPane = static function (string $recType, array $jobs, string $
                             ? esc($job['external_apply_url'])
                             : base_url('job/' . $job['id']);
                         ?>
-                        <div class="job-card js-clickable-card <?= $appliedStatus !== null ? 'is-applied' : '' ?>"
-                            data-href="<?= $jobLink ?>" data-job-id="<?= (int) $job['id'] ?>" <?= $isExternalJob ? 'data-external="1"' : '' ?> role="link" tabindex="0" style="cursor:pointer;">
+                        <div class="job-card js-clickable-card candidate-cursor-pointer <?= $appliedStatus !== null ? 'is-applied' : '' ?>"
+                            data-href="<?= $jobLink ?>" data-job-id="<?= (int) $job['id'] ?>" <?= $isExternalJob ? 'data-external="1"' : '' ?> role="link" tabindex="0">
 
                             <div class="job-card-body">
                                 <h3 class="job-card-title"><?= esc($title) ?></h3>
@@ -457,9 +332,9 @@ $renderRecommendedPane = static function (string $recType, array $jobs, string $
                                             <a href="<?= $isExternalJob && !empty($job['external_apply_url'])
                                                 ? esc($job['external_apply_url'])
                                                 : base_url('job/' . $job['id']) ?>"
-                                                class="view-details js-mark-visited <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>"
+                                                class="view-details js-mark-visited candidate-link-plain <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>"
                                                 data-job-id="<?= (int) $job['id'] ?>" <?= $isExternalJob ? 'target="_blank"' : '' ?>
-                                                style="text-decoration:none;">
+                                                >
                                                 <span class="viewed-action-mark <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>">
                                                     <i class="<?= $isVisited ? 'fas fa-eye' : 'far fa-eye' ?>"></i>
                                                     <?= $isVisited ? 'Viewed' : 'Not viewed' ?>
@@ -983,10 +858,10 @@ $activeFilterCount = count($activeFilterChips);
                                                     ? esc($job['external_apply_url'])
                                                     : base_url('job/' . $job['id']);
                                                 ?>
-                                                <div class="job-card js-clickable-card <?= $appliedStatus !== null ? 'is-applied' : '' ?>"
+                                                <div class="job-card js-clickable-card candidate-cursor-pointer <?= $appliedStatus !== null ? 'is-applied' : '' ?>"
                                                     data-href="<?= $jobLink ?>" data-job-id="<?= (int) $job['id'] ?>"
                                                     <?= $isExternalJob ? 'data-external="1"' : '' ?> role="link" tabindex="0"
-                                                    style="cursor:pointer;">
+                                                    >
 
                                                     <div class="job-card-body">
                                                         <h3 class="job-card-title"><?= esc($title) ?></h3>
@@ -1017,8 +892,8 @@ $activeFilterCount = count($activeFilterChips);
                                                                 <span class="saved-job-visited-note">
                                                                     <a href="<?= $isExternalJob && !empty($job['external_apply_url'])
                                                                         ? esc($job['external_apply_url'])
-                                                                        : base_url('job/' . $job['id']) ?>" class="view-details js-mark-visited <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>"
-                                                                        data-job-id="<?= (int) $job['id'] ?>" <?= $isExternalJob ? 'target="_blank"' : '' ?> style="text-decoration:none;">
+                                                                        : base_url('job/' . $job['id']) ?>" class="view-details js-mark-visited candidate-link-plain <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>"
+                                                                        data-job-id="<?= (int) $job['id'] ?>" <?= $isExternalJob ? 'target="_blank"' : '' ?>>
                                                                         <span
                                                                             class="viewed-action-mark <?= $isVisited ? 'is-viewed' : 'is-unviewed' ?>">
                                                                             <i
@@ -1191,7 +1066,7 @@ $activeFilterCount = count($activeFilterChips);
 <div class="modal fade" id="coverLetterModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content border-0">
-            <div class="modal-header text-white" style="background:#1FB7B5 !important;">
+            <div class="modal-header text-white candidate-brand-modal-header">
                 <h5 class="modal-title font-weight-bold"><i class="fas fa-magic mr-2"></i>AI Cover Letter Draft</h5>
                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
