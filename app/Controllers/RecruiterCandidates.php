@@ -974,7 +974,7 @@ class RecruiterCandidates extends BaseController
             }
         }
 
-        $redirectTarget = $returnTo !== '' ? $returnTo : base_url('recruiter/candidates');
+        $redirectTarget = $returnTo !== '' ? $returnTo : base_url('recruiter/resdex');
         if ($successCount > 0) {
             $message = $successCount . ' invitation' . ($successCount === 1 ? '' : 's') . ' sent successfully.';
             if ($skippedCount > 0) {
