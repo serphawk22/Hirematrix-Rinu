@@ -218,16 +218,14 @@ body.dark .empty-state{
             </div>
           </div>
           <div class="ms-actions">
-            <a href="<?= site_url('recruiter/resdex') . '?' . http_build_query($sf) ?>" class="btn btn-outline">
-              <i class="fas fa-pen"></i> Fill
-            </a>
+            
             <a href="<?= site_url('recruiter/resdex') . '?' . http_build_query(array_merge($sf, ['search' => 1])) ?>" class="btn btn-primary">
               <i class="fas fa-search"></i> Search
             </a>
             <form method="post" action="<?= site_url('recruiter/resdex/saved-searches/delete') ?>" onsubmit="return confirm('Delete this search?');">
               <?= csrf_field() ?>
               <input type="hidden" name="id" value="<?= (int) $s['id'] ?>">
-              <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+              <button type="submit" class="btn btn-danger">Remove</button>
             </form>
           </div>
         </div>
