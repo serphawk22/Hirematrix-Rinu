@@ -19,6 +19,7 @@ public function index()
 {
     $filters     = $this->collectFilters('get');
     $hasSearched = $this->request->getGet('search') !== null;
+    $recruiterId = (int) session()->get('user_id');
 
     // Always run the search — with empty filters this returns everything.
     $results = $this->candidateSearch->search($filters);
@@ -36,8 +37,6 @@ public function index()
     // candidate's id). We look up the saved row per candidate by hash and
     // only mark it saved if a row exists AND is_manual = 1.
     if ($hasSearched && !empty($results['results'])) {
-        $recruiterId = (int) session()->get('user_id');
-
         foreach ($results['results'] as &$candidate) {
             $candFilters = $filters;
             $candFilters['candidate_id'] = (string) $candidate['user_id'];
@@ -52,12 +51,20 @@ public function index()
         unset($candidate);
     }
 
+    $recruiterJobs = model('JobModel')
+        ->select('id, title')
+        ->where('recruiter_id', $recruiterId)
+        ->where('status', 'open')
+        ->orderBy('created_at', 'DESC')
+        ->findAll();
+
     return view('recruiter/resdex', [
         'title'          => 'Search Resumes',
         'filters'        => $filters,
         'results'        => $results,
         'hasSearched'    => $hasSearched,
         'folders'        => $this->getFoldersForRecruiter(),
+        'recruiterJobs'  => $recruiterJobs,
         'recentSearches' => $this->candidateSearch->getSearches((int) session()->get('user_id'), false, 4),
     ]);
 }
@@ -557,7 +564,7 @@ public function index()
             'gender'           => (string) ($src['gender'] ?? ''),
             'must_have_skills' => array_filter(explode(',', (string) ($src['must_have_skills'] ?? ''))),
             'page'             => (int) ($src['page'] ?? 1),
-            'per_page'         => 20,
+            'per_page'         => 12,
         ];
     }
 }

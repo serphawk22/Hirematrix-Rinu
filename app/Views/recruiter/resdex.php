@@ -120,7 +120,7 @@
   position: sticky;
   top: 10px;
   z-index: 20;
-  display: none;
+  display: flex;
   align-items: center;
   gap: 14px;
   background: var(--card);
@@ -131,13 +131,16 @@
   box-shadow: 0 4px 14px rgba(0,0,0,0.08);
   flex-wrap: wrap;
 }
-.bulk-action-bar.active { display: flex; }
 .bulk-action-bar .bulk-count { font-size: 13.5px; font-weight: 700; color: var(--foreground); white-space: nowrap; }
 .bulk-action-bar .bulk-count span { color: var(--primary); }
 .bulk-action-bar .spacer { flex: 1; }
 .bulk-action-bar select {
   border: 1px solid var(--border); border-radius: 8px; font-size: 12.5px; padding: 8px 12px;
   background: var(--background); color: var(--foreground); min-width: 180px;
+}
+.bulk-action-bar .bulk-invite-note {
+  border: 1px solid var(--border); border-radius: 8px; font-size: 12.5px; padding: 8px 12px;
+  background: var(--background); color: var(--foreground); min-width: 220px; resize: vertical;
 }
 .bulk-clear-btn {
   background: none; border: none; color: var(--muted-foreground); font-size: 12.5px;
@@ -239,12 +242,16 @@ body.dark .folder-warning-inline { color: #FCD34D !important; }
 .empty-state { text-align: center; padding: 60px 20px; color: var(--muted-foreground); }
 .empty-state i { font-size: 40px; color: var(--border); margin-bottom: 14px; display: block; }
 
-.pagination-row { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
-.pagination-row a {
+.pagination-summary { margin-top: 20px; text-align: center; color: var(--muted-foreground); font-size: 12.5px; }
+.pagination-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.pagination-row a,
+.pagination-row span {
   min-width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
   border: 1.5px solid rgba(31,183,181,0.38); border-radius: 6px; color: var(--primary) !important;
   font-size: 13px; font-weight: 700; text-decoration: none;
 }
+.pagination-row .pagination-direction { padding: 0 12px; }
+.pagination-row .disabled { color: var(--muted-foreground) !important; border-color: var(--border); opacity: 0.55; }
 .pagination-row a.active { background: var(--primary) !important; border-color: var(--primary); color: #fff !important; }
 
 .recent-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
@@ -502,19 +509,38 @@ body.dark .alert-danger {
               Select all on this page
             </label>
           </div>
- <?php if (session()->getFlashdata('success')): ?>
-  <div class="alert alert-success" role="alert">
+<?php if (session()->getFlashdata('success')): ?>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
     <?= esc(session()->getFlashdata('success')) ?>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
 <?php endif; ?>
 <?php if (session()->getFlashdata('error')): ?>
-  <div class="alert alert-danger" role="alert">
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
     <?= esc(session()->getFlashdata('error')) ?>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
 <?php endif; ?>
           <!-- Bulk action bar: hidden until at least one candidate is checked -->
           <div class="bulk-action-bar" id="bulkActionBar">
             <div class="bulk-count"><span id="bulkSelectedCount">0</span> selected</div>
+
+            <select id="bulkInviteJobSelect" aria-label="Select job to invite candidates">
+              <option value="">Select Job to Invite</option>
+              <?php foreach (($recruiterJobs ?? []) as $job): ?>
+                <option value="<?= (int) $job['id'] ?>"><?= esc($job['title'] ?? 'Untitled job') ?></option>
+              <?php endforeach; ?>
+            </select>
+            <textarea id="bulkInviteNote" class="bulk-invite-note" rows="1" maxlength="500"
+                      placeholder="Optional invite note" aria-label="Optional invitation note"></textarea>
+            <button type="button" class="btn btn-primary btn-sm" id="bulkInviteBtn" data-has-open-jobs="<?= empty($recruiterJobs) ? '0' : '1' ?>"
+                    <?= empty($recruiterJobs) ? 'disabled title="Post an open job before inviting candidates"' : '' ?>>
+              <i class="fas fa-paper-plane"></i> Invite
+            </button>
 
             <?php if (!empty($folders)): ?>
               <span class="folder-select-wrap">
@@ -542,6 +568,10 @@ body.dark .alert-danger {
           <!-- Hidden form used by the bulk "Save to Folder" action -->
           <form id="bulkFolderForm" method="post" action="<?= site_url('recruiter/resdex/folder/bulk-add') ?>">
               <?= csrf_field() ?>
+          </form>
+          <form id="bulkInviteForm" method="post" action="<?= site_url('recruiter/resdex/invite-job/bulk') ?>">
+              <?= csrf_field() ?>
+              <input type="hidden" name="return_to" value="<?= esc(current_url() . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '')) ?>">
           </form>
 
           <!-- Per-candidate hidden forms:
@@ -658,17 +688,43 @@ body.dark .alert-danger {
           <?php endforeach; ?></div>
 
           <?php if ($results['total_pages'] > 1): ?>
-            <div class="pagination-row">
-              <?php for ($p = 1; $p <= $results['total_pages']; $p++): ?>
-                <?php
+            <?php
+              $currentPage = (int) $results['page'];
+              $totalPages  = (int) $results['total_pages'];
+              $firstItem   = (($currentPage - 1) * (int) $results['per_page']) + 1;
+              $lastItem    = min($currentPage * (int) $results['per_page'], (int) $results['total']);
+              $pageUrl = static function (int $page) use ($filters): string {
                   $query = $filters;
                   $query['search'] = 1;
-                  $query['page'] = $p;
+                  $query['page'] = $page;
                   $query['must_have_skills'] = implode(',', $query['must_have_skills'] ?? []);
-                ?>
-                <a href="<?= site_url('recruiter/resdex') . '?' . http_build_query($query) ?>"
-                   class="<?= $p === $results['page'] ? 'active' : '' ?>"><?= $p ?></a>
+                  return site_url('recruiter/resdex') . '?' . http_build_query($query);
+              };
+            ?>
+            <div class="pagination-summary">
+              Showing <?= $firstItem ?>–<?= $lastItem ?> of <?= (int) $results['total'] ?> candidates
+            </div>
+            <div class="pagination-row">
+              <?php if ($currentPage > 1): ?>
+                <a class="pagination-direction" href="<?= esc($pageUrl($currentPage - 1)) ?>" rel="prev">
+                  <i class="fas fa-chevron-left" aria-hidden="true"></i>&nbsp; Previous
+                </a>
+              <?php else: ?>
+                <span class="pagination-direction disabled" aria-disabled="true"><i class="fas fa-chevron-left" aria-hidden="true"></i>&nbsp; Previous</span>
+              <?php endif; ?>
+
+              <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+                <a href="<?= esc($pageUrl($p)) ?>" class="<?= $p === $currentPage ? 'active' : '' ?>"
+                   <?= $p === $currentPage ? 'aria-current="page"' : '' ?>><?= $p ?></a>
               <?php endfor; ?>
+
+              <?php if ($currentPage < $totalPages): ?>
+                <a class="pagination-direction" href="<?= esc($pageUrl($currentPage + 1)) ?>" rel="next">
+                  Next&nbsp; <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                </a>
+              <?php else: ?>
+                <span class="pagination-direction disabled" aria-disabled="true">Next&nbsp; <i class="fas fa-chevron-right" aria-hidden="true"></i></span>
+              <?php endif; ?>
             </div>
           <?php endif; ?>
 
@@ -750,6 +806,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const saveBtn     = document.getElementById('bulkSaveBtn');       // may be null if no folders exist
   const clearBtn    = document.getElementById('bulkClearBtn');
   const bulkForm    = document.getElementById('bulkFolderForm');
+  const inviteForm  = document.getElementById('bulkInviteForm');
+  const inviteBtn   = document.getElementById('bulkInviteBtn');
+  const inviteJob   = document.getElementById('bulkInviteJobSelect');
+  const inviteNote  = document.getElementById('bulkInviteNote');
 
   if (!checkboxes.length || !bar) return;
 
@@ -760,7 +820,13 @@ document.addEventListener('DOMContentLoaded', function () {
   function refreshBar() {
     const selected = getSelected();
     countEl.textContent = selected.length;
-    bar.classList.toggle('active', selected.length > 0);
+
+    if (inviteBtn) {
+      inviteBtn.disabled = selected.length === 0 || inviteBtn.dataset.hasOpenJobs !== '1';
+    }
+    if (saveBtn) {
+      saveBtn.disabled = selected.length === 0;
+    }
 
     if (selectAll) {
       selectAll.checked = selected.length === checkboxes.length;
@@ -783,6 +849,43 @@ document.addEventListener('DOMContentLoaded', function () {
     clearBtn.addEventListener('click', function () {
       checkboxes.forEach(function (cb) { cb.checked = false; });
       refreshBar();
+    });
+  }
+
+  if (inviteBtn && inviteForm && inviteJob) {
+    inviteBtn.addEventListener('click', function () {
+      const selected = getSelected().map(function (cb) { return cb.value; });
+
+      if (!selected.length) {
+        alert('Select at least one candidate.');
+        return;
+      }
+      if (!inviteJob.value) {
+        alert('Select a job before sending invitations.');
+        inviteJob.focus();
+        return;
+      }
+
+      inviteForm.querySelectorAll('[data-dynamic-invite-field]').forEach(function (field) {
+        field.remove();
+      });
+
+      function addField(name, value) {
+        const field = document.createElement('input');
+        field.type = 'hidden';
+        field.name = name;
+        field.value = value;
+        field.dataset.dynamicInviteField = '1';
+        inviteForm.appendChild(field);
+      }
+
+      addField('job_id', inviteJob.value);
+      addField('message', inviteNote ? inviteNote.value.trim() : '');
+      selected.forEach(function (id) { addField('candidate_ids[]', id); });
+
+      inviteBtn.disabled = true;
+      inviteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      inviteForm.submit();
     });
   }
 
@@ -836,6 +939,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+
+  refreshBar();
 });
 </script>
 

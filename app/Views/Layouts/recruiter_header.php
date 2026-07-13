@@ -119,11 +119,6 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                     <i class="fas fa-plus-square sb-icon"></i>
                     <span class="sb-label">Post a Job</span>
                 </a>
-                <a href="<?= base_url('recruiter/candidates') ?>"
-                   class="hm-sb-subitem <?= $isActive('recruiter/candidates') ?>">
-                    <i class="fas fa-users sb-icon"></i>
-                    <span class="sb-label">Candidates</span>
-                </a>
             </div>
 
             <button class="hm-sb-item hm-sb-group-toggle sb-open <?= ($isActive('recruiter/slots')) ? 'active' : '' ?>"

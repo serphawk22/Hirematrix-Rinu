@@ -20,6 +20,7 @@ $routes->get('portal-trailer', function() {
 $routes->get('recruiter/reports', 'ReportController::index');
 $routes->get('recruiter/resdex', 'RecruiterResdexController::index');
 $routes->get('recruiter/resdex/candidate/(:num)', 'RecruiterResdexController::viewCandidate/$1');
+$routes->post('recruiter/resdex/invite-job/bulk', 'RecruiterCandidates::bulkInviteToJob', ['filter' => 'recruiter']);
  
 $routes->post('recruiter/resdex/folder/add', 'RecruiterResdexController::addToFolder');
 $routes->post('recruiter/resdex/folder/create', 'RecruiterResdexController::createFolder');
@@ -194,7 +195,11 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     $routes->post('applications/schedule-interview/(:num)', 'JobResponsesController::scheduleInterview/$1');
     $routes->post('jobs/(:num)/send-bulk-email', 'JobResponsesController::sendBulkEmail/$1');
     
-    $routes->get('candidates', 'RecruiterCandidates::index');
+    // Candidate database functionality now lives in Resdex. Keep the old URL
+    // working for bookmarks while exposing a single recruiter candidate pool.
+    $routes->get('candidates', static function () {
+        return redirect()->to(site_url('recruiter/resdex'));
+    });
     $routes->post('candidates/send-bulk-email', 'RecruiterCandidates::sendBulkEmail');
     $routes->get('jobs/edit/(:num)', 'RecruiterJobs::edit/$1');
     $routes->post('jobs/update/(:num)', 'RecruiterJobs::update/$1');
