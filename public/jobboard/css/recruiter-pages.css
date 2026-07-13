@@ -6079,7 +6079,7 @@ body.dark .status-pill {
 }
 body.dark .hm-page-content,body.dark .recruiter-company-edit-jobboard, body.dark .company-edit-card,body.dark .checklist-item{
     background: #000000 !important; 
-    border: 1px solid #23343A; !important;
+    border: 1px solid #23343A !important;
 } 
 .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
     border:none !important;
@@ -7345,7 +7345,7 @@ body.dark .modal-body small.text-muted { color: #FFFFFF !important; }
 body.dark .modal-body #emailRecipients {
   background: #000000 !important;
   border-color: #23343A !important;
-  color: #FFFFF !important;
+  color: #FFFFFF !important;
 }
 
 .modal-footer {
@@ -9989,7 +9989,7 @@ body.dark .hm-page-content,body.dark .recruiter-notifications-jobboard {
 } 
 body.dark .recruiter-notification-card{
     background: #000000 !important;
-    border: 1px solid #23343A; !important;
+    border: 1px solid #23343A !important;
 } 
 .status-pill {
     display: inline-flex;
@@ -11813,7 +11813,7 @@ body.dark .recruiter-job-form label, body.dark h6 {
     color:#FFFFFF !important;
 }
 body.dark .m-0.font-weight-bold,body.dark .recruiter-summary-item{
-     color:#FFFFFFF !important;
+     color:#FFFFFF !important;
 }
 /* ── Kill Bootstrap's orange/default focus first ── */
 /* ── Kill Bootstrap's orange/default focus first ── */
@@ -12003,7 +12003,7 @@ body.dark .status-pill {
 }
 body.dark .hm-page-content,body.dark .recruiter-slot-create-jobboard, body.dark .recruiter-form-card,body.dark .checklist-item{
     background: #000000 !important;
-    border: 1px solid #23343A; !important;
+    border: 1px solid #23343A !important;
 } 
 .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
     border:none !important;
@@ -12136,7 +12136,7 @@ body.dark .status-pill {
 
 body.dark .hm-page-content,body.dark .recruiter-slot-edit-jobboard, body.dark .recruiter-form-card,body.dark .recruiter-tip-item,body.dark .recruiter-info-card{
     background: #000000 !important;
-    border: 1px solid #23343A; !important;
+    border: 1px solid #23343A !important;
 } 
 .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
     border:none !important;
