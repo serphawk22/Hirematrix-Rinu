@@ -175,6 +175,33 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                 </a>
             </div>
 
+            <!-- ▼▼▼ NEW: RESDEX group ▼▼▼ -->
+            <button class="hm-sb-item hm-sb-group-toggle sb-open <?= $isActive('recruiter/resdex') ? 'active' : '' ?>"
+                    id="hmResdexBtn" aria-expanded="true">
+                <i class="fas fa-search sb-icon"></i>
+                <span class="sb-label">RESDEX</span>
+                <i class="fas fa-chevron-down sb-arrow"></i>
+                <span class="sb-tooltip">ResDex</span>
+            </button>
+            <div class="hm-sb-sub sb-open" id="hmResdexSub">
+                <a href="<?= base_url('recruiter/resdex') ?>"
+                   class="hm-sb-subitem <?= ($isActive('recruiter/resdex') && !$isActive('recruiter/resdex/saved-searches') && !$isActive('recruiter/resdex/folders')) ? 'active' : '' ?>">
+                    <i class="fas fa-search sb-icon"></i>
+                    <span class="sb-label">Search Resumes</span>
+                </a>
+                <a href="<?= base_url('recruiter/resdex/saved-searches') ?>"
+                   class="hm-sb-subitem <?= $isActive('recruiter/resdex/saved-searches') ?>">
+                    <i class="fas fa-bookmark sb-icon"></i>
+                    <span class="sb-label">Manage Searches</span>
+                </a>
+                <a href="<?= base_url('recruiter/resdex/folders') ?>"
+                   class="hm-sb-subitem <?= $isActive('recruiter/resdex/folders') ?>">
+                    <i class="fas fa-folder sb-icon"></i>
+                    <span class="sb-label">Manage Folders</span>
+                </a>
+            </div>
+            <!-- ▲▲▲ END RESDEX group ▲▲▲ -->
+
         </nav>
 
         <!-- FOOTER: profile submenu + profile card -->
@@ -238,6 +265,8 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     var slotsSub    = document.getElementById('hmSlotsSub');
     var toolsBtn    = document.getElementById('hmToolsBtn');
     var toolsSub    = document.getElementById('hmToolsSub');
+    var resdexBtn   = document.getElementById('hmResdexBtn');
+    var resdexSub   = document.getElementById('hmResdexSub');
     var profileCard = document.getElementById('hmProfileCard');
     var profileSub  = document.getElementById('hmProfileSub');
  
@@ -316,7 +345,8 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
         { button: overviewBtn, submenu: overviewSub },
         { button: jobsBtn, submenu: jobsSub },
         { button: slotsBtn, submenu: slotsSub },
-        { button: toolsBtn, submenu: toolsSub }
+        { button: toolsBtn, submenu: toolsSub },
+        { button: resdexBtn, submenu: resdexSub }
     ].filter(function (group) {
         return group.button && group.submenu;
     });

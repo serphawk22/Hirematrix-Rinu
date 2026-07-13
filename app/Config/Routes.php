@@ -18,6 +18,22 @@ $routes->get('portal-trailer', function() {
 });
 //ReportController
 $routes->get('recruiter/reports', 'ReportController::index');
+$routes->get('recruiter/resdex', 'RecruiterResdexController::index');
+$routes->get('recruiter/resdex/candidate/(:num)', 'RecruiterResdexController::viewCandidate/$1');
+ 
+$routes->post('recruiter/resdex/folder/add', 'RecruiterResdexController::addToFolder');
+$routes->post('recruiter/resdex/folder/create', 'RecruiterResdexController::createFolder');
+$routes->post('recruiter/resdex/folder/remove', 'RecruiterResdexController::removeFromFolder');
+$routes->post('recruiter/resdex/folder/delete', 'RecruiterResdexController::deleteFolders'); 
+$routes->post('recruiter/resdex/folder/bulk-add', 'RecruiterResdexController::bulkAddToFolder');
+$routes->get('recruiter/resdex/folders', 'RecruiterResdexController::folders');
+$routes->get('recruiter/resdex/folders/(:num)', 'RecruiterResdexController::folderDetail/$1');
+  
+    $routes->post('recruiter/resdex/save-search', 'RecruiterResdexController::saveSearch'); 
+$routes->post('recruiter/resdex/saved-searches/delete', 'RecruiterResdexController::deleteSearch');
+
+$routes->get('recruiter/resdex/saved-searches', 'RecruiterResdexController::savedSearches');
+
 // app/Config/Routes.php  ← route goes HERE, not in the controller file
 $routes->post('job/mark-visited/(:num)', 'JobController::markVisited/$1');
 // Login

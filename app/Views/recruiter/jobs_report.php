@@ -108,8 +108,6 @@ $employmentTypeOptions = ['Full-time', 'Part-time', 'Contract', 'Internship'];
           </div>
         </div>
 
-        
-
         <hr class="divider">
 
         <div class="recruiter-text-right">
