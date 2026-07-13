@@ -14755,3 +14755,30 @@ body.dark.recruiter-jobboard .recruiter-table-card > .card-body {
     border: 0 !important;
     box-shadow: none !important;
 }
+
+/* Sidebar profile avatar: keep the first-letter initial visible in dark mode */
+body.recruiter-jobboard .hm-sidebar .hm-sb-profile-avatar,
+body.dark.recruiter-jobboard .hm-sidebar .hm-sb-profile-avatar {
+    background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 100%) !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .18);
+}
+
+/* Sidebar edge: use one clean divider only */
+body.recruiter-jobboard .hm-sidebar {
+    border-right: 1px solid #d9ece5 !important;
+    box-shadow: none !important;
+}
+
+body.dark.recruiter-jobboard .hm-sidebar {
+    border-right: 1px solid #2a2a2a !important;
+    box-shadow: none !important;
+}
+
+body.recruiter-jobboard .hm-main,
+body.recruiter-jobboard .hm-page-content,
+body.dark.recruiter-jobboard .hm-main,
+body.dark.recruiter-jobboard .hm-page-content {
+    border-left: 0 !important;
+    box-shadow: none !important;
+}
