@@ -145,7 +145,7 @@ class CandidateSearchModel extends Model
 
         $dataSql = "SELECT cp.user_id, cp.headline, cp.location, cp.key_skills,
                            cp.expected_salary, cp.notice_period, cp.total_experience_months,
-                           cp.resume_path, cp.updated_at,
+                           cp.resume_path, cp.profile_photo, cp.updated_at,
                            u.name, u.email, u.phone
                     FROM candidate_profiles cp
                     JOIN users u ON u.id = cp.user_id

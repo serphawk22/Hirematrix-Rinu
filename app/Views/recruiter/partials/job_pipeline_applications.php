@@ -455,7 +455,7 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                                     </a>
                                 <?php endif; ?>
                                 <?php if ($appStatus === 'ai_interview_completed'): ?>
-                                    <button type="button" class="response-action-icon response-action-ai view-ai-report-btn" data-candidate-id="<?= (int) ($app['candidate_id'] ?? 0) ?>" data-jobrole="<?= esc($job['title'] ?? '') ?>" data-candidate-name="<?= esc($app['candidate_name'] ?? '-') ?>" title="AI interview report" aria-label="AI interview report">
+                                    <button type="button" class="response-action-icon response-action-ai view-ai-report-btn" data-candidate-id="<?= (int) ($app['candidate_id'] ?? 0) ?>" data-job-id="<?= (int) ($job['id'] ?? 0) ?>" data-jobrole="<?= esc($job['title'] ?? '') ?>" data-candidate-name="<?= esc($app['candidate_name'] ?? '-') ?>" title="AI interview report" aria-label="AI interview report">
                                         <span>AI</span>
                                     </button>
                                 <?php endif; ?>

@@ -217,8 +217,12 @@ body.dark .folder-warning-inline { color: #FCD34D !important; }
 }
 .candidate-avatar {
   width: 48px; height: 48px; border-radius: 50%; background: var(--gradient-primary) !important;
-  display: flex; align-items: center; justify-content: center; color: #fff;
-  font-weight: 700; font-size: 18px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; color: #fff !important;
+  font-weight: 700; font-size: 18px; flex-shrink: 0; overflow: hidden; position: relative;
+}
+.candidate-avatar img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border-radius: inherit; object-fit: cover;
 }
 .candidate-main { flex: 1; min-width: 0; }
 .candidate-name { font-size: 15.5px; font-weight: 700; margin: 0; }
@@ -608,11 +612,22 @@ body.dark .alert-danger {
           <div class="candidate-grid">
           <?php foreach ($results['results'] as $candidate): ?>
             <?php $isCardSaved = !empty($candidate['is_search_saved']); ?>
+            <?php
+              $candidatePhotoPath = trim((string) ($candidate['profile_photo'] ?? ''));
+              $candidatePhotoUrl = $candidatePhotoPath !== ''
+                ? (preg_match('/^https?:\/\//i', $candidatePhotoPath) ? $candidatePhotoPath : base_url($candidatePhotoPath))
+                : '';
+            ?>
             <div class="candidate-card">
               <div class="candidate-select-wrap">
                 <input type="checkbox" class="candidate-select" value="<?= (int) $candidate['user_id'] ?>">
               </div>
-              <div class="candidate-avatar"><?= strtoupper(substr($candidate['name'] ?? 'C', 0, 1)) ?></div>
+              <div class="candidate-avatar" aria-hidden="true">
+                <?= esc(strtoupper(substr(trim((string) ($candidate['name'] ?? 'C')), 0, 1)) ?: 'C') ?>
+                <?php if ($candidatePhotoUrl !== ''): ?>
+                  <img src="<?= esc($candidatePhotoUrl) ?>" alt="" loading="lazy" onerror="this.remove()">
+                <?php endif; ?>
+              </div>
               <div class="candidate-main">
                 <h3 class="candidate-name"><?= esc($candidate['name'] ?? 'Candidate') ?></h3>
                 <p class="candidate-headline"><?= esc($candidate['headline'] ?? 'No headline provided') ?>   </p>
@@ -653,7 +668,7 @@ body.dark .alert-danger {
 
                   <?php if (!empty($folders)): ?>
                     <span class="folder-select-wrap">
-                      <select name="folder_id" form="folderForm_<?= (int) $candidate['user_id'] ?>">
+                      <select name="folder_id" form="folderForm_<?= (int) $candidate['user_id'] ?>" required>
                           <option value="">Select Folder</option>
                           <?php foreach ($folders as $folder): ?>
                               <option value="<?= (int) $folder['id'] ?>"><?= esc($folder['folder_name']) ?></option>

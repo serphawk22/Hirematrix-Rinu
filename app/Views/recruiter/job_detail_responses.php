@@ -877,6 +877,7 @@ document.addEventListener('click', function (e) {
     if (!btn) return;
 
     const candidateId = btn.dataset.candidateId;
+    const jobId = btn.dataset.jobId;
     const jobrole = btn.dataset.jobrole;
     const candidateName = btn.dataset.candidateName;
     const reportHost = document.getElementById('aiReportContent');
@@ -896,7 +897,7 @@ document.addEventListener('click', function (e) {
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
         },
-        body: JSON.stringify({ candidate_id: candidateId, jobrole: jobrole })
+        body: JSON.stringify({ candidate_id: candidateId, job_id: jobId, jobrole: jobrole })
     })
     .then(function (res) {
         if (!res.ok) {
