@@ -137,7 +137,9 @@ class ExternalJobIngestionService
             'status' => 'open',
             'employment_type' => ExternalJobTextNormalizer::normalize((string) ($payload['employment_type'] ?? 'Full Time')),
             'salary_range' => $payload['salary_range'] ?? null,
-            'application_deadline' => $payload['application_deadline'] ?? null,
+            'application_deadline' => !empty($payload['application_deadline'])
+                ? $payload['application_deadline']
+                : date('Y-m-d', strtotime('+30 days')),
             'created_at' => date('Y-m-d H:i:s'),
         ];
 

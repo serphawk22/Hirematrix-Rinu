@@ -220,6 +220,7 @@ $jobExcerpt = static function ($value): string {
 (function () {
     const companyName = <?= json_encode($companyName) ?>;
     const discoverUrl = <?= json_encode($discoverUrl) ?>;
+    const cachedJobsUrl = <?= json_encode(base_url('candidate/company-jobs/cache')) ?>;
     const companyWebsite = <?= json_encode($companyWebsite) ?>;
     const companyCareerPage = <?= json_encode($companyCareerPage) ?>;
     const portalCount = <?= (int) $portalCount ?>;
@@ -229,6 +230,11 @@ $jobExcerpt = static function ($value): string {
     const tabCountEl = document.getElementById('companyJobsTabCount');
     const initialExternalCount = <?= (int) $externalCount ?>;
     const initialTotalCount = <?= (int) $totalCount ?>;
+    let cachePollTimer = null;
+    let cachePollAttempts = 0;
+    let lastPolledJobCount = 0;
+    let stableCachePolls = 0;
+    const maxCachePollAttempts = 30;
 
     const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
         '&': '&amp;',
@@ -386,6 +392,68 @@ $jobExcerpt = static function ($value): string {
         });
     };
 
+    const stopCachePolling = () => {
+        if (cachePollTimer) {
+            window.clearTimeout(cachePollTimer);
+            cachePollTimer = null;
+        }
+    };
+
+    const pollCachedJobs = () => {
+        if (document.hidden) {
+            cachePollTimer = window.setTimeout(pollCachedJobs, 2000);
+            return;
+        }
+
+        cachePollAttempts += 1;
+        const params = new URLSearchParams({ company: companyName });
+
+        fetch(cachedJobsUrl + '?' + params.toString(), {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then((response) => response.json())
+            .then((payload) => {
+                const jobs = payload && Array.isArray(payload.jobs) ? payload.jobs : [];
+                if (jobs.length > 0) {
+                    renderExternalJobs(jobs);
+                    if (jobs.length === lastPolledJobCount) {
+                        stableCachePolls += 1;
+                    } else {
+                        lastPolledJobCount = jobs.length;
+                        stableCachePolls = 0;
+                    }
+
+                    if (stableCachePolls >= 3 || cachePollAttempts >= maxCachePollAttempts) {
+                        stopCachePolling();
+                    } else {
+                        cachePollTimer = window.setTimeout(pollCachedJobs, 2000);
+                    }
+                    return;
+                }
+
+                if (cachePollAttempts < maxCachePollAttempts) {
+                    cachePollTimer = window.setTimeout(pollCachedJobs, 2000);
+                } else {
+                    showNoResultsState();
+                }
+            })
+            .catch(() => {
+                if (cachePollAttempts < maxCachePollAttempts) {
+                    cachePollTimer = window.setTimeout(pollCachedJobs, 2000);
+                } else if (renderedJobCardCount() === 0) {
+                    showNoResultsState();
+                }
+            });
+    };
+
+    const startCachePolling = () => {
+        stopCachePolling();
+        cachePollAttempts = 0;
+        lastPolledJobCount = 0;
+        stableCachePolls = 0;
+        cachePollTimer = window.setTimeout(pollCachedJobs, 1200);
+    };
+
     const discoverJobs = (isAutomatic = false) => {
         if (!externalList || !emptyState) {
             return;
@@ -400,7 +468,10 @@ $jobExcerpt = static function ($value): string {
         if (emptyState) {
             emptyState.hidden = portalCount > 0;
         }
-        externalList.innerHTML = '';
+        if (renderedJobCardCount() === 0) {
+            externalList.innerHTML = '';
+        }
+        startCachePolling();
 
         const discoverParams = new URLSearchParams({
             company: companyName,
@@ -438,12 +509,17 @@ $jobExcerpt = static function ($value): string {
                 if (!payload || payload.success === false || payload.error) {
                     throw new Error(payload && payload.error ? payload.error : 'Could not check latest jobs.');
                 }
-                renderExternalJobs(payload.jobs || []);
+                if (Array.isArray(payload.jobs) && payload.jobs.length > 0) {
+                    renderExternalJobs(payload.jobs);
+                    stopCachePolling();
+                }
             })
             .catch((error) => {
-                externalList.innerHTML = previousHtml && !isAutomatic ? previousHtml : '';
+                if (previousHtml && !externalList.innerHTML) {
+                    externalList.innerHTML = previousHtml;
+                }
                 setCounts(initialExternalCount);
-                if (emptyState) {
+                if (emptyState && cachePollAttempts >= maxCachePollAttempts) {
                     setEmptyStateContent(
                         'Openings are not available right now',
                         'Please try again shortly.',
@@ -459,6 +535,7 @@ $jobExcerpt = static function ($value): string {
         window.setTimeout(() => discoverJobs(true), 250);
     }
     syncEmptyStateVisibility();
+    window.addEventListener('beforeunload', stopCachePolling);
 })();
 </script>
 

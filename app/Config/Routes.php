@@ -343,6 +343,7 @@ $routes->get('mnc/job/unsave/(:num)', 'MncJobController::unsave/$1', ['filter' =
 
 // Company Jobs Routes
 $routes->get('candidate/company-jobs/suggestions', 'CompanyJobsController::suggestions');
+$routes->get('candidate/company-jobs/cache', 'CompanyJobsController::cachedJobs', ['filter' => 'candidate']);
 $routes->get('candidate/company-jobs/clear-cache/(:segment)', 'CompanyJobsController::clearCache/$1');
 $routes->get('candidate/company-jobs/clear-all-cache', 'CompanyJobsController::clearAllCache');
 $routes->get('candidate/company-jobs/(:any)', 'CompanyJobsController::viewCompanyJobs/$1', ['filter' => 'candidate']);
