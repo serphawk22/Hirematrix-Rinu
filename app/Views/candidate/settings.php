@@ -14,13 +14,36 @@
                 
             </div>
 
-            <?php if (session()->getFlashdata('settings_success') || session()->getFlashdata('error')): ?>
+            <?php
+                $settingsSuccess = session()->getFlashdata('settings_success');
+                $settingsWarning = session()->getFlashdata('settings_warning') ?: session()->getFlashdata('warning');
+                $settingsError = session()->getFlashdata('error');
+            ?>
+            <?php if ($settingsSuccess || $settingsWarning || $settingsError): ?>
                 <div class="settings-flash-wrap">
-                    <?php if (session()->getFlashdata('settings_success')): ?>
-                        <div class="alert alert-success mb-0"><?= esc(session()->getFlashdata('settings_success')) ?></div>
+                    <?php if ($settingsSuccess): ?>
+                        <div class="alert alert-success alert-dismissible mb-0" role="alert">
+                            <?= esc($settingsSuccess) ?>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     <?php endif; ?>
-                    <?php if (session()->getFlashdata('error')): ?>
-                        <div class="alert alert-danger mb-0"><?= esc(session()->getFlashdata('error')) ?></div>
+                    <?php if ($settingsWarning): ?>
+                        <div class="alert alert-warning alert-dismissible mb-0" role="alert">
+                            <?= esc($settingsWarning) ?>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($settingsError): ?>
+                        <div class="alert alert-danger alert-dismissible mb-0" role="alert">
+                            <?= esc($settingsError) ?>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>

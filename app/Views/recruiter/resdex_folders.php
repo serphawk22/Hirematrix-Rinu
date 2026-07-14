@@ -10,8 +10,8 @@
 
 .resdex-folders-shell {
   width: 100% !important;
-  max-width: 1600px !important;
-  margin: 0 auto !important;
+  max-width: none !important;
+  margin: 0 !important;
   padding: 8px 40px 48px !important;
 }
 @media (max-width: 1600px) {
@@ -135,8 +135,8 @@
 .resdex-folders-jobboard .empty-state i { font-size: 40px; color: var(--hm-border); margin-bottom: 14px; display: block; }
 </style>
 
-<div class="resdex-folders-jobboard">
-<div class="container-fluid py-5">
+<div class="resdex-folders-jobboard recruiter-resdex-folders-jobboard">
+<div class="resdex-folders-shell"> 
 
   <div class="page-board-header page-board-header-tight recruiter-page-board-header">
     <div class="page-board-copy">

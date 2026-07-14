@@ -376,18 +376,39 @@ public function getAiReport()
         $data = $this->request->getJSON(true);
 
         $candidateId = (int)($data['candidate_id'] ?? 0);
-        $jobrole     = trim($data['jobrole'] ?? '');
+        $jobId       = (int)($data['job_id'] ?? 0);
+        $recruiterId = (int) session()->get('user_id');
 
-        if (!$candidateId) {
+        if ($candidateId <= 0 || $jobId <= 0) {
             return $this->response
                 ->setStatusCode(400)
                 ->setJSON([
                     'success' => false,
-                    'message' => 'Candidate ID is required.'
+                    'message' => 'Candidate and job are required.'
                 ]);
         }
 
         $db = \Config\Database::connect();
+        $ownedApplication = $db->table('applications')
+            ->select('jobs.id, jobs.title')
+            ->join('jobs', 'jobs.id = applications.job_id')
+            ->where('applications.candidate_id', $candidateId)
+            ->where('jobs.id', $jobId)
+            ->where('jobs.recruiter_id', $recruiterId)
+            ->get()
+            ->getRowArray();
+
+        if (!$ownedApplication) {
+            return $this->response
+                ->setStatusCode(403)
+                ->setJSON([
+                    'success' => false,
+                    'message' => 'You do not have permission to view this interview report.'
+                ]);
+        }
+
+        // Use the authorized job record rather than trusting a client-supplied title.
+        $jobrole = trim((string) ($ownedApplication['title'] ?? ''));
         $results = [];
         $violations = [];
 
@@ -396,7 +417,9 @@ public function getAiReport()
                 ->select('round_name, score, total_questions, percentage')
                 ->where('candidate_id', $candidateId);
 
-            if ($jobrole !== '' && $db->fieldExists('jobrole', 'interview_results')) {
+            if ($db->fieldExists('job_id', 'interview_results')) {
+                $resultsBuilder->where('job_id', $jobId);
+            } elseif ($jobrole !== '' && $db->fieldExists('jobrole', 'interview_results')) {
                 $resultsBuilder->where('jobrole', $jobrole);
             }
 
@@ -416,7 +439,9 @@ public function getAiReport()
                 ->select('message, COUNT(*) as total')
                 ->where('candidate_id', $candidateId);
 
-            if ($jobrole !== '' && $db->fieldExists('jobrole', 'violations')) {
+            if ($db->fieldExists('job_id', 'violations')) {
+                $violationsBuilder->where('job_id', $jobId);
+            } elseif ($jobrole !== '' && $db->fieldExists('jobrole', 'violations')) {
                 $violationsBuilder->where('jobrole', $jobrole);
             }
 

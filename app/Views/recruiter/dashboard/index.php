@@ -216,7 +216,7 @@ if (!empty($availableRates)) {
                     <div class="table-responsive recent-applications-table-wrap">
                         <table class="table table-hover mb-0 recent-applications-table">
                             <thead class="thead-light">
-                                <tr><th class="pl-3">ID</th><th>Candidate</th><th>Job</th><th>Status</th><th>Applied</th><th class="text-right pr-3">Action</th></tr>
+                                <tr><th class="pl-3">ID</th><th>Candidate</th><th>Job</th><th>Status</th><th class="pr-3">Applied</th></tr>
                             </thead>
                             <tbody>
                                 <?php if (!empty($recentApplications)): ?>
@@ -232,14 +232,11 @@ if (!empty($availableRates)) {
                                             <td><strong><?= esc($app['candidate_name']) ?></strong></td>
                                             <td><?= esc($app['job_title']) ?></td>
                                             <td><span class="status-pill"><?= esc($statusLabel) ?></span></td>
-                                            <td class="text-muted"><?= date('M d, Y', strtotime($app['applied_at'])) ?></td>
-                                            <td class="text-right pr-3">
-                                                <a href="<?= base_url('recruiter/jobs/view/' . $app['job_id']) ?>#leaderboard" class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();">Review</a>
-                                            </td>
+                                            <td class="text-muted pr-3"><?= date('M d, Y', strtotime($app['applied_at'])) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php else: ?>
-                                    <tr><td colspan="6" class="text-center py-4 text-muted">No recent applications</td></tr>
+                                    <tr><td colspan="5" class="text-center py-4 text-muted">No recent applications</td></tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>

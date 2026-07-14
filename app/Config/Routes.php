@@ -7,7 +7,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 
 $routes->get('/', 'Home::index');
-$routes->post('recruiter/get-ai-report', 'Recruiter::getAiReport');
+$routes->post('recruiter/get-ai-report', 'Recruiter::getAiReport', ['filter' => 'recruiter']);
 // Route to serve the standalone portal trailer page
 $routes->get('portal-trailer', function() {
     $path = ROOTPATH . 'standalone/portal-trailer.html';
@@ -18,22 +18,22 @@ $routes->get('portal-trailer', function() {
 });
 //ReportController
 $routes->get('recruiter/reports', 'ReportController::index');
-$routes->get('recruiter/resdex', 'RecruiterResdexController::index');
-$routes->get('recruiter/resdex/candidate/(:num)', 'RecruiterResdexController::viewCandidate/$1');
+$routes->get('recruiter/resdex', 'RecruiterResdexController::index', ['filter' => 'recruiter']);
+$routes->get('recruiter/resdex/candidate/(:num)', 'RecruiterResdexController::viewCandidate/$1', ['filter' => 'recruiter']);
 $routes->post('recruiter/resdex/invite-job/bulk', 'RecruiterCandidates::bulkInviteToJob', ['filter' => 'recruiter']);
  
-$routes->post('recruiter/resdex/folder/add', 'RecruiterResdexController::addToFolder');
-$routes->post('recruiter/resdex/folder/create', 'RecruiterResdexController::createFolder');
-$routes->post('recruiter/resdex/folder/remove', 'RecruiterResdexController::removeFromFolder');
-$routes->post('recruiter/resdex/folder/delete', 'RecruiterResdexController::deleteFolders'); 
-$routes->post('recruiter/resdex/folder/bulk-add', 'RecruiterResdexController::bulkAddToFolder');
-$routes->get('recruiter/resdex/folders', 'RecruiterResdexController::folders');
-$routes->get('recruiter/resdex/folders/(:num)', 'RecruiterResdexController::folderDetail/$1');
+$routes->post('recruiter/resdex/folder/add', 'RecruiterResdexController::addToFolder', ['filter' => 'recruiter']);
+$routes->post('recruiter/resdex/folder/create', 'RecruiterResdexController::createFolder', ['filter' => 'recruiter']);
+$routes->post('recruiter/resdex/folder/remove', 'RecruiterResdexController::removeFromFolder', ['filter' => 'recruiter']);
+$routes->post('recruiter/resdex/folder/delete', 'RecruiterResdexController::deleteFolders', ['filter' => 'recruiter']);
+$routes->post('recruiter/resdex/folder/bulk-add', 'RecruiterResdexController::bulkAddToFolder', ['filter' => 'recruiter']);
+$routes->get('recruiter/resdex/folders', 'RecruiterResdexController::folders', ['filter' => 'recruiter']);
+$routes->get('recruiter/resdex/folders/(:num)', 'RecruiterResdexController::folderDetail/$1', ['filter' => 'recruiter']);
   
-    $routes->post('recruiter/resdex/save-search', 'RecruiterResdexController::saveSearch'); 
-$routes->post('recruiter/resdex/saved-searches/delete', 'RecruiterResdexController::deleteSearch');
+$routes->post('recruiter/resdex/save-search', 'RecruiterResdexController::saveSearch', ['filter' => 'recruiter']);
+$routes->post('recruiter/resdex/saved-searches/delete', 'RecruiterResdexController::deleteSearch', ['filter' => 'recruiter']);
 
-$routes->get('recruiter/resdex/saved-searches', 'RecruiterResdexController::savedSearches');
+$routes->get('recruiter/resdex/saved-searches', 'RecruiterResdexController::savedSearches', ['filter' => 'recruiter']);
 
 // app/Config/Routes.php  ← route goes HERE, not in the controller file
 $routes->post('job/mark-visited/(:num)', 'JobController::markVisited/$1');
@@ -193,6 +193,9 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     $routes->get('jobs/preview/(:num)', 'JobResponsesController::previewJob/$1');
     $routes->post('applications/update-status/(:num)', 'JobResponsesController::updateApplicationStatus/$1');
     $routes->post('applications/schedule-interview/(:num)', 'JobResponsesController::scheduleInterview/$1');
+    $routes->post('applications/(:num)/notes', 'JobResponsesController::saveInlineNotes/$1');
+    $routes->post('applications/(:num)/follow-up', 'JobResponsesController::setFollowUp/$1');
+    $routes->post('applications/(:num)/communication-outcome', 'JobResponsesController::logCommunicationOutcome/$1');
     $routes->post('jobs/(:num)/send-bulk-email', 'JobResponsesController::sendBulkEmail/$1');
     
     // Candidate database functionality now lives in Resdex. Keep the old URL

@@ -291,13 +291,42 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                         $activeStageMeta = $responseStageTabs[$safeActiveStage] ?? $responseStageTabs['all'];
                         $activeStageCount = $safeActiveStage === 'all' ? $allApplicationsLabel : (int) ($activeStageMeta['count'] ?? 0);
                     ?>
-                    <div class="response-chip-row">
-                        <span class="response-chip"><?= max(0, $openings) ?> openings</span>
-                        <span class="response-chip"><?= $avgMatch ?>% avg match</span>
-                    </div>
+                    <?php
+                        $nextActionLabels = [
+                            'unreviewed' => 'Unreviewed',
+                            'follow_up_due' => 'Follow-up due',
+                            'candidate_replied' => 'Candidate replied',
+                            'interview_pending' => 'Interview pending',
+                            'inactive_3d' => 'No activity for 3+ days',
+                        ];
+                        $activeNextAction = (string) ($advancedFilters['next_action'] ?? '');
+                        $nextActionBase = array_filter(array_merge($advancedFilters ?? [], ['stage' => $safeActiveStage]), static fn ($value) => $value !== '' && $value !== null);
+                    ?>
+                    <nav class="next-action-bar" aria-label="Next action filters">
+                        <span class="next-action-label">Next action</span>
+                        <?php foreach ($nextActionLabels as $nextActionKey => $nextActionLabel): ?>
+                            <?php
+                                $nextActionParams = $nextActionBase;
+                                if ($activeNextAction === $nextActionKey) {
+                                    unset($nextActionParams['next_action']);
+                                } else {
+                                    $nextActionParams['next_action'] = $nextActionKey;
+                                }
+                                $nextActionUrl = base_url('recruiter/jobs/view/' . $job['id'] . '?' . http_build_query($nextActionParams));
+                            ?>
+                            <a href="<?= esc($nextActionUrl) ?>" class="next-action-filter <?= $activeNextAction === $nextActionKey ? 'is-active' : '' ?>" data-next-action="<?= esc($nextActionKey) ?>">
+                                <?= esc($nextActionLabel) ?>
+                                <span data-next-action-count="<?= esc($nextActionKey) ?>"><?= (int) ($nextActionCounts[$nextActionKey] ?? 0) ?></span>
+                            </a>
+                        <?php endforeach; ?>
+                    </nav>
 
                     <div class="response-toolbar">
-                        <strong id="responseShowingCount">Showing <?= $activeStageCount ?> <?= $activeStageCount === 1 ? 'response' : 'responses' ?></strong>
+                        <div class="response-toolbar-summary">
+                            <strong id="responseShowingCount">Showing <?= $activeStageCount ?> <?= $activeStageCount === 1 ? 'response' : 'responses' ?></strong>
+                            <span class="response-chip"><?= max(0, $openings) ?> openings</span>
+                            <span class="response-chip"><?= $avgMatch ?>% avg match</span>
+                        </div>
                         <div class="response-toolbar-actions">
                             <div class="pipeline-search">
                                 <i class="fas fa-search"></i>
@@ -848,6 +877,7 @@ document.addEventListener('click', function (e) {
     if (!btn) return;
 
     const candidateId = btn.dataset.candidateId;
+    const jobId = btn.dataset.jobId;
     const jobrole = btn.dataset.jobrole;
     const candidateName = btn.dataset.candidateName;
     const reportHost = document.getElementById('aiReportContent');
@@ -867,7 +897,7 @@ document.addEventListener('click', function (e) {
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
         },
-        body: JSON.stringify({ candidate_id: candidateId, jobrole: jobrole })
+        body: JSON.stringify({ candidate_id: candidateId, job_id: jobId, jobrole: jobrole })
     })
     .then(function (res) {
         if (!res.ok) {

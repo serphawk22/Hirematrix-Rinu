@@ -29,7 +29,6 @@ if ($companyLogo !== '') {
     $logoUrl = 'https://www.google.com/s2/favicons?domain=' . rawurlencode($websiteHost) . '&sz=96';
 }
 $discoverUrl = base_url('mnc/discover');
-$profileUrl = !empty($company['id']) ? base_url('company/' . (int) $company['id']) : '';
 $discoveryUrl = base_url('candidate/company-job-discovery');
 
 $companyTags = [];
@@ -126,12 +125,6 @@ $jobExcerpt = static function ($value): string {
                     <div class="company-jobs-links">
                         <?php if ($companyCareerPage !== ''): ?>
                             <a href="<?= esc($companyCareerPage) ?>" target="_blank" rel="noopener">Career page <i class="fas fa-external-link-alt"></i></a>
-                        <?php endif; ?>
-                        <?php if ($companyWebsite !== ''): ?>
-                            <a href="<?= esc($companyWebsite) ?>" target="_blank" rel="noopener">Company website <i class="fas fa-external-link-alt"></i></a>
-                        <?php endif; ?>
-                        <?php if ($profileUrl !== ''): ?>
-                            <a href="<?= esc($profileUrl) ?>">HireMatrix profile <i class="fas fa-arrow-right"></i></a>
                         <?php endif; ?>
                     </div>
                 </article>
