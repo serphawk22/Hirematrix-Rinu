@@ -15,8 +15,8 @@
 /* Full-width shell, matching the main Search Resumes page */
 .resdex-shell {
   width: 100% !important;
-  max-width: 1600px !important;
-  margin: 0 auto !important;
+  max-width: none !important;
+  margin: 0 !important;
   padding: 22px 40px 38px !important;
 }
 @media (max-width: 1600px) {
@@ -133,7 +133,7 @@ body.dark .empty-state{
 }
 </style>
 
-<div class="resdex-wrap resdex-jobboard">
+<div class="resdex-wrap resdex-jobboard recruiter-resdex-jobboard">
   <div class="resdex-shell">
 
     
