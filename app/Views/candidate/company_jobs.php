@@ -1,6 +1,8 @@
 <?= view('Layouts/candidate_header', ['title' => $title]) ?>
 
 <?php
+use App\Libraries\ExternalJobTextNormalizer;
+
 $companyName = (string) ($company_name ?? 'Company');
 $companyInitial = strtoupper(substr($companyName, 0, 1) ?: 'C');
 $portalJobs = is_array($internal_jobs ?? null) ? $internal_jobs : [];
@@ -46,7 +48,7 @@ $formatDate = static function ($value): string {
 };
 
 $jobExcerpt = static function ($value): string {
-    $text = trim(strip_tags((string) $value));
+    $text = ExternalJobTextNormalizer::normalize((string) $value);
     if ($text === '') {
         return 'Open role listed by the employer.';
     }
@@ -135,27 +137,37 @@ $jobExcerpt = static function ($value): string {
             <div class="company-jobs-content-grid">
                 <div class="company-jobs-list">
                     <?php if ($portalCount > 0): ?>
-                        <div class="company-jobs-section-label">HireMatrix Posted Jobs</div>
+                        <div class="company-jobs-section-label">Available Jobs</div>
                     <?php endif; ?>
                     <?php foreach ($portalJobs as $job): ?>
-                        <?php $jobDetailsUrl = base_url('job/' . (int) $job['id']); ?>
+                        <?php
+                        $isExternalPortalJob = (int) ($job['is_external'] ?? 0) === 1;
+                        $externalApplyUrl = trim((string) ($job['external_apply_url'] ?? ''));
+                        $jobDetailsUrl = $isExternalPortalJob && filter_var($externalApplyUrl, FILTER_VALIDATE_URL)
+                            ? $externalApplyUrl
+                            : base_url('job/' . (int) $job['id']);
+                        $sourceLabel = $isExternalPortalJob
+                            ? ExternalJobTextNormalizer::normalize((string) ($job['external_source'] ?? 'External source'))
+                            : 'HireMatrix';
+                        ?>
                         <article class="company-job-card"
                             data-href="<?= esc($jobDetailsUrl) ?>"
+                            <?= $isExternalPortalJob ? 'data-target="_blank"' : '' ?>
                             role="link"
                             tabindex="0"
-                            aria-label="View details for <?= esc($job['title'] ?? 'this job') ?>">
+                            aria-label="<?= $isExternalPortalJob ? 'Apply to' : 'View details for' ?> <?= esc(ExternalJobTextNormalizer::normalize((string) ($job['title'] ?? 'this job'))) ?>">
                             <div class="company-job-main">
-                                <div class="company-job-source">HireMatrix</div>
-                                <h3><?= esc($job['title'] ?? 'Untitled role') ?></h3>
+                                <div class="company-job-source"><?= esc($sourceLabel ?: 'External source') ?></div>
+                                <h3><?= esc(ExternalJobTextNormalizer::normalize((string) ($job['title'] ?? 'Untitled role'))) ?></h3>
                                 <div class="company-job-meta">
-                                    <span><i class="fas fa-map-marker-alt"></i><?= esc($job['location'] ?? 'N/A') ?></span>
-                                    <span><i class="fas fa-briefcase"></i><?= esc($job['experience_level'] ?? 'Not specified') ?></span>
+                                    <span><i class="fas fa-map-marker-alt"></i><?= esc(ExternalJobTextNormalizer::normalize((string) ($job['location'] ?? 'N/A'))) ?></span>
+                                    <span><i class="fas fa-briefcase"></i><?= esc(ExternalJobTextNormalizer::normalize((string) ($job['experience_level'] ?? 'Not specified'))) ?></span>
                                     <span><i class="fas fa-calendar"></i><?= esc($formatDate($job['created_at'] ?? '')) ?></span>
                                 </div>
                                 <p><?= esc($jobExcerpt($job['description'] ?? '')) ?></p>
                                 <?php if (!empty($job['employment_type'])): ?>
                                     <div class="company-jobs-pills">
-                                        <span class="skill-chip"><?= esc($job['employment_type']) ?></span>
+                                        <span class="skill-chip"><?= esc(ExternalJobTextNormalizer::normalize((string) $job['employment_type'])) ?></span>
                                     </div>
                                 <?php endif; ?>
                             </div>

@@ -214,9 +214,15 @@
                                                         <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>">Edit Job</a>
                                                         <div class="hm-job-dropdown-separator"></div>
                                                         <?php if ($isOpen): ?>
-                                                        <a class="hm-job-dropdown-item is-danger" href="<?= base_url('recruiter/jobs/close/' . $job['id']) ?>" onclick="return confirm('Close this job?')">Close Job</a>
-                                                        <?php else: ?>
-                                                        <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/reopen/' . $job['id']) ?>">Reopen Job</a>
+                                                        <form method="post" action="<?= base_url('recruiter/jobs/close/' . $job['id']) ?>" onsubmit="return confirm('Close this job?')">
+                                                            <?= csrf_field() ?>
+                                                            <button type="submit" class="hm-job-dropdown-item is-danger">Close Job</button>
+                                                        </form>
+                                                    <?php else: ?>
+                                                        <form method="post" action="<?= base_url('recruiter/jobs/reopen/' . $job['id']) ?>">
+                                                            <?= csrf_field() ?>
+                                                            <button type="submit" class="hm-job-dropdown-item">Reopen Job</button>
+                                                        </form>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
                                                 </div>

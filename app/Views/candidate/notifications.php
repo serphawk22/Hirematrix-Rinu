@@ -10,9 +10,12 @@
             </div>
             <div class="page-board-actions">
                 <?php if ($unread_count > 0): ?>
-                    <a href="<?= base_url('notifications/mark-all-read') ?>" class="btn btn-primary js-mark-all-notifications-read">
-                        <i class="fas fa-check mr-1"></i> Mark All as Read
-                    </a>
+                    <form method="post" action="<?= base_url('notifications/mark-all-read') ?>">
+                        <?= csrf_field() ?>
+                        <button type="submit" class="btn btn-primary js-mark-all-notifications-read">
+                            <i class="fas fa-check mr-1"></i> Mark All as Read
+                        </button>
+                    </form>
                 <?php endif; ?>
             </div>
         </div>
@@ -61,28 +64,31 @@
                                         
                                         <div class="d-flex justify-content-between align-items-center">
                                             <?php if ($notification['action_link']): ?>
-                                                <a href="<?= base_url('notifications/mark-read/' . $notification['id']) ?>" 
-                                                   class="btn btn-sm btn-outline-primary notification-action-btn">
-                                                    <?= esc($config['action_text'] ?? 'Take Action') ?> <i class="fas fa-arrow-right ml-1"></i>
-                                                </a>
+                                                <form method="post" action="<?= base_url('notifications/mark-read/' . $notification['id']) ?>" class="d-inline">
+                                                    <?= csrf_field() ?>
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary notification-action-btn">
+                                                        <?= esc($config['action_text'] ?? 'Take Action') ?> <i class="fas fa-arrow-right ml-1"></i>
+                                                    </button>
+                                                </form>
                                             <?php else: ?>
                                                 <span></span>
                                             <?php endif; ?>
                                             
                                             <div>
                                                 <?php if (!$notification['is_read']): ?>
-                                                    <a href="<?= base_url('notifications/mark-read/' . $notification['id']) ?>" 
-                                                       class="btn btn-sm btn-link notification-link-action js-mark-notification-read"
-                                                       data-notification-id="<?= (int) $notification['id'] ?>">
-                                                        <i class="fas fa-check mr-1"></i> Mark as Read
-                                                    </a>
+                                                    <form method="post" action="<?= base_url('notifications/mark-read/' . $notification['id']) ?>" class="d-inline">
+                                                        <?= csrf_field() ?>
+                                                        <button type="submit" class="btn btn-sm btn-link notification-link-action js-mark-notification-read" data-notification-id="<?= (int) $notification['id'] ?>">
+                                                            <i class="fas fa-check mr-1"></i> Mark as Read
+                                                        </button>
+                                                    </form>
                                                 <?php endif; ?>
-                                                <a href="<?= base_url('notifications/delete/' . $notification['id']) ?>" 
-                                                   class="btn btn-sm btn-link notification-link-danger js-delete-notification"
-                                                   data-notification-id="<?= (int) $notification['id'] ?>"
-                                                   data-confirm-message="Delete this notification?">
-                                                    <i class="fas fa-trash-alt mr-1"></i> Delete
-                                                </a>
+                                                <form method="post" action="<?= base_url('notifications/delete/' . $notification['id']) ?>" class="d-inline">
+                                                    <?= csrf_field() ?>
+                                                    <button type="submit" class="btn btn-sm btn-link notification-link-danger js-delete-notification" data-notification-id="<?= (int) $notification['id'] ?>" data-confirm-message="Delete this notification?">
+                                                        <i class="fas fa-trash-alt mr-1"></i> Delete
+                                                    </button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>

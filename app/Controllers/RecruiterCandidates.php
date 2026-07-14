@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Libraries\AiCandidateMatcher;
 use App\Libraries\AtsScoreService;
 use App\Libraries\ResumeTemplateRenderer;
+use App\Libraries\RecruiterCandidateAccessService;
 use App\Models\UserModel;
 use App\Models\ApplicationModel;
 use App\Models\CandidateResumeVersionModel;
@@ -1357,10 +1358,7 @@ class RecruiterCandidates extends BaseController
 
     private function applyRecruiterVisibilityFilter($builder, int $recruiterId): void
     {
-        $builder->groupStart()
-            ->where('COALESCE(candidate_profiles.allow_public_recruiter_visibility, 1) =', 1, false)
-            ->orWhere('users.id IN (SELECT applications.candidate_id FROM applications INNER JOIN jobs ON jobs.id = applications.job_id WHERE jobs.recruiter_id = ' . $recruiterId . ')', null, false)
-            ->groupEnd();
+        (new RecruiterCandidateAccessService())->applyVisibilityFilter($builder, $recruiterId);
     }
 
     private function applySelectedJobAvailabilityFilter($builder, int $jobId): void
@@ -1407,24 +1405,7 @@ class RecruiterCandidates extends BaseController
 
     private function canRecruiterAccessCandidate(int $candidateId, int $recruiterId): bool
     {
-        $userModel = new UserModel();
-        $candidate = $userModel->findCandidateWithProfile($candidateId) ?? $userModel->find($candidateId);
-        if (!$candidate || ($candidate['role'] ?? '') !== 'candidate') {
-            return false;
-        }
-
-        if ((int) ($candidate['allow_public_recruiter_visibility'] ?? 1) === 1) {
-            return true;
-        }
-
-        $application = (new ApplicationModel())
-            ->select('applications.id')
-            ->join('jobs', 'jobs.id = applications.job_id')
-            ->where('applications.candidate_id', $candidateId)
-            ->where('jobs.recruiter_id', $recruiterId)
-            ->first();
-
-        return !empty($application);
+        return (new RecruiterCandidateAccessService())->canAccess($candidateId, $recruiterId);
     }
 
     private function normalizeTags(string $rawTags): string

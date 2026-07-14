@@ -121,7 +121,10 @@
                                     <?php if ($slot['booked_count'] == 0): ?>
                                         <?php if (!$isPast): ?>
                                             <a href="<?= base_url('recruiter/slots/edit/' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary">Edit</a>
-                                            <a href="<?= base_url('recruiter/slots/delete/' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary" onclick="return confirm('Delete this slot?')" class="recruiter-danger-outline">Delete</a>
+                                            <form method="post" action="<?= base_url('recruiter/slots/delete/' . $slot['id']) ?>" class="d-inline" onsubmit="return confirm('Delete this slot?')">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn btn-sm btn-outline-primary recruiter-danger-outline">Delete</button>
+                                            </form>
                                         <?php else: ?>
                                             <span class="text-muted">Archived</span>
                                         <?php endif; ?>

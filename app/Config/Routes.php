@@ -207,8 +207,8 @@ $routes->group('recruiter', ['namespace' => 'App\Controllers', 'filter' => 'recr
     $routes->get('jobs/edit/(:num)', 'RecruiterJobs::edit/$1');
     $routes->post('jobs/update/(:num)', 'RecruiterJobs::update/$1');
     $routes->post('jobs/bulk-close', 'RecruiterJobs::bulkClose');
-    $routes->get('jobs/close/(:num)', 'RecruiterJobs::close/$1');
-    $routes->get('jobs/reopen/(:num)', 'RecruiterJobs::reopen/$1');
+    $routes->post('jobs/close/(:num)', 'RecruiterJobs::close/$1', ['filter' => 'recruiter_csrf']);
+    $routes->post('jobs/reopen/(:num)', 'RecruiterJobs::reopen/$1', ['filter' => 'recruiter_csrf']);
     $routes->get('company-profile', 'CompanyProfile::edit');
     $routes->post('company-profile', 'CompanyProfile::update');
 });
@@ -273,9 +273,9 @@ $routes->post('recruiter/candidates/invite-job/bulk', 'RecruiterCandidates::bulk
 // Notification Routes
 $routes->group('notifications', ['filter' => 'auth'], function($routes) {
     $routes->get('/', 'NotificationController::index');
-    $routes->get('mark-read/(:num)', 'NotificationController::markAsRead/$1');
-    $routes->get('mark-all-read', 'NotificationController::markAllAsRead');
-    $routes->get('delete/(:num)', 'NotificationController::delete/$1');
+    $routes->post('mark-read/(:num)', 'NotificationController::markAsRead/$1', ['filter' => 'auth_csrf']);
+    $routes->post('mark-all-read', 'NotificationController::markAllAsRead', ['filter' => 'auth_csrf']);
+    $routes->post('delete/(:num)', 'NotificationController::delete/$1', ['filter' => 'auth_csrf']);
 });
 
 // Interview Slot Booking Routes
@@ -296,7 +296,7 @@ $routes->group('recruiter', ['filter' => 'recruiter'], function($routes) {
     $routes->post('slots/store', 'SlotManagementController::store');
     $routes->get('slots/edit/(:num)', 'SlotManagementController::edit/$1');
     $routes->post('slots/update/(:num)', 'SlotManagementController::update/$1');
-    $routes->get('slots/delete/(:num)', 'SlotManagementController::delete/$1');
+    $routes->post('slots/delete/(:num)', 'SlotManagementController::delete/$1', ['filter' => 'recruiter_csrf']);
     
     // Booking Management
     $routes->get('slots/bookings', 'SlotManagementController::bookings');
