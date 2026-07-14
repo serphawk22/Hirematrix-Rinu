@@ -14,7 +14,7 @@
 
 .resdex-shell {
   width: 100% !important;
-  max-width: 1600px !important;
+  max-width: 1500px !important;
   margin: 0 auto !important;
   padding: 22px 40px 38px !important;
 }
