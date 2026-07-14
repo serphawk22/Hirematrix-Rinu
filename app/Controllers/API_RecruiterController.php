@@ -4593,6 +4593,10 @@ class API_RecruiterController extends ResourceController
             return $this->failNotFound('Candidate not found.');
         }
 
+        if (!$this->canRecruiterAccessCandidate($profile, (int)$recruiterId)) {
+            return $this->failForbidden('This candidate profile is not available.');
+        }
+
         $db = \Config\Database::connect();
         $db->table('recruiter_candidate_actions')->insert([
             'candidate_id' => $id,
@@ -4746,6 +4750,14 @@ class API_RecruiterController extends ResourceController
 
         $db = \Config\Database::connect();
 
+        if ($candidateId <= 0) {
+            return $this->failValidationErrors('Invalid candidate.');
+        }
+
+        if ($folderId <= 0 && $newFolder === '') {
+            return $this->failValidationErrors('Please select a folder.');
+        }
+
         if ($newFolder !== '') {
             $db->table('resdex_folders')->insert([
                 'recruiter_id' => $recruiterId,
@@ -4755,20 +4767,27 @@ class API_RecruiterController extends ResourceController
             $folderId = $db->insertID();
         }
 
-        if ($folderId > 0 && $candidateId > 0) {
-            $db->table('resdex_folder_candidates')->ignore(true)->insert([
-                'folder_id'    => $folderId,
-                'candidate_id' => $candidateId,
-                'added_at'     => date('Y-m-d H:i:s'),
-            ]);
+        $folderOwned = $db->table('resdex_folders')
+            ->where('id', $folderId)
+            ->where('recruiter_id', $recruiterId)
+            ->countAllResults();
 
-            $db->table('recruiter_candidate_actions')->insert([
-                'candidate_id' => $candidateId,
-                'recruiter_id' => $recruiterId,
-                'action_type'  => 'shortlisted',
-                'created_at'   => date('Y-m-d H:i:s'),
-            ]);
+        if (!$folderOwned) {
+            return $this->failForbidden('Please select a valid folder.');
         }
+
+        $db->table('resdex_folder_candidates')->ignore(true)->insert([
+            'folder_id'    => $folderId,
+            'candidate_id' => $candidateId,
+            'added_at'     => date('Y-m-d H:i:s'),
+        ]);
+
+        $db->table('recruiter_candidate_actions')->insert([
+            'candidate_id' => $candidateId,
+            'recruiter_id' => $recruiterId,
+            'action_type'  => 'shortlisted',
+            'created_at'   => date('Y-m-d H:i:s'),
+        ]);
 
         return $this->respond([
             'success' => true,
@@ -4967,5 +4986,27 @@ class API_RecruiterController extends ResourceController
             'deleted_ids' => $deletedIds,
             'message' => $count . ' search' . ($count === 1 ? '' : 'es') . ' removed.'
         ]);
+    }
+    private function canRecruiterAccessCandidate(array $profile, int $recruiterId): bool
+    {
+        if ($recruiterId <= 0) {
+            return false;
+        }
+
+        if ((int) ($profile['allow_public_recruiter_visibility'] ?? 0) === 1) {
+            return true;
+        }
+
+        $candidateId = (int) ($profile['user_id'] ?? 0);
+        if ($candidateId <= 0) {
+            return false;
+        }
+
+        return \Config\Database::connect()
+            ->table('applications')
+            ->join('jobs', 'jobs.id = applications.job_id')
+            ->where('applications.candidate_id', $candidateId)
+            ->where('jobs.recruiter_id', $recruiterId)
+            ->countAllResults() > 0;
     }
 }
