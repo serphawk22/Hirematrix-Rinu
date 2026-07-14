@@ -9,6 +9,7 @@ use App\Models\NotificationModel;
 use App\Models\InterviewBookingModel;
 use App\Models\CompanyModel;
 use App\Models\StageHistoryModel;
+use App\Models\CandidateSearchModel;
 use CodeIgniter\RESTful\ResourceController;
 
 class API_RecruiterController extends ResourceController
@@ -4533,4 +4534,438 @@ class API_RecruiterController extends ResourceController
         return array_slice($suggestions, 0, 8);
     }
 
+    // =========================================================================
+    // RESDEX (Candidate Search) API Endpoints
+    // =========================================================================
+
+    public function resdexSearch()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+
+        $candidateSearch = new CandidateSearchModel();
+        
+        // Collect filters from GET
+        $filters = $this->request->getGet();
+        unset($filters['recruiter_id']); // Not a search filter
+        
+        $hasSearched = !empty($filters); // If any filters are provided, it's a search
+
+        $results = $candidateSearch->search($filters);
+
+        if ($hasSearched) {
+            try {
+                $candidateSearch->logSearch((int) $recruiterId, $filters);
+            } catch (\Throwable $e) {
+                log_message('error', 'ResDex API logSearch failed: ' . $e->getMessage());
+            }
+
+            if (!empty($results['results'])) {
+                foreach ($results['results'] as &$candidate) {
+                    $candFilters = $filters;
+                    $candFilters['candidate_id'] = (string) $candidate['user_id'];
+                    $hash = $candidateSearch->hashFilters($candFilters);
+                    $row  = $candidateSearch->findSavedSearchByHash((int)$recruiterId, $hash);
+                    $isManualSaved = !empty($row) && (int) ($row['is_manual'] ?? 0) === 1;
+                    $candidate['is_search_saved'] = $isManualSaved ? '1' : '0';
+                }
+                unset($candidate);
+            }
+        }
+
+        return $this->respond([
+            'success' => true,
+            'filters' => $filters,
+            'results' => $results,
+            'hasSearched' => $hasSearched
+        ]);
+    }
+
+    public function resdexGetCandidate($id)
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+
+        $candidateSearch = new CandidateSearchModel();
+        $profile = $candidateSearch->getFullProfile((int) $id);
+
+        if (!$profile) {
+            return $this->failNotFound('Candidate not found.');
+        }
+
+        $db = \Config\Database::connect();
+        $db->table('recruiter_candidate_actions')->insert([
+            'candidate_id' => $id,
+            'recruiter_id' => (int) $recruiterId,
+            'action_type'  => 'viewed',
+            'created_at'   => date('Y-m-d H:i:s'),
+        ]);
+
+        return $this->respond([
+            'success' => true,
+            'profile' => $profile
+        ]);
+    }
+
+    public function resdexGetFolders()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+
+        $db = \Config\Database::connect();
+
+        $folders = $db->table('resdex_folders')
+            ->where('recruiter_id', $recruiterId)
+            ->orderBy('created_at', 'DESC')
+            ->get()->getResultArray();
+
+        foreach ($folders as &$folder) {
+            $folder['candidate_count'] = $db->table('resdex_folder_candidates')
+                ->where('folder_id', $folder['id'])->countAllResults();
+        }
+
+        return $this->respond([
+            'success' => true,
+            'folders' => $folders
+        ]);
+    }
+
+    public function resdexCreateFolder()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+
+        $name = trim((string) $this->request->getVar('folder_name'));
+        if ($name === '') {
+            return $this->fail('Please give the folder a name.');
+        }
+
+        $db = \Config\Database::connect();
+        $db->table('resdex_folders')->insert([
+            'recruiter_id' => $recruiterId,
+            'folder_name'  => $name,
+            'created_at'   => date('Y-m-d H:i:s'),
+        ]);
+
+        return $this->respondCreated([
+            'success' => true,
+            'message' => 'Folder created.'
+        ]);
+    }
+
+    public function resdexDeleteFolders()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+
+        $folderIds = $this->request->getVar('folder_ids');
+        if (empty($folderIds)) {
+            $singleId = (int) $this->request->getVar('folder_id');
+            $folderIds = $singleId > 0 ? [$singleId] : [];
+        } else {
+            // Assume comma separated if string (from GET/POST form-data)
+            if (is_string($folderIds)) {
+                $folderIds = explode(',', $folderIds);
+            }
+            $folderIds = array_values(array_unique(array_filter(array_map('intval', (array) $folderIds))));
+        }
+
+        if (empty($folderIds)) {
+            return $this->failValidationErrors('No folders selected.');
+        }
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        $ownedFolders = $db->table('resdex_folders')
+            ->select('id')
+            ->where('recruiter_id', $recruiterId)
+            ->whereIn('id', $folderIds)
+            ->get()
+            ->getResultArray();
+
+        $ownedIds = array_map(fn($row) => (int) $row['id'], $ownedFolders);
+
+        if (!empty($ownedIds)) {
+            $db->table('resdex_folder_candidates')->whereIn('folder_id', $ownedIds)->delete();
+            $db->table('resdex_folders')->whereIn('id', $ownedIds)->delete();
+        }
+
+        $db->transComplete();
+
+        if (!$db->transStatus()) {
+            return $this->failServerError('Could not delete folders.');
+        }
+
+        $count = count($ownedIds);
+        return $this->respondDeleted([
+            'success' => true,
+            'deleted_ids' => $ownedIds,
+            'message' => $count . ' folder' . ($count === 1 ? '' : 's') . ' deleted.'
+        ]);
+    }
+
+    public function resdexGetFolderDetails($id)
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+
+        $db = \Config\Database::connect();
+        $folder = $db->table('resdex_folders')
+            ->where('id', $id)
+            ->where('recruiter_id', $recruiterId)
+            ->get()->getRowArray();
+
+        if (!$folder) {
+            return $this->failNotFound('Folder not found.');
+        }
+
+        $candidates = $db->table('resdex_folder_candidates rfc')
+            ->select('rfc.added_at, u.name, cp.headline, cp.location, cp.total_experience_months, cp.resume_path, cp.key_skills, cp.user_id')
+            ->join('users u', 'u.id = rfc.candidate_id')
+            ->join('candidate_profiles cp', 'cp.user_id = rfc.candidate_id')
+            ->where('rfc.folder_id', $id)
+            ->orderBy('rfc.added_at', 'DESC')
+            ->get()->getResultArray();
+
+        return $this->respond([
+            'success' => true,
+            'folder' => $folder,
+            'candidates' => $candidates
+        ]);
+    }
+
+    public function resdexAddToFolder()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+
+        $candidateId = (int) $this->request->getVar('candidate_id');
+        $folderId    = (int) $this->request->getVar('folder_id');
+        $newFolder   = trim((string) $this->request->getVar('new_folder_name'));
+
+        $db = \Config\Database::connect();
+
+        if ($newFolder !== '') {
+            $db->table('resdex_folders')->insert([
+                'recruiter_id' => $recruiterId,
+                'folder_name'  => $newFolder,
+                'created_at'   => date('Y-m-d H:i:s'),
+            ]);
+            $folderId = $db->insertID();
+        }
+
+        if ($folderId > 0 && $candidateId > 0) {
+            $db->table('resdex_folder_candidates')->ignore(true)->insert([
+                'folder_id'    => $folderId,
+                'candidate_id' => $candidateId,
+                'added_at'     => date('Y-m-d H:i:s'),
+            ]);
+
+            $db->table('recruiter_candidate_actions')->insert([
+                'candidate_id' => $candidateId,
+                'recruiter_id' => $recruiterId,
+                'action_type'  => 'shortlisted',
+                'created_at'   => date('Y-m-d H:i:s'),
+            ]);
+        }
+
+        return $this->respond([
+            'success' => true,
+            'message' => 'Candidate added to folder.'
+        ]);
+    }
+
+    public function resdexBulkAddToFolder()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+
+        $folderId     = (int) $this->request->getVar('folder_id');
+        $candidateIds = $this->request->getVar('candidate_ids');
+        if (is_string($candidateIds)) {
+            $candidateIds = explode(',', $candidateIds);
+        }
+
+        if (!$folderId || empty($candidateIds)) {
+            return $this->failValidationErrors('Missing folder or candidates.');
+        }
+
+        $db = \Config\Database::connect();
+        $folderOwned = $db->table('resdex_folders')
+            ->where('id', $folderId)
+            ->where('recruiter_id', $recruiterId)
+            ->countAllResults();
+
+        if (!$folderOwned) {
+            return $this->failForbidden('Invalid folder.');
+        }
+
+        $savedCount = 0;
+        foreach ((array)$candidateIds as $candidateId) {
+            $candidateId = (int) $candidateId;
+            if ($folderId > 0 && $candidateId > 0) {
+                $db->table('resdex_folder_candidates')->ignore(true)->insert([
+                    'folder_id'    => $folderId,
+                    'candidate_id' => $candidateId,
+                    'added_at'     => date('Y-m-d H:i:s'),
+                ]);
+
+                $db->table('recruiter_candidate_actions')->ignore(true)->insert([
+                    'candidate_id' => $candidateId,
+                    'recruiter_id' => $recruiterId,
+                    'action_type'  => 'shortlisted',
+                    'created_at'   => date('Y-m-d H:i:s'),
+                ]);
+                $savedCount++;
+            }
+        }
+
+        return $this->respond([
+            'success' => true,
+            'message' => $savedCount . ' candidate(s) saved to folder.'
+        ]);
+    }
+
+    public function resdexRemoveFromFolder()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+
+        $folderId = (int) $this->request->getVar('folder_id');
+        $candidateIds = $this->request->getVar('candidate_ids');
+
+        if (empty($candidateIds)) {
+            $singleId = (int) $this->request->getVar('candidate_id');
+            $candidateIds = $singleId > 0 ? [$singleId] : [];
+        } else {
+            if (is_string($candidateIds)) {
+                $candidateIds = explode(',', $candidateIds);
+            }
+            $candidateIds = array_values(array_unique(array_filter(array_map('intval', (array) $candidateIds))));
+        }
+
+        if ($folderId <= 0 || empty($candidateIds)) {
+            return $this->failValidationErrors('No candidates selected.');
+        }
+
+        $candidateSearch = new CandidateSearchModel();
+        $removedCount = 0;
+        foreach ($candidateIds as $candidateId) {
+            $candidateSearch->removeFromFolder($folderId, $candidateId, $recruiterId);
+            $removedCount++;
+        }
+
+        return $this->respond([
+            'success' => true,
+            'removed_ids' => $candidateIds,
+            'message' => $removedCount . ' candidate(s) removed.'
+        ]);
+    }
+
+    public function resdexGetSearches()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+
+        $tab = $this->request->getVar('tab') === 'recent' ? 'recent' : 'saved';
+        $candidateSearch = new CandidateSearchModel();
+        $searches = $candidateSearch->getSearches((int)$recruiterId, $tab === 'saved');
+
+        return $this->respond([
+            'success' => true,
+            'searches' => $searches,
+            'activeTab' => $tab
+        ]);
+    }
+
+    public function resdexSaveSearch()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+
+        try {
+            $filters = $this->request->getVar();
+            unset($filters['recruiter_id']);
+            unset($filters['candidate_name']); // keep out of hash
+
+            $candidateId = (int) $this->request->getVar('candidate_id');
+            if ($candidateId <= 0) {
+                return $this->failValidationErrors('Missing candidate reference.');
+            }
+
+            $filters['candidate_id'] = (string) $candidateId;
+            $candidateSearch = new CandidateSearchModel();
+            $hash = $candidateSearch->hashFilters($filters);
+
+            $existing = $candidateSearch->findSavedSearchByHash((int)$recruiterId, $hash);
+            $db = \Config\Database::connect();
+
+            if ($existing) {
+                $db->table('resdex_saved_searches')->where('id', $existing['id'])->delete();
+                $isSaved = false;
+                $message = 'Removed from Saved Searches.';
+            } else {
+                $candidateName = trim((string) $this->request->getVar('candidate_name'));
+                $label = $candidateSearch->buildSearchLabel($filters);
+                if ($candidateName !== '') {
+                    $label = $label !== 'Untitled search' ? $candidateName . ' — ' . $label : $candidateName;
+                }
+
+                $db->table('resdex_saved_searches')->insert([
+                    'recruiter_id'    => $recruiterId,
+                    'search_name'     => $label,
+                    'is_manual'       => 1,
+                    'filters_json'    => json_encode($filters),
+                    'filters_hash'    => $hash,
+                    'alert_frequency' => 'none',
+                    'created_at'      => date('Y-m-d H:i:s'),
+                    'updated_at'      => date('Y-m-d H:i:s'),
+                ]);
+                $isSaved = true;
+                $message = 'Search saved.';
+            }
+
+            return $this->respond([
+                'success' => true,
+                'is_saved' => $isSaved,
+                'candidate_id' => $candidateId,
+                'message' => $message
+            ]);
+        } catch (\Throwable $e) {
+            log_message('error', 'resdexSaveSearch failed: ' . $e->getMessage());
+            return $this->failServerError('Could not update saved search.');
+        }
+    }
+
+    public function resdexDeleteSearches()
+    {
+        $recruiterId = $this->request->getVar('recruiter_id');
+        if (!$recruiterId) return $this->fail('Recruiter ID required');
+
+        $ids = $this->request->getVar('ids');
+        if (empty($ids)) {
+            $singleId = (int) $this->request->getVar('id');
+            $ids = $singleId > 0 ? [$singleId] : [];
+        } else {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            $ids = array_values(array_unique(array_filter(array_map('intval', (array) $ids))));
+        }
+
+        if (empty($ids)) {
+            return $this->failValidationErrors('No searches selected.');
+        }
+
+        $candidateSearch = new CandidateSearchModel();
+        $deletedIds = $candidateSearch->deleteSearches($ids, (int)$recruiterId);
+        
+        $count = count($deletedIds);
+        return $this->respond([
+            'success' => true,
+            'deleted_ids' => $deletedIds,
+            'message' => $count . ' search' . ($count === 1 ? '' : 'es') . ' removed.'
+        ]);
+    }
 }

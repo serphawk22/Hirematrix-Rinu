@@ -238,6 +238,20 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
         $routes->post('applications/bulk_message', 'API_RecruiterController::bulkSendMessage');
         $routes->post('update_fcm_token', 'API_RecruiterController::updateFcmToken');
 
+        // Resdex API Routes
+        $routes->get('resdex/search', 'API_RecruiterController::resdexSearch');
+        $routes->get('resdex/candidate/(:num)', 'API_RecruiterController::resdexGetCandidate/$1');
+        $routes->get('resdex/folders', 'API_RecruiterController::resdexGetFolders');
+        $routes->post('resdex/folders/create', 'API_RecruiterController::resdexCreateFolder');
+        $routes->post('resdex/folders/delete', 'API_RecruiterController::resdexDeleteFolders');
+        $routes->get('resdex/folders/(:num)', 'API_RecruiterController::resdexGetFolderDetails/$1');
+        $routes->post('resdex/folders/add', 'API_RecruiterController::resdexAddToFolder');
+        $routes->post('resdex/folders/bulk-add', 'API_RecruiterController::resdexBulkAddToFolder');
+        $routes->post('resdex/folders/remove', 'API_RecruiterController::resdexRemoveFromFolder');
+        $routes->get('resdex/searches', 'API_RecruiterController::resdexGetSearches');
+        $routes->post('resdex/searches/save', 'API_RecruiterController::resdexSaveSearch');
+        $routes->post('resdex/searches/delete', 'API_RecruiterController::resdexDeleteSearches');
+
         // Interview Management
         $routes->get('interview_slots', 'API_RecruiterController::getInterviewSlots');
         $routes->post('interview_slots/add', 'API_RecruiterController::addInterviewSlot');
