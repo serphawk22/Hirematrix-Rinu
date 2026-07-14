@@ -348,7 +348,7 @@ body.dark .alert-danger {
 </style>
 
 <div class="resdex-wrap resdex-jobboard">
-  <div class="resdex-shell">
+<div class="container-fluid py-5">
   <div class="page-board-header page-board-header-tight recruiter-page-board-header">
         <div class="page-board-copy"> 
             <h1 class="page-board-title">Search Resumes</h1>
@@ -374,7 +374,7 @@ body.dark .alert-danger {
 
           <div class="card">
             <div class="kw-toolbar">
-              <h2 class="card-title" style="margin-bottom:0;"><i class="fas fa-key" style="color:var(--primary)"></i> Keywords</h2>
+              <h2 class="card-title" style="margin-bottom:0;"> Keywords</h2>
               <label class="kw-toggle">
                 <input type="checkbox" name="boolean_on" value="1" <?= !empty($filters['boolean_on']) ? 'checked' : '' ?>>
                 Boolean search

@@ -141,7 +141,7 @@ body.dark h3.candidate-name{
 </style>
 
 <div class="resdex-folder-detail-jobboard">
-<div class="resdex-folder-detail-shell">
+<div class="container-fluid py-5">
 
   <div class="page-board-header page-board-header-tight recruiter-page-board-header">
     <div class="page-board-copy">
