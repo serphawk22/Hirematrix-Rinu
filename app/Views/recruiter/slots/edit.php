@@ -1,143 +1,4 @@
 <?= view('Layouts/recruiter_header', ['title' => 'Edit Interview Slot']) ?>
-<style>
- .container-fluid {
-    max-width: 100% !important;
-    padding-left: 34px !important;
-    padding-right: 34px !important;
-}
-     .page-board-title{
-        font-size: 26px !important; 
-    font-weight: 700 !important;
-    color: var(--foreground) !important;
-    margin: 0;
-    }
-    body.dark .page-board-title{
-        font-size: 26px !important;
-    font-weight: 700 !important;
-    color: #FFFFFF !important;
-    margin: 0;
-    }
-    .status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 14px;
-    border-radius: 50px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    background: #16212b14;
-    color: #0D8A90;
-    border: none;
-    text-decoration: none !important;
-    white-space: nowrap;
-    cursor: pointer;
-}
-body.dark .status-pill {
-    background: #000000 !important;
-    color: #0D8A90;
-    border: 1px solid rgba(31, 183, 181, 0.15) !important;
-}
-     .btn-primary,.btn-outline-primary {
-  background: transparent !important;
-    border: 1.5px solid #1FB7B5 !important;
-    color: #1FB7B5 !important;
-    padding: 8px 20px;
-    border-radius: 6px !important;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.btn-primary:hover, .btn-primary:focus, .btn-outline-primary:focus, .btn-outline-primary:hover {
-    background:  #1FB7B5 !important;
-    color: #ffffff !important;
-    transform: translateY(-1px);
-
-}
- .hm-page-content,.recruiter-slot-edit-jobboard {
-         background: linear-gradient(
-      135deg,
-      #F4FBFA 0%,
-      #EEF9F2 100%
-    ) !important;
-}
-
-body.dark .hm-page-content,body.dark .recruiter-slot-edit-jobboard, body.dark .recruiter-form-card,body.dark .recruiter-tip-item,body.dark .recruiter-info-card{
-    background: #000000 !important;
-    border: 1px solid #23343A; !important;
-} 
-.page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
-    border:none !important;
-}
-/* ── Input focus border ── */
-.recruiter-job-form .form-control:focus {
-    border-color: var(--primary-dark, #0D8A90) !important; 
-    outline: none !important;
-}
-
-.recruiter-job-form .form-control {
-    border: 1px solid var(--border, #D9ECE5);
-    border-radius: 6px;
-    transition: border-color .2s, box-shadow .2s;
-    background: #fff;
-    color: var(--foreground, #16212B);
-}
-.recruiter-info-card{ 
-    box-shadow: 0 0.1px 1px rgba(0, 0, 0, 0.08) !important;
-}
-body.dark .card,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
- border: 1px solid #23343A !important;
-}
-body.dark .recruiter-job-form .form-control {
-    border: 1px solid #23343A !important;
-    border-radius: 6px;
-    transition: border-color .2s, box-shadow .2s;
-    background: #000000 !important;
-    color: #FFFFFF !important;
-}
-/* ── Labels — match h6 style ── */
-.recruiter-job-form label {
-    font-size: 1rem;        /* same as Bootstrap h6 */
-    font-weight: 500 !important;       /* same as h6 */
-    color: var(--foreground, #16212B);
-    margin-bottom: 6px;
-    display: block;
-    line-height: 1.5;
-}
-body.dark .recruiter-job-form label, body.dark h6 {
-    font-size: 1rem;        /* same as Bootstrap h6 */
-    font-weight: 500 !important;   
-    margin-bottom: 6px;
-    display: block;
-    line-height: 1.5;
-    color:#FFFFFF !important;
-}
-/* ── Kill Bootstrap's orange/default focus first ── */
-/* ── Kill Bootstrap's orange/default focus first ── */
-.recruiter-job-form .form-control:focus,
-.recruiter-job-form select.form-control:focus,
-.recruiter-job-form textarea.form-control:focus {
-    outline: 0 !important;
-    box-shadow: none !important;   /* ← add this */
-    border-color: #0D8A90 !important; 
-}
-/* ── Also reset Bootstrap's base .form-control focus ── */
-.form-control:focus {
-    box-shadow: none !important;   /* ← already there, add !important */
-    border-color: #0D8A90;
-}
-body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header{
-    border:none !important;
-}
-body.dark .recruiter-summary-card{
-    background: #000000 !important;
-    color:#FFFFFF !important;
-    border:1px solid #23343A;
-}
-body.dark .recruiter-info-card,body.dark .recruiter-tip-item{
-    color:#FFFFFF !important;
-}
-</style>
 <div class="recruiter-slot-edit-jobboard">
 <div class="container-fluid py-5">
     <div class="page-board-header page-board-header-tight recruiter-page-board-header">
@@ -171,7 +32,7 @@ body.dark .recruiter-info-card,body.dark .recruiter-tip-item{
 
     <div class="recruiter-form-layout recruiter-slot-edit-layout">
         <div class="recruiter-form-main">
-            <div class="card shadow-sm recruiter-form-card" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm recruiter-form-card recruiter-rounded-hidden">
                 <div class="card-body">
                     <form method="post" action="<?= base_url('recruiter/slots/update/' . $slot['id']) ?>" id="editSlotForm" class="recruiter-job-form">
                         <?= csrf_field() ?>
@@ -268,7 +129,7 @@ body.dark .recruiter-info-card,body.dark .recruiter-tip-item{
         </div>
 
         <div class="recruiter-form-side">
-            <div class="card shadow-sm recruiter-form-card" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm recruiter-form-card recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6 class="mb-3"><i class="fas fa-shield-alt"></i> Booking protection</h6>
                     <div class="recruiter-tip-list">
@@ -280,7 +141,7 @@ body.dark .recruiter-info-card,body.dark .recruiter-tip-item{
             </div>
 
             <?php if ($slot['booked_count'] > 0): ?>
-                <div class="card shadow-sm recruiter-form-card" style="border-radius: 20px !important;overflow: hidden;">
+                <div class="card shadow-sm recruiter-form-card recruiter-rounded-hidden">
                     <div class="card-body">
                         <h6 class="mb-3"><i class="fas fa-users"></i> Existing bookings</h6>
                         <p class="text-muted mb-3">This slot has <?= $slot['booked_count'] ?> active booking(s). To modify it, candidates must be rescheduled or cancelled first.</p>

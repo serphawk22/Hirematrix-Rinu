@@ -15,8 +15,8 @@
 /* Full-width shell, matching the main Search Resumes page */
 .resdex-shell {
   width: 100% !important;
-  max-width: 1600px !important;
-  margin: 0 auto !important;
+  max-width: none !important;
+  margin: 0 !important;
   padding: 22px 40px 38px !important;
 }
 @media (max-width: 1600px) {
@@ -132,11 +132,9 @@ body.dark .empty-state{
     border:1px solid #23343A;
 }
 </style>
-
-<div class="resdex-wrap resdex-jobboard">
-  <div class="resdex-shell">
-
-    
+ 
+<div class="resdex-wrap resdex-jobboard recruiter-resdex-jobboard">
+  <div class="resdex-shell"> 
       <div class="page-board-header page-board-header-tight recruiter-page-board-header">
     <div class="page-board-copy">
       <h1 class="page-board-title">Manage Searches</h1>
@@ -147,10 +145,7 @@ body.dark .empty-state{
         Back to Resdex
       </a>
     </div>
-  
-     
     </div>
-
     <div class="ms-tabs">
       <a href="<?= site_url('recruiter/resdex/saved-searches') ?>?tab=saved" class="<?= $activeTab === 'saved' ? 'active' : '' ?>">
         My Saved Searches
@@ -161,10 +156,16 @@ body.dark .empty-state{
     </div>
 
     <?php if (session()->getFlashdata('success')): ?>
-      <div class="alert alert-success" role="alert"><?= esc(session()->getFlashdata('success')) ?></div>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <?= esc(session()->getFlashdata('success')) ?>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
     <?php endif; ?>
     <?php if (session()->getFlashdata('error')): ?>
-      <div class="alert alert-danger" role="alert"><?= esc(session()->getFlashdata('error')) ?></div>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <?= esc(session()->getFlashdata('error')) ?>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
     <?php endif; ?>
 
     <?php if (empty($searches)): ?>
@@ -212,16 +213,14 @@ body.dark .empty-state{
             </div>
           </div>
           <div class="ms-actions">
-            <a href="<?= site_url('recruiter/resdex') . '?' . http_build_query($sf) ?>" class="btn btn-outline">
-              <i class="fas fa-pen"></i> Fill
-            </a>
+            
             <a href="<?= site_url('recruiter/resdex') . '?' . http_build_query(array_merge($sf, ['search' => 1])) ?>" class="btn btn-primary">
               <i class="fas fa-search"></i> Search
             </a>
             <form method="post" action="<?= site_url('recruiter/resdex/saved-searches/delete') ?>" onsubmit="return confirm('Delete this search?');">
               <?= csrf_field() ?>
               <input type="hidden" name="id" value="<?= (int) $s['id'] ?>">
-              <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+              <button type="submit" class="btn btn-danger">Remove</button>
             </form>
           </div>
         </div>

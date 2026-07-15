@@ -1,153 +1,4 @@
 <?= view('Layouts/recruiter_header', ['title' => 'Candidate Profile']) ?>
-<style>
- .container-fluid {
-    max-width: 100% !important;
-    padding-left: 34px !important;
-    padding-right: 34px !important;
-}
-     .btn-outline-primary {
-  background: transparent !important;
-    border: 1.5px solid #1FB7B5 !important;
-    color: #1FB7B5 !important;
-    padding: 8px 20px;
-    border-radius: 6px !important;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.btn-primary:hover, .btn-primary:focus, .btn-outline-primary:focus, .btn-outline-primary:hover {
-    background:  #1FB7B5 !important;
-    color: #ffffff !important;
-    transform: translateY(-1px);
-
-}
- .page-board-title{
-        font-size: 26px !important; 
-    font-weight: 700 !important;
-    color: var(--foreground) !important;
-    margin: 0;
-    }
-    body.dark .page-board-title{
-        font-size: 26px !important;
-    font-weight: 700 !important;
-    color: #FFFFFF !important;
-    margin: 0;
-    }
-    .status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 14px;
-    border-radius: 50px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    background: #16212b14;
-    color: #0D8A90;
-    border: none;
-    text-decoration: none !important;
-    white-space: nowrap;
-    cursor: pointer;
-}
-body.dark .status-pill {
-    background: #000000 !important;
-    color: #0D8A90;
-    border: 1px solid rgba(31, 183, 181, 0.6) !important;
-}
-.page-board-header.page-board-header-tight.recruiter-page-board-header,.border-bottom,body.dark .page-board-header.page-board-header-tight.recruiter-page-board-header,body.dark .border-bottom,body.dark .candidate-summary-fallback{
-    border:none !important;
-}
-.hm-page-content,.recruiter-candidate-profile-jobboard{
-         background: linear-gradient(
-      135deg,
-      #F4FBFA 0%,
-      #EEF9F2 100%
-    ) !important;
-}
-body.dark .hm-page-content,body.dark .recruiter-candidate-profile-jobboard, body.dark .candidate-profile-rail-card, body.dark .candidate-profile-section,body.dark .candidate-detail-item,body.dark .card.shadow-sm.mb-3{
-    background: #000000 !important;
-    border: 1px solid #23343A !important;
-} 
-body.dark .candidate-detail-item div,body.dark .card-body p,body.dark .candidate-meta p,body.dark .h6.mb-0{
-    color:#FFFFFF;
-}
-h6{
-    font-size: 1rem;        /* same as Bootstrap h6 */
-    font-weight: 500 !important;       /* same as h6 */
-    color: var(--foreground, #16212B);
-    margin-bottom: 6px;
-    display: block;
-    line-height: 1.5;
-}
-body.dark h6,body.dark .candidate-name,body.dark .card-body h6{
-    font-size: 1rem;        /* same as Bootstrap h6 */
-    font-weight: 500 !important;   
-    margin-bottom: 6px;
-    display: block;
-    line-height: 1.5;
-    color:#FFFFFF;
-}
-/* ── Input focus border ── */
-.recruiter-job-form .form-control:focus {
-    border-color: var(--primary-dark, #0D8A90) !important; 
-    outline: none !important;
-}
-
-.recruiter-job-form .form-control {
-    border: 1px solid var(--border, #D9ECE5);
-    border-radius: 6px;
-    transition: border-color .2s, box-shadow .2s;
-    background: #fff;
-    color: var(--foreground, #16212B);
-}
-body.dark .recruiter-job-form .form-control {
-    border: 1px solid #23343A !important;
-    border-radius: 6px;
-    transition: border-color .2s, box-shadow .2s;
-    background: #000000 !important;
-    color: #FFFFFF !important;
-}
-/* ── Labels — match h6 style ── */
-.recruiter-job-form label {
-    font-size: 1rem;        /* same as Bootstrap h6 */
-    font-weight: 500 !important;       /* same as h6 */
-    color: var(--foreground, #16212B);
-    margin-bottom: 6px;
-    display: block;
-    line-height: 1.5;
-}
-body.dark .recruiter-job-form label, body.dark h6 {
-    font-size: 1rem;        /* same as Bootstrap h6 */
-    font-weight: 500 !important;   
-    margin-bottom: 6px;
-    display: block;
-    line-height: 1.5;
-    color:#FFFFFF;
-}
-.candidate-profile-rail-card p{
-    font-size:1rem !important;
-}
-body.dark .candidate-detail-item lable, body.dark .candidate-detail-item .value-empty{
-    color: #FFFFFF !important;
-}
-/* ── Kill Bootstrap's orange/default focus first ── */
-/* ── Kill Bootstrap's orange/default focus first ── */
-.recruiter-job-form .form-control:focus,
-.recruiter-job-form select.form-control:focus,
-.recruiter-job-form textarea.form-control:focus {
-    outline: 0 !important;
-    box-shadow: none !important;   /* ← add this */
-    border-color: #0D8A90 !important; 
-}
-/* ── Also reset Bootstrap's base .form-control focus ── */
-.form-control:focus {
-    box-shadow: none !important;   /* ← already there, add !important */
-    border-color: #0D8A90;
-}
-body.dark div{
-    color:#94A3B8;
-}
-</style>
 <div class="recruiter-candidate-profile-jobboard">
 <div class="container-fluid py-5">
     <?php
@@ -159,6 +10,9 @@ body.dark div{
         . '&job_id=' . $jobId;
     $resumeUrl = base_url('recruiter/candidate/' . $candidate['id'] . '/download-resume');
     $resumeUrl .= '?application_id=' . $applicationId . '&job_id=' . $jobId;
+    $communicationUrl = base_url('recruiter/messages/' . $candidate['id'])
+        . '?application_id=' . $applicationId
+        . '&job_id=' . $jobId;
     $introVideoPath = trim((string) ($candidate['intro_video_path'] ?? ''));
     $introVideoUrl = $introVideoPath !== ''
         ? (preg_match('/^https?:\/\//i', $introVideoPath) ? $introVideoPath : base_url($introVideoPath))
@@ -221,7 +75,7 @@ body.dark div{
         return implode(' ', $parts);
     };
     ?>
-    <div class="page-board-header page-board-header-tight recruiter-page-board-header" style="border-radius: 20px !important;overflow: hidden;">
+    <div class="page-board-header page-board-header-tight recruiter-page-board-header recruiter-rounded-hidden">
         <div class="page-board-copy"> 
             <h1 class="page-board-title"><?= esc($candidate['name']) ?></h1>
             <p class="page-board-subtitle">
@@ -229,6 +83,9 @@ body.dark div{
             </p>
         </div>
         <div class="page-board-actions candidate-profile-actions">
+            <a href="<?= $communicationUrl ?>" class="btn btn-outline-primary">
+                Communication
+            </a>
             <?php if (!$showContact): ?>
                 <a href="<?= $contactViewUrl ?>" class="btn btn-outline-primary">
                     View Contact
@@ -249,7 +106,7 @@ body.dark div{
     <?php endif; ?>
     <div class="candidate-profile-shell">
         <div class="candidate-profile-side">
-            <div class="card shadow-sm candidate-summary-card candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm candidate-summary-card candidate-profile-rail-card recruiter-rounded-hidden">
                 <div class="card-body text-center">
                     <?php
                     $candidatePhotoPath = trim((string) ($candidate['profile_photo'] ?? ''));
@@ -278,7 +135,7 @@ body.dark div{
             </div>
             
             <?php if($candidate['bio']): ?>
-            <div class="card shadow-sm mt-3 candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mt-3 candidate-profile-rail-card recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6>  About</h6>
                     <p><?= nl2br(esc($candidate['bio'])) ?></p>
@@ -287,26 +144,26 @@ body.dark div{
             <?php endif; ?>
 
             <?php if ($introVideoUrl !== '' || !empty($candidate['intro_video_pitch']) || !empty($candidate['intro_video_target_role'])): ?>
-            <div class="card shadow-sm mt-3 candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mt-3 candidate-profile-rail-card recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6>  Video Introduction</h6>
                     <?php if (!empty($candidate['intro_video_target_role'])): ?>
                         <p class="small text-muted mb-2">Pitching for: <?= esc($candidate['intro_video_target_role']) ?></p>
                     <?php endif; ?>
                     <?php if ($introVideoUrl !== ''): ?>
-                        <video controls preload="metadata" style="width: 100%; border-radius: 10px; background: #111827; margin-bottom: 12px;">
+                        <video controls preload="metadata" class="recruiter-intro-video">
                             <source src="<?= esc($introVideoUrl) ?>">
                             Your browser does not support the video tag.
                         </video>
                     <?php endif; ?>
                     <?php if (!empty($candidate['intro_video_pitch'])): ?>
-                        <p class="mb-0 small" style="line-height: 1.55; color: #475569;"><?= nl2br(esc($candidate['intro_video_pitch'])) ?></p>
+                        <p class="mb-0 small recruiter-video-pitch"><?= nl2br(esc($candidate['intro_video_pitch'])) ?></p>
                     <?php endif; ?>
                 </div>
             </div>
             <?php endif; ?>
 
-            <div class="card shadow-sm mt-3 candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mt-3 candidate-profile-rail-card recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6> Invite to Apply</h6>
                     <p class="text-muted mb-3">Send a direct invitation for one of your open roles. The candidate gets an in-app alert and an email if their notification settings allow it.</p>
@@ -340,7 +197,7 @@ body.dark div{
                 </div>
             </div>
 
-            <div class="card shadow-sm mt-3 candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mt-3 candidate-profile-rail-card recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6>  Recruiter Notes & Tags</h6>
                     <?php if (!empty($recruiterNote['tags'])): ?>
@@ -373,7 +230,7 @@ body.dark div{
                 </div>
             </div>
 
-            <div class="card shadow-sm mt-3 candidate-profile-rail-card" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mt-3 candidate-profile-rail-card recruiter-rounded-hidden">
                 <div class="card-body">
                     <div class="candidate-communication-head">
                         <div>
@@ -459,7 +316,7 @@ body.dark div{
             </div>
         </div>
         
-        <div class="candidate-profile-main" style="border-radius: 20px !important;overflow: hidden;">
+        <div class="candidate-profile-main recruiter-rounded-hidden">
             <?php if (!empty($applicationContext['questionnaire_items'])): ?>
             <div class="card shadow-sm mb-3 candidate-profile-section">
                 <div class="card-body">
@@ -471,7 +328,7 @@ body.dark div{
                         <?php foreach ((array) $applicationContext['questionnaire_items'] as $item): ?>
                             <div class="candidate-detail-item">
                                 <label><?= esc((string) ($item['label'] ?? 'Question')) ?></label>
-                                <div style="white-space: pre-wrap;"><?= esc((string) ($item['answer'] ?? '')) ?></div>
+                                <div class="recruiter-pre-wrap"><?= esc((string) ($item['answer'] ?? '')) ?></div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -479,7 +336,7 @@ body.dark div{
             </div>
             <?php endif; ?>
 
-            <div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mb-3 candidate-profile-section recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6>  Professional Summary</h6>
                     <div class="row mt-3">
@@ -501,7 +358,7 @@ body.dark div{
                 </div>
             </div>
 
-            <div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mb-3 candidate-profile-section recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6> Personal Information</h6>
                     <div class="candidate-detail-grid mt-3">
@@ -533,7 +390,7 @@ body.dark div{
                 </div>
             </div>
 
-            <div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mb-3 candidate-profile-section recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6> Career Details</h6>
                     <div class="candidate-detail-grid mt-3">
@@ -553,7 +410,7 @@ body.dark div{
                 </div>
             </div>
 
-            <div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mb-3 candidate-profile-section recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6>  Preferences</h6>
                     <div class="candidate-detail-grid mt-3">
@@ -579,7 +436,7 @@ body.dark div{
 
             <!-- Skills -->
             <?php if (!empty($skills['skill_name']) || !empty($github['languages_used'])): ?>
-            <div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mb-3 candidate-profile-section recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6> Skills & Technologies</h6>
                     <?php if (!empty($skills['skill_name'])): ?>
@@ -603,7 +460,7 @@ body.dark div{
             <?php endif; ?>
 
             <?php if (!empty($interests)): ?>
-            <div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mb-3 candidate-profile-section recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6> Job Interests</h6>
                     <div class="mt-3">
@@ -617,10 +474,10 @@ body.dark div{
             
             <!-- Work Experience -->
           <?php if (!empty($workExperiences)): ?>
-<div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
+<div class="card shadow-sm mb-3 candidate-profile-section recruiter-rounded-hidden">
     <div class="card-body">
         <h6>Work Experience</h6>
-        <div style="max-height: 250px; overflow-y: auto;">
+        <div class="recruiter-scroll-250">
             <?php foreach($workExperiences as $exp): ?>
             <div class="border-bottom pb-3 mb-3">
                 <h6 class="mb-1"><?= esc($exp['job_title']) ?></h6>
@@ -636,7 +493,7 @@ body.dark div{
 <?php endif; ?>
 
             <?php if (!empty($projects)): ?>
-            <div class="card shadow-sm mb-3" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mb-3 recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6>  Projects</h6>
                     <?php foreach ($projects as $project): ?>
@@ -665,18 +522,18 @@ body.dark div{
             
             <!-- Education -->
          <?php if (!empty($education)): ?>
-<div class="card shadow-sm mb-3 candidate-profile-section" style="border-radius: 20px !important;overflow: hidden;">
+<div class="card shadow-sm mb-3 candidate-profile-section recruiter-rounded-hidden">
     <div class="card-body">
         <h6>Education</h6>
         <div class="d-flex flex-nowrap overflow-auto gap-3 pb-2">
             <?php foreach($education as $edu): ?>
-            <div style="min-width: 200px; flex: 0 0 auto;">
+            <div class="recruiter-min-200">
                 <h6 class="mb-1"><?= esc($edu['degree']) ?></h6>
-                <p class="mb-1 text-muted" style="font-size:13px;"><?= esc($edu['institution']) ?></p>
-                <p class="mb-1 text-muted" style="font-size:13px;"><?= esc($edu['field_of_study']) ?></p>
-                <p class="mb-1 text-muted" style="font-size:13px;"><?= esc($edu['start_year']) ?> - <?= esc($edu['end_year']) ?></p>
+                <p class="mb-1 text-muted recruiter-text-13"><?= esc($edu['institution']) ?></p>
+                <p class="mb-1 text-muted recruiter-text-13"><?= esc($edu['field_of_study']) ?></p>
+                <p class="mb-1 text-muted recruiter-text-13"><?= esc($edu['start_year']) ?> - <?= esc($edu['end_year']) ?></p>
                 <?php if($edu['grade']): ?>
-                    <p class="mb-0 text-muted" style="font-size:13px;">Grade: <?= esc($edu['grade']) ?></p>
+                    <p class="mb-0 text-muted recruiter-text-13">Grade: <?= esc($edu['grade']) ?></p>
                 <?php endif; ?>
             </div>
             <?php endforeach; ?>
@@ -687,7 +544,7 @@ body.dark div{
             
             <!-- Certifications -->
             <?php if (!empty($certifications)): ?>
-            <div class="card shadow-sm mb-3" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mb-3 recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6>  Certifications</h6>
                     <?php foreach($certifications as $cert): ?>
@@ -705,10 +562,10 @@ body.dark div{
             
             <!-- GitHub Stats -->
             <?php if (!empty($github['github_username'])): ?>
-            <div class="card shadow-sm mb-3" style="border-radius: 20px !important;overflow: hidden;">
+            <div class="card shadow-sm mb-3 recruiter-rounded-hidden">
                 <div class="card-body">
                     <h6> GitHub Profile</h6>
-                    <p><a href="https://github.com/<?= esc($github['github_username']) ?>"style="color:#0D8A90;" target="_blank">@<?= esc($github['github_username']) ?></a></p>
+                    <p><a href="https://github.com/<?= esc($github['github_username']) ?>"class="recruiter-brand-link" target="_blank">@<?= esc($github['github_username']) ?></a></p>
                     <div class="row text-center">
                         <div class="col-4">
                             <strong><?= esc($github['repo_count']) ?></strong><br>

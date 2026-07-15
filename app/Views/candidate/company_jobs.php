@@ -29,7 +29,6 @@ if ($companyLogo !== '') {
     $logoUrl = 'https://www.google.com/s2/favicons?domain=' . rawurlencode($websiteHost) . '&sz=96';
 }
 $discoverUrl = base_url('mnc/discover');
-$profileUrl = !empty($company['id']) ? base_url('company/' . (int) $company['id']) : '';
 $discoveryUrl = base_url('candidate/company-job-discovery');
 
 $companyTags = [];
@@ -54,64 +53,6 @@ $jobExcerpt = static function ($value): string {
     return mb_substr($text, 0, 170) . (mb_strlen($text) > 170 ? '...' : '');
 };
 ?>
-
-<style>
-.company-jobs-page .company-job-card[data-href] {
-    cursor: pointer;
-}
-.company-jobs-page .company-job-card[data-href]:focus,
-.company-jobs-page .company-job-card[data-href]:focus-visible {
-    border-color: var(--primary, #1FB7B5);
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(31, 183, 181, .14);
-}
-.company-jobs-page .company-jobs-empty-state {
-    align-items: flex-start;
-    background: #fff;
-    border: 1px solid var(--candidate-line, #d7e5f2);
-    border-radius: 8px;
-    display: grid;
-    gap: 16px;
-    grid-template-columns: 44px minmax(0, 1fr);
-    padding: 22px;
-}
-.company-jobs-page .company-jobs-empty-icon {
-    align-items: center;
-    background: rgba(31, 183, 181, .1);
-    border: 1px solid rgba(31, 183, 181, .28);
-    border-radius: 8px;
-    color: var(--primary, #1FB7B5);
-    display: inline-flex;
-    height: 44px;
-    justify-content: center;
-    width: 44px;
-}
-.company-jobs-page .company-jobs-empty-state strong {
-    color: var(--foreground, #0f172a);
-    display: block;
-    font-size: 1rem;
-    margin-bottom: 4px;
-}
-.company-jobs-page .company-jobs-empty-state p {
-    color: var(--muted-foreground, #64748b);
-    margin: 0;
-}
-body.dark.candidate-app .company-jobs-page .company-jobs-empty-state {
-    background: #111;
-    border-color: #272727;
-}
-body.dark.candidate-app .company-jobs-page .company-jobs-empty-state strong {
-    color: #f4f4f5;
-}
-body.dark.candidate-app .company-jobs-page .company-jobs-empty-state p {
-    color: #b8bec8;
-}
-@media (max-width: 768px) {
-    .company-jobs-page .company-jobs-empty-state {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
 
 <div class="jobs-page-jobboard company-jobs-page">
     <div class="container company-jobs-shell">
@@ -184,12 +125,6 @@ body.dark.candidate-app .company-jobs-page .company-jobs-empty-state p {
                     <div class="company-jobs-links">
                         <?php if ($companyCareerPage !== ''): ?>
                             <a href="<?= esc($companyCareerPage) ?>" target="_blank" rel="noopener">Career page <i class="fas fa-external-link-alt"></i></a>
-                        <?php endif; ?>
-                        <?php if ($companyWebsite !== ''): ?>
-                            <a href="<?= esc($companyWebsite) ?>" target="_blank" rel="noopener">Company website <i class="fas fa-external-link-alt"></i></a>
-                        <?php endif; ?>
-                        <?php if ($profileUrl !== ''): ?>
-                            <a href="<?= esc($profileUrl) ?>">HireMatrix profile <i class="fas fa-arrow-right"></i></a>
                         <?php endif; ?>
                     </div>
                 </article>

@@ -19,6 +19,7 @@ public function index()
 {
     $filters     = $this->collectFilters('get');
     $hasSearched = $this->request->getGet('search') !== null;
+    $recruiterId = (int) session()->get('user_id');
 
     // Always run the search — with empty filters this returns everything.
     $results = $this->candidateSearch->search($filters);
@@ -36,8 +37,6 @@ public function index()
     // candidate's id). We look up the saved row per candidate by hash and
     // only mark it saved if a row exists AND is_manual = 1.
     if ($hasSearched && !empty($results['results'])) {
-        $recruiterId = (int) session()->get('user_id');
-
         foreach ($results['results'] as &$candidate) {
             $candFilters = $filters;
             $candFilters['candidate_id'] = (string) $candidate['user_id'];
@@ -52,12 +51,20 @@ public function index()
         unset($candidate);
     }
 
+    $recruiterJobs = model('JobModel')
+        ->select('id, title')
+        ->where('recruiter_id', $recruiterId)
+        ->where('status', 'open')
+        ->orderBy('created_at', 'DESC')
+        ->findAll();
+
     return view('recruiter/resdex', [
         'title'          => 'Search Resumes',
         'filters'        => $filters,
         'results'        => $results,
         'hasSearched'    => $hasSearched,
         'folders'        => $this->getFoldersForRecruiter(),
+        'recruiterJobs'  => $recruiterJobs,
         'recentSearches' => $this->candidateSearch->getSearches((int) session()->get('user_id'), false, 4),
     ]);
 }
@@ -65,16 +72,23 @@ public function index()
     /** GET /recruiter/resdex/candidate/{id} */
     public function viewCandidate($id)
     {
-        $profile = $this->candidateSearch->getFullProfile((int) $id);
+        $candidateId = (int) $id;
+        $recruiterId = (int) session()->get('user_id');
+        $profile = $this->candidateSearch->getFullProfile($candidateId);
 
         if (!$profile) {
             return redirect()->to(site_url('recruiter/resdex'))->with('error', 'Candidate not found.');
         }
 
+        if (!$this->canRecruiterAccessCandidate($profile, $recruiterId)) {
+            return redirect()->to(site_url('recruiter/resdex'))
+                ->with('error', 'This candidate profile is not available.');
+        }
+
         $db = \Config\Database::connect();
         $db->table('recruiter_candidate_actions')->insert([
-            'candidate_id' => $id,
-            'recruiter_id' => session()->get('user_id'),
+            'candidate_id' => $candidateId,
+            'recruiter_id' => $recruiterId,
             'action_type'  => 'viewed',
             'created_at'   => date('Y-m-d H:i:s'),
         ]);
@@ -84,6 +98,33 @@ public function index()
             'profile' => $profile,
             'folders' => $this->getFoldersForRecruiter(),
         ]);
+    }
+
+    /**
+     * A private candidate remains accessible only to recruiters whose job they
+     * applied to. Public candidates are discoverable by every recruiter.
+     */
+    private function canRecruiterAccessCandidate(array $profile, int $recruiterId): bool
+    {
+        if ($recruiterId <= 0) {
+            return false;
+        }
+
+        if ((int) ($profile['allow_public_recruiter_visibility'] ?? 0) === 1) {
+            return true;
+        }
+
+        $candidateId = (int) ($profile['user_id'] ?? 0);
+        if ($candidateId <= 0) {
+            return false;
+        }
+
+        return \Config\Database::connect()
+            ->table('applications')
+            ->join('jobs', 'jobs.id = applications.job_id')
+            ->where('applications.candidate_id', $candidateId)
+            ->where('jobs.recruiter_id', $recruiterId)
+            ->countAllResults() > 0;
     }
 
     /** POST /recruiter/resdex/folder/add */
@@ -96,6 +137,14 @@ public function index()
         $db          = \Config\Database::connect();
         $recruiterId = session()->get('user_id');
 
+        if ($candidateId <= 0) {
+            return redirect()->back()->with('error', 'Invalid candidate.');
+        }
+
+        if ($folderId <= 0 && $newFolder === '') {
+            return redirect()->back()->with('error', 'Please select a folder.');
+        }
+
         if ($newFolder !== '') {
             $db->table('resdex_folders')->insert([
                 'recruiter_id' => $recruiterId,
@@ -105,20 +154,27 @@ public function index()
             $folderId = $db->insertID();
         }
 
-        if ($folderId > 0 && $candidateId > 0) {
-            $db->table('resdex_folder_candidates')->ignore(true)->insert([
-                'folder_id'    => $folderId,
-                'candidate_id' => $candidateId,
-                'added_at'     => date('Y-m-d H:i:s'),
-            ]);
+        $folderOwned = $db->table('resdex_folders')
+            ->where('id', $folderId)
+            ->where('recruiter_id', $recruiterId)
+            ->countAllResults();
 
-            $db->table('recruiter_candidate_actions')->insert([
-                'candidate_id' => $candidateId,
-                'recruiter_id' => $recruiterId,
-                'action_type'  => 'shortlisted',
-                'created_at'   => date('Y-m-d H:i:s'),
-            ]);
+        if (!$folderOwned) {
+            return redirect()->back()->with('error', 'Please select a valid folder.');
         }
+
+        $db->table('resdex_folder_candidates')->ignore(true)->insert([
+            'folder_id'    => $folderId,
+            'candidate_id' => $candidateId,
+            'added_at'     => date('Y-m-d H:i:s'),
+        ]);
+
+        $db->table('recruiter_candidate_actions')->insert([
+            'candidate_id' => $candidateId,
+            'recruiter_id' => $recruiterId,
+            'action_type'  => 'shortlisted',
+            'created_at'   => date('Y-m-d H:i:s'),
+        ]);
 
         return redirect()->back()->with('success', 'Candidate added to folder.');
     }
@@ -557,7 +613,7 @@ public function index()
             'gender'           => (string) ($src['gender'] ?? ''),
             'must_have_skills' => array_filter(explode(',', (string) ($src['must_have_skills'] ?? ''))),
             'page'             => (int) ($src['page'] ?? 1),
-            'per_page'         => 20,
+            'per_page'         => 12,
         ];
     }
 }

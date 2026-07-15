@@ -34,18 +34,35 @@ class JobResponsesController extends BaseController
 
         $statusFilter = $this->request->getGet('status') ?: 'active';
         $searchQuery = $this->request->getGet('q');
+        $postedByFilter = trim((string) ($this->request->getGet('posted_by') ?: 'me'));
 
         $jobModel = model(JobModel::class);
-        $builder = $jobModel->where('recruiter_id', $recruiterId);
+        $recruiter = (new UserModel())->findRecruiterWithProfile($recruiterId) ?? [];
+        $companyId = (int) ($recruiter['company_id'] ?? 0);
+        $postedByOptions = $this->getCompanyRecruiterOptions($recruiterId, $companyId);
+        $allowedRecruiterIds = array_map(static fn (array $option): int => (int) $option['id'], $postedByOptions);
+
+        $builder = $jobModel
+            ->select('jobs.*, posted_by_user.name as posted_by_name, posted_by_user.email as posted_by_email')
+            ->join('users posted_by_user', 'posted_by_user.id = jobs.recruiter_id', 'left');
+
+        if ($postedByFilter === 'all' && count($allowedRecruiterIds) > 1) {
+            $builder->whereIn('jobs.recruiter_id', $allowedRecruiterIds);
+        } elseif (ctype_digit($postedByFilter) && in_array((int) $postedByFilter, $allowedRecruiterIds, true)) {
+            $builder->where('jobs.recruiter_id', (int) $postedByFilter);
+        } else {
+            $postedByFilter = 'me';
+            $builder->where('jobs.recruiter_id', $recruiterId);
+        }
 
         if ($statusFilter === 'active') {
-            $builder->where('status', 'open');
+            $builder->where('jobs.status', 'open');
         } elseif ($statusFilter === 'closed') {
-            $builder->where('status', 'closed');
+            $builder->where('jobs.status', 'closed');
         }
 
         if ($searchQuery) {
-            $builder->like('title', $searchQuery);
+            $builder->like('jobs.title', $searchQuery);
         }
 
         $alertJobModel = new JobModel();
@@ -56,7 +73,7 @@ class JobResponsesController extends BaseController
             ->findAll();
         $recruiterAlerts = $this->buildRecruiterAlertCenter($alertJobs, $recruiterId);
 
-        $jobs = $builder->orderBy('created_at', 'DESC')->paginate(10);
+        $jobs = $builder->orderBy('jobs.created_at', 'DESC')->paginate(10);
         $pager = $jobModel->pager;
 
         // applicant counts for list view
@@ -141,8 +158,61 @@ class JobResponsesController extends BaseController
             'jobs' => $jobs,
             'pager' => $pager,
             'recruiterAlerts' => $recruiterAlerts,
-            'filters' => ['status' => $statusFilter, 'q' => $searchQuery]
+            'postedByOptions' => $postedByOptions,
+            'filters' => ['status' => $statusFilter, 'q' => $searchQuery, 'posted_by' => $postedByFilter]
         ]);
+    }
+
+    private function getCompanyRecruiterOptions(int $recruiterId, int $companyId): array
+    {
+        $db = \Config\Database::connect();
+        $userModel = new UserModel();
+        $builder = $userModel
+            ->select('users.id, users.name, users.email')
+            ->where('users.role', 'recruiter');
+
+        if ($companyId > 0 && $db->fieldExists('company_id', 'users')) {
+            $builder->groupStart()
+                ->where('users.company_id', $companyId);
+
+            if ($db->tableExists('recruiter_company_map')) {
+                $builder->orWhere(
+                    'users.id IN (SELECT recruiter_user_id FROM recruiter_company_map WHERE company_id = ' . $db->escape($companyId) . ')',
+                    null,
+                    false
+                );
+            }
+
+            $builder->groupEnd();
+        } else {
+            $builder->where('users.id', $recruiterId);
+        }
+
+        $options = $builder
+            ->orderBy('users.name', 'ASC')
+            ->findAll();
+
+        $hasCurrentRecruiter = false;
+        foreach ($options as $option) {
+            if ((int) ($option['id'] ?? 0) === $recruiterId) {
+                $hasCurrentRecruiter = true;
+                break;
+            }
+        }
+
+        if (!$hasCurrentRecruiter) {
+            $currentRecruiter = $userModel
+                ->select('users.id, users.name, users.email')
+                ->where('users.id', $recruiterId)
+                ->where('users.role', 'recruiter')
+                ->first();
+
+            if ($currentRecruiter) {
+                array_unshift($options, $currentRecruiter);
+            }
+        }
+
+        return $options;
     }
 
     public function viewJob(int $jobId)
@@ -150,8 +220,7 @@ class JobResponsesController extends BaseController
         if (session()->get('role') !== 'recruiter') return redirect()->to(base_url('login'));
 
         $recruiterId = (int) session()->get('user_id');
-        $jobModel = model(JobModel::class);
-        $job = $jobModel->where('id', $jobId)->where('recruiter_id', $recruiterId)->first();
+        $job = $this->findAccessibleRecruiterJob($jobId, $recruiterId);
 
         if (!$job) return redirect()->to(base_url('recruiter/jobs'))->with('error', 'Job not found.');
 
@@ -163,12 +232,27 @@ class JobResponsesController extends BaseController
             'ats_max'     => $this->request->getGet('ats_max'),
             'sort'        => trim((string) $this->request->getGet('sort')) ?: 'ats_desc',
             'last_active' => trim((string) $this->request->getGet('last_active')),
+            'notice_period' => trim((string) $this->request->getGet('notice_period')),
+            'salary_min'  => trim((string) $this->request->getGet('salary_min')),
+            'salary_max'  => trim((string) $this->request->getGet('salary_max')),
+            'education'   => trim((string) $this->request->getGet('education')),
+            'diversity'   => trim((string) $this->request->getGet('diversity')),
+            'company'     => trim((string) $this->request->getGet('company')),
+            'designation' => trim((string) $this->request->getGet('designation')),
+            'next_action' => trim((string) $this->request->getGet('next_action')),
         ];
+
+        $allowedNextActions = ['unreviewed', 'follow_up_due', 'candidate_replied', 'interview_pending', 'inactive_3d'];
+        if (!in_array($filters['next_action'], $allowedNextActions, true)) {
+            $filters['next_action'] = '';
+        }
 
         $activeStage = $this->request->getGet('stage') ?: 'all';
 
         // Fetch all applications for counts and scoreboard (unpaginated)
-        $allApplications = $this->getApplicationsForRecruiterJobs([$jobId], $recruiterId, false, 'all', $filters);
+        $countFilters = $filters;
+        $countFilters['next_action'] = '';
+        $allApplications = $this->getApplicationsForRecruiterJobs([$jobId], $recruiterId, false, 'all', $countFilters);
         $applicationsByStatus = $this->groupApplicationsByStatus($allApplications);
         $jobScoreboard = $this->calculateScoreboard($recruiterId, $allApplications);
         $funnelMetrics = $this->buildHiringFunnelMetrics($allApplications);
@@ -207,12 +291,14 @@ class JobResponsesController extends BaseController
             ],
             'totalApplicationsCount' => count($allApplications),
             'advancedFilters' => $filters,
+            'nextActionCounts' => $this->buildNextActionCounts($allApplications),
         ];
 
         if ($this->request->isAJAX()) {
             return $this->response->setJSON([
                 'success' => true,
                 'activeStage' => $activeStage,
+                'nextActionCounts' => $viewData['nextActionCounts'],
                 'html' => view('recruiter/partials/job_pipeline_applications', $viewData),
             ]);
         }
@@ -362,8 +448,7 @@ class JobResponsesController extends BaseController
         }
 
         $recruiterId = (int) session()->get('user_id');
-        $jobModel = model(JobModel::class);
-        $job = $jobModel->where('id', $jobId)->where('recruiter_id', $recruiterId)->first();
+        $job = $this->findAccessibleRecruiterJob($jobId, $recruiterId);
 
         if (!$job) {
             return redirect()->to(base_url('recruiter/jobs'))->with('error', 'Job not found.');
@@ -407,6 +492,25 @@ class JobResponsesController extends BaseController
         ]);
     }
 
+    private function findAccessibleRecruiterJob(int $jobId, int $recruiterId): ?array
+    {
+        $recruiter = (new UserModel())->findRecruiterWithProfile($recruiterId) ?? [];
+        $companyId = (int) ($recruiter['company_id'] ?? 0);
+        $postedByOptions = $this->getCompanyRecruiterOptions($recruiterId, $companyId);
+        $allowedRecruiterIds = array_values(array_unique(array_map(static fn (array $option): int => (int) $option['id'], $postedByOptions)));
+
+        if (empty($allowedRecruiterIds)) {
+            $allowedRecruiterIds = [$recruiterId];
+        }
+
+        $job = model(JobModel::class)
+            ->where('id', $jobId)
+            ->whereIn('recruiter_id', $allowedRecruiterIds)
+            ->first();
+
+        return $job ?: null;
+    }
+
     private function decodeApplicationQuestionnaire(string $rawQuestionnaire): array
     {
         if (trim($rawQuestionnaire) === '') {
@@ -432,6 +536,24 @@ class JobResponsesController extends BaseController
             return [];
         }
 
+        $filters = array_merge([
+            'skills'        => '',
+            'experience'    => '',
+            'location'      => '',
+            'last_active'   => '',
+            'notice_period' => '',
+            'salary_min'    => '',
+            'salary_max'    => '',
+            'education'     => '',
+            'diversity'     => '',
+            'company'       => '',
+            'designation'   => '',
+            'ats_min'       => '',
+            'ats_max'       => '',
+            'sort'          => 'ats_desc',
+            'next_action'   => '',
+        ], $filters);
+
         $applicationModel = model(ApplicationModel::class);
         $actionModel = model(RecruiterCandidateActionModel::class);
         $db = \Config\Database::connect();
@@ -456,7 +578,7 @@ class JobResponsesController extends BaseController
         $notesSelect = $hasRecruiterNotes ? 'recruiter_candidate_notes.tags as recruiter_tags, recruiter_candidate_notes.notes as recruiter_notes' : 'NULL as recruiter_tags, NULL as recruiter_notes';
 
         $applications = $applicationModel
-            ->select('applications.*, jobs.title as job_title, jobs.company as job_company, jobs.location as job_location, jobs.experience_level, jobs.required_skills, users.name as candidate_name, users.email as candidate_email, users.phone as candidate_phone, candidate_profiles.resume_path, candidate_profiles.profile_photo, candidate_profiles.headline as candidate_headline, candidate_profiles.location as candidate_location, candidate_profiles.preferred_locations, candidate_profiles.notice_period, candidate_profiles.current_salary, candidate_profiles.expected_salary, COALESCE(candidate_experience.total_experience_months, 0) as total_experience_months, candidate_work_summary.current_role_summary, candidate_work_summary.previous_role_summary, candidate_education_summary.latest_education_summary, ' . $lastLoginSelect . ', ' . $notesSelect . ', ' . $ratingSelect)
+            ->select('applications.*, jobs.title as job_title, jobs.company as job_company, jobs.location as job_location, jobs.experience_level, jobs.required_skills, users.name as candidate_name, users.email as candidate_email, users.phone as candidate_phone, candidate_profiles.resume_path, candidate_profiles.profile_photo, candidate_profiles.headline as candidate_headline, candidate_profiles.location as candidate_location, candidate_profiles.preferred_locations, candidate_profiles.notice_period, candidate_profiles.current_salary, candidate_profiles.expected_salary, candidate_profiles.gender as candidate_gender, COALESCE(candidate_experience.total_experience_months, 0) as total_experience_months, candidate_work_summary.current_role_summary, candidate_work_summary.previous_role_summary, candidate_education_summary.latest_education_summary, ' . $lastLoginSelect . ', ' . $notesSelect . ', ' . $ratingSelect)
             ->join('jobs', 'jobs.id = applications.job_id', 'left')
             ->join('users', 'users.id = applications.candidate_id', 'left')
             ->join('candidate_profiles', 'candidate_profiles.user_id = applications.candidate_id', 'left')
@@ -485,6 +607,8 @@ class JobResponsesController extends BaseController
             $applicationModel->whereIn('applications.status', $this->getRawStatusesForStage($stage));
         }
 
+        $this->applyNextActionFilter($applicationModel, (string) $filters['next_action'], $recruiterId, $db);
+
         // Apply Advanced Filters
         if (!empty($filters['skills'])) {
             $applicationModel->like('candidate_skills.skill_name', $filters['skills']);
@@ -511,6 +635,56 @@ class JobResponsesController extends BaseController
             $applicationModel->where('last_login_table.last_login >= DATE_SUB(NOW(), INTERVAL ' . $days . ' DAY)', null, false);
         }
 
+        if (!empty($filters['notice_period'])) {
+            $noticePeriod = strtolower((string) $filters['notice_period']);
+            if ($noticePeriod === 'immediate') {
+                $applicationModel->groupStart()
+                    ->like('candidate_profiles.notice_period', 'Immediate')
+                    ->orLike('candidate_profiles.notice_period', '0')
+                    ->groupEnd();
+            } else {
+                $applicationModel->like('candidate_profiles.notice_period', $noticePeriod);
+            }
+        }
+
+        $salaryExpression = 'COALESCE(CAST(NULLIF(candidate_profiles.current_salary, \'\') AS DECIMAL(10,2)), CAST(NULLIF(candidate_profiles.expected_salary, \'\') AS DECIMAL(10,2)))';
+        if ($filters['salary_min'] !== '' && is_numeric($filters['salary_min'])) {
+            $applicationModel->where($salaryExpression . ' >= ' . (float) $filters['salary_min'], null, false);
+        }
+        if ($filters['salary_max'] !== '' && is_numeric($filters['salary_max'])) {
+            $applicationModel->where($salaryExpression . ' <= ' . (float) $filters['salary_max'], null, false);
+        }
+
+        if (!empty($filters['education'])) {
+            $applicationModel->where(
+                'candidate_education_summary.latest_education_summary LIKE ' . $db->escape('%' . $filters['education'] . '%'),
+                null,
+                false
+            );
+        }
+
+        if (!empty($filters['diversity'])) {
+            $applicationModel->where('LOWER(candidate_profiles.gender)', strtolower((string) $filters['diversity']));
+        }
+
+        if (!empty($filters['company'])) {
+            $company = '%' . $filters['company'] . '%';
+            $applicationModel->where(
+                '(candidate_work_summary.current_role_summary LIKE ' . $db->escape($company) . ' OR candidate_work_summary.previous_role_summary LIKE ' . $db->escape($company) . ')',
+                null,
+                false
+            );
+        }
+
+        if (!empty($filters['designation'])) {
+            $designation = '%' . $filters['designation'] . '%';
+            $applicationModel->where(
+                '(candidate_work_summary.current_role_summary LIKE ' . $db->escape($designation) . ' OR candidate_work_summary.previous_role_summary LIKE ' . $db->escape($designation) . ' OR candidate_profiles.headline LIKE ' . $db->escape($designation) . ')',
+                null,
+                false
+            );
+        }
+
         $applicationModel->orderBy('applications.applied_at', 'DESC');
             
         $applications = $paginate ? $applicationModel->paginate(10) : $applicationModel->findAll();
@@ -524,6 +698,7 @@ class JobResponsesController extends BaseController
         // Ensure we don't call the model if application IDs are empty
         $recruiterActions = !empty($applicationIds) ? $actionModel->getSummaryByApplicationIds(null, $applicationIds, $recruiterId) : [];
         $communicationSummaries = $this->getCommunicationSummaries($applications, $recruiterId, $recruiterJobIds);
+        $workflowSummaries = $this->getApplicationWorkflowSummaries($applicationIds, $recruiterId);
 
         // Status mapping to normalize database values for the recruiter UI
         $statusMap = [
@@ -544,12 +719,22 @@ class JobResponsesController extends BaseController
             $app['communication_summary'] = $communicationSummaries[(int) $app['id']] ?? [
                 'email_count' => 0,
                 'message_count' => 0,
+                'has_unread' => false,
+                'needs_followup' => false,
                 'latest_type' => '',
                 'latest_direction' => '',
                 'latest_at' => null,
                 'latest_subject' => '',
                 'latest_preview' => '',
                 'items' => [],
+            ];
+            $app['workflow'] = $workflowSummaries[(int) $app['id']] ?? [
+                'follow_up_at' => null,
+                'follow_up_completed_at' => null,
+                'last_channel' => '',
+                'last_outcome' => '',
+                'last_outcome_notes' => '',
+                'last_outcome_at' => null,
             ];
             $app['candidate_skills'] = $this->getCandidateSkills((int) ($app['candidate_id'] ?? 0));
             $app['required_skills'] = $this->parseRequiredSkills($app['required_skills'] ?? '');
@@ -590,6 +775,154 @@ class JobResponsesController extends BaseController
         return $applications;
     }
 
+    private function applyNextActionFilter($builder, string $filter, int $recruiterId, $db): void
+    {
+        if ($filter === '') {
+            return;
+        }
+
+        $recruiter = (int) $recruiterId;
+        $hasWorkflows = $db->tableExists('recruiter_application_workflows');
+        $hasOutcomes = $db->tableExists('recruiter_communication_outcomes');
+        $hasActions = $db->tableExists('recruiter_candidate_actions');
+        $hasMessages = $db->tableExists('recruiter_candidate_messages');
+        $hasEmails = $db->tableExists('recruiter_email_activities');
+
+        if ($filter === 'unreviewed') {
+            $builder->whereIn('applications.status', ['applied', 'pending']);
+            if ($hasActions) {
+                $builder->where('NOT EXISTS (SELECT 1 FROM recruiter_candidate_actions rca WHERE rca.application_id = applications.id AND rca.recruiter_id = ' . $recruiter . ')', null, false);
+            }
+            if ($hasOutcomes) {
+                $builder->where('NOT EXISTS (SELECT 1 FROM recruiter_communication_outcomes rco WHERE rco.application_id = applications.id AND rco.recruiter_id = ' . $recruiter . ')', null, false);
+            }
+            return;
+        }
+
+        if ($filter === 'follow_up_due') {
+            if (!$hasWorkflows) {
+                $builder->where('1 = 0', null, false);
+                return;
+            }
+            $builder->where('EXISTS (SELECT 1 FROM recruiter_application_workflows rawf WHERE rawf.application_id = applications.id AND rawf.recruiter_id = ' . $recruiter . ' AND rawf.follow_up_at IS NOT NULL AND rawf.follow_up_at <= NOW() AND rawf.follow_up_completed_at IS NULL)', null, false);
+            return;
+        }
+
+        if ($filter === 'candidate_replied') {
+            $incomingChecks = [];
+            $outgoingChecks = [];
+            if ($hasMessages) {
+                $incomingChecks[] = "COALESCE((SELECT MAX(rcmi.created_at) FROM recruiter_candidate_messages rcmi WHERE rcmi.application_id = applications.id AND rcmi.recruiter_id = {$recruiter} AND rcmi.sender_role = 'candidate'), '1970-01-01 00:00:00')";
+                $outgoingChecks[] = "COALESCE((SELECT MAX(rcmo.created_at) FROM recruiter_candidate_messages rcmo WHERE rcmo.application_id = applications.id AND rcmo.recruiter_id = {$recruiter} AND rcmo.sender_role <> 'candidate'), '1970-01-01 00:00:00')";
+            }
+            if ($hasEmails) {
+                $incomingChecks[] = "COALESCE((SELECT MAX(COALESCE(reai.occurred_at, reai.created_at)) FROM recruiter_email_activities reai WHERE reai.application_id = applications.id AND reai.recruiter_id = {$recruiter} AND reai.direction IN ('incoming','inbound')), '1970-01-01 00:00:00')";
+                $outgoingChecks[] = "COALESCE((SELECT MAX(COALESCE(reao.occurred_at, reao.created_at)) FROM recruiter_email_activities reao WHERE reao.application_id = applications.id AND reao.recruiter_id = {$recruiter} AND reao.direction IN ('outgoing','outbound')), '1970-01-01 00:00:00')";
+            }
+            if ($hasOutcomes) {
+                $outgoingChecks[] = "COALESCE((SELECT MAX(rcoh.occurred_at) FROM recruiter_communication_outcomes rcoh WHERE rcoh.application_id = applications.id AND rcoh.recruiter_id = {$recruiter}), '1970-01-01 00:00:00')";
+            }
+            $incomingLatest = count($incomingChecks) > 1 ? 'GREATEST(' . implode(', ', $incomingChecks) . ')' : ($incomingChecks[0] ?? "'1970-01-01 00:00:00'");
+            $outgoingLatest = count($outgoingChecks) > 1 ? 'GREATEST(' . implode(', ', $outgoingChecks) . ')' : ($outgoingChecks[0] ?? "'1970-01-01 00:00:00'");
+            $builder->where($incomingLatest . ' > ' . $outgoingLatest, null, false);
+            return;
+        }
+
+        if ($filter === 'interview_pending') {
+            $builder->whereIn('applications.status', ['shortlisted']);
+            return;
+        }
+
+        if ($filter === 'inactive_3d') {
+            $builder->where('applications.applied_at <= DATE_SUB(NOW(), INTERVAL 3 DAY)', null, false);
+            if ($hasActions) {
+                $builder->where('NOT EXISTS (SELECT 1 FROM recruiter_candidate_actions rca3 WHERE rca3.application_id = applications.id AND rca3.recruiter_id = ' . $recruiter . ' AND rca3.created_at > DATE_SUB(NOW(), INTERVAL 3 DAY))', null, false);
+            }
+            if ($hasOutcomes) {
+                $builder->where('NOT EXISTS (SELECT 1 FROM recruiter_communication_outcomes rco3 WHERE rco3.application_id = applications.id AND rco3.recruiter_id = ' . $recruiter . ' AND rco3.occurred_at > DATE_SUB(NOW(), INTERVAL 3 DAY))', null, false);
+            }
+            if ($hasMessages) {
+                $builder->where('NOT EXISTS (SELECT 1 FROM recruiter_candidate_messages rcm3 WHERE rcm3.application_id = applications.id AND rcm3.recruiter_id = ' . $recruiter . ' AND rcm3.created_at > DATE_SUB(NOW(), INTERVAL 3 DAY))', null, false);
+            }
+            if ($hasEmails) {
+                $builder->where('NOT EXISTS (SELECT 1 FROM recruiter_email_activities rea3 WHERE rea3.application_id = applications.id AND rea3.recruiter_id = ' . $recruiter . ' AND COALESCE(rea3.occurred_at, rea3.created_at) > DATE_SUB(NOW(), INTERVAL 3 DAY))', null, false);
+            }
+            if ($hasWorkflows) {
+                $builder->where('NOT EXISTS (SELECT 1 FROM recruiter_application_workflows rawf3 WHERE rawf3.application_id = applications.id AND rawf3.recruiter_id = ' . $recruiter . ' AND rawf3.updated_at > DATE_SUB(NOW(), INTERVAL 3 DAY))', null, false);
+            }
+        }
+    }
+
+    private function getApplicationWorkflowSummaries(array $applicationIds, int $recruiterId): array
+    {
+        $applicationIds = array_values(array_filter(array_map('intval', $applicationIds)));
+        if (!$applicationIds) {
+            return [];
+        }
+
+        $db = \Config\Database::connect();
+        $summaries = [];
+        if ($db->tableExists('recruiter_application_workflows')) {
+            $rows = $db->table('recruiter_application_workflows')
+                ->where('recruiter_id', $recruiterId)
+                ->whereIn('application_id', $applicationIds)
+                ->get()->getResultArray();
+            foreach ($rows as $row) {
+                $summaries[(int) $row['application_id']] = [
+                    'follow_up_at' => $row['follow_up_at'] ?? null,
+                    'follow_up_completed_at' => $row['follow_up_completed_at'] ?? null,
+                    'last_channel' => '', 'last_outcome' => '', 'last_outcome_notes' => '', 'last_outcome_at' => null,
+                ];
+            }
+        }
+
+        if ($db->tableExists('recruiter_communication_outcomes')) {
+            $rows = $db->table('recruiter_communication_outcomes')
+                ->where('recruiter_id', $recruiterId)
+                ->whereIn('application_id', $applicationIds)
+                ->orderBy('occurred_at', 'DESC')->get()->getResultArray();
+            foreach ($rows as $row) {
+                $applicationId = (int) $row['application_id'];
+                $summaries[$applicationId] = $summaries[$applicationId] ?? [
+                    'follow_up_at' => null, 'follow_up_completed_at' => null,
+                    'last_channel' => '', 'last_outcome' => '', 'last_outcome_notes' => '', 'last_outcome_at' => null,
+                ];
+                if ($summaries[$applicationId]['last_outcome_at'] === null) {
+                    $summaries[$applicationId]['last_channel'] = (string) ($row['channel'] ?? '');
+                    $summaries[$applicationId]['last_outcome'] = (string) ($row['outcome'] ?? '');
+                    $summaries[$applicationId]['last_outcome_notes'] = (string) ($row['notes'] ?? '');
+                    $summaries[$applicationId]['last_outcome_at'] = $row['occurred_at'] ?? null;
+                }
+            }
+        }
+        return $summaries;
+    }
+
+    private function buildNextActionCounts(array $applications): array
+    {
+        $counts = ['unreviewed' => 0, 'follow_up_due' => 0, 'candidate_replied' => 0, 'interview_pending' => 0, 'inactive_3d' => 0];
+        $threeDaysAgo = strtotime('-3 days');
+        foreach ($applications as $app) {
+            $activity = (array) ($app['recruiter_activity'] ?? []);
+            $workflow = (array) ($app['workflow'] ?? []);
+            $communication = (array) ($app['communication_summary'] ?? []);
+            $activityCount = (int) ($activity['profile_viewed_count'] ?? 0) + (int) ($activity['contact_viewed_count'] ?? 0) + (int) ($activity['resume_downloaded_count'] ?? 0);
+            if (in_array((string) ($app['status'] ?? ''), ['applied', 'pending'], true) && $activityCount === 0 && empty($workflow['last_outcome_at'])) $counts['unreviewed']++;
+            $followUpAt = strtotime((string) ($workflow['follow_up_at'] ?? '')) ?: 0;
+            if ($followUpAt && $followUpAt <= time() && empty($workflow['follow_up_completed_at'])) $counts['follow_up_due']++;
+            if (in_array((string) ($communication['latest_direction'] ?? ''), ['incoming', 'inbound'], true)) $counts['candidate_replied']++;
+            if ((string) ($app['status'] ?? '') === 'shortlisted') $counts['interview_pending']++;
+            $lastActivity = max(
+                strtotime((string) ($app['applied_at'] ?? '')) ?: 0,
+                strtotime((string) ($activity['last_recruiter_activity_at'] ?? '')) ?: 0,
+                strtotime((string) ($communication['latest_at'] ?? '')) ?: 0,
+                strtotime((string) ($workflow['last_outcome_at'] ?? '')) ?: 0
+            );
+            if ($lastActivity > 0 && $lastActivity <= $threeDaysAgo) $counts['inactive_3d']++;
+        }
+        return $counts;
+    }
+
     private function getRawStatusesForStage(string $stage): array
     {
         $aliases = [
@@ -624,6 +957,8 @@ class JobResponsesController extends BaseController
             $summaries[$applicationId] = [
                 'email_count' => 0,
                 'message_count' => 0,
+                'has_unread' => false,
+                'needs_followup' => false,
                 'latest_type' => '',
                 'latest_direction' => '',
                 'latest_at' => null,
@@ -710,11 +1045,64 @@ class JobResponsesController extends BaseController
             }
         }
 
+        if ($db->tableExists('recruiter_communication_outcomes') && !empty($applicationIds)) {
+            $outcomeRows = $db->table('recruiter_communication_outcomes')
+                ->select('application_id, channel, outcome, notes, occurred_at')
+                ->where('recruiter_id', $recruiterId)
+                ->whereIn('application_id', $applicationIds)
+                ->orderBy('occurred_at', 'DESC')
+                ->get()->getResultArray();
+            foreach ($outcomeRows as $row) {
+                $applicationId = (int) ($row['application_id'] ?? 0);
+                if (!isset($summaries[$applicationId])) {
+                    continue;
+                }
+                $entry = [
+                    'type' => (string) ($row['channel'] ?? 'contact'),
+                    'direction' => 'outgoing',
+                    'at' => $row['occurred_at'] ?? null,
+                    'subject' => ucwords(str_replace('_', ' ', (string) ($row['outcome'] ?? 'Contact logged'))),
+                    'preview' => (string) ($row['notes'] ?? ''),
+                ];
+                $this->maybeSetLatestCommunication($summaries[$applicationId], $entry);
+                $this->appendCommunicationItem($summaries[$applicationId], $entry);
+            }
+        }
+
+        if ($db->tableExists('notifications')) {
+            $unreadRows = $db->table('notifications')
+                ->select('application_id, action_link')
+                ->where('user_id', $recruiterId)
+                ->where('is_read', 0)
+                ->whereIn('type', ['candidate_message_reply', 'candidate_email_reply'])
+                ->get()
+                ->getResultArray();
+
+            foreach ($unreadRows as $row) {
+                $applicationId = (int) ($row['application_id'] ?? 0);
+                if ($applicationId <= 0) {
+                    $actionLink = (string) ($row['action_link'] ?? '');
+                    if (preg_match('~/recruiter/messages/(\d+)~', $actionLink, $matches)) {
+                        $applicationId = $candidateToApplication[(int) $matches[1]] ?? 0;
+                    }
+                }
+
+                if (isset($summaries[$applicationId])) {
+                    $summaries[$applicationId]['has_unread'] = true;
+                }
+            }
+        }
+
         foreach ($summaries as &$summary) {
             usort($summary['items'], static function (array $a, array $b): int {
                 return strtotime((string) ($b['at'] ?? '')) <=> strtotime((string) ($a['at'] ?? ''));
             });
             $summary['items'] = array_slice($summary['items'], 0, 8);
+            $latestDirection = (string) ($summary['latest_direction'] ?? '');
+            $latestAt = !empty($summary['latest_at']) ? strtotime((string) $summary['latest_at']) : 0;
+            $summary['needs_followup'] = in_array($latestDirection, ['outgoing', 'outbound'], true)
+                && $latestAt > 0
+                && $latestAt <= strtotime('-2 days');
         }
         unset($summary);
 
@@ -1096,6 +1484,134 @@ class JobResponsesController extends BaseController
      * Action to update an application's status.
      * This is a placeholder and would need proper validation and logic.
      */
+    public function saveInlineNotes(int $applicationId)
+    {
+        $application = $this->findAccessibleApplication($applicationId);
+        if (!$application) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Application not found or access denied.'])->setStatusCode(404);
+        }
+
+        $rawTags = trim((string) $this->request->getPost('tags'));
+        $notes = trim((string) $this->request->getPost('notes'));
+        if (mb_strlen($rawTags) > 255 || mb_strlen($notes) > 5000) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Notes or tags exceed the allowed length.'])->setStatusCode(422);
+        }
+
+        $tags = array_values(array_unique(array_filter(array_map(static function ($tag): string {
+            return trim(preg_replace('/\s+/', ' ', (string) $tag) ?? '');
+        }, preg_split('/[,;\n]+/', $rawTags) ?: []))));
+        $data = [
+            'candidate_id' => (int) $application['candidate_id'],
+            'recruiter_id' => (int) session()->get('user_id'),
+            'tags' => implode(', ', array_slice($tags, 0, 12)),
+            'notes' => $notes,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+        $db = \Config\Database::connect();
+        if (!$db->tableExists('recruiter_candidate_notes')) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Notes storage is not available.'])->setStatusCode(503);
+        }
+        $existing = $db->table('recruiter_candidate_notes')->select('id')
+            ->where('candidate_id', $data['candidate_id'])->where('recruiter_id', $data['recruiter_id'])->get()->getRowArray();
+        if ($existing) {
+            $db->table('recruiter_candidate_notes')->where('id', (int) $existing['id'])->update($data);
+        } else {
+            $data['created_at'] = date('Y-m-d H:i:s');
+            $db->table('recruiter_candidate_notes')->insert($data);
+        }
+        return $this->response->setJSON(['status' => 'success', 'message' => 'Note saved.', 'csrf_hash' => csrf_hash()]);
+    }
+
+    public function setFollowUp(int $applicationId)
+    {
+        $application = $this->findAccessibleApplication($applicationId);
+        if (!$application) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Application not found or access denied.'])->setStatusCode(404);
+        }
+        $date = trim((string) $this->request->getPost('follow_up_date'));
+        $followUp = \DateTime::createFromFormat('!Y-m-d', $date);
+        if (!$followUp || $followUp->format('Y-m-d') !== $date || $date < date('Y-m-d')) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Choose today or a future follow-up date.'])->setStatusCode(422);
+        }
+        $followUp->setTime(17, 0);
+        $db = \Config\Database::connect();
+        if (!$db->tableExists('recruiter_application_workflows')) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Run the latest database migration to enable follow-ups.'])->setStatusCode(503);
+        }
+        $recruiterId = (int) session()->get('user_id');
+        $existing = $db->table('recruiter_application_workflows')->select('id')
+            ->where('application_id', $applicationId)->where('recruiter_id', $recruiterId)->get()->getRowArray();
+        $data = [
+            'application_id' => $applicationId,
+            'recruiter_id' => $recruiterId,
+            'follow_up_at' => $followUp->format('Y-m-d H:i:s'),
+            'follow_up_completed_at' => null,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+        if ($existing) {
+            $db->table('recruiter_application_workflows')->where('id', (int) $existing['id'])->update($data);
+        } else {
+            $data['created_at'] = date('Y-m-d H:i:s');
+            $db->table('recruiter_application_workflows')->insert($data);
+        }
+        return $this->response->setJSON(['status' => 'success', 'message' => 'Follow-up scheduled for ' . $followUp->format('M d, Y') . '.', 'csrf_hash' => csrf_hash()]);
+    }
+
+    public function logCommunicationOutcome(int $applicationId)
+    {
+        $application = $this->findAccessibleApplication($applicationId);
+        if (!$application) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Application not found or access denied.'])->setStatusCode(404);
+        }
+        $channel = trim((string) $this->request->getPost('channel'));
+        $outcome = trim((string) $this->request->getPost('outcome'));
+        $notes = trim((string) $this->request->getPost('notes'));
+        $allowedChannels = ['call', 'whatsapp', 'email', 'message'];
+        $allowedOutcomes = ['connected', 'no_answer', 'callback', 'interested', 'not_interested', 'wrong_number', 'message_sent'];
+        if (!in_array($channel, $allowedChannels, true) || !in_array($outcome, $allowedOutcomes, true)) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Choose a valid channel and outcome.'])->setStatusCode(422);
+        }
+        if (mb_strlen($notes) > 500) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Outcome note is too long.'])->setStatusCode(422);
+        }
+        $db = \Config\Database::connect();
+        if (!$db->tableExists('recruiter_communication_outcomes')) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Run the latest database migration to enable outcome logging.'])->setStatusCode(503);
+        }
+        $recruiterId = (int) session()->get('user_id');
+        $now = date('Y-m-d H:i:s');
+        $db->table('recruiter_communication_outcomes')->insert([
+            'application_id' => $applicationId,
+            'candidate_id' => (int) $application['candidate_id'],
+            'job_id' => (int) $application['job_id'],
+            'recruiter_id' => $recruiterId,
+            'channel' => $channel,
+            'outcome' => $outcome,
+            'notes' => $notes !== '' ? $notes : null,
+            'occurred_at' => $now,
+            'created_at' => $now,
+        ]);
+        if ($db->tableExists('recruiter_application_workflows')) {
+            $db->table('recruiter_application_workflows')
+                ->where('application_id', $applicationId)->where('recruiter_id', $recruiterId)
+                ->where('follow_up_at IS NOT NULL', null, false)->where('follow_up_completed_at IS NULL', null, false)
+                ->update(['follow_up_completed_at' => $now, 'updated_at' => $now]);
+        }
+        return $this->response->setJSON(['status' => 'success', 'message' => 'Communication outcome logged.', 'csrf_hash' => csrf_hash()]);
+    }
+
+    private function findAccessibleApplication(int $applicationId): ?array
+    {
+        if (session()->get('role') !== 'recruiter' || (int) session()->get('user_id') <= 0) {
+            return null;
+        }
+        $application = model(ApplicationModel::class)
+            ->select('applications.*, jobs.recruiter_id')
+            ->join('jobs', 'jobs.id = applications.job_id')
+            ->where('applications.id', $applicationId)->first();
+        return $application && (int) $application['recruiter_id'] === (int) session()->get('user_id') ? $application : null;
+    }
+
     public function updateApplicationStatus(int $applicationId)
     {
         if (session()->get('role') !== 'recruiter') {

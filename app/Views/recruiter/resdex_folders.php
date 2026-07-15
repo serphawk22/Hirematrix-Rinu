@@ -10,8 +10,8 @@
 
 .resdex-folders-shell {
   width: 100% !important;
-  max-width: 1600px !important;
-  margin: 0 auto !important;
+  max-width: none !important;
+  margin: 0 !important;
   padding: 8px 40px 48px !important;
 }
 @media (max-width: 1600px) {
@@ -135,8 +135,8 @@
 .resdex-folders-jobboard .empty-state i { font-size: 40px; color: var(--hm-border); margin-bottom: 14px; display: block; }
 </style>
 
-<div class="resdex-folders-jobboard">
-<div class="resdex-folders-shell">
+<div class="resdex-folders-jobboard recruiter-resdex-folders-jobboard">
+<div class="resdex-folders-shell"> 
 
   <div class="page-board-header page-board-header-tight recruiter-page-board-header">
     <div class="page-board-copy">
@@ -151,10 +151,16 @@
   </div>
 
   <?php if (session()->getFlashdata('error')): ?>
-    <div class="alert alert-danger" role="alert"><?= esc(session()->getFlashdata('error')) ?></div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <?= esc(session()->getFlashdata('error')) ?>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
   <?php endif; ?>
   <?php if (session()->getFlashdata('success')): ?>
-    <div class="alert alert-success" role="alert"><?= esc(session()->getFlashdata('success')) ?></div>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <?= esc(session()->getFlashdata('success')) ?>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
   <?php endif; ?>
 
   <form method="post" action="<?= site_url('recruiter/resdex/folder/create') ?>" class="folders-toolbar">

@@ -154,6 +154,98 @@
         });
     }
 
+    function updateVisibleContact(card, payload) {
+        var target = card ? card.querySelector('.response-contact-reveal') : null;
+        if (!target) {
+            return;
+        }
+        var parts = [];
+        if (payload.email) parts.push(escapeHtml(payload.email));
+        if (payload.phone) parts.push(escapeHtml(payload.phone));
+        target.innerHTML = '<span class="response-contact-value">' + (parts.join('<span class="response-contact-separator">&middot;</span>') || 'Not provided') + '</span>';
+    }
+
+    function openAuthorizedContactAction(button) {
+        var mode = button.getAttribute('data-mode') || 'call';
+        var url = button.getAttribute('data-contact-url') || '';
+        var popup = mode === 'whatsapp' ? window.open('', '_blank') : null;
+        var originalHtml = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authorizing';
+
+        fetch(url, {
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        }).then(function (response) { return response.json(); }).then(function (payload) {
+            if (!payload || payload.status !== 'success') {
+                throw new Error((payload && payload.message) || 'Could not authorize contact access.');
+            }
+            var phone = String(payload.phone || '').trim();
+            if (!phone) {
+                throw new Error('This candidate has not provided a phone number.');
+            }
+            updateVisibleContact(button.closest('.response-card'), payload);
+            var cockpit = button.closest('.candidate-cockpit');
+            var outcomeForm = cockpit ? cockpit.querySelector('.js-outcome-form') : null;
+            if (outcomeForm) {
+                outcomeForm.hidden = false;
+                outcomeForm.querySelector('[name="channel"]').value = mode;
+                var select = outcomeForm.querySelector('[name="outcome"]');
+                if (select && mode === 'whatsapp') select.value = 'message_sent';
+            }
+            if (mode === 'call') {
+                window.location.href = 'tel:' + phone.replace(/[^\d+]/g, '');
+            } else {
+                var digits = phone.replace(/\D/g, '');
+                if (digits.length === 10) digits = '91' + digits;
+                var message = 'Hello, this is regarding your application for ' + (getConfig().jobTitle || 'our open role') + '.';
+                var whatsappUrl = 'https://wa.me/' + digits + '?text=' + encodeURIComponent(message);
+                if (popup) popup.location.href = whatsappUrl;
+                else window.open(whatsappUrl, '_blank', 'noopener');
+            }
+        }).catch(function (error) {
+            if (popup) popup.close();
+            showRecruiterAlert(error.message || 'Contact action could not be started.', 'error', 'Contact unavailable');
+        }).finally(function () {
+            button.disabled = false;
+            button.innerHTML = originalHtml;
+        });
+    }
+
+    function submitCockpitForm(form) {
+        var config = getConfig();
+        var data = new FormData(form);
+        if (config.csrfName && config.csrfHash) data.set(config.csrfName, config.csrfHash);
+        var submit = form.querySelector('[type="submit"]');
+        if (submit) submit.disabled = true;
+        return fetch(form.getAttribute('action'), {
+            method: 'POST', body: data, credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        }).then(function (response) {
+            return response.json().then(function (payload) {
+                if (!response.ok || !payload || payload.status !== 'success') {
+                    throw new Error((payload && payload.message) || 'Could not save this update.');
+                }
+                updateCsrf(config, payload);
+                return refreshApplicationsAjax().then(function () {
+                    return showRecruiterAlert(payload.message || 'Saved.', 'success', 'Updated');
+                });
+            });
+        }).catch(function (error) {
+            showRecruiterAlert(error.message || 'Could not save this update.', 'error', 'Update failed');
+        }).finally(function () {
+            if (submit) submit.disabled = false;
+        });
+    }
+
+    function localDateAfter(days) {
+        var date = new Date();
+        date.setHours(12, 0, 0, 0);
+        date.setDate(date.getDate() + days);
+        return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+    }
+
     function openScheduleInterviewModal(button) {
         var modal = document.getElementById('scheduleInterviewModal');
         var form = document.getElementById('scheduleInterviewForm');
@@ -268,15 +360,17 @@
             '</section>';
 
         if (!items.length) {
-            timeline.innerHTML = '<div class="communication-empty-state">No emails or messages have been recorded for this applicant yet.</div>';
+            timeline.innerHTML = '<div class="communication-empty-state">No communication has been recorded for this applicant yet.</div>';
         } else {
             timeline.innerHTML = items.map(function (item) {
                 var subject = item.subject || communicationLabel(item);
                 var preview = item.preview || '';
-                var itemTypeClass = item.type === 'email' ? 'fa-at' : 'fa-comments';
+                var itemTypeClass = item.type === 'email' ? 'fa-at'
+                    : (item.type === 'call' ? 'fa-phone' : (item.type === 'whatsapp' ? 'fa-whatsapp' : 'fa-comments'));
+                var itemIconPrefix = item.type === 'whatsapp' ? 'fab' : 'fas';
                 return '<article class="communication-timeline-item">' +
                     '<div class="communication-timeline-meta">' +
-                        '<span class="communication-chip"><i class="fas ' + itemTypeClass + '"></i>' + escapeHtml(communicationLabel(item)) + '</span>' +
+                        '<span class="communication-chip"><i class="' + itemIconPrefix + ' ' + itemTypeClass + '"></i>' + escapeHtml(communicationLabel(item)) + '</span>' +
                         '<span>' + escapeHtml(formatCommunicationDate(item.at)) + '</span>' +
                     '</div>' +
                     '<div class="communication-timeline-subject">' + escapeHtml(subject) + '</div>' +
@@ -719,7 +813,7 @@
         });
 
         $(document).on('click', '.js-open-candidate-review', function (event) {
-            if (event.target.closest('a, button, input, select, textarea, label')) {
+            if (event.target.closest('a, button, input, select, textarea, label, .candidate-cockpit')) {
                 return;
             }
             var raw = this.getAttribute('data-review') || '{}';
@@ -736,6 +830,48 @@
             event.preventDefault();
             event.stopPropagation();
             revealCandidateContact(this);
+        });
+
+        $(document).on('click', '.js-contact-action', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            openAuthorizedContactAction(this);
+        });
+
+        $(document).on('click', '.js-toggle-cockpit-panel', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var cockpit = this.closest('.candidate-cockpit');
+            var panelName = this.getAttribute('data-panel');
+            if (!cockpit) return;
+            cockpit.querySelectorAll('.cockpit-panel').forEach(function (panel) {
+                panel.hidden = panel.getAttribute('data-panel-name') !== panelName || !panel.hidden;
+            });
+        });
+
+        $(document).on('click', '.js-quick-tag', function (event) {
+            event.preventDefault();
+            var form = this.closest('.js-inline-note-form');
+            var input = form ? form.querySelector('[name="tags"]') : null;
+            if (!input) return;
+            var tags = input.value.split(',').map(function (tag) { return tag.trim(); }).filter(Boolean);
+            var tag = this.getAttribute('data-tag') || '';
+            if (tag && tags.indexOf(tag) === -1) tags.push(tag);
+            input.value = tags.join(', ');
+            this.classList.add('is-selected');
+        });
+
+        $(document).on('click', '.js-followup-preset', function (event) {
+            event.preventDefault();
+            var form = this.closest('.js-followup-form');
+            var input = form ? form.querySelector('[name="follow_up_date"]') : null;
+            if (input) input.value = localDateAfter(parseInt(this.getAttribute('data-days'), 10) || 0);
+        });
+
+        $(document).on('submit', '.js-inline-note-form, .js-followup-form, .js-outcome-form', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            submitCockpitForm(this);
         });
 
         $(document).on('click', '.js-review-stage-action', function () {
@@ -766,7 +902,7 @@
             }
         });
 
-        $(document).on('click', '.stage-ajax-link, #applications-ajax-container .pagination a', function (event) {
+        $(document).on('click', '.stage-ajax-link, .next-action-filter, #applications-ajax-container .pagination a', function (event) {
             var url = $(this).attr('href');
             if (!url || url === '#' || url.startsWith('javascript:')) {
                 return;
@@ -789,6 +925,7 @@
 
                         var urlParams = new URL(url, window.location.origin).searchParams;
                         var currentStage = response.activeStage || urlParams.get('stage') || 'all';
+                        var currentNextAction = urlParams.get('next_action') || '';
 
                         $('.stage-ajax-link').removeClass('active');
                         var activeStageLink = $('.stage-ajax-link').filter(function () {
@@ -802,6 +939,27 @@
                                 stageCount = $('#applications-ajax-container [data-application-row]').length;
                             }
                             $('#responseShowingCount').text('Showing ' + stageCount + ' ' + (stageCount === 1 ? 'response' : 'responses'));
+                        }
+
+                        $('.next-action-filter').removeClass('is-active').filter(function () {
+                            return ($(this).data('next-action') || '') === currentNextAction;
+                        }).addClass('is-active');
+                        $('.next-action-filter').each(function () {
+                            var filterKey = $(this).data('next-action') || '';
+                            var filterUrl = new URL(url, window.location.origin);
+                            if (filterKey === currentNextAction) filterUrl.searchParams.delete('next_action');
+                            else filterUrl.searchParams.set('next_action', filterKey);
+                            filterUrl.searchParams.delete('page');
+                            $(this).attr('href', filterUrl.toString());
+                        });
+                        if (response.nextActionCounts) {
+                            Object.keys(response.nextActionCounts).forEach(function (key) {
+                                $('[data-next-action-count="' + key + '"]').text(response.nextActionCounts[key]);
+                            });
+                        }
+                        if (currentNextAction) {
+                            var visibleCount = $('#applications-ajax-container [data-application-row]').length;
+                            $('#responseShowingCount').text('Showing ' + visibleCount + ' next-action ' + (visibleCount === 1 ? 'candidate' : 'candidates'));
                         }
 
                         window.history.pushState({ path: url }, '', url);

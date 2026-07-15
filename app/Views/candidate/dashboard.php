@@ -142,351 +142,12 @@ $proFeatureSlides = [
           <!-- ═══════════════ PRO FEATURE PROMO (top of page) ═══════════════ -->
   <!-- ═══════════════ PRO FEATURE PROMO (top of page) ═══════════════ -->
 <?php if (empty($premiumSubscription ?? null)): ?>
-<style>
-/* Reset any inherited white "card" styling on the ancestor section/container
-   so the gradient panel below is the ONLY visible box — no white halo. */
-.dash-pro-wrap{
-  background:transparent !important;
-  box-shadow:none !important;
-  border:none !important;
-  padding-top:0 !important;
-  padding-bottom:0 !important;
-}
-.dash-pro-wrap .container-fluid{
-  background:transparent !important;
-  box-shadow:none !important;
-  border:none !important;
-}
-
-.dash-pro-promo{ margin: 8px 0 32px; }
-
-/* ── Spotlight panel (single box, no nested white card) ───────── */
-.dash-pro-panel{
-  position:relative;
-  overflow:hidden;
-  border-radius:24px;
-  padding:36px 32px;
-  background:
-    linear-gradient( rgba(31, 183, 181, 0.19), transparent 135%), 
-    var(--gradient-soft);
-  border:1px solid var(--border);
-}
-
-.dash-pro-panel-head{
-  position:relative;z-index:1;
-  display:flex;justify-content:space-between;align-items:flex-end;
-  gap:16px;margin-bottom:26px;flex-wrap:wrap;
-}
-.dash-pro-badge{
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-  color:#fff;background:var(--gradient-primary);
-  padding:5px 12px;border-radius:999px;margin-bottom:10px;
-}
-.dash-pro-panel-head h2{
-  font-size:22px;font-weight:800;color:var(--foreground);margin:0 0 4px;
-}
-.dash-pro-panel-head p{margin:0;color:var(--muted-foreground);font-size:14px;}
-.dash-pro-promo-cta{
-  background:var(--gradient-primary);color:#fff !important;border:none;
-  border-radius:99px !important;padding:10px 24px;font-size:13px;font-weight:700;
-  text-decoration:none !important;white-space:nowrap;
-  box-shadow:0 4px 14px rgba(31,183,181,.25);
-  transition:transform .15s,box-shadow .15s;
-}
-.dash-pro-promo-cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(31,183,181,.35);color:#fff !important;}
-
-/* ── Card grid ───────────────────────────────────────────────── */
-/* ── Carousel wrapper ───────────────────────────────────────── */
-.dash-pro-carousel{ position:relative; }
-
-.dash-pro-grid{
-  position:relative;z-index:1;
-  display:flex;
-  gap:18px;
-  overflow-x:auto;
-  overflow-y:visible;
-  scroll-snap-type:x proximity;   /* was: mandatory — was fighting JS scroll */
-  -webkit-overflow-scrolling:touch;
-  padding:8px 2px 10px;
-  margin:-8px -2px -10px;
-}
-.dash-pro-grid::-webkit-scrollbar{ display:none; }
-.dash-pro-grid{ scrollbar-width:none; -ms-overflow-style:none; }
-
-/* Gradient-ring wrapper: thin rainbow border via padding trick */
-.dash-pro-ring{
-  flex:0 0 calc(25% - 13.5px);
-  scroll-snap-align:start;
-  border-radius:16px;
-  padding:1.5px;
-  background: linear-gradient(
-      135deg,
-      #1FB7B5 0%,
-      #53B86C 55%,
-      #B5D84E 100%
-    ) !important;
-  transition:transform .2s ease, box-shadow .2s ease;
-}
-.dash-pro-ring:hover{
-  transform:translateY(-1px) !important;
-  box-shadow:0 10px 24px rgba(31,183,181,.18);
-}
-@media (max-width: 1199px){ .dash-pro-ring{ flex:0 0 calc(50% - 9px); } }
-@media (max-width: 575px){ .dash-pro-ring{ flex:0 0 85%; } }
-
-.dash-pro-carousel-nav{
-  position:absolute;top:50%;transform:translateY(-50%);
-  width:38px;height:38px;border-radius:50%;
-  background:var(--card);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;z-index:5;
-  box-shadow:0 4px 12px rgba(0,0,0,.10);
-  color:var(--foreground);
-  transition:transform .15s,box-shadow .15s;
-  pointer-events:auto;
-  outline:none !important;
-  -webkit-tap-highlight-color:transparent;
-}
-.dash-pro-carousel-nav:hover{ transform:translateY(-50%) scale(1.07); }
-.dash-pro-carousel-prev{ left:-16px; }
-.dash-pro-carousel-next{ right:-16px; }
-@media (max-width: 575px){ .dash-pro-carousel-nav{ display:none; } }
-
-body.dark .dash-pro-carousel-nav{
-  box-shadow:0 4px 14px rgba(0,0,0,.4);
-}
-.dash-pro-carousel-nav:focus,
-.dash-pro-carousel-nav:focus-visible,
-.dash-pro-carousel-nav:active{
-  outline:none !important;
-  box-shadow:0 4px 12px rgba(0,0,0,.10);
-}
-.dash-pro-card{
-   background: linear-gradient(
-      135deg,
-      #F4FBFA 0%,
-      #EEF9F2 100%
-    );
-  border-radius:14.5px;
-  padding:22px;
-  display:flex;flex-direction:column;
-  position:relative;
-  overflow:hidden;
-  cursor:pointer;
-  height:100%;
-}
-
-.dash-pro-card-lock{
-  position:absolute;top:16px;right:16px;
-  font-size:12px;color:var(--text-light);
-}
-
-.dash-pro-card-icon{
-  width:44px;height:44px;border-radius:12px;
-  background:var(--gradient-soft);
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:14px;
-  position:relative;
-}
-.dash-pro-card-icon i{
-  font-size:18px;
-  background:var(--gradient-primary);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.dash-pro-card-play-badge{
-  position:absolute;top:-6px;right:-6px;
-  width:20px;height:20px;border-radius:50%;
-  background:var(--gradient-primary);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 4px rgba(31,183,181,.04) !important;
-  border:2px solid var(--card);
-}
-.dash-pro-card-play-badge i{
-  font-size:8px;color:#fff;background:none;-webkit-text-fill-color:#fff;margin-left:1px;
-}
-
-.dash-pro-card-eyebrow{
-  display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;
-  text-transform:uppercase;color:var(--primary-dark);
-  background:var(--muted);border:1px solid var(--border);
-  padding:3px 10px;border-radius:999px;margin-bottom:10px;align-self:flex-start;
-}
-.dash-pro-card-title{
-  font-size:15px;font-weight:700;color:var(--foreground);margin:0 0 12px;line-height:1.35;
-}
-.dash-pro-card-rows{list-style:none;margin:0 0 16px;padding:0;flex:1;}
-.dash-pro-card-rows li{
-  display:flex;align-items:flex-start;gap:8px;font-size:12.5px;
-  color:var(--muted-foreground);margin-bottom:8px;line-height:1.4;
-}
-.dash-pro-card-rows li i{
-  color:var(--secondary);margin-top:2px;font-size:12px;flex-shrink:0;
-}
-.dash-pro-card-watch,
-.dash-pro-card-cta{
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:12.5px;font-weight:700;
-  margin-top:auto;
-  background:var(--gradient-primary);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.dash-pro-card-watch i,
-.dash-pro-card-cta i{font-size:11px;color:var(--primary-dark);-webkit-text-fill-color:var(--primary-dark);}
-
-/* Video modal */
-.dash-pro-video-modal{
-  display:none;position:fixed;inset:0;z-index:1080;
-  align-items:center;justify-content:center;
-  background:rgba(15, 23, 28, 0.72);
-  padding:20px;
-}
-.dash-pro-video-modal.is-open{display:flex;}
-.dash-pro-video-modal-box{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  width:100%;max-width:1020px !important;
-  overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-}
-.dash-pro-video-modal-head{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 20px;border-bottom:1px solid var(--border);
-  gap:12px;
-}
-.dash-pro-video-modal-head h4{
-  margin:0;font-size:15px;font-weight:700;color:var(--foreground);
-}
-.dash-pro-video-modal-close{
-  background:var(--muted);border:none !important;
-  color:var(--foreground);width:30px;height:30px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;flex-shrink:0;font-size:13px;line-height:1;
-  transition:background .15s,color .15s,transform .15s;
-  outline:none !important;
-  box-shadow:none !important;
-  -webkit-tap-highlight-color:transparent;
-}
-.dash-pro-video-modal-close:focus,
-.dash-pro-video-modal-close:active,
-.dash-pro-video-modal-close:focus-visible{
-  outline:none !important;
-  box-shadow:none !important;
-  border:none !important;
-}
-.dash-pro-video-modal-close:hover{
-  transform:translateY(-1px) !important;
-}
-.dash-pro-video-modal-body{ background:#000; }
-.dash-pro-video-modal-body video{
-  display:block;width:100%;max-height:70vh;background:#000;
-} 
-/* ── Dark theme boost ───────────────────────────────────────────
-   Tokens already flip via var(--foreground)/var(--card)/etc, but the
-   glow + shadows below are tuned for a light backdrop and go flat
-   against a near-black page — brighten/re-tune them here. */
-body.dark .dash-pro-panel{
-  border-color:rgba(31,183,181,.35);
-  background:
-    radial-gradient(circle at top right, rgba(31,183,181,.24), transparent 50%),
-    radial-gradient(circle at bottom left, rgba(181,216,78,.18), transparent 50%),
-    var(--gradient-soft);
-  box-shadow:0 0 0 1px rgba(31,183,181,.10), 0 28px 64px rgba(31,183,181,.12);
-}
- 
-body.dark .dash-pro-badge{
-  box-shadow:0 2px 6px rgba(31,183,181,.20) !important;
-}
- 
-body.dark .dash-pro-promo-cta{
-  box-shadow:0 2px 9px rgba(31,183,181,.04) !important;
-}
-body.dark .dash-pro-promo-cta:hover{
-  box-shadow:0 6px 22px rgba(31,183,181,.55);
-}
- 
-body.dark .dash-pro-ring{
-  background:linear-gradient(135deg, #24D9D6, #6BD886, #C7EB6B);
-}
-body.dark .dash-pro-ring:hover{
-  box-shadow:0 4px 12px rgba(31,183,181,.04) !important;
-}
- 
-body.dark .dash-pro-card{
-  background:var(--card);
-}
- 
-body.dark .dash-pro-card-icon{
-  background:linear-gradient(135deg, rgba(31,183,181,.22), rgba(181,216,78,.20));
-}
-body.dark .dash-pro-card-icon i{
-  background:linear-gradient(135deg, #24D9D6, #6BD886, #C7EB6B);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
- 
-body.dark .dash-pro-card-play-badge{
-  box-shadow:0 2px 10px rgba(31,183,181,.55);
-}
- 
-body.dark .dash-pro-card-eyebrow{
-  background:var(--muted);
-  border-color:rgba(31,183,181,.30);
-}
- 
-body.dark .dash-pro-card-watch,
-body.dark .dash-pro-card-cta{
-  background:linear-gradient(135deg, #24D9D6, #6BD886, #C7EB6B);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-/* Jobs Matching Your Profile: vertical stacked cards */
- .candidate-app .job-card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 16px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border, #f0f1f3);
-}
-.candidate-app .job-card-posted {
-    font-size: 12.5px;
-    color: var(--muted-foreground, #8a94a0);
-}
-.candidate-app .job-card-save {
-    background: none;
-    border: none !important;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: var(--foreground, #12181f);
-    cursor: pointer;
-    padding: 0;
-    outline: none !important;
-    box-shadow: none !important;
-}
-.candidate-app .job-card-save i { font-size: 14px; }
-.candidate-app .job-card-save i.fas { color: var(--primary, #1FB7B5); }
-.candidate-app .job-card-save.is-saving { opacity: .6; pointer-events: none; }
-
-@media (max-width: 575.98px) {
-    .candidate-app .dashboard-jobs-grid .job-card.dashboard-card {
-        padding: 16px 18px;
-    }
-}
-body.dark .job-card.dashboard-card{
-    background-color:var(--card) !important;
- }
-</style>
-
- 
-      <div class="dash-pro-panel">
+<div class="dash-pro-panel">
 
         <div class="dash-pro-panel-head">
           <div>
             <div class="dash-pro-badge"><i class="fas fa-crown"></i> Pro tools</div>
-          <h2 style="font-weight: bold; background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">
+          <h2 class="candidate-gradient-text">
   Unlock more with PRO
 </h2>
             <p>AI-powered tools to help you land your next role faster.</p>
@@ -502,6 +163,7 @@ body.dark .job-card.dashboard-card{
           <?php foreach ($proFeatureSlides as $slide):
               $hasVideo = !empty($slide['video_url']);
               $cardTag  = $hasVideo ? 'div' : 'a';
+              $cardClass = $hasVideo ? 'dash-pro-card' : 'dash-pro-card candidate-link-plain';
           ?>
             <div class="dash-pro-ring">
               <<?= $cardTag ?>
@@ -512,9 +174,9 @@ body.dark .job-card.dashboard-card{
                       onclick="dashProOpenVideo(this)"
                       onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();dashProOpenVideo(this);}"
                   <?php else: ?>
-                      href="<?= esc($slide['cta_url'] ?? base_url('premium/plans')) ?>" style="text-decoration:none;"
+                      href="<?= esc($slide['cta_url'] ?? base_url('premium/plans')) ?>"
                   <?php endif; ?>
-                  class="dash-pro-card"
+                  class="<?= esc($cardClass, 'attr') ?>"
               >
                  <?php if (!$hasVideo && ($slide['eyebrow'] ?? '') !== 'Job Search Strategy Coach'): ?>
     <i class="fas fa-lock dash-pro-card-lock" aria-hidden="true"></i>
@@ -610,26 +272,7 @@ document.getElementById('dashProVideoModal').addEventListener('click', function(
 <!-- ═══════════════ END PRO FEATURE PROMO ═══════════════ -->
 
    <section class="dashboard-section pt-0">
-    <style>
-        .job-card-top {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 12px;
-        }
-        .job-card-heading {
-            flex: 1;
-            min-width: 0;
-        }
-        .job-card-icon {
-            flex-shrink: 0;
-        }
-        .row.g-4 > [class*="col-"] {
-            margin-bottom: 24px;
-        }
-    </style>
-
-        <div class="container-fluid px-lg-5">
+    <div class="container-fluid px-lg-5">
             <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
                 <div>
                     <h2 class="section-title">Jobs Matching Your Profile</h2>
@@ -698,7 +341,7 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
             ?>
             <div class="col-md-6">
             <div class="job-card dashboard-card h-100">
-                <a href="<?= base_url('job/' . $jobId) ?>" class="job-card-link" style="text-decoration:none;color:inherit;display:block;">
+                <a href="<?= base_url('job/' . $jobId) ?>" class="job-card-link candidate-card-link">
                     <div class="job-card-top">
                         <div class="job-card-heading">
                             <h3 class="job-card-title"><?= esc($title) ?></h3>
@@ -767,7 +410,7 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
             </div>
         <?php endforeach; ?>
     <?php else: ?>
-        <div class="dashboard-panel" style="grid-column:1/-1">
+        <div class="dashboard-panel candidate-grid-full">
             <div class="panel-body text-center py-5">
                 <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
                 <h4 class="mb-2">No recommended jobs yet</h4>

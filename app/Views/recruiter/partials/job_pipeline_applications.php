@@ -104,11 +104,37 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                     if ($latestPreview === '') {
                         $latestPreview = trim((string) ($communication['latest_preview'] ?? ''));
                     }
+                    $hasUnreadCommunication = !empty($communication['has_unread']);
+                    $needsFollowUp = !empty($communication['needs_followup']);
+                    $hasCommunication = ($emailCount + $messageCount) > 0;
+                    $communicationState = 'No contact';
+                    $communicationStateClass = 'is-muted';
+                    $communicationStateIcon = 'fa-minus-circle';
+                    if ($hasUnreadCommunication) {
+                        $communicationState = 'Unread reply';
+                        $communicationStateClass = 'is-unread';
+                        $communicationStateIcon = 'fa-circle';
+                    } elseif (in_array($latestDirection, ['incoming', 'inbound'], true)) {
+                        $communicationState = 'Candidate replied';
+                        $communicationStateClass = 'is-replied';
+                        $communicationStateIcon = 'fa-reply';
+                    } elseif ($needsFollowUp) {
+                        $communicationState = 'Needs follow-up';
+                        $communicationStateClass = 'is-followup';
+                        $communicationStateIcon = 'fa-clock';
+                    } elseif ($hasCommunication) {
+                        $communicationState = 'Contacted';
+                        $communicationStateClass = 'is-contacted';
+                        $communicationStateIcon = 'fa-check-circle';
+                    }
                     $communicationPayload = [
                         'candidateName' => (string) ($app['candidate_name'] ?? '-'),
                         'candidateEmail' => '',
                         'emailCount' => $emailCount,
                         'messageCount' => $messageCount,
+                        'stateLabel' => $communicationState,
+                        'hasUnread' => $hasUnreadCommunication,
+                        'needsFollowUp' => $needsFollowUp,
                         'latestPreview' => $latestPreview,
                         'items' => array_values((array) ($communication['items'] ?? [])),
                     ];
@@ -161,6 +187,15 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                     if ($salaryText !== '' && is_numeric($salaryText)) {
                         $salaryText = number_format((float) $salaryText, 2) . ' LPA';
                     }
+                    $workflow = (array) ($app['workflow'] ?? []);
+                    $followUpAt = trim((string) ($workflow['follow_up_at'] ?? ''));
+                    $followUpLabel = $followUpAt !== '' ? date('M d', strtotime($followUpAt)) : '';
+                    $lastOutcome = trim((string) ($workflow['last_outcome'] ?? ''));
+                    $lastOutcomeLabel = $lastOutcome !== '' ? ucwords(str_replace('_', ' ', $lastOutcome)) : '';
+                    $contactUrl = base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '/view-contact?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0));
+                    $notesUrl = base_url('recruiter/applications/' . (int) ($app['id'] ?? 0) . '/notes');
+                    $followUpUrl = base_url('recruiter/applications/' . (int) ($app['id'] ?? 0) . '/follow-up');
+                    $outcomeUrl = base_url('recruiter/applications/' . (int) ($app['id'] ?? 0) . '/communication-outcome');
                 ?>
                 <article class="response-card is-reviewable js-open-candidate-review" data-application-row="<?= (int) $app['id'] ?>" data-review="<?= $communicationJson ?>">
                     <div class="response-card-check">
@@ -184,7 +219,7 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                                 <div class="response-meta-line">
                                     <span><i class="fas fa-briefcase"></i> <?= esc($app['experience_display'] ?? '-') ?></span>
                                     <?php if ($salaryText !== ''): ?>
-                                        <span><i class="fas fa-wallet"></i> <?= esc($salaryLabel) ?> <?= esc($salaryText) ?></span>
+                                        <span title="<?= esc($salaryLabel) ?>"><i class="fas fa-rupee-sign"></i> <?= esc($salaryText) ?></span>
                                     <?php endif; ?>
                                     <?php if ($noticePeriod !== ''): ?>
                                         <span><i class="far fa-clock"></i> <?= esc($noticePeriod) ?></span>
@@ -194,6 +229,26 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                                 </div>
                                 <?php if (!empty($app['candidate_headline'])): ?>
                                     <div class="response-headline"><?= esc($app['candidate_headline']) ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($tags) || $note !== ''): ?>
+                                    <div class="response-recruiter-insight">
+                                        <span class="response-insight-label"><i class="fas fa-sticky-note"></i> Notes</span>
+                                        <?php if (!empty($tags)): ?>
+                                            <div class="pipeline-tag-list">
+                                                <?php foreach (array_slice($tags, 0, 2) as $tag): ?>
+                                                    <span class="status-pill is-note-tag"><?= esc($tag) ?></span>
+                                                <?php endforeach; ?>
+                                                <?php if (count($tags) > 2): ?>
+                                                    <span class="status-pill is-muted">+<?= count($tags) - 2 ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <?php if ($note !== ''): ?>
+                                            <span class="pipeline-note-preview" title="<?= esc($note) ?>"><?= esc($notePreview) ?></span>
+                                        <?php else: ?>
+                                            <span class="response-muted-line">Tagged for follow-up</span>
+                                        <?php endif; ?>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -236,7 +291,7 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                                 <div class="response-detail-value response-contact-reveal" data-contact-target="<?= (int) $app['id'] ?>">
                                     <button type="button"
                                             class="response-contact-button js-view-contact"
-                                            data-contact-url="<?= base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '/view-contact?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0)) ?>"
+                                            data-contact-url="<?= esc($contactUrl) ?>"
                                             aria-label="View contact details for <?= esc($app['candidate_name'] ?? 'candidate') ?>">
                                         <i class="fas fa-address-card"></i> View contact
                                     </button>
@@ -262,62 +317,44 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                                 <?php endif; ?>
                             </div>
 
-                            <?php if (!empty($tags) || $note !== ''): ?>
-                                <div class="response-note-row">
-                                    <?php if (!empty($tags)): ?>
-                                        <div class="pipeline-tag-list">
-                                            <?php foreach (array_slice($tags, 0, 3) as $tag): ?>
-                                                <span class="status-pill"><?= esc($tag) ?></span>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    <?php if ($note !== ''): ?>
-                                        <span class="pipeline-note-preview" title="<?= esc($note) ?>"><?= esc($notePreview) ?></span>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endif; ?>
-
                             <div class="response-fit-summary">
                                 <div>
-                                    <span class="response-field-label">Matched requirements</span>
+                                    <span class="response-field-label">Requirements</span>
                                     <div class="pipeline-skill-list">
-                                        <?php if (!empty($matchedSkills)): ?>
-                                            <?php foreach (array_slice($matchedSkills, 0, 4) as $skill): ?>
-                                                <span class="status-pill"><?= esc($skill) ?></span>
-                                            <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <span class="status-pill is-muted">No required skills matched</span>
+                                        <span class="status-pill"><?= count($matchedSkills) ?> of <?= count($allRequiredSkills) ?> matched</span>
+                                        <?php foreach (array_slice($matchedSkills, 0, 3) as $skill): ?>
+                                            <span class="status-pill"><?= esc($skill) ?></span>
+                                        <?php endforeach; ?>
+                                        <?php foreach (array_slice($missingSkills, 0, 3) as $skill): ?>
+                                            <span class="status-pill is-muted"><?= esc($skill) ?></span>
+                                        <?php endforeach; ?>
+                                        <?php if (count($matchedSkills) + count($missingSkills) > 6): ?>
+                                            <span class="status-pill is-muted">+<?= count($matchedSkills) + count($missingSkills) - 6 ?></span>
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                                <?php if (!empty($missingSkills)): ?>
-                                    <div>
-                                        <span class="response-field-label">Missing requirements</span>
-                                        <div class="pipeline-skill-list">
-                                            <?php foreach (array_slice($missingSkills, 0, 4) as $skill): ?>
-                                                <span class="status-pill is-muted"><?= esc($skill) ?></span>
-                                            <?php endforeach; ?>
-                                            <?php if (count($missingSkills) > 4): ?>
-                                                <span class="status-pill is-muted">+<?= count($missingSkills) - 4 ?></span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
 
                     <aside class="response-card-side">
                         <div class="response-match-box">
-                            <span class="response-field-label">Match</span>
-                            <strong><?= $atsScore ?>%</strong>
-                            <span class="ats-score-bar"><span style="width: <?= min(100, max(0, $atsScore)) ?>%;"></span></span>
+                            <div class="response-match-ring" style="--match-score: <?= min(100, max(0, $atsScore)) ?>%;">
+                                <strong><?= $atsScore ?>%</strong>
+                            </div>
                             <div class="response-match-meta">
+                                <span class="response-field-label">Match</span>
                                 <span><?= (int) ($app['skill_match'] ?? 0) ?>% skills</span>
                             </div>
                         </div>
 
                         <button type="button" class="communication-stack js-open-communication-drawer" data-communication="<?= $communicationJson ?>" aria-label="Open communication history for <?= esc($app['candidate_name'] ?? 'candidate') ?>">
+                            <div class="communication-status-line">
+                                <span class="communication-state <?= esc($communicationStateClass) ?>">
+                                    <i class="fas <?= esc($communicationStateIcon) ?>"></i>
+                                    <?= esc($communicationState) ?>
+                                </span>
+                            </div>
                             <div class="communication-counts">
                                 <span class="communication-chip"><i class="fas fa-at"></i><?= $emailCount ?> email<?= $emailCount === 1 ? '' : 's' ?></span>
                                 <span class="communication-chip"><i class="fas fa-comments"></i><?= $messageCount ?> msg<?= $messageCount === 1 ? '' : 's' ?></span>
@@ -330,35 +367,99 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                             <?php endif; ?>
                         </button>
 
+                        <div class="candidate-cockpit" data-application-id="<?= (int) $app['id'] ?>">
+                            <span class="sidebar-section-label">Contact &amp; follow-up</span>
+                            <?php if ($followUpLabel !== '' || $lastOutcomeLabel !== ''): ?>
+                                <div class="candidate-cockpit-status">
+                                    <?php if ($followUpLabel !== ''): ?>
+                                    <span><i class="far fa-clock"></i> Follow-up <?= esc($followUpLabel) ?></span>
+                                    <?php endif; ?>
+                                    <?php if ($lastOutcomeLabel !== ''): ?>
+                                        <span><i class="fas fa-history"></i> <?= esc($lastOutcomeLabel) ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+                            <div class="candidate-cockpit-actions">
+                                <button type="button" class="cockpit-action js-contact-action" data-mode="call" data-contact-url="<?= esc($contactUrl) ?>" data-outcome-url="<?= esc($outcomeUrl) ?>"><i class="fas fa-phone"></i> Call</button>
+                                <button type="button" class="cockpit-action js-contact-action" data-mode="whatsapp" data-contact-url="<?= esc($contactUrl) ?>" data-outcome-url="<?= esc($outcomeUrl) ?>"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                                <button type="button" class="cockpit-action js-toggle-cockpit-panel" data-panel="note"><i class="fas fa-comment-alt"></i> Note</button>
+                                <button type="button" class="cockpit-action js-toggle-cockpit-panel" data-panel="followup"><i class="far fa-calendar"></i> Follow-up</button>
+                            </div>
+
+                            <form class="cockpit-panel cockpit-note-panel js-inline-note-form" data-panel-name="note" action="<?= esc($notesUrl) ?>" hidden>
+                                <textarea name="notes" maxlength="5000" rows="3" placeholder="Private recruiter note..."><?= esc($note) ?></textarea>
+                                <input type="text" name="tags" maxlength="255" value="<?= esc(implode(', ', $tags)) ?>" placeholder="Tags, separated by commas">
+                                <div class="quick-tag-list" aria-label="Quick tags">
+                                    <?php foreach (['Strong fit', 'Immediate joiner', 'Salary concern', 'Follow up', 'Good communication'] as $quickTag): ?>
+                                        <button type="button" class="quick-tag js-quick-tag" data-tag="<?= esc($quickTag) ?>"><?= esc($quickTag) ?></button>
+                                    <?php endforeach; ?>
+                                </div>
+                                <button type="submit" class="cockpit-save">Save note</button>
+                            </form>
+
+                            <form class="cockpit-panel js-followup-form" data-panel-name="followup" action="<?= esc($followUpUrl) ?>" hidden>
+                                <div class="followup-presets">
+                                    <button type="button" class="js-followup-preset" data-days="0">Today</button>
+                                    <button type="button" class="js-followup-preset" data-days="1">Tomorrow</button>
+                                    <button type="button" class="js-followup-preset" data-days="3">3 days</button>
+                                </div>
+                                <label>Custom <input type="date" name="follow_up_date" min="<?= date('Y-m-d') ?>" value="<?= $followUpAt !== '' ? esc(date('Y-m-d', strtotime($followUpAt))) : '' ?>"></label>
+                                <button type="submit" class="cockpit-save">Set follow-up</button>
+                            </form>
+
+                            <form class="cockpit-panel js-outcome-form" data-panel-name="outcome" action="<?= esc($outcomeUrl) ?>" hidden>
+                                <input type="hidden" name="channel" value="call">
+                                <strong>Log communication outcome</strong>
+                                <select name="outcome" required>
+                                    <option value="">Choose outcome</option>
+                                    <option value="connected">Connected</option>
+                                    <option value="no_answer">No answer</option>
+                                    <option value="callback">Call back requested</option>
+                                    <option value="interested">Interested</option>
+                                    <option value="not_interested">Not interested</option>
+                                    <option value="wrong_number">Wrong number</option>
+                                    <option value="message_sent">Message sent</option>
+                                </select>
+                                <input type="text" name="notes" maxlength="500" placeholder="Optional outcome note">
+                                <button type="submit" class="cockpit-save">Log outcome</button>
+                            </form>
+                        </div>
+
                         <div class="response-actions response-icon-actions" aria-label="Candidate actions">
-                            <button type="button" class="response-action-icon js-review-stage-action" data-application-id="<?= (int) $app['id'] ?>" data-status="shortlisted" title="Shortlist" aria-label="Shortlist <?= esc($app['candidate_name'] ?? 'candidate') ?>">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button type="button" class="response-action-icon js-open-schedule-interview" data-application-id="<?= (int) $app['id'] ?>" data-candidate-name="<?= esc($app['candidate_name'] ?? 'Candidate') ?>" data-candidate-email="<?= esc($app['candidate_email'] ?? '') ?>" title="Schedule interview" aria-label="Schedule interview">
-                                <i class="fas fa-calendar-plus"></i>
-                            </button>
-                            <button type="button" class="response-action-icon js-review-stage-action" data-application-id="<?= (int) $app['id'] ?>" data-status="hold" title="Hold" aria-label="Put on hold">
-                                <i class="fas fa-pause"></i>
-                            </button>
-                            <button type="button" class="response-action-icon is-danger js-review-stage-action" data-application-id="<?= (int) $app['id'] ?>" data-status="rejected" title="Reject" aria-label="Reject <?= esc($app['candidate_name'] ?? 'candidate') ?>">
-                                <i class="fas fa-times"></i>
-                            </button>
-                            <a href="<?= base_url('recruiter/candidate/' . (int) $app['candidate_id'] . '?application_id=' . (int) $app['id'] . '&job_id=' . (int) $job['id']) ?>" class="response-action-icon" title="Full profile" aria-label="Full profile">
-                                <i class="fas fa-user"></i>
-                            </a>
-                            <?php if (!empty($app['resume_path'])): ?>
-                                <a href="<?= base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '/preview-resume?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0)) ?>" class="response-action-icon" target="_blank" rel="noopener" title="Preview resume" aria-label="Preview resume">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="<?= base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '/download-resume?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0)) ?>" class="response-action-icon" title="Download resume" aria-label="Download resume">
-                                    <i class="fas fa-download"></i>
-                                </a>
-                            <?php endif; ?>
-                            <?php if ($appStatus === 'ai_interview_completed'): ?>
-                                <button type="button" class="response-action-icon response-action-ai view-ai-report-btn" data-candidate-id="<?= (int) ($app['candidate_id'] ?? 0) ?>" data-jobrole="<?= esc($job['title'] ?? '') ?>" data-candidate-name="<?= esc($app['candidate_name'] ?? '-') ?>" title="AI interview report" aria-label="AI interview report">
-                                    <span>AI</span>
+                            <span class="sidebar-section-label">Hiring decision</span>
+                            <div class="response-action-cluster is-decision">
+                                <button type="button" class="response-action-icon js-review-stage-action" data-application-id="<?= (int) $app['id'] ?>" data-status="shortlisted" title="Shortlist" aria-label="Shortlist <?= esc($app['candidate_name'] ?? 'candidate') ?>">
+                                    <i class="fas fa-check"></i>
                                 </button>
-                            <?php endif; ?>
+                                <button type="button" class="response-action-icon js-open-schedule-interview" data-application-id="<?= (int) $app['id'] ?>" data-candidate-name="<?= esc($app['candidate_name'] ?? 'Candidate') ?>" data-candidate-email="<?= esc($app['candidate_email'] ?? '') ?>" title="Schedule interview" aria-label="Schedule interview">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </button>
+                                <button type="button" class="response-action-icon js-review-stage-action" data-application-id="<?= (int) $app['id'] ?>" data-status="hold" title="Hold" aria-label="Put on hold">
+                                    <i class="fas fa-pause"></i>
+                                </button>
+                                <button type="button" class="response-action-icon is-danger js-review-stage-action" data-application-id="<?= (int) $app['id'] ?>" data-status="rejected" title="Reject" aria-label="Reject <?= esc($app['candidate_name'] ?? 'candidate') ?>">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <span class="sidebar-section-label">Profile &amp; resume</span>
+                            <div class="response-action-cluster is-profile">
+                                <a href="<?= base_url('recruiter/candidate/' . (int) $app['candidate_id'] . '?application_id=' . (int) $app['id'] . '&job_id=' . (int) $job['id']) ?>" class="response-action-icon" title="Full profile" aria-label="Full profile">
+                                    <i class="fas fa-user"></i>
+                                </a>
+                                <?php if (!empty($app['resume_path'])): ?>
+                                    <a href="<?= base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '/preview-resume?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0)) ?>" class="response-action-icon" target="_blank" rel="noopener" title="Preview resume" aria-label="Preview resume">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="<?= base_url('recruiter/candidate/' . (int) ($app['candidate_id'] ?? 0) . '/download-resume?application_id=' . (int) ($app['id'] ?? 0) . '&job_id=' . (int) ($job['id'] ?? 0)) ?>" class="response-action-icon" title="Download resume" aria-label="Download resume">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                <?php endif; ?>
+                                <?php if ($appStatus === 'ai_interview_completed'): ?>
+                                    <button type="button" class="response-action-icon response-action-ai view-ai-report-btn" data-candidate-id="<?= (int) ($app['candidate_id'] ?? 0) ?>" data-job-id="<?= (int) ($job['id'] ?? 0) ?>" data-jobrole="<?= esc($job['title'] ?? '') ?>" data-candidate-name="<?= esc($app['candidate_name'] ?? '-') ?>" title="AI interview report" aria-label="AI interview report">
+                                        <span>AI</span>
+                                    </button>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </aside>
                 </article>
