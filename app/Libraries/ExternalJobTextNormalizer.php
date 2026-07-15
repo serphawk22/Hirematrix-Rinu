@@ -21,6 +21,12 @@ class ExternalJobTextNormalizer
             }
         }
 
+        // Older imports may contain question marks where a leading emoji or
+        // other four-byte UTF-8 symbol could not be stored by MySQL's utf8
+        // character set. The original symbol cannot be recovered, but the
+        // replacement run should not become part of the visible job title.
+        $value = preg_replace('/^(?:(?:\?|\x{FFFD})\s*){2,}(?=[\p{L}\p{N}])/u', '', $value) ?? $value;
+
         $value = preg_replace('/\s+/u', ' ', $value) ?? '';
         return trim($value);
     }

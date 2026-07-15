@@ -54,6 +54,39 @@ $jobExcerpt = static function ($value): string {
     }
     return mb_substr($text, 0, 170) . (mb_strlen($text) > 170 ? '...' : '');
 };
+
+$formatExternalSource = static function ($source, $applyUrl = '') use ($companyName, $websiteHost): string {
+    $source = trim(ExternalJobTextNormalizer::normalize((string) $source));
+    $applyUrl = trim((string) $applyUrl);
+    $sourceHost = strtolower((string) (parse_url($source, PHP_URL_HOST) ?: ''));
+    $applyHost = strtolower((string) (parse_url($applyUrl, PHP_URL_HOST) ?: ''));
+    $host = preg_replace('/^www\./i', '', $sourceHost ?: $applyHost) ?? ($sourceHost ?: $applyHost);
+
+    $platforms = [
+        'linkedin.' => 'LinkedIn',
+        'indeed.' => 'Indeed',
+        'glassdoor.' => 'Glassdoor',
+        'remotive.' => 'Remotive',
+        'remoteok.' => 'Remote OK',
+        'arbeitnow.' => 'Arbeitnow',
+    ];
+    foreach ($platforms as $domainPart => $label) {
+        if (str_contains(strtolower($source), rtrim($domainPart, '.')) || str_contains($host, $domainPart)) {
+            return $label;
+        }
+    }
+
+    $officialHost = strtolower(preg_replace('/^www\./i', '', $websiteHost) ?? $websiteHost);
+    if ($host !== '' && ($officialHost === '' || $host === $officialHost || str_ends_with($host, '.' . $officialHost))) {
+        return $companyName . ' Careers';
+    }
+
+    if ($host !== '') {
+        return $host;
+    }
+
+    return $source !== '' && !filter_var($source, FILTER_VALIDATE_URL) ? $source : 'External source';
+};
 ?>
 
 <div class="jobs-page-jobboard company-jobs-page">
@@ -147,7 +180,7 @@ $jobExcerpt = static function ($value): string {
                             ? $externalApplyUrl
                             : base_url('job/' . (int) $job['id']);
                         $sourceLabel = $isExternalPortalJob
-                            ? ExternalJobTextNormalizer::normalize((string) ($job['external_source'] ?? 'External source'))
+                            ? $formatExternalSource($job['external_source'] ?? '', $externalApplyUrl)
                             : 'HireMatrix';
                         ?>
                         <article class="company-job-card"
@@ -190,7 +223,7 @@ $jobExcerpt = static function ($value): string {
                                     <h3><?= esc($job['title'] ?? 'Untitled role') ?></h3>
                                     <div class="company-job-meta">
                                         <span><i class="fas fa-map-marker-alt"></i><?= esc($job['location'] ?? 'Remote/Multiple') ?></span>
-                                        <span><i class="fas fa-layer-group"></i><?= esc($job['source_platform'] ?? 'Official/public source') ?></span>
+                                        <span><i class="fas fa-layer-group"></i><?= esc($formatExternalSource($job['source_platform'] ?? '', $applyUrl)) ?></span>
                                         <span><i class="fas fa-clock"></i><?= esc($job['posted_at_raw'] ?? 'Recently') ?></span>
                                     </div>
                                     <?php if (!empty($job['employment_type'])): ?>
@@ -343,11 +376,48 @@ $jobExcerpt = static function ($value): string {
         }
     };
 
+    const cleanSourceLabel = (sourceValue, applyUrl) => {
+        const source = String(sourceValue || '').trim();
+        const getHost = (value) => {
+            try {
+                return value && /^https?:\/\//i.test(value) ? new URL(value).hostname.toLowerCase().replace(/^www\./, '') : '';
+            } catch (error) {
+                return '';
+            }
+        };
+        const host = getHost(source) || getHost(applyUrl);
+        const platforms = [
+            ['linkedin.', 'LinkedIn'],
+            ['indeed.', 'Indeed'],
+            ['glassdoor.', 'Glassdoor'],
+            ['remotive.', 'Remotive'],
+            ['remoteok.', 'Remote OK'],
+            ['arbeitnow.', 'Arbeitnow']
+        ];
+
+        for (const [domainPart, label] of platforms) {
+            if (source.toLowerCase().includes(domainPart.replace('.', '')) || host.includes(domainPart)) {
+                return label;
+            }
+        }
+
+        const officialHost = getHost(companyWebsite);
+        if (host && (!officialHost || host === officialHost || host.endsWith('.' + officialHost))) {
+            return companyName + ' Careers';
+        }
+
+        if (host) {
+            return host;
+        }
+
+        return source && !/^https?:\/\//i.test(source) ? source : 'External source';
+    };
+
     const jobCardHtml = (job) => {
         const url = escapeHtml(job.apply_url || job.url || '#');
         const title = escapeHtml(job.title || 'Untitled role');
         const location = escapeHtml(job.location || 'Remote/Multiple');
-        const source = escapeHtml(job.source_platform || job.source || 'Official/public source');
+        const source = escapeHtml(cleanSourceLabel(job.source_platform || job.source || '', job.apply_url || job.url || ''));
         const posted = escapeHtml(job.posted_at_raw || job.posted_date || 'Recently');
         const employmentType = escapeHtml(job.employment_type || '');
 

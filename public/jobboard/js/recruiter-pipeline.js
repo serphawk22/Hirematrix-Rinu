@@ -15,6 +15,12 @@
     function updateCsrf(config, response) {
         if (response && response.csrf_hash) {
             config.csrfHash = response.csrf_hash;
+            var tokenName = response.csrf_token_name || config.csrfName;
+            if (tokenName) {
+                document.querySelectorAll('input[name="' + tokenName + '"]').forEach(function (input) {
+                    input.value = response.csrf_hash;
+                });
+            }
         }
     }
 
@@ -64,6 +70,28 @@
             .text(message);
     }
 
+    function updateStageCounts(response) {
+        var $ = window.jQuery;
+        if (!$ || !response || !response.stageCounts) {
+            return;
+        }
+
+        $('.stage-ajax-link').each(function () {
+            var link = $(this);
+            var stage = String(link.data('stage') || '');
+            if (!Object.prototype.hasOwnProperty.call(response.stageCounts, stage)) {
+                return;
+            }
+            var count = parseInt(response.stageCounts[stage], 10) || 0;
+            var label = String(link.data('label') || stage);
+            link.attr('data-count', count).data('count', count).text(label + ' (' + count + ')');
+        });
+
+        var activeStage = response.activeStage || 'all';
+        var activeCount = parseInt(response.stageCounts[activeStage], 10) || 0;
+        $('#responseShowingCount').text('Showing ' + activeCount + ' ' + (activeCount === 1 ? 'response' : 'responses'));
+    }
+
     function refreshApplicationsAjax() {
         var $ = window.jQuery;
         var ajaxTarget = $('#applications-ajax-container');
@@ -80,6 +108,7 @@
         }).then(function (response) {
             if (response && response.success) {
                 ajaxTarget.html(response.html || '').css('opacity', '1');
+                updateStageCounts(response);
                 $('#candidatePipelineSearch').val('');
                 if (typeof window.updateBulkBar === 'function') {
                     window.updateBulkBar();
@@ -315,8 +344,12 @@
             updateCsrf(config, response);
             if (response && response.status === 'success') {
                 closeScheduleInterviewModal();
-                alert(response.message || 'Interview scheduled.');
-                location.reload();
+                showRecruiterAlert(response.message || 'Interview scheduled.', 'success');
+                refreshApplicationsAjax().then(function (didRefresh) {
+                    if (!didRefresh) {
+                        showRecruiterAlert('The interview was scheduled, but the candidate list could not be refreshed.', 'warning');
+                    }
+                });
                 return;
             }
             alert((response && response.message) || 'Could not schedule interview.');
@@ -622,8 +655,12 @@
         }).done(function (response) {
             updateCsrf(config, response);
             if (response && response.success) {
-                alert(response.message || 'Bulk action completed.');
-                location.reload();
+                showRecruiterAlert(response.message || 'Bulk action completed.', 'success');
+                refreshApplicationsAjax().then(function (didRefresh) {
+                    if (!didRefresh) {
+                        showRecruiterAlert('The changes were saved, but the candidate list could not be refreshed.', 'warning');
+                    }
+                });
                 return;
             }
             alert((response && response.message) || 'Bulk action failed.');
@@ -650,23 +687,34 @@
             return;
         }
 
+        var $triggers = $('[data-application-id="' + applicationId + '"][data-status]');
+        $triggers.prop('disabled', true).attr('aria-busy', 'true');
         var payload = Object.assign({ status: newStatus }, csrfData(config));
-        $.ajax({
+        return $.ajax({
             url: config.statusUrlBase + applicationId,
             type: 'POST',
             data: payload,
             dataType: 'json',
-            success: function (res) {
-                updateCsrf(config, res);
-                if (res.status === 'success') {
-                    closeCommunicationDrawer();
-                    refreshApplicationsAjax().then(function (didRefresh) {
-                        if (!didRefresh) {
-                            location.reload();
-                        }
-                    });
-                }
+        }).done(function (res) {
+            updateCsrf(config, res);
+            if (res && res.status === 'success') {
+                closeCommunicationDrawer();
+                refreshApplicationsAjax().then(function (didRefresh) {
+                    if (!didRefresh) {
+                        showRecruiterAlert('Status was saved, but the candidate list could not be refreshed.', 'warning');
+                    }
+                });
+                return;
             }
+            showRecruiterAlert((res && res.message) || 'Could not update the application status.', 'error');
+        }).fail(function (xhr) {
+            updateCsrf(config, xhr.responseJSON || {});
+            showRecruiterAlert(
+                (xhr.responseJSON && xhr.responseJSON.message) || 'Could not update the application status.',
+                'error'
+            );
+        }).always(function () {
+            $triggers.prop('disabled', false).removeAttr('aria-busy');
         });
     };
 
@@ -882,6 +930,31 @@
             }
         });
 
+        $(document).on('click', '.hm-status-drop-btn', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var menu = this.closest('.hm-status-drop').querySelector('.hm-status-drop-menu');
+            $('.hm-status-drop-menu').not(menu).removeClass('is-open');
+            if (menu) menu.classList.toggle('is-open');
+        });
+
+        $(document).on('click', '.hm-pipeline-status-change', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            $('.hm-status-drop-menu').removeClass('is-open');
+            var applicationId = this.getAttribute('data-application-id');
+            var status = this.getAttribute('data-status');
+            if (applicationId && status && typeof window.updateApplicationStatus === 'function') {
+                window.updateApplicationStatus(applicationId, status);
+            }
+        });
+
+        $(document).on('click', function (event) {
+            if (!event.target.closest('.hm-status-drop')) {
+                $('.hm-status-drop-menu').removeClass('is-open');
+            }
+        });
+
         $(document).on('click', '.js-open-schedule-interview', function () {
             openScheduleInterviewModal(this);
         });
@@ -920,6 +993,7 @@
                 success: function (response) {
                     if (response && response.success) {
                         ajaxTarget.html(response.html || '').css('opacity', '1');
+                        updateStageCounts(response);
                         $('#candidatePipelineSearch').val('');
                         window.updateBulkBar();
 

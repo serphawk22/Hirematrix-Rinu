@@ -4,16 +4,19 @@ namespace App\Controllers;
 
 use App\Models\JobModel;
 use App\Models\MncJobModel;
+use App\Models\CompanyAtsMappingModel;
 
 class CompanyJobsController extends BaseController
 {
     private $jobModel;
     private $companyModel;
+    private $companyAtsMappingModel;
 
     public function __construct()
     {
         $this->jobModel = model('JobModel');
         $this->companyModel = model('CompanyModel');
+        $this->companyAtsMappingModel = model(CompanyAtsMappingModel::class);
     }
 
     /**
@@ -444,6 +447,21 @@ class CompanyJobsController extends BaseController
         $company = $this->companyModel
             ->like('name', $companyName, 'both')
             ->first();
+
+        // ATS mappings are maintained independently and are the authoritative
+        // source for career destinations. Company profile URLs can become stale
+        // when an employer moves its careers site (for example, Deloitte).
+        try {
+            $mapping = $this->companyAtsMappingModel->findMatchingMapping($companyName);
+            $mappedCareerUrl = trim((string) ($mapping['career_url'] ?? ''));
+            if ($mappedCareerUrl !== '' && filter_var($mappedCareerUrl, FILTER_VALIDATE_URL)) {
+                $company = is_array($company) ? $company : [];
+                $company['career_page'] = $mappedCareerUrl;
+            }
+        } catch (\Throwable $e) {
+            // Keep the company profile URL when mappings have not been migrated yet.
+            log_message('warning', 'Could not resolve career URL mapping for ' . $companyName . ': ' . $e->getMessage());
+        }
 
         return view('candidate/company_jobs', [
             'title' => "Jobs at {$companyName}",

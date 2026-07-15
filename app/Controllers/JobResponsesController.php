@@ -254,6 +254,10 @@ class JobResponsesController extends BaseController
         $countFilters['next_action'] = '';
         $allApplications = $this->getApplicationsForRecruiterJobs([$jobId], $recruiterId, false, 'all', $countFilters);
         $applicationsByStatus = $this->groupApplicationsByStatus($allApplications);
+        $stageCounts = ['all' => count($allApplications)];
+        foreach ($applicationsByStatus as $status => $statusApplications) {
+            $stageCounts[$status] = count($statusApplications);
+        }
         $jobScoreboard = $this->calculateScoreboard($recruiterId, $allApplications);
         $funnelMetrics = $this->buildHiringFunnelMetrics($allApplications);
         
@@ -292,6 +296,7 @@ class JobResponsesController extends BaseController
             'totalApplicationsCount' => count($allApplications),
             'advancedFilters' => $filters,
             'nextActionCounts' => $this->buildNextActionCounts($allApplications),
+            'stageCounts' => $stageCounts,
         ];
 
         if ($this->request->isAJAX()) {
@@ -299,6 +304,7 @@ class JobResponsesController extends BaseController
                 'success' => true,
                 'activeStage' => $activeStage,
                 'nextActionCounts' => $viewData['nextActionCounts'],
+                'stageCounts' => $stageCounts,
                 'html' => view('recruiter/partials/job_pipeline_applications', $viewData),
             ]);
         }
@@ -1660,6 +1666,8 @@ class JobResponsesController extends BaseController
             'status' => 'success',
             'message' => 'Application status updated.',
             'updated_status' => $newStatus,
+            'csrf_token_name' => csrf_token(),
+            'csrf_hash' => csrf_hash(),
         ]);
     }
 
