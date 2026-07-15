@@ -4573,11 +4573,19 @@ class API_RecruiterController extends ResourceController
             }
         }
 
+        $jobModel = new \App\Models\JobModel();
+        $recruiterJobs = $jobModel->select('id, title')
+            ->where('recruiter_id', $recruiterId)
+            ->where('status', 'open')
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+
         return $this->respond([
             'success' => true,
             'filters' => $filters,
             'results' => $results,
-            'hasSearched' => $hasSearched
+            'hasSearched' => $hasSearched,
+            'recruiterJobs' => $recruiterJobs
         ]);
     }
 
