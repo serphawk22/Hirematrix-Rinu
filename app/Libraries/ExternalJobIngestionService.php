@@ -90,11 +90,11 @@ class ExternalJobIngestionService
     {
         $this->ensureExternalSchemaReady();
 
-        $title = trim((string) ($payload['title'] ?? ''));
-        $company = trim((string) ($payload['company'] ?? ''));
-        $location = trim((string) ($payload['location'] ?? ''));
-        $description = trim((string) ($payload['description'] ?? ''));
-        $source = trim((string) ($payload['source'] ?? ''));
+        $title = ExternalJobTextNormalizer::normalize((string) ($payload['title'] ?? ''));
+        $company = ExternalJobTextNormalizer::normalize((string) ($payload['company'] ?? ''));
+        $location = ExternalJobTextNormalizer::normalize((string) ($payload['location'] ?? ''));
+        $description = ExternalJobTextNormalizer::normalize((string) ($payload['description'] ?? ''));
+        $source = ExternalJobTextNormalizer::normalize((string) ($payload['source'] ?? ''));
         $applyUrl = trim((string) ($payload['apply_url'] ?? ''));
 
         if ($title === '' || $company === '' || $location === '' || $description === '' || $source === '' || $applyUrl === '') {
@@ -120,7 +120,7 @@ class ExternalJobIngestionService
         $recruiterId = $this->getOrCreateSystemRecruiterId();
         $insertData = [
             'title' => $title,
-            'category' => trim((string) ($payload['category'] ?? 'External')),
+            'category' => ExternalJobTextNormalizer::normalize((string) ($payload['category'] ?? 'External')),
             'recruiter_id' => $recruiterId,
             'company_id' => null,
             'is_external' => 1,
@@ -129,15 +129,17 @@ class ExternalJobIngestionService
             'company' => $company,
             'location' => $location,
             'description' => $description,
-            'required_skills' => trim((string) ($payload['required_skills'] ?? '')),
-            'experience_level' => trim((string) ($payload['experience_level'] ?? 'Not specified')),
+            'required_skills' => ExternalJobTextNormalizer::normalize((string) ($payload['required_skills'] ?? '')),
+            'experience_level' => ExternalJobTextNormalizer::normalize((string) ($payload['experience_level'] ?? 'Not specified')),
             'min_ai_cutoff_score' => 0,
             'ai_interview_policy' => JobModel::AI_POLICY_OFF,
             'openings' => max(1, (int) ($payload['openings'] ?? 1)),
             'status' => 'open',
-            'employment_type' => trim((string) ($payload['employment_type'] ?? 'Full Time')),
+            'employment_type' => ExternalJobTextNormalizer::normalize((string) ($payload['employment_type'] ?? 'Full Time')),
             'salary_range' => $payload['salary_range'] ?? null,
-            'application_deadline' => $payload['application_deadline'] ?? null,
+            'application_deadline' => !empty($payload['application_deadline'])
+                ? $payload['application_deadline']
+                : date('Y-m-d', strtotime('+30 days')),
             'created_at' => date('Y-m-d H:i:s'),
         ];
 

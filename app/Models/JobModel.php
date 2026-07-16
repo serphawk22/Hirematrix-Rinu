@@ -310,6 +310,9 @@ class JobModel extends Model
             'is_external'        => 1,
             'external_source'    => $sourceUrl,
             'external_apply_url' => $applyUrl,
+            'application_deadline' => !empty($job['application_deadline'])
+                ? $job['application_deadline']
+                : date('Y-m-d', strtotime('+30 days')),
             'ai_interview_policy'=> self::AI_POLICY_OFF,
             'min_ai_cutoff_score'=> 0,
         ];

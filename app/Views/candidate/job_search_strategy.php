@@ -5,6 +5,9 @@ $jobSearchStrategy = $jobSearchStrategy ?? [];
 $topSuggestedJobs = $topSuggestedJobs ?? [];
 $jobsWorthApplying = array_values(array_filter((array) ($jobSearchStrategy['jobs_worth_applying'] ?? [])));
 $jobsToAvoid = array_values(array_filter((array) ($jobSearchStrategy['jobs_to_avoid'] ?? [])));
+$normalizeExternalText = static function ($value): string {
+    return \App\Libraries\ExternalJobTextNormalizer::normalize((string) $value);
+};
 
 $recommendedIds = array_map('intval', (array) ($jobSearchStrategy['recommended_job_ids'] ?? []));
 if (empty($jobsWorthApplying)) {
@@ -59,8 +62,8 @@ $profileBlockers = array_values(array_filter(array_map('trim', (array) ($jobSear
 
 $targetRoles = array_values(array_filter(array_map('trim', (array) ($jobSearchStrategy['target_roles'] ?? []))));
 if (empty($targetRoles)) {
-    $targetRoles = array_values(array_filter(array_map(static function (array $job): string {
-        return trim((string) ($job['title'] ?? ''));
+    $targetRoles = array_values(array_filter(array_map(static function (array $job) use ($normalizeExternalText): string {
+        return $normalizeExternalText($job['title'] ?? '');
     }, $jobsWorthApplying)));
 }
 if (empty($targetRoles)) {
@@ -219,7 +222,7 @@ $roadmapPhases = [
                                     <div class="strategy-job-top">
                                         <div>
                                             <div class="strategy-job-title">
-                                                <a href="<?= base_url('job/' . (int) $job['id']) ?>"><?= esc($job['title'] ?? 'Untitled Role') ?></a>
+                                                <a href="<?= base_url('job/' . (int) $job['id']) ?>"><?= esc($normalizeExternalText($job['title'] ?? 'Untitled Role')) ?></a>
                                             </div>
                                             <div class="strategy-job-meta">
                                                 <?= esc($job['company'] ?? 'Company') ?>
@@ -277,7 +280,7 @@ $roadmapPhases = [
                                     <div class="strategy-job-top">
                                         <div>
                                             <div class="strategy-job-title">
-                                                <a href="<?= base_url('job/' . (int) $job['id']) ?>"><?= esc($job['title'] ?? 'Untitled Role') ?></a>
+                                                <a href="<?= base_url('job/' . (int) $job['id']) ?>"><?= esc($normalizeExternalText($job['title'] ?? 'Untitled Role')) ?></a>
                                             </div>
                                             <div class="strategy-job-meta">
                                                 <?= esc($job['company'] ?? 'Company') ?>

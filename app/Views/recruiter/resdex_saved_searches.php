@@ -132,9 +132,11 @@ body.dark .empty-state{
     border:1px solid #23343A;
 }
 </style>
- 
+
 <div class="resdex-wrap resdex-jobboard recruiter-resdex-jobboard">
-  <div class="resdex-shell"> 
+  <div class="resdex-shell">
+
+    
       <div class="page-board-header page-board-header-tight recruiter-page-board-header">
     <div class="page-board-copy">
       <h1 class="page-board-title">Manage Searches</h1>

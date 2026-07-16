@@ -965,6 +965,60 @@ class MncJobIngestor
         return is_string($response) ? $response : '';
     }
 
+    /**
+     * Checks whether a direct vacancy page still exists.
+     * Returns null when the site blocks or otherwise prevents a reliable check.
+     */
+    public function verifyJobIsLive(string $url): ?bool
+    {
+        $url = $this->normalizeUrl($url);
+        if ($url === '') {
+            return false;
+        }
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            CURLOPT_SSL_VERIFYPEER => (ENVIRONMENT !== 'development'),
+            CURLOPT_HTTPHEADER => ['Accept: text/html,application/xhtml+xml'],
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if (in_array($httpCode, [404, 410], true)) {
+            return false;
+        }
+
+        if (!is_string($response) || $response === '' || $httpCode === 0 || $httpCode === 401 || $httpCode === 403 || $httpCode === 429 || $httpCode >= 500) {
+            return null;
+        }
+
+        $text = strtolower($this->cleanText($response));
+        $expiredPatterns = [
+            '/\bhas expired\b/i',
+            '/\bthis (?:job|position|role|vacancy) (?:has expired|is expired|is no longer available|has been filled|has been closed)\b/i',
+            '/\b(?:job|position|role|vacancy) (?:has expired|is expired|no longer available|has been filled|has been closed)\b/i',
+            '/\bthis posting (?:has expired|is no longer available|has been removed|has been closed)\b/i',
+            '/\bthe job you (?:are looking for|requested) (?:is no longer available|has expired|was not found)\b/i',
+            '/\bjob (?:not found|does not exist)\b/i',
+        ];
+
+        foreach ($expiredPatterns as $pattern) {
+            if (preg_match($pattern, $text) === 1) {
+                return false;
+            }
+        }
+
+        return $httpCode >= 200 && $httpCode < 400;
+    }
+
     private function cleanText(string $text): string
     {
         $text = strip_tags($text);

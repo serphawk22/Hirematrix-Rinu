@@ -28,6 +28,8 @@ class Filters extends BaseConfig
         'CandidateAuth' => \App\Filters\CandidateAuth::class,
         'candidate'     => \App\Filters\CandidateAuth::class,
         'recruiter'     => \App\Filters\RecruiterAuth::class,
+        'recruiter_csrf' => [\App\Filters\RecruiterAuth::class, CSRF::class],
+        'auth_csrf'      => [\App\Filters\AuthFilter::class, CSRF::class],
         'admin'         => \App\Filters\AdminAuth::class,
     ];
 

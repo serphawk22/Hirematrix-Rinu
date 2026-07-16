@@ -10,8 +10,8 @@
 
 .resdex-folder-detail-shell {
   width: 100% !important;
-  max-width: 1600px !important;
-  margin: 0 auto !important;
+  max-width: none !important;
+  margin: 0 !important;
   padding: 8px 40px 48px !important;
 }
 @media (max-width: 1600px) {
@@ -140,8 +140,8 @@ body.dark h3.candidate-name{
 }
 </style>
 
-<div class="resdex-folder-detail-jobboard">
-<div class="container-fluid py-5">
+<div class="resdex-folder-detail-jobboard recruiter-resdex-folder-detail-jobboard">
+<div class="resdex-folder-detail-shell">
 
   <div class="page-board-header page-board-header-tight recruiter-page-board-header">
     <div class="page-board-copy">
