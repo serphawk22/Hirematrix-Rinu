@@ -229,7 +229,7 @@ body.dark h3.candidate-name{
             <i class="fas fa-eye"></i> View Profile
           </a>
           <a href="<?= site_url('recruiter/candidate/' . $candidate['user_id'] . '/download-resume') ?>" class="btn btn-outline">
-            <i class="fas fa-file-download"></i> Resume
+           Resume
           </a>
            <form method="post" action="<?= site_url('recruiter/resdex/folder/remove') ?>" onsubmit="return confirm('Remove from this folder?');">
                 <input type="hidden" name="folder_id" value="<?= (int) $folder['id'] ?>">
