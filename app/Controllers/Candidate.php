@@ -28,7 +28,7 @@ class Candidate extends BaseController
             return redirect()->to(base_url('recruiter/dashboard'))->with('error', 'Access denied.');
         }
 
-        $userId = (int) session()->get('user_id');
+        $userId = session()->get('user_id');
         $userModel = model('UserModel');
         $user = $userModel->findCandidateWithProfile($userId) ?? $userModel->find($userId) ?? [];
 
@@ -43,7 +43,7 @@ class Candidate extends BaseController
             return redirect()->to(base_url('recruiter/dashboard'))->with('error', 'Access denied.');
         }
         
-        $userId = session()->get('user_id');
+        $userId = (int) session()->get('user_id');
         $userModel = model('UserModel');
         $user = $userModel->findCandidateWithProfile((int) $userId) ?? $userModel->find($userId);
         $githubModel = model('GithubAnalysisModel');
@@ -899,16 +899,17 @@ class Candidate extends BaseController
         $workExpModel = new WorkExperienceModel();
         
         $exp = $workExpModel->find($id);
-        if ($exp && $exp['user_id'] == $userId) {
-            $workExpModel->delete($id);
+        if (!$exp || (int) ($exp['user_id'] ?? 0) !== $userId) {
+            return redirect()->back()->with('error', 'Work experience not found.');
         }
-        
+
+        $workExpModel->delete((int) $id);
         return redirect()->back()->with('success', 'Work experience deleted');
     }
 
     public function addEducation()
     {
-        $userId = session()->get('user_id');
+        $userId = (int) session()->get('user_id');
         $educationModel = new EducationModel();
         
         $data = [
@@ -941,10 +942,11 @@ class Candidate extends BaseController
         $educationModel = new EducationModel();
         
         $edu = $educationModel->find($id);
-        if ($edu && $edu['user_id'] == $userId) {
-            $educationModel->delete($id);
+        if (!$edu || (int) ($edu['user_id'] ?? 0) !== $userId) {
+            return redirect()->back()->with('error', 'Education record not found.');
         }
-        
+
+        $educationModel->delete((int) $id);
         return redirect()->back()->with('success', 'Education deleted');
     }
 
@@ -1026,23 +1028,25 @@ class Candidate extends BaseController
         $projectModel = new CandidateProjectModel();
         $project = $projectModel->find((int) $id);
 
-        if ($project && (int) ($project['user_id'] ?? 0) === $userId) {
-            $projectModel->delete((int) $id);
+        if (!$project || (int) ($project['user_id'] ?? 0) !== $userId) {
+            return redirect()->back()->with('error', 'Project not found.');
         }
 
+        $projectModel->delete((int) $id);
         return redirect()->back()->with('success', 'Project deleted.');
     }
 
     public function deleteCertification($id)
     {
-        $userId = session()->get('user_id');
+        $userId = (int) session()->get('user_id');
         $certificationModel = new CertificationModel();
         
         $cert = $certificationModel->find($id);
-        if ($cert && $cert['user_id'] == $userId) {
-            $certificationModel->delete($id);
+        if (!$cert || (int) ($cert['user_id'] ?? 0) !== $userId) {
+            return redirect()->back()->with('error', 'Certification not found.');
         }
-        
+
+        $certificationModel->delete((int) $id);
         return redirect()->back()->with('success', 'Certification deleted');
     }
 
@@ -1081,11 +1085,14 @@ class Candidate extends BaseController
         return redirect()->back()->with('success', 'Interest added successfully');
     }
 
-    public function deleteInterest($interest)
+    public function deleteInterest()
     {
-        // $interest is the URL-encoded interest name (not an ID)
         $userId      = session()->get('user_id');
-        $toRemove    = urldecode($interest);
+        $toRemove    = trim((string) $this->request->getPost('interest'));
+
+        if ($toRemove === '') {
+            return redirect()->back()->with('error', 'Invalid interest selected.');
+        }
 
         $interestsModel = new CandidateInterestsModel();
         $existingRow    = $interestsModel->where('candidate_id', $userId)->first();

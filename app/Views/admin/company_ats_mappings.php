@@ -175,7 +175,10 @@
                                 </td>
                                 <td class="text-end">
                                     <a class="btn btn-sm btn-outline-primary" href="<?= base_url('admin/company-ats-mappings?edit=' . (int) ($row['id'] ?? 0)) ?>">Edit</a>
-                                    <a class="btn btn-sm btn-outline-danger" href="<?= base_url('admin/company-ats-mappings/delete/' . (int) ($row['id'] ?? 0)) ?>" onclick="return confirm('Delete this mapping?');">Delete</a>
+                                    <form method="post" action="<?= base_url('admin/company-ats-mappings/delete/' . (int) ($row['id'] ?? 0)) ?>" class="d-inline" onsubmit="return confirm('Delete this mapping?');">
+                                        <?= csrf_field() ?>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

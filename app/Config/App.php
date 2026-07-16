@@ -201,4 +201,22 @@ class App extends BaseConfig
      * @see http://www.w3.org/TR/CSP/
      */
     public bool $CSPEnabled = false;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Explicit environment values take precedence. This lets a local XAMPP
+        // install run over HTTP even when CI_ENVIRONMENT is set to production,
+        // while secure defaults still apply to production deployments.
+        $forceHttps = env('app.forceGlobalSecureRequests');
+        $enableCsp = env('app.CSPEnabled');
+
+        $this->forceGlobalSecureRequests = $forceHttps === null
+            ? ENVIRONMENT === 'production'
+            : filter_var($forceHttps, FILTER_VALIDATE_BOOL);
+        $this->CSPEnabled = $enableCsp === null
+            ? ENVIRONMENT === 'production'
+            : filter_var($enableCsp, FILTER_VALIDATE_BOOL);
+    }
 }

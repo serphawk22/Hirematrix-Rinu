@@ -120,11 +120,10 @@ $savedPaths = max(0, $totalPaths - $activePaths);
                                         <i class="fas fa-check"></i> Currently Active
                                     </button>
                                 <?php else: ?>
-                                    <a href="<?= base_url('career-transition/reactivate/' . $transition['id']) ?>"
-                                       class="btn btn-primary"
-                                       onclick="return confirm('Reactivate this career path? Your current active path will be saved to history.')">
-                                        <i class="fas fa-play"></i> Reactivate This Path
-                                    </a>
+                                    <form method="post" action="<?= base_url('career-transition/reactivate/' . (int) $transition['id']) ?>" onsubmit="return confirm('Reactivate this career path? Your current active path will be saved to history.')">
+                                        <?= csrf_field() ?>
+                                        <button type="submit" class="btn btn-primary"><i class="fas fa-play"></i> Reactivate This Path</button>
+                                    </form>
                                 <?php endif; ?>
                             </div>
                         </article>
