@@ -36,9 +36,7 @@ $metaParts = array_filter([
 $statusLabel = ucfirst((string) ($job['status'] ?? 'open'));
 $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-open' : 'is-closed';
 ?>
-
-
-
+ 
 <div
     id="recruiterPipelinePage"
     class="recruiter-pipeline-page recruiter-applications-jobboard recruiter-leaderboard-jobboard"

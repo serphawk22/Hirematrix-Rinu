@@ -1,6 +1,6 @@
 <?php
 session_start();
-echo $_SESSION['candidateId'];
+//echo $_SESSION['candidateId'];
 if (empty($_SESSION['candidate']) || empty($_SESSION['interview_report'])) { header('Location: index.php'); exit; }
 $cand   = $_SESSION['candidate'];
 $report = $_SESSION['interview_report'];
@@ -92,11 +92,11 @@ function insertRound($conn, $candidateId, $candidateName, $roundName, $jobrole, 
     $pct = ($totalQ > 0) ? round(($score / $totalQ) * 100) : 0;
 
     // Check duplicate
-    $checkStmt = $conn->prepare("
+   $checkStmt = $conn->prepare("
         SELECT id FROM interview_results 
-        WHERE candidate_id = ? AND round_name = ?
+        WHERE candidate_id = ? AND round_name = ? AND jobrole = ?
     ");
-    $checkStmt->bind_param("is", $candidateId, $roundName);
+    $checkStmt->bind_param("iss", $candidateId, $roundName, $jobrole);
     $checkStmt->execute();
     $checkStmt->store_result();
 
