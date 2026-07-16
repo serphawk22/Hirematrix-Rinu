@@ -1113,13 +1113,23 @@ class ApiJobsController extends ResourceController
             ->orderBy('saved_jobs.created_at', 'DESC')
             ->findAll();
 
+        $filteredMncRows = [];
         foreach ($savedMncRows as $index => $job) {
-            $savedMncRows[$index]['is_external'] = true;
-            $savedMncRows[$index]['created_at'] = $job['saved_at'] ?? null;
-            $savedMncRows[$index]['employment_type'] = trim((string) ($job['source_platform'] ?? '')) ?: 'External';
+            $parsedDays = $this->parsePostedAtRawDays((string) ($job['posted_at_raw'] ?? ''));
+            if ($parsedDays !== null && $parsedDays > 30) {
+                // Skip expired jobs
+                continue;
+            }
+            $job['is_external'] = true;
+            $job['created_at'] = $job['saved_at'] ?? null;
+            $sourceStr = trim((string) ($job['source_platform'] ?? ''));
+            $applyUrl = trim((string) ($job['apply_url'] ?? ''));
+            $companyName = trim((string) ($job['company'] ?? ''));
+            $job['employment_type'] = $this->formatExternalSource($sourceStr, $applyUrl, $companyName);
+            $filteredMncRows[] = $job;
         }
 
-        $savedRows = array_merge($savedRows, $savedMncRows);
+        $savedRows = array_merge($savedRows, $filteredMncRows);
         usort($savedRows, static function (array $left, array $right): int {
             return strtotime((string) ($right['saved_at'] ?? '')) <=> strtotime((string) ($left['saved_at'] ?? ''));
         });
@@ -1627,5 +1637,94 @@ class ApiJobsController extends ResourceController
         }
 
         return array_values(array_unique($tokens));
+    }
+
+    private function parsePostedAtRawDays(string $postedAtRaw): ?int
+    {
+        $text = strtolower(trim($postedAtRaw));
+        if ($text === '' || $text === 'recently' || str_contains($text, 'just now') || str_contains($text, 'today') || str_contains($text, 'hour') || str_contains($text, 'minute') || str_contains($text, 'second')) {
+            return 0;
+        }
+
+        if (str_contains($text, 'yesterday')) {
+            return 1;
+        }
+
+        $relativePatterns = [
+            '/(\d+)\s*d(ays?)?\b/i' => 1,
+            '/(\d+)\s*day[s]?\b/i' => 1,
+            '/(\d+)\s*w(eeks?)?\b/i' => 7,
+            '/(\d+)\s*week[s]?\b/i' => 7,
+            '/(\d+)\s*mo(nths?)?\b/i' => 30,
+            '/(\d+)\s*month[s]?\b/i' => 30,
+            '/(\d+)\s*y(ears?)?\b/i' => 365,
+        ];
+
+        foreach ($relativePatterns as $pattern => $multiplier) {
+            if (preg_match($pattern, $text, $matches) === 1) {
+                return (int) $matches[1] * $multiplier;
+            }
+        }
+
+        if (preg_match('/(\d+)\s*day[s]?\s*ago/i', $text, $matches) === 1) {
+            return (int) $matches[1];
+        }
+        if (preg_match('/(\d+)\s*week[s]?\s*ago/i', $text, $matches) === 1) {
+            return (int) $matches[1] * 7;
+        }
+        if (preg_match('/(\d+)\s*month[s]?\s*ago/i', $text, $matches) === 1) {
+            return (int) $matches[1] * 30;
+        }
+        if (preg_match('/(\d+)\s*year[s]?\s*ago/i', $text, $matches) === 1) {
+            return (int) $matches[1] * 365;
+        }
+
+        if (preg_match('/\b(older than|more than|over)\s*(\d+)\s*(day|week|month|year)s?\b/i', $text, $matches) === 1) {
+            $value = (int) $matches[2];
+            $unit = strtolower($matches[3]);
+            switch ($unit) {
+                case 'day': return $value;
+                case 'week': return $value * 7;
+                case 'month': return $value * 30;
+                case 'year': return $value * 365;
+                default: return null;
+            }
+        }
+
+        $timestamp = strtotime($postedAtRaw);
+        if ($timestamp !== false && $timestamp <= time()) {
+            return (int) floor((time() - $timestamp) / 86400);
+        }
+
+        return null;
+    }
+
+    private function formatExternalSource(string $source, string $applyUrl, string $companyName): string 
+    {
+        $source = trim($source);
+        $applyUrl = trim($applyUrl);
+        $sourceHost = strtolower((string) (parse_url($source, PHP_URL_HOST) ?: ''));
+        $applyHost = strtolower((string) (parse_url($applyUrl, PHP_URL_HOST) ?: ''));
+        $host = preg_replace('/^www\./i', '', $sourceHost ?: $applyHost) ?? ($sourceHost ?: $applyHost);
+
+        $platforms = [
+            'linkedin.' => 'LinkedIn',
+            'indeed.' => 'Indeed',
+            'glassdoor.' => 'Glassdoor',
+            'remotive.' => 'Remotive',
+            'remoteok.' => 'Remote OK',
+            'arbeitnow.' => 'Arbeitnow',
+        ];
+        foreach ($platforms as $domainPart => $label) {
+            if (str_contains(strtolower($source), rtrim($domainPart, '.')) || str_contains($host, $domainPart)) {
+                return $label;
+            }
+        }
+
+        if ($host !== '') {
+            return $host;
+        }
+
+        return $source !== '' && !filter_var($source, FILTER_VALIDATE_URL) ? $source : 'External source';
     }
 }
