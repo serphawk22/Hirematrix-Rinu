@@ -20146,9 +20146,39 @@ body.candidate-app .cand-topbar .mobile-nav-hamburger {
 }
 
 body.candidate-app .cand-topbar .mobile-nav-icon .icon-search,
-body.candidate-app .cand-topbar .mobile-nav-icon .icon-bell,
+body.candidate-app .cand-topbar .mobile-nav-icon .icon-bell {
+    color: #16212B !important;
+    background: transparent !important;
+}
+
 body.candidate-app .cand-topbar .mobile-nav-hamburger span {
     background: #16212B !important;
+}
+
+body.candidate-app .cand-topbar #mobileSearchToggle {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--candidate-nav-primary-dark, #0D8A90) !important;
+    background: rgba(31, 183, 181, 0.06) !important;
+    border: 1px solid rgba(31, 183, 181, 0.18) !important;
+    border-radius: 11px !important;
+    box-shadow: none !important;
+}
+
+body.candidate-app .cand-topbar #mobileSearchToggle .icon-search,
+body.candidate-app .cand-topbar #mobileSearchToggle .icon-search::before {
+    width: auto !important;
+    height: auto !important;
+    display: inline-block !important;
+    color: inherit !important;
+    background: transparent !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
 }
 
 body.candidate-app .cand-topbar__logo img.candidate-logo-sm {
@@ -20177,9 +20207,19 @@ body.dark.candidate-app .cand-topbar .mobile-nav-hamburger {
 }
 
 body.dark.candidate-app .cand-topbar .mobile-nav-icon .icon-search,
-body.dark.candidate-app .cand-topbar .mobile-nav-icon .icon-bell,
+body.dark.candidate-app .cand-topbar .mobile-nav-icon .icon-bell {
+    color: #f4f4f5 !important;
+    background: transparent !important;
+}
+
 body.dark.candidate-app .cand-topbar .mobile-nav-hamburger span {
     background: #f4f4f5 !important;
+}
+
+body.dark.candidate-app .cand-topbar #mobileSearchToggle {
+    color: #f4f4f5 !important;
+    background: rgba(31, 183, 181, 0.12) !important;
+    border-color: rgba(31, 183, 181, 0.28) !important;
 }
 
 @media (max-width: 420px) {

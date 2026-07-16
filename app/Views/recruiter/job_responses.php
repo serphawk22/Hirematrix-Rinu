@@ -1,6 +1,6 @@
 <?= view('Layouts/recruiter_header', [
     'title' => 'Jobs & Responses',
-    'pageStyles' => [base_url('jobboard/css/recruiter-jobs.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-jobs.css'))],
+    'pageStyles' => [base_url('jobboard/css/recruiter-jobs.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-jobs.min.css'))],
 ]) ?>
 
   <div

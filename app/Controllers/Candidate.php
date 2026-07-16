@@ -895,7 +895,7 @@ class Candidate extends BaseController
 
     public function deleteWorkExperience($id)
     {
-        $userId = session()->get('user_id');
+        $userId = (int) session()->get('user_id');
         $workExpModel = new WorkExperienceModel();
         
         $exp = $workExpModel->find($id);

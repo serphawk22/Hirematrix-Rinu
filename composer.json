@@ -39,6 +39,7 @@
         "sort-packages": true
     },
     "scripts": {
+        "build:css": "php tools/build-css.php",
         "test": "phpunit"
     }
 }

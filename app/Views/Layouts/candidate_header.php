@@ -57,13 +57,11 @@
         <link rel="stylesheet" href="<?= base_url('jobboard/css/animate.min.css') ?>">
     <?php endif; ?>
     <link rel="stylesheet" href="<?= base_url('jobboard/css/style.css') ?>">
-    <?php $candidateBundleHref = base_url('jobboard/css/candidate-bundle.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-bundle.min.css')); ?>
-    <link rel="preload" href="<?= $candidateBundleHref ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="<?= $candidateBundleHref ?>"></noscript>
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/hirematrix-style.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/hirematrix-style.min.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.min.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/portal-ui-system.css?v=' . @filemtime(FCPATH . 'jobboard/css/portal-ui-system.css')) ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/candidate-pages.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-pages.css')) ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/candidate-pages.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-pages.min.css')) ?>">
     <?php if ($candidateNeedsAtsCircle): ?>
         <!-- CSS Circle Progress (Required for visual ATS Score) -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/css-percentage-circle/0.0.3/css/circle.min.css">
@@ -148,14 +146,14 @@
     $activeCompanySegment = trim((string) service('request')->getGet('segment'));
     $companyNavSegments = [
         '' => ['label' => 'All Companies', 'icon' => 'fas fa-building'],
-        'indian-mnc' => ['label' => 'Indian MNCs', 'icon' => 'fas fa-building-flag'],
-        'global-indian' => ['label' => 'Global Indian', 'icon' => 'fas fa-globe-asia'],
-        'corporate' => ['label' => 'Corporate', 'icon' => 'fas fa-city'],
+        'indian-mnc' => ['label' => 'Indian MNCs', 'icon' => 'fas fa-flag'],
+        'global-indian' => ['label' => 'Global Indian', 'icon' => 'fas fa-globe'],
+        'corporate' => ['label' => 'Corporate', 'icon' => 'fas fa-industry'],
         'startups' => ['label' => 'Startups', 'icon' => 'fas fa-rocket'],
         'product' => ['label' => 'Product Companies', 'icon' => 'fas fa-cube'],
-        'service' => ['label' => 'Service Companies', 'icon' => 'fas fa-people-carry-box'],
-        'remote-friendly' => ['label' => 'Remote Friendly', 'icon' => 'fas fa-laptop-house'],
-        'freshers' => ['label' => 'Freshers Hiring', 'icon' => 'fas fa-user-graduate'],
+        'service' => ['label' => 'Service Companies', 'icon' => 'fas fa-handshake'],
+        'remote-friendly' => ['label' => 'Remote Friendly', 'icon' => 'fas fa-laptop'],
+        'freshers' => ['label' => 'Freshers Hiring', 'icon' => 'fas fa-graduation-cap'],
     ];
     $companySegmentUrl = static function (string $segment): string {
         return $segment === ''
@@ -344,11 +342,11 @@
                         <span>Settings</span>
                     </a>
                     <a href="<?= base_url('premium/plans') ?>" class="hm-drawer-link">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-crown"></i></span>
+                        <span class="hm-drawer-link-icon"><i class="fas fa-gem"></i></span>
                         <span>Premium Plans</span>
                     </a>
                     <a href="<?= base_url('payment/history') ?>" class="hm-drawer-link">
-                        <span class="hm-drawer-link-icon"><i class="fas fa-receipt"></i></span>
+                        <span class="hm-drawer-link-icon"><i class="fas fa-file-alt"></i></span>
                         <span>Payment History</span>
                     </a>
                 </div>

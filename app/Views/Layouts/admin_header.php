@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/theme-colors.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/custom-bs.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/hirematrix-style.css?v=' . @filemtime(FCPATH . 'jobboard/css/hirematrix-style.css')) ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/hirematrix-style.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/hirematrix-style.min.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/admin-pages.css?v=' . @filemtime(FCPATH . 'jobboard/css/admin-pages.css')) ?>">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5380525657635231"

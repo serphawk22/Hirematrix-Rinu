@@ -21,21 +21,17 @@
     </script>
     <link rel="icon" type="image/png" href="<?= base_url('jobboard/images/Serp Hwak Logo.png') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/custom-bs.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/jquery.fancybox.min.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/bootstrap-select.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/fonts/icomoon/style.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/fonts/line-icons/style.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/owl.carousel.min.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/animate.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/style.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/hirematrix-style.css?v=' . @filemtime(FCPATH . 'jobboard/css/hirematrix-style.css')) ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/hirematrix-style.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/hirematrix-style.min.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.css')) ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.min.css')) ?>">
     <?php foreach ((array) ($pageStyles ?? []) as $pageStyle): ?>
         <link rel="stylesheet" href="<?= esc($pageStyle, 'attr') ?>">
     <?php endforeach; ?>
     <link rel="stylesheet" href="<?= base_url('jobboard/css/portal-ui-system.css?v=' . @filemtime(FCPATH . 'jobboard/css/portal-ui-system.css')) ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/recruiter-pages.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-pages.css')) ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/recruiter-pages.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-pages.min.css')) ?>">
 
 </head>
 
