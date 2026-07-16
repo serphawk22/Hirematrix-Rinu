@@ -26,6 +26,12 @@ class MncJobController extends BaseController
             return $this->response->setJSON(['error' => 'Company name required']);
         }
 
+        // Discovery can take a while. Release PHP's session lock so the same
+        // candidate can poll the cache concurrently while jobs are inserted.
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
+
         // Reconnect to DB before starting the process
         try {
             \Config\Database::connect()->reconnect();
@@ -137,6 +143,7 @@ class MncJobController extends BaseController
 
         // 1. Check if we have recently discovered jobs (Cache to save API costs)
         $jobs = $this->filterUsableJobs($this->getCachedJobsForCompanyAliases($model, $companyName, $companyInfo, $limit), $companyName, $limit);
+        $jobs = $this->filterLiveJobs($jobs, $ingestor, $model);
 
         if (count($jobs) < $limit) {
             // 2. Perform AI discovery if cache is empty or old
@@ -189,6 +196,16 @@ class MncJobController extends BaseController
                     if (!$this->isUsableJob($validationData, $companyName)) {
                         continue;
                     }
+
+                    if ($ingestor->verifyJobIsLive($applyUrl) === false) {
+                        $existingExpired = $model->where('company_name', $companyName)
+                            ->where('apply_url', $applyUrl)
+                            ->first();
+                        if ($existingExpired) {
+                            $model->update($existingExpired['id'], ['is_active' => 0]);
+                        }
+                        continue;
+                    }
                     
                     // Check if this specific job link already exists for this company
                     $existing = $model->where('company_name', $companyName)
@@ -217,6 +234,7 @@ class MncJobController extends BaseController
                 }
 
                 $jobs = $this->filterUsableJobs($this->getCachedJobsForCompanyAliases($model, $companyName, $companyInfo, $limit), $companyName, $limit);
+                $jobs = $this->filterLiveJobs($jobs, $ingestor, $model);
             }
         }
 
@@ -479,6 +497,32 @@ class MncJobController extends BaseController
     }
 
     /**
+     * Remove confirmed expired vacancies and deactivate them in the cache.
+     * An inconclusive check is retained because many career sites block bots.
+     *
+     * @param array<int, array<string, mixed>> $jobs
+     * @return array<int, array<string, mixed>>
+     */
+    private function filterLiveJobs(array $jobs, MncJobIngestor $ingestor, MncJobModel $model): array
+    {
+        $liveJobs = [];
+
+        foreach ($jobs as $job) {
+            if ($ingestor->verifyJobIsLive((string) ($job['apply_url'] ?? '')) === false) {
+                $jobId = (int) ($job['id'] ?? 0);
+                if ($jobId > 0) {
+                    $model->update($jobId, ['is_active' => 0]);
+                }
+                continue;
+            }
+
+            $liveJobs[] = $job;
+        }
+
+        return $liveJobs;
+    }
+
+    /**
      * Rejects generic search pages and incomplete AI guesses before they reach the UI.
      *
      * @param array<string, mixed> $job
@@ -527,16 +571,6 @@ class MncJobController extends BaseController
             return false;
         }
 
-        $discoveredEmployerKey = $this->normalizeCompanyKey((string) ($job['discovered_employer'] ?? ''));
-        if ($discoveredEmployerKey !== '' && $this->companyKeysMatch($this->normalizeCompanyKey($companyName), $discoveredEmployerKey)) {
-            return true;
-        }
-        // Fallback: if AI didn't explicitly extract employer, check URL host
-        if ($discoveredEmployerKey === '') {
-            $applyUrlHost = strtolower((string) (parse_url($applyUrl, PHP_URL_HOST) ?? ''));
-            if ($this->hostLooksOfficialForCompany($applyUrlHost, $this->normalizeCompanyKey($companyName))) return true;
-        }
-
         if (!$this->jobBelongsToCompany($job, $companyName)) {
             return false;
         }
@@ -559,13 +593,14 @@ class MncJobController extends BaseController
 
         $host = strtolower((string) (parse_url($applyUrl, PHP_URL_HOST) ?: ''));
         $hostKey = $this->normalizeCompanyKey($host);
-        $discoveredEmployerKey = $this->normalizeCompanyKey((string) ($job['discovered_employer'] ?? ''));
+        $discoveredEmployer = (string) ($job['discovered_employer'] ?? '');
+        $discoveredEmployerKey = $this->normalizeCompanyKey($discoveredEmployer);
 
         if ($discoveredEmployerKey !== '') {
-            return $this->companyKeysMatch($companyKey, $discoveredEmployerKey);
+            return $this->companyNamesMatch($companyName, $discoveredEmployer);
         }
 
-        if ($this->hostLooksOfficialForCompany($host, $companyKey)) {
+        if ($this->hostLooksOfficialForCompany($host, $companyName)) {
             return true;
         }
 
@@ -613,19 +648,55 @@ class MncJobController extends BaseController
         return '';
     }
 
-    private function hostLooksOfficialForCompany(string $host, string $companyKey): bool
+    private function hostLooksOfficialForCompany(string $host, string $companyName): bool
     {
         $host = strtolower($host);
         $host = preg_replace('/^www\./', '', $host) ?? $host;
         $parts = explode('.', $host);
 
         foreach ($parts as $part) {
-            if ($this->companyKeysMatch($companyKey, $this->normalizeCompanyKey($part))) {
-                return true;
+            foreach ($this->companyMatchKeys($companyName) as $companyKey) {
+                if ($this->companyKeysMatch($companyKey, $this->normalizeCompanyKey($part))) {
+                    return true;
+                }
             }
         }
 
         return false;
+    }
+
+    private function companyNamesMatch(string $expected, string $actual): bool
+    {
+        foreach ($this->companyMatchKeys($expected) as $expectedKey) {
+            foreach ($this->companyMatchKeys($actual) as $actualKey) {
+                if ($this->companyKeysMatch($expectedKey, $actualKey)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /** @return array<int, string> */
+    private function companyMatchKeys(string $companyName): array
+    {
+        $keys = [$this->normalizeCompanyKey($companyName)];
+        $words = preg_split('/[^a-z0-9]+/i', strtolower($companyName)) ?: [];
+        $ignored = ['and', 'of', 'the', 'for', 'in', 'at', 'limited', 'ltd', 'private', 'pvt'];
+        $initials = '';
+
+        foreach ($words as $word) {
+            if ($word !== '' && !in_array($word, $ignored, true)) {
+                $initials .= $word[0];
+            }
+        }
+
+        if (strlen($initials) >= 2) {
+            $keys[] = $initials;
+        }
+
+        return array_values(array_unique(array_filter($keys)));
     }
 
     private function companyKeysMatch(string $left, string $right): bool
@@ -769,9 +840,30 @@ class MncJobController extends BaseController
         $query = strtolower((string) ($parts['query'] ?? ''));
         $haystack = $host . ' ' . $path . ' ' . $query;
 
+        if ($host === '' || $path === '') {
+            return false;
+        }
+
+        if (preg_match('#/(search|jobs/search|job-search|search-jobs|jobs-in)(/|$)#i', $path) === 1
+            || preg_match('/(^|&)(keywords|keyword|q|query|search)=/i', $query) === 1
+        ) {
+            return false;
+        }
+
+        if (str_contains($host, 'linkedin.')) {
+            return preg_match('#^/jobs/view/(?:[^/]*-)?\d+/?$#i', $path) === 1;
+        }
+
+        if (str_contains($host, 'indeed.')) {
+            return str_contains($path, '/viewjob') && preg_match('/(^|&)jk=[a-z0-9]+/i', $query) === 1;
+        }
+
+        if (str_contains($host, 'glassdoor.')) {
+            return str_contains($path, '/job-listing/');
+        }
+
         $directPatterns = [
             'linkedin.com/jobs/view',
-            'linkedin.com/jobs/',
             'reqid',
             'jobid',
             'job_id',

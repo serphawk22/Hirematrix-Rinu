@@ -36,9 +36,7 @@ $metaParts = array_filter([
 $statusLabel = ucfirst((string) ($job['status'] ?? 'open'));
 $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-open' : 'is-closed';
 ?>
-
-
-
+ 
 <div
     id="recruiterPipelinePage"
     class="recruiter-pipeline-page recruiter-applications-jobboard recruiter-leaderboard-jobboard"
@@ -551,9 +549,12 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                             <a href="<?= base_url('recruiter/slots/edit/' . $slot['id']) ?>" class="btn btn-sm btn-outline-primary" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a href="<?= base_url('recruiter/slots/delete/' . $slot['id']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this slot?')" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
+                                            <form method="post" action="<?= base_url('recruiter/slots/delete/' . $slot['id']) ?>" class="d-inline" onsubmit="return confirm('Delete this slot?')">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
                                         <?php else: ?>
                                             <span class="text-muted">Has bookings</span>
                                         <?php endif; ?>

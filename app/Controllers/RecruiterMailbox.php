@@ -200,8 +200,9 @@ class RecruiterMailbox extends BaseController
             return redirect()->to(base_url('recruiter/settings?tab=mailbox'))->with('error', 'Connect a mailbox first.');
         }
         $result = (new RecruiterMailboxService())->syncConnection($connection);
-        $type = !empty($result['ok']) ? 'success' : 'error';
-        $message = !empty($result['ok']) ? ((int) $result['count'] . ' new candidate email(s) imported. Previously imported emails remain saved.') : ('Synchronization failed: ' . ($result['error'] ?? 'Unknown error'));
+        $importedCount = (int) ($result['count'] ?? 0);
+        $type = empty($result['ok']) ? 'error' : ($importedCount > 0 ? 'success' : 'warning');
+        $message = !empty($result['ok']) ? ($importedCount . ' new candidate email(s) imported. Previously imported emails remain saved.') : ('Synchronization failed: ' . ($result['error'] ?? 'Unknown error'));
         return redirect()->to(base_url('recruiter/settings?tab=mailbox'))->with($type, $message);
     }
 

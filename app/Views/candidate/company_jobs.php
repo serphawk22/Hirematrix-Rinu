@@ -1,6 +1,8 @@
 <?= view('Layouts/candidate_header', ['title' => $title]) ?>
 
 <?php
+use App\Libraries\ExternalJobTextNormalizer;
+
 $companyName = (string) ($company_name ?? 'Company');
 $companyInitial = strtoupper(substr($companyName, 0, 1) ?: 'C');
 $portalJobs = is_array($internal_jobs ?? null) ? $internal_jobs : [];
@@ -46,11 +48,44 @@ $formatDate = static function ($value): string {
 };
 
 $jobExcerpt = static function ($value): string {
-    $text = trim(strip_tags((string) $value));
+    $text = ExternalJobTextNormalizer::normalize((string) $value);
     if ($text === '') {
         return 'Open role listed by the employer.';
     }
     return mb_substr($text, 0, 170) . (mb_strlen($text) > 170 ? '...' : '');
+};
+
+$formatExternalSource = static function ($source, $applyUrl = '') use ($companyName, $websiteHost): string {
+    $source = trim(ExternalJobTextNormalizer::normalize((string) $source));
+    $applyUrl = trim((string) $applyUrl);
+    $sourceHost = strtolower((string) (parse_url($source, PHP_URL_HOST) ?: ''));
+    $applyHost = strtolower((string) (parse_url($applyUrl, PHP_URL_HOST) ?: ''));
+    $host = preg_replace('/^www\./i', '', $sourceHost ?: $applyHost) ?? ($sourceHost ?: $applyHost);
+
+    $platforms = [
+        'linkedin.' => 'LinkedIn',
+        'indeed.' => 'Indeed',
+        'glassdoor.' => 'Glassdoor',
+        'remotive.' => 'Remotive',
+        'remoteok.' => 'Remote OK',
+        'arbeitnow.' => 'Arbeitnow',
+    ];
+    foreach ($platforms as $domainPart => $label) {
+        if (str_contains(strtolower($source), rtrim($domainPart, '.')) || str_contains($host, $domainPart)) {
+            return $label;
+        }
+    }
+
+    $officialHost = strtolower(preg_replace('/^www\./i', '', $websiteHost) ?? $websiteHost);
+    if ($host !== '' && ($officialHost === '' || $host === $officialHost || str_ends_with($host, '.' . $officialHost))) {
+        return $companyName . ' Careers';
+    }
+
+    if ($host !== '') {
+        return $host;
+    }
+
+    return $source !== '' && !filter_var($source, FILTER_VALIDATE_URL) ? $source : 'External source';
 };
 ?>
 
@@ -135,27 +170,37 @@ $jobExcerpt = static function ($value): string {
             <div class="company-jobs-content-grid">
                 <div class="company-jobs-list">
                     <?php if ($portalCount > 0): ?>
-                        <div class="company-jobs-section-label">HireMatrix Posted Jobs</div>
+                        <div class="company-jobs-section-label">Available Jobs</div>
                     <?php endif; ?>
                     <?php foreach ($portalJobs as $job): ?>
-                        <?php $jobDetailsUrl = base_url('job/' . (int) $job['id']); ?>
+                        <?php
+                        $isExternalPortalJob = (int) ($job['is_external'] ?? 0) === 1;
+                        $externalApplyUrl = trim((string) ($job['external_apply_url'] ?? ''));
+                        $jobDetailsUrl = $isExternalPortalJob && filter_var($externalApplyUrl, FILTER_VALIDATE_URL)
+                            ? $externalApplyUrl
+                            : base_url('job/' . (int) $job['id']);
+                        $sourceLabel = $isExternalPortalJob
+                            ? $formatExternalSource($job['external_source'] ?? '', $externalApplyUrl)
+                            : 'HireMatrix';
+                        ?>
                         <article class="company-job-card"
                             data-href="<?= esc($jobDetailsUrl) ?>"
+                            <?= $isExternalPortalJob ? 'data-target="_blank"' : '' ?>
                             role="link"
                             tabindex="0"
-                            aria-label="View details for <?= esc($job['title'] ?? 'this job') ?>">
+                            aria-label="<?= $isExternalPortalJob ? 'Apply to' : 'View details for' ?> <?= esc(ExternalJobTextNormalizer::normalize((string) ($job['title'] ?? 'this job'))) ?>">
                             <div class="company-job-main">
-                                <div class="company-job-source">HireMatrix</div>
-                                <h3><?= esc($job['title'] ?? 'Untitled role') ?></h3>
+                                <div class="company-job-source"><?= esc($sourceLabel ?: 'External source') ?></div>
+                                <h3><?= esc(ExternalJobTextNormalizer::normalize((string) ($job['title'] ?? 'Untitled role'))) ?></h3>
                                 <div class="company-job-meta">
-                                    <span><i class="fas fa-map-marker-alt"></i><?= esc($job['location'] ?? 'N/A') ?></span>
-                                    <span><i class="fas fa-briefcase"></i><?= esc($job['experience_level'] ?? 'Not specified') ?></span>
+                                    <span><i class="fas fa-map-marker-alt"></i><?= esc(ExternalJobTextNormalizer::normalize((string) ($job['location'] ?? 'N/A'))) ?></span>
+                                    <span><i class="fas fa-briefcase"></i><?= esc(ExternalJobTextNormalizer::normalize((string) ($job['experience_level'] ?? 'Not specified'))) ?></span>
                                     <span><i class="fas fa-calendar"></i><?= esc($formatDate($job['created_at'] ?? '')) ?></span>
                                 </div>
                                 <p><?= esc($jobExcerpt($job['description'] ?? '')) ?></p>
                                 <?php if (!empty($job['employment_type'])): ?>
                                     <div class="company-jobs-pills">
-                                        <span class="skill-chip"><?= esc($job['employment_type']) ?></span>
+                                        <span class="skill-chip"><?= esc(ExternalJobTextNormalizer::normalize((string) $job['employment_type'])) ?></span>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -178,7 +223,7 @@ $jobExcerpt = static function ($value): string {
                                     <h3><?= esc($job['title'] ?? 'Untitled role') ?></h3>
                                     <div class="company-job-meta">
                                         <span><i class="fas fa-map-marker-alt"></i><?= esc($job['location'] ?? 'Remote/Multiple') ?></span>
-                                        <span><i class="fas fa-layer-group"></i><?= esc($job['source_platform'] ?? 'Official/public source') ?></span>
+                                        <span><i class="fas fa-layer-group"></i><?= esc($formatExternalSource($job['source_platform'] ?? '', $applyUrl)) ?></span>
                                         <span><i class="fas fa-clock"></i><?= esc($job['posted_at_raw'] ?? 'Recently') ?></span>
                                     </div>
                                     <?php if (!empty($job['employment_type'])): ?>
@@ -208,6 +253,7 @@ $jobExcerpt = static function ($value): string {
 (function () {
     const companyName = <?= json_encode($companyName) ?>;
     const discoverUrl = <?= json_encode($discoverUrl) ?>;
+    const cachedJobsUrl = <?= json_encode(base_url('candidate/company-jobs/cache')) ?>;
     const companyWebsite = <?= json_encode($companyWebsite) ?>;
     const companyCareerPage = <?= json_encode($companyCareerPage) ?>;
     const portalCount = <?= (int) $portalCount ?>;
@@ -217,6 +263,11 @@ $jobExcerpt = static function ($value): string {
     const tabCountEl = document.getElementById('companyJobsTabCount');
     const initialExternalCount = <?= (int) $externalCount ?>;
     const initialTotalCount = <?= (int) $totalCount ?>;
+    let cachePollTimer = null;
+    let cachePollAttempts = 0;
+    let lastPolledJobCount = 0;
+    let stableCachePolls = 0;
+    const maxCachePollAttempts = 30;
 
     const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
         '&': '&amp;',
@@ -325,11 +376,48 @@ $jobExcerpt = static function ($value): string {
         }
     };
 
+    const cleanSourceLabel = (sourceValue, applyUrl) => {
+        const source = String(sourceValue || '').trim();
+        const getHost = (value) => {
+            try {
+                return value && /^https?:\/\//i.test(value) ? new URL(value).hostname.toLowerCase().replace(/^www\./, '') : '';
+            } catch (error) {
+                return '';
+            }
+        };
+        const host = getHost(source) || getHost(applyUrl);
+        const platforms = [
+            ['linkedin.', 'LinkedIn'],
+            ['indeed.', 'Indeed'],
+            ['glassdoor.', 'Glassdoor'],
+            ['remotive.', 'Remotive'],
+            ['remoteok.', 'Remote OK'],
+            ['arbeitnow.', 'Arbeitnow']
+        ];
+
+        for (const [domainPart, label] of platforms) {
+            if (source.toLowerCase().includes(domainPart.replace('.', '')) || host.includes(domainPart)) {
+                return label;
+            }
+        }
+
+        const officialHost = getHost(companyWebsite);
+        if (host && (!officialHost || host === officialHost || host.endsWith('.' + officialHost))) {
+            return companyName + ' Careers';
+        }
+
+        if (host) {
+            return host;
+        }
+
+        return source && !/^https?:\/\//i.test(source) ? source : 'External source';
+    };
+
     const jobCardHtml = (job) => {
         const url = escapeHtml(job.apply_url || job.url || '#');
         const title = escapeHtml(job.title || 'Untitled role');
         const location = escapeHtml(job.location || 'Remote/Multiple');
-        const source = escapeHtml(job.source_platform || job.source || 'Official/public source');
+        const source = escapeHtml(cleanSourceLabel(job.source_platform || job.source || '', job.apply_url || job.url || ''));
         const posted = escapeHtml(job.posted_at_raw || job.posted_date || 'Recently');
         const employmentType = escapeHtml(job.employment_type || '');
 
@@ -374,6 +462,68 @@ $jobExcerpt = static function ($value): string {
         });
     };
 
+    const stopCachePolling = () => {
+        if (cachePollTimer) {
+            window.clearTimeout(cachePollTimer);
+            cachePollTimer = null;
+        }
+    };
+
+    const pollCachedJobs = () => {
+        if (document.hidden) {
+            cachePollTimer = window.setTimeout(pollCachedJobs, 2000);
+            return;
+        }
+
+        cachePollAttempts += 1;
+        const params = new URLSearchParams({ company: companyName });
+
+        fetch(cachedJobsUrl + '?' + params.toString(), {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then((response) => response.json())
+            .then((payload) => {
+                const jobs = payload && Array.isArray(payload.jobs) ? payload.jobs : [];
+                if (jobs.length > 0) {
+                    renderExternalJobs(jobs);
+                    if (jobs.length === lastPolledJobCount) {
+                        stableCachePolls += 1;
+                    } else {
+                        lastPolledJobCount = jobs.length;
+                        stableCachePolls = 0;
+                    }
+
+                    if (stableCachePolls >= 3 || cachePollAttempts >= maxCachePollAttempts) {
+                        stopCachePolling();
+                    } else {
+                        cachePollTimer = window.setTimeout(pollCachedJobs, 2000);
+                    }
+                    return;
+                }
+
+                if (cachePollAttempts < maxCachePollAttempts) {
+                    cachePollTimer = window.setTimeout(pollCachedJobs, 2000);
+                } else {
+                    showNoResultsState();
+                }
+            })
+            .catch(() => {
+                if (cachePollAttempts < maxCachePollAttempts) {
+                    cachePollTimer = window.setTimeout(pollCachedJobs, 2000);
+                } else if (renderedJobCardCount() === 0) {
+                    showNoResultsState();
+                }
+            });
+    };
+
+    const startCachePolling = () => {
+        stopCachePolling();
+        cachePollAttempts = 0;
+        lastPolledJobCount = 0;
+        stableCachePolls = 0;
+        cachePollTimer = window.setTimeout(pollCachedJobs, 1200);
+    };
+
     const discoverJobs = (isAutomatic = false) => {
         if (!externalList || !emptyState) {
             return;
@@ -388,7 +538,10 @@ $jobExcerpt = static function ($value): string {
         if (emptyState) {
             emptyState.hidden = portalCount > 0;
         }
-        externalList.innerHTML = '';
+        if (renderedJobCardCount() === 0) {
+            externalList.innerHTML = '';
+        }
+        startCachePolling();
 
         const discoverParams = new URLSearchParams({
             company: companyName,
@@ -426,12 +579,17 @@ $jobExcerpt = static function ($value): string {
                 if (!payload || payload.success === false || payload.error) {
                     throw new Error(payload && payload.error ? payload.error : 'Could not check latest jobs.');
                 }
-                renderExternalJobs(payload.jobs || []);
+                if (Array.isArray(payload.jobs) && payload.jobs.length > 0) {
+                    renderExternalJobs(payload.jobs);
+                    stopCachePolling();
+                }
             })
             .catch((error) => {
-                externalList.innerHTML = previousHtml && !isAutomatic ? previousHtml : '';
+                if (previousHtml && !externalList.innerHTML) {
+                    externalList.innerHTML = previousHtml;
+                }
                 setCounts(initialExternalCount);
-                if (emptyState) {
+                if (emptyState && cachePollAttempts >= maxCachePollAttempts) {
                     setEmptyStateContent(
                         'Openings are not available right now',
                         'Please try again shortly.',
@@ -447,6 +605,7 @@ $jobExcerpt = static function ($value): string {
         window.setTimeout(() => discoverJobs(true), 250);
     }
     syncEmptyStateVisibility();
+    window.addEventListener('beforeunload', stopCachePolling);
 })();
 </script>
 

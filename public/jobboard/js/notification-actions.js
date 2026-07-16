@@ -64,7 +64,8 @@
 
         const markReadLink = card.querySelector('.js-mark-notification-read');
         if (markReadLink) {
-            markReadLink.remove();
+            const form = markReadLink.closest('form');
+            (form || markReadLink).remove();
         }
     }
 
@@ -102,13 +103,15 @@
         button.disabled = false;
     }
 
-    async function postNotificationAction(url) {
-        const response = await fetch(url, {
-            method: 'GET',
+    async function postNotificationAction(form) {
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+            method: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
-            }
+            },
+            body: formData
         });
 
         const payload = await response.json();
@@ -131,7 +134,7 @@
             const button = markReadLink;
 
             setBusy(button, true);
-            postNotificationAction(markReadLink.href)
+            postNotificationAction(markReadLink.form)
                 .then(function (payload) {
                     markCardRead(card);
                     if (typeof payload.unread_count === 'number') {
@@ -157,13 +160,13 @@
             const button = markAllLink;
 
             setBusy(button, true);
-            postNotificationAction(markAllLink.href)
+            postNotificationAction(markAllLink.form)
                 .then(function (payload) {
                     markAllCardsRead();
                     setHeaderBadge(0);
                     setRecruiterUnreadCount(0);
                     showAlert(payload.message, 'success', alertTarget);
-                    button.remove();
+                    (button.form || button).remove();
                 })
                 .catch(function (error) {
                     showAlert(error.message || 'Could not update notifications.', 'danger', alertTarget);
@@ -188,7 +191,7 @@
             const button = deleteLink;
 
             setBusy(button, true);
-            postNotificationAction(deleteLink.href)
+            postNotificationAction(deleteLink.form)
                 .then(function (payload) {
                     removeNotificationCard(card);
                     if (typeof payload.unread_count === 'number') {

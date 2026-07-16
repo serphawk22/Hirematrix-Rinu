@@ -12,9 +12,12 @@
         </div>
         <div class="page-board-actions">
             <?php if ($unread_count > 0): ?>
-                <a href="<?= base_url('notifications/mark-all-read') ?>" class="btn btn-primary js-mark-all-notifications-read">
+                <form method="post" action="<?= base_url('notifications/mark-all-read') ?>">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="btn btn-primary js-mark-all-notifications-read">
                     <span class="icon-check mr-1"></span> Mark All as Read
-                </a>
+                    </button>
+                </form>
             <?php endif; ?>
         </div>
     </div>
@@ -53,20 +56,27 @@
 
                                 <div class="recruiter-notification-actions">
                                     <?php if ($notification['action_link']): ?>
-                                        <a href="<?= base_url('notifications/mark-read/' . $notification['id']) ?>" class="btn btn-sm btn-outline-primary">
-                                            <?= esc($config['action_text'] ?? 'Open') ?>  
-                                        </a>
+                                        <form method="post" action="<?= base_url('notifications/mark-read/' . $notification['id']) ?>" class="d-inline">
+                                            <?= csrf_field() ?>
+                                            <button type="submit" class="btn btn-sm btn-outline-primary"><?= esc($config['action_text'] ?? 'Open') ?></button>
+                                        </form>
                                     <?php endif; ?>
 
                                     <div class="recruiter-notification-links">
                                         <?php if (!$notification['is_read']): ?>
-                                            <a href="<?= base_url('notifications/mark-read/' . $notification['id']) ?>" class="btn btn-sm btn-link js-mark-notification-read" data-notification-id="<?= (int) $notification['id'] ?>">
+                                            <form method="post" action="<?= base_url('notifications/mark-read/' . $notification['id']) ?>" class="d-inline">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn btn-sm btn-link js-mark-notification-read" data-notification-id="<?= (int) $notification['id'] ?>">
                                                 Mark as Read
-                                            </a>
+                                                </button>
+                                            </form>
                                         <?php endif; ?>
-                                        <a href="<?= base_url('notifications/delete/' . $notification['id']) ?>" class="btn btn-sm btn-link text-danger js-delete-notification" data-notification-id="<?= (int) $notification['id'] ?>" data-confirm-message="Delete this notification?">
+                                        <form method="post" action="<?= base_url('notifications/delete/' . $notification['id']) ?>" class="d-inline">
+                                            <?= csrf_field() ?>
+                                            <button type="submit" class="btn btn-sm btn-link text-danger js-delete-notification" data-notification-id="<?= (int) $notification['id'] ?>" data-confirm-message="Delete this notification?">
                                              Delete
-                                        </a>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

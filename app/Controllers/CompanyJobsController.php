@@ -2,17 +2,21 @@
 
 namespace App\Controllers;
 
+use App\Models\JobModel;
 use App\Models\MncJobModel;
+use App\Models\CompanyAtsMappingModel;
 
 class CompanyJobsController extends BaseController
 {
     private $jobModel;
     private $companyModel;
+    private $companyAtsMappingModel;
 
     public function __construct()
     {
         $this->jobModel = model('JobModel');
         $this->companyModel = model('CompanyModel');
+        $this->companyAtsMappingModel = model(CompanyAtsMappingModel::class);
     }
 
     /**
@@ -42,6 +46,28 @@ class CompanyJobsController extends BaseController
         ]);
     }
 
+    /** Lightweight endpoint used while background discovery fills the cache. */
+    public function cachedJobs()
+    {
+        $companyName = trim((string) $this->request->getGet('company'));
+        if ($companyName === '') {
+            return $this->response->setStatusCode(400)->setJSON([
+                'success' => false,
+                'jobs' => [],
+                'message' => 'Company name is required.',
+            ]);
+        }
+
+        $jobs = $this->getCachedDiscoveredJobsByCompany($companyName);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'company' => $companyName,
+            'count' => count($jobs),
+            'jobs' => $jobs,
+        ]);
+    }
+
     /**
      * Get open jobs that belong to a company profile or match its name.
      */
@@ -57,6 +83,7 @@ class CompanyJobsController extends BaseController
         $builder = $this->jobModel
             ->where('status', 'open')
             ->orderBy('created_at', 'DESC');
+        JobModel::applyApplicationDeadlineFilter($builder);
 
         if ($company) {
             $builder->groupStart()->where('company_id', (int) $company['id']);
@@ -72,7 +99,30 @@ class CompanyJobsController extends BaseController
             $builder->where('company', $companyName);
         }
 
-        return $builder->findAll(50);
+        $jobs = $builder->findAll(50);
+        $freshExternalAfter = strtotime('-30 days');
+
+        return array_values(array_filter($jobs, function (array $job) use ($freshExternalAfter): bool {
+            if ((int) ($job['is_external'] ?? 0) !== 1) {
+                return true;
+            }
+
+            $createdAt = strtotime((string) ($job['created_at'] ?? ''));
+            if ($createdAt !== false && $createdAt >= $freshExternalAfter) {
+                return true;
+            }
+
+            $jobId = (int) ($job['id'] ?? 0);
+            if ($jobId > 0) {
+                try {
+                    $this->jobModel->update($jobId, ['status' => 'closed']);
+                } catch (\Throwable $e) {
+                    log_message('error', 'Could not close stale external job ' . $jobId . ': ' . $e->getMessage());
+                }
+            }
+
+            return false;
+        }));
     }
 
     /**
@@ -160,25 +210,61 @@ class CompanyJobsController extends BaseController
             return false;
         }
 
-        if (strlen($companyKey) > 4) {
-            return true;
-        }
-
         foreach (explode('.', preg_replace('/^www\./', '', $host) ?? $host) as $part) {
-            if ($this->companyKeysMatch($companyKey, $this->normalizeCompanyKey($part))) {
-                return true;
+            foreach ($this->companyMatchKeys($companyName) as $matchKey) {
+                if ($this->companyKeysMatch($matchKey, $this->normalizeCompanyKey($part))) {
+                    return true;
+                }
             }
         }
 
         $thirdPartySources = ['linkedin', 'indeed', 'glassdoor', 'remotive', 'aggregator', 'search discovery'];
         foreach ($thirdPartySources as $thirdPartySource) {
             if (str_contains($source, $thirdPartySource) || str_contains($host, $thirdPartySource)) {
+                if (!$this->looksLikeDirectExternalJobUrl($applyUrl)) {
+                    return false;
+                }
+
                 return $this->textMentionsCompany((string) ($job['title'] ?? ''), $companyName)
                     || $this->urlPathMentionsCompany($applyUrl, $companyName);
             }
         }
 
-        return $this->urlPathMentionsCompany($applyUrl, $companyName);
+        return $this->looksLikeDirectExternalJobUrl($applyUrl)
+            && $this->urlPathMentionsCompany($applyUrl, $companyName);
+    }
+
+    private function looksLikeDirectExternalJobUrl(string $url): bool
+    {
+        $parts = parse_url($url);
+        $host = strtolower((string) ($parts['host'] ?? ''));
+        $path = strtolower((string) ($parts['path'] ?? ''));
+        $query = strtolower((string) ($parts['query'] ?? ''));
+
+        if ($host === '' || $path === '') {
+            return false;
+        }
+
+        if (preg_match('#/(search|jobs/search|job-search|search-jobs|jobs-in)(/|$)#i', $path) === 1
+            || preg_match('/(^|&)(keywords|keyword|q|query|search)=/i', $query) === 1
+        ) {
+            return false;
+        }
+
+        if (str_contains($host, 'linkedin.')) {
+            return preg_match('#^/jobs/view/(?:[^/]*-)?\d+/?$#i', $path) === 1;
+        }
+
+        if (str_contains($host, 'indeed.')) {
+            return str_contains($path, '/viewjob') && preg_match('/(^|&)jk=[a-z0-9]+/i', $query) === 1;
+        }
+
+        if (str_contains($host, 'glassdoor.')) {
+            return str_contains($path, '/job-listing/');
+        }
+
+        return preg_match('#/(job|jobs|career|careers|position|positions|vacancy|vacancies)/[^/]+#i', $path) === 1
+            || preg_match('/(^|&)(jobid|job_id|reqid|gh_jid)=[^&]+/i', $query) === 1;
     }
 
     private function isStaleExternalJob(array $job): bool
@@ -311,6 +397,27 @@ class CompanyJobsController extends BaseController
         return str_contains($left, $right) || str_contains($right, $left);
     }
 
+    /** @return array<int, string> */
+    private function companyMatchKeys(string $companyName): array
+    {
+        $keys = [$this->normalizeCompanyKey($companyName)];
+        $words = preg_split('/[^a-z0-9]+/i', strtolower($companyName)) ?: [];
+        $ignored = ['and', 'of', 'the', 'for', 'in', 'at', 'limited', 'ltd', 'private', 'pvt'];
+        $initials = '';
+
+        foreach ($words as $word) {
+            if ($word !== '' && !in_array($word, $ignored, true)) {
+                $initials .= $word[0];
+            }
+        }
+
+        if (strlen($initials) >= 2) {
+            $keys[] = $initials;
+        }
+
+        return array_values(array_unique(array_filter($keys)));
+    }
+
     private function normalizeCompanyKey(string $value): string
     {
         $value = strtolower(trim($value));
@@ -340,6 +447,21 @@ class CompanyJobsController extends BaseController
         $company = $this->companyModel
             ->like('name', $companyName, 'both')
             ->first();
+
+        // ATS mappings are maintained independently and are the authoritative
+        // source for career destinations. Company profile URLs can become stale
+        // when an employer moves its careers site (for example, Deloitte).
+        try {
+            $mapping = $this->companyAtsMappingModel->findMatchingMapping($companyName);
+            $mappedCareerUrl = trim((string) ($mapping['career_url'] ?? ''));
+            if ($mappedCareerUrl !== '' && filter_var($mappedCareerUrl, FILTER_VALIDATE_URL)) {
+                $company = is_array($company) ? $company : [];
+                $company['career_page'] = $mappedCareerUrl;
+            }
+        } catch (\Throwable $e) {
+            // Keep the company profile URL when mappings have not been migrated yet.
+            log_message('warning', 'Could not resolve career URL mapping for ' . $companyName . ': ' . $e->getMessage());
+        }
 
         return view('candidate/company_jobs', [
             'title' => "Jobs at {$companyName}",

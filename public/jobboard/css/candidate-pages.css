@@ -23876,6 +23876,10 @@ body.dark.candidate-app .applications-jobboard .applications-sidebar-list {
     scrollbar-color: #4a4a4a #111111;
 }
 
+html body.candidate-app .company-jobs-page .company-jobs-empty-state[hidden] {
+    display: none !important;
+}
+
 body.dark.candidate-app .applications-jobboard .applications-sidebar-list::-webkit-scrollbar {
     width: 10px;
 }

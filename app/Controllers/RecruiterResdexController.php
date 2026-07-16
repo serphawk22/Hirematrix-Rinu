@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\RecruiterCandidateAccessService;
 use App\Models\CandidateSearchModel;
 
 class RecruiterResdexController extends BaseController
@@ -80,7 +81,7 @@ public function index()
             return redirect()->to(site_url('recruiter/resdex'))->with('error', 'Candidate not found.');
         }
 
-        if (!$this->canRecruiterAccessCandidate($profile, $recruiterId)) {
+        if (!(new RecruiterCandidateAccessService())->canAccess($candidateId, $recruiterId)) {
             return redirect()->to(site_url('recruiter/resdex'))
                 ->with('error', 'This candidate profile is not available.');
         }
@@ -100,33 +101,6 @@ public function index()
         ]);
     }
 
-    /**
-     * A private candidate remains accessible only to recruiters whose job they
-     * applied to. Public candidates are discoverable by every recruiter.
-     */
-    private function canRecruiterAccessCandidate(array $profile, int $recruiterId): bool
-    {
-        if ($recruiterId <= 0) {
-            return false;
-        }
-
-        if ((int) ($profile['allow_public_recruiter_visibility'] ?? 0) === 1) {
-            return true;
-        }
-
-        $candidateId = (int) ($profile['user_id'] ?? 0);
-        if ($candidateId <= 0) {
-            return false;
-        }
-
-        return \Config\Database::connect()
-            ->table('applications')
-            ->join('jobs', 'jobs.id = applications.job_id')
-            ->where('applications.candidate_id', $candidateId)
-            ->where('jobs.recruiter_id', $recruiterId)
-            ->countAllResults() > 0;
-    }
-
     /** POST /recruiter/resdex/folder/add */
     public function addToFolder()
     {
@@ -143,6 +117,10 @@ public function index()
 
         if ($folderId <= 0 && $newFolder === '') {
             return redirect()->back()->with('error', 'Please select a folder.');
+        }
+
+        if (!(new RecruiterCandidateAccessService())->canAccess($candidateId, (int) $recruiterId)) {
+            return redirect()->back()->with('error', 'This candidate profile is not available.');
         }
 
         if ($newFolder !== '') {
@@ -216,11 +194,12 @@ public function index()
         }
 
         $savedCount = 0;
+        $candidateAccess = new RecruiterCandidateAccessService();
 
         foreach ($candidateIds as $candidateId) {
             $candidateId = (int) $candidateId;
 
-            if ($folderId > 0 && $candidateId > 0) {
+            if ($folderId > 0 && $candidateId > 0 && $candidateAccess->canAccess($candidateId, (int) $recruiterId)) {
                 $db->table('resdex_folder_candidates')
                     ->ignore(true)
                     ->insert([
@@ -561,6 +540,15 @@ public function index()
         if ($data === null) {
             return redirect()->to(site_url('recruiter/resdex/folders'))->with('error', 'Folder not found.');
         }
+
+        $candidateAccess = new RecruiterCandidateAccessService();
+        $data['candidates'] = array_values(array_filter(
+            $data['candidates'],
+            static fn (array $candidate): bool => $candidateAccess->canAccess(
+                (int) ($candidate['user_id'] ?? 0),
+                $recruiterId
+            )
+        ));
 
         return view('recruiter/resdex_folder_detail', [
             'title'      => $data['folder']['folder_name'],

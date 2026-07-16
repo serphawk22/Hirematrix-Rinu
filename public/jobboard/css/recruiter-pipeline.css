@@ -16,7 +16,7 @@
     .pipeline-work-nav { display: flex; align-items: stretch; overflow-x: auto; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px 12px 0 0; box-shadow: 0 10px 30px rgba(15, 23, 42, .05); }
     .pipeline-work-nav .nav-link { min-height: 54px; display: inline-flex; align-items: center; gap: 9px; padding: 0 20px; border: 0; border-right: 1px solid #eef2f7; border-radius: 0; color: #64748b; font-size: 14px; font-weight: 700; white-space: nowrap; }
     .pipeline-work-nav .nav-link i { opacity: .82; }
-    .pipeline-work-nav .nav-link.active { background: #eff6ff; color: #2563eb; box-shadow: inset 0 -3px 0 #2563eb; }
+    .pipeline-work-nav .nav-link.active { background: #eff6ff; color: #2563eb; }
     .pipeline-work-nav .nav-link:not(.active):hover { background: #f8fafc; color: #2563eb; }
     .pipeline-board { background: #fff; border: 1px solid #e2e8f0; border-top: 0; border-radius: 0 0 12px 12px; box-shadow: 0 10px 30px rgba(15, 23, 42, .05); overflow: hidden; }
     .pipeline-summary-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 24px; border-bottom: 1px solid #e2e8f0; background: #fff; }
@@ -740,22 +740,11 @@ body.dark .recruiter-pipeline-page .communication-chip.is-muted {
     .recruiter-pipeline-page .response-console { grid-template-columns: 1fr; }
     .response-filter-panel { border-bottom: 1px solid #e5edf2; border-right: 0; min-height: 0; position: static; }
     .response-filter-form { grid-template-columns: repeat(2,minmax(0,1fr)); }
-    .response-card { grid-template-columns: 28px minmax(0,1fr); }
-    .response-card-side { border-left: 0; border-top: 1px solid #eef2f7; grid-column: 2; padding-left: 0; padding-top: 12px; }
-    .recruiter-pipeline-page .response-icon-actions { grid-template-columns: repeat(8,36px); }
 }
 @media (max-width: 760px) {
-    .response-card { grid-template-columns: 28px minmax(0,1fr); }
-    .response-card-main,
-    .response-profile-snapshot,
     .response-profile-grid,
     .schedule-interview-grid,
     .response-filter-form { grid-template-columns: 1fr; }
-    .response-skills-block,
-    .response-note-row,
-    .response-fit-summary,
-    .response-fit-panel { grid-column: auto; }
-    .recruiter-pipeline-page .response-icon-actions { grid-template-columns: repeat(4,36px); }
     .response-toolbar,.response-job-row { align-items: stretch; flex-direction: column; }
     .response-toolbar-actions { margin-left: 0; width: 100%; }
     .response-toolbar .pipeline-search { min-width: 0; width: 100%; }
@@ -795,12 +784,6 @@ body.dark .recruiter-pipeline-page .communication-chip.is-muted {
 .recruiter-pipeline-page .candidate-cockpit-status,
 .recruiter-pipeline-page .cockpit-panel {
     grid-column: 1;
-}
-
-@media (max-width: 560px) {
-    .recruiter-pipeline-page .candidate-cockpit-actions {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
 }
 
 /* Candidate response cards: cleaner, simple row cards */
@@ -1051,32 +1034,9 @@ body.recruiter-jobboard.dark-mode .recruiter-pipeline-page .ats-score-bar span,
 body.dark .recruiter-pipeline-page .ats-score-bar span {
     background: #a3a3a3 !important;
 }
-@media (max-width: 1100px) {
-    .recruiter-pipeline-page .response-card {
-        grid-template-columns: 28px minmax(0, 1fr);
-    }
-    .recruiter-pipeline-page .response-card-side {
-        border-left: 0;
-        border-top: 1px solid #edf2f7;
-        grid-column: 2;
-        padding-left: 0;
-        padding-top: 14px;
-    }
-}
 @media (max-width: 760px) {
     .recruiter-pipeline-page .response-card-list {
         padding: 10px;
-    }
-    .recruiter-pipeline-page .response-card {
-        border-radius: 10px;
-        padding: 14px;
-    }
-    .recruiter-pipeline-page .response-card-main,
-    .recruiter-pipeline-page .response-profile-snapshot {
-        grid-template-columns: 1fr;
-    }
-    .recruiter-pipeline-page .response-candidate-head {
-        align-items: flex-start;
     }
 }
 
@@ -1513,36 +1473,6 @@ body.dark .recruiter-pipeline-page .communication-preview {
     color: #b4b4b8 !important;
 }
 
-@media (max-width: 1180px) {
-    .recruiter-pipeline-page .response-card {
-        grid-template-columns: 28px minmax(0, 1fr);
-    }
-    .recruiter-pipeline-page .response-card-side {
-        border-left: 0;
-        border-top: 1px solid #edf2f7;
-        grid-column: 2;
-        grid-template-columns: 190px minmax(0, 1fr);
-        padding-left: 0;
-        padding-top: 12px;
-    }
-    .recruiter-pipeline-page .response-match-box,
-    .recruiter-pipeline-page .communication-stack {
-        border-bottom: 0;
-        padding-bottom: 0;
-    }
-}
-@media (max-width: 860px) {
-    .recruiter-pipeline-page .response-card-main,
-    .recruiter-pipeline-page .response-profile-snapshot {
-        grid-template-columns: 1fr;
-    }
-    .recruiter-pipeline-page .response-fit-panel {
-        border-left: 0;
-        border-top: 1px solid #edf2f7;
-        padding-left: 0;
-        padding-top: 12px;
-    }
-}
 
 /* Communication drawer: simple, clean conversation view */
 .recruiter-pipeline-page .communication-drawer {
@@ -1977,19 +1907,6 @@ body.dark .recruiter-pipeline-page .candidate-cockpit-status {
     background: #141414;
 }
 
-@media (max-width: 1100px) {
-    .recruiter-pipeline-page .response-card { grid-template-columns: 28px minmax(0, 1fr); }
-    .recruiter-pipeline-page .response-card-side {
-        grid-column: 2;
-        grid-template-columns: repeat(2, minmax(190px, 1fr));
-    }
-    .recruiter-pipeline-page .response-icon-actions,
-    .recruiter-pipeline-page .candidate-cockpit { align-self: start; }
-}
-@media (max-width: 640px) {
-    .recruiter-pipeline-page .response-card-side { grid-template-columns: 1fr; }
-}
-
 /* Compact console: keep more candidates visible per viewport */
 .recruiter-pipeline-page .response-card {
     grid-template-columns: 28px minmax(0, 1fr) 360px;
@@ -2087,46 +2004,6 @@ body.dark .recruiter-pipeline-page .candidate-cockpit-status {
     height: 30px;
 }
 
-@media (max-width: 1250px) {
-    .recruiter-pipeline-page .response-card { grid-template-columns: 28px minmax(0, 1fr); }
-    .recruiter-pipeline-page .response-card-side {
-        grid-column: 2;
-        grid-template-columns: minmax(150px, .65fr) minmax(180px, .8fr) minmax(360px, 1.55fr);
-    }
-    .recruiter-pipeline-page .candidate-cockpit {
-        border-left: 1px solid #e2ecea;
-        border-top: 0;
-        grid-column: 3;
-        grid-row: 1;
-        padding-left: 10px;
-        padding-top: 0;
-    }
-    .recruiter-pipeline-page .response-icon-actions {
-        grid-column: 1 / -1;
-    }
-}
-@media (max-width: 820px) {
-    .recruiter-pipeline-page .response-card-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .recruiter-pipeline-page .candidate-cockpit {
-        border-left: 0;
-        border-top: 1px solid #e2ecea;
-        grid-column: 1 / -1;
-        grid-row: auto;
-        padding-left: 0;
-        padding-top: 8px;
-    }
-}
-@media (max-width: 560px) {
-    .recruiter-pipeline-page .response-card-side { grid-template-columns: 1fr; }
-    .recruiter-pipeline-page .candidate-cockpit,
-    .recruiter-pipeline-page .response-icon-actions { grid-column: 1; }
-    .recruiter-pipeline-page .candidate-cockpit { grid-template-columns: 1fr; }
-    .recruiter-pipeline-page .candidate-cockpit-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .recruiter-pipeline-page .response-icon-actions { grid-template-columns: 1fr; }
-    .recruiter-pipeline-page .response-icon-actions > .sidebar-section-label,
-    .recruiter-pipeline-page .response-action-cluster { grid-column: 1 !important; grid-row: auto !important; }
-}
-
 /* Compact pipeline controls: prioritize candidate rows above the fold */
 .recruiter-pipeline-page .response-tabs {
     flex-wrap: nowrap;
@@ -2214,4 +2091,151 @@ body.dark .recruiter-pipeline-page .candidate-cockpit-status {
         padding: 7px 12px;
     }
     .recruiter-pipeline-page .response-toolbar-summary { width: 100%; }
+}
+
+/* Candidate card presentation: clear summary first, review controls second */
+.recruiter-pipeline-page .response-card {
+    background: #fff;
+    border: 1px solid #dbe7ec;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 42, 55, .055);
+    gap: 14px;
+    overflow: hidden;
+    padding: 18px;
+    position: relative;
+}
+.recruiter-pipeline-page .response-candidate-head {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #e6eef2;
+    border-radius: 0;
+    padding: 2px 0 14px;
+}
+.recruiter-pipeline-page .response-name-row h3 {
+    color: #102a3a;
+    font-size: 17px;
+}
+.recruiter-pipeline-page .response-headline {
+    color: #526779;
+    line-height: 1.5;
+    max-width: 100%;
+}
+.recruiter-pipeline-page .response-card-main {
+    gap: 14px;
+    grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr);
+}
+.recruiter-pipeline-page .response-profile-snapshot,
+.recruiter-pipeline-page .response-fit-panel {
+    align-content: start;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 6px 0;
+}
+.recruiter-pipeline-page .response-profile-snapshot {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.recruiter-pipeline-page .response-detail-row {
+    border-bottom: 0;
+    min-height: 54px;
+    padding-bottom: 10px;
+}
+.recruiter-pipeline-page .response-detail-row:nth-last-child(-n + 2) {
+    border-bottom: 0;
+}
+.recruiter-pipeline-page .response-field-label,
+.recruiter-pipeline-page .sidebar-section-label {
+    color: #527083;
+    font-weight: 900;
+    letter-spacing: .065em;
+}
+.recruiter-pipeline-page .response-detail-value {
+    color: #172f3e;
+    font-size: 12.5px;
+    line-height: 1.55;
+}
+.recruiter-pipeline-page .response-fit-panel {
+    border-left: 1px solid #e6eef2;
+    padding-left: 20px;
+}
+.recruiter-pipeline-page .response-skills-block,
+.recruiter-pipeline-page .response-fit-summary {
+    padding: 2px 0 10px;
+}
+.recruiter-pipeline-page .status-pill {
+    box-shadow: 0 2px 5px rgba(15, 118, 110, .06);
+    padding: 5px 10px;
+}
+
+/* Candidate rows keep one table-like layout at every viewport width. */
+.recruiter-pipeline-page .response-card-list {
+    min-width: 1160px;
+}
+.recruiter-pipeline-page .response-card {
+    grid-template-columns: 28px minmax(620px, 1fr) 360px;
+    min-width: 1120px;
+    padding: 18px;
+}
+.recruiter-pipeline-page .response-card-main {
+    grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr);
+}
+.recruiter-pipeline-page .response-profile-snapshot {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.recruiter-pipeline-page .response-fit-panel {
+    border-left: 1px solid #e6eef2;
+    border-top: 0;
+    padding-left: 20px;
+    padding-top: 6px;
+}
+.recruiter-pipeline-page .response-card-side {
+    background: transparent;
+    border: 0;
+    border-left: 1px solid #e1eaee;
+    border-radius: 0;
+    display: grid;
+    gap: 10px;
+    grid-column: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0 0 0 14px;
+}
+.recruiter-pipeline-page .response-match-box,
+.recruiter-pipeline-page .communication-stack {
+    grid-column: auto;
+}
+.recruiter-pipeline-page .candidate-cockpit,
+.recruiter-pipeline-page .response-icon-actions {
+    grid-column: 1 / -1;
+}
+.recruiter-pipeline-page .candidate-cockpit {
+    border-left: 0;
+    border-top: 1px solid #e1eaee;
+    grid-row: auto;
+    padding: 8px 0 0;
+}
+.recruiter-pipeline-page .response-icon-actions {
+    background: transparent;
+    border: 0;
+    border-top: 1px solid #e1eaee;
+    border-radius: 0;
+    padding: 9px 0 0;
+}
+
+.recruiter-pipeline-page .response-results {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-color: #9cbfc3 #edf5f6;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+}
+.recruiter-pipeline-page .response-results::-webkit-scrollbar { height: 10px; }
+.recruiter-pipeline-page .response-results::-webkit-scrollbar-track {
+    background: #edf5f6;
+    border-radius: 999px;
+}
+.recruiter-pipeline-page .response-results::-webkit-scrollbar-thumb {
+    background: #9cbfc3;
+    border: 2px solid #edf5f6;
+    border-radius: 999px;
 }

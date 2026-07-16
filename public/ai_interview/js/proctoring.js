@@ -1249,9 +1249,9 @@ async function verifyCandidateFace() {
         true
     );
 
-        reportViolation(
-            "Face verification model load failed: " + err.message
-        );
+        // reportViolation(
+        //     "Face verification model load failed: " + err.message
+        // );
 
         return false;
     }
@@ -1318,7 +1318,7 @@ async function verifyCandidateFace() {
                 overlay.querySelector("#face-verify-box").appendChild(updateBtn);
             }
 
-            reportViolation("Face verification failed: No profile photo on file");
+            //reportViolation("Face verification failed: No profile photo on file");
 
             return false;
         }
@@ -1331,9 +1331,9 @@ async function verifyCandidateFace() {
             true
         );
 
-        reportViolation(
-            "Face verification setup failed: " + err.message
-        );
+        // reportViolation(
+        //     "Face verification setup failed: " + err.message
+        // );
 
         return false;
     }
@@ -1438,11 +1438,11 @@ async function verifyCandidateFace() {
             "Identity verified. Starting your interview..."
         );
 
-        reportViolation(
-            "Face verification passed (distance: " +
-            lastDistance.toFixed(3) +
-            ")"
-        );
+        // reportViolation(
+        //     "Face verification passed (distance: " +
+        //     lastDistance.toFixed(3) +
+        //     ")"
+        // );
 
         await new Promise(
             (r) => setTimeout(r, 800)
@@ -1958,9 +1958,9 @@ document.addEventListener(
     e => {
 
         e.preventDefault(); 
-         reportViolation(
-                "Copy attempt detected"
-            );
+        //  reportViolation(
+        //         "Copy attempt detected"
+        //     );
     }
 );
 
@@ -1975,9 +1975,9 @@ document.addEventListener(
     e => {
 
         e.preventDefault(); 
-         reportViolation(
-                "Cut attempt detected"
-            );
+        //  reportViolation(
+        //         "Cut attempt detected"
+        //     );
     }
 );
 
@@ -1992,9 +1992,9 @@ document.addEventListener(
     e => {
 
         e.preventDefault(); 
-         reportViolation(
-                "Paste attempt detected"
-            );
+        //  reportViolation(
+        //         "Paste attempt detected"
+        //     );
     }
 );
 
@@ -2009,9 +2009,9 @@ document.addEventListener(
     e => {
 
         e.preventDefault(); 
-         reportViolation(
-                "Right click disabled"
-            );
+        //  reportViolation(
+        //         "Right click disabled"
+        //     );
     }
 );
 
@@ -2118,9 +2118,9 @@ e.preventDefault();
 
         if (e.ctrlKey && e.key === "c") {
  
-              reportViolation(
-                "Copy shortcut detected"
-            );
+            //   reportViolation(
+            //     "Copy shortcut detected"
+            // );
         }
 
         /*
@@ -2132,9 +2132,9 @@ e.preventDefault();
         if (e.ctrlKey && e.key === "v") {
 
             e.preventDefault(); 
-              reportViolation(
-                "Paste shortcut detected"
-            );
+            //   reportViolation(
+            //     "Paste shortcut detected"
+            // );
         }
 
         /*
@@ -2146,9 +2146,9 @@ e.preventDefault();
         if (e.ctrlKey && e.key === "u") {
 
             e.preventDefault(); 
-              reportViolation(
-                "Source view blocked"
-            );
+            //   reportViolation(
+            //     "Source view blocked"
+            // );
         }
 
         /*
@@ -2160,9 +2160,9 @@ e.preventDefault();
         if (e.key === "F12") {
 
            e.preventDefault(); 
-              reportViolation(
-                "Developer tools detected"
-            );
+            //   reportViolation(
+            //     "Developer tools detected"
+            // );
         }
 
         /*
@@ -2178,9 +2178,9 @@ e.preventDefault();
         ) {
 
            // e.preventDefault(); 
-              reportViolation(
-                "Developer tools detected"
-            );
+            //   reportViolation(
+            // //     "Developer tools detected"
+            // // );
         }
     }
 );

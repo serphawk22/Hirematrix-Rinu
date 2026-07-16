@@ -8,6 +8,9 @@ $verifiedRecruiterEmail = (string) ($verifiedRecruiterEmail ?? '');
 $mailDomain = str_contains($verifiedRecruiterEmail, '@') ? substr(strrchr($verifiedRecruiterEmail, '@'), 1) : '';
 $suggestedMailHost = $mailDomain !== '' ? 'mail.' . $mailDomain : '';
 $workflowSettings = (array) ($workflowSettings ?? []);
+$settingsSuccess = session()->getFlashdata('success');
+$settingsWarning = session()->getFlashdata('warning');
+$settingsError = session()->getFlashdata('error');
 ?>
 
 <?= view('Layouts/recruiter_header') ?>
@@ -22,13 +25,31 @@ $workflowSettings = (array) ($workflowSettings ?? []);
             </div>
         </div>
 
-        <?php if (session()->getFlashdata('success') || session()->getFlashdata('error')): ?>
+        <?php if ($settingsSuccess || $settingsWarning || $settingsError): ?>
             <div class="recruiter-settings-flash">
-                <?php if (session()->getFlashdata('success')): ?>
-                    <div class="alert alert-success mb-0"><?= esc(session()->getFlashdata('success')) ?></div>
+                <?php if ($settingsSuccess): ?>
+                    <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+                        <?= esc($settingsSuccess) ?>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                 <?php endif; ?>
-                <?php if (session()->getFlashdata('error')): ?>
-                    <div class="alert alert-danger mb-0"><?= esc(session()->getFlashdata('error')) ?></div>
+                <?php if ($settingsWarning): ?>
+                    <div class="alert alert-warning alert-dismissible fade show mb-0" role="alert">
+                        <?= esc($settingsWarning) ?>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <?php endif; ?>
+                <?php if ($settingsError): ?>
+                    <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+                        <?= esc($settingsError) ?>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
