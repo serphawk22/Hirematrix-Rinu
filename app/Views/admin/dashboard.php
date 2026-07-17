@@ -5,7 +5,7 @@
         <h3 class="fw-bold mb-0">Admin Analytics</h3>
 
         <div class="d-flex gap-2">
-            <a class="btn btn-outline-primary" href="<?= base_url('admin/company-ats-mappings') ?>">
+            <!-- <a class="btn btn-outline-primary" href="<?= base_url('admin/company-ats-mappings') ?>">
                 Company ATS
             </a>
             <a class="btn btn-outline-primary" href="<?= base_url('admin/blogs') ?>">
@@ -13,7 +13,7 @@
             </a>
             <a class="btn btn-outline-primary" href="<?= base_url('admin/subscriptions') ?>">
                 Subscriptions
-            </a>
+            </a> -->
             <form method="get" class="d-flex align-items-center gap-2">
                 <label class="small text-muted">Last</label>
                 <div class="input-group" style="width:150px;">
@@ -179,7 +179,7 @@
 
     <!-- SCROLL TABLE -->
     <div class="card">
-        <div class="card-header">Login Duration</div>
+        <div class="card-header">First Page Load Duration</div>
         <div class="table-responsive" style="max-height:400px; overflow-y:auto;">
             <table class="table table-sm mb-0">
                 <thead class="table-light" style="position:sticky; top:0;">
@@ -188,7 +188,7 @@
                         <th>User</th>
                         <th>Role</th>
                         <th>Page</th>
-                        <th>Duration</th>
+                        <th>Duration (ms)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -198,7 +198,7 @@
                         <td><?= $row['user_name'] ?></td>
                         <td><?= $row['user_role'] ?></td>
                         <td><?= $row['first_page_path'] ?></td>
-                        <td><?= $row['duration_ms'] ?></td>
+                        <td><?= number_format((int) $row['duration_ms']) ?> ms</td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>

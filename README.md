@@ -212,6 +212,14 @@ Private/cPanel-hosted company mailboxes can use **Other Provider (IMAP/SMTP)** i
 
 ## Testing
 
+Build the production CSS assets after changing any source stylesheet:
+
+```bash
+composer build:css
+```
+
+The candidate and recruiter layouts load these minified files directly. Recruiter pipeline and job-list styles remain page-specific and are only requested by the pages that need them.
+
 Run the PHPUnit suite:
 
 ```bash

@@ -1,6 +1,6 @@
 <?= view('Layouts/recruiter_header', [
     'title' => 'Job Detail Pipeline',
-    'pageStyles' => [base_url('jobboard/css/recruiter-pipeline.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-pipeline.css'))],
+    'pageStyles' => [base_url('jobboard/css/recruiter-pipeline.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-pipeline.min.css'))],
 ]) ?>
 <style>
 /* Widen the AI Interview Report modal */

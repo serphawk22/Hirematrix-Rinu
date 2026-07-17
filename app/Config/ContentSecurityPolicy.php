@@ -22,7 +22,9 @@ class ContentSecurityPolicy extends BaseConfig
     /**
      * Default CSP report context
      */
-    public bool $reportOnly = false;
+    // Start in report-only mode because legacy portal views still contain
+    // inline scripts/styles. Violations can be reviewed before enforcement.
+    public bool $reportOnly = true;
 
     /**
      * Specifies a URL where a browser will send reports
@@ -35,7 +37,7 @@ class ContentSecurityPolicy extends BaseConfig
      * HTTP to HTTPS. This directive is for websites with
      * large numbers of old URLs that need to be rewritten.
      */
-    public bool $upgradeInsecureRequests = false;
+    public bool $upgradeInsecureRequests = true;
 
     // -------------------------------------------------------------------------
     // Sources allowed

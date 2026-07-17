@@ -10,6 +10,18 @@ $targets = [
         'candidate-pages.css',
         'hirematrix-style.css',
     ],
+    'candidate-pages.min.css' => [
+        'candidate-pages.css',
+    ],
+    'recruiter-pages.min.css' => [
+        'recruiter-pages.css',
+    ],
+    'recruiter-pipeline.min.css' => [
+        'recruiter-pipeline.css',
+    ],
+    'recruiter-jobs.min.css' => [
+        'recruiter-jobs.css',
+    ],
     'hirematrix-style.min.css' => [
         'hirematrix-style.css',
     ],

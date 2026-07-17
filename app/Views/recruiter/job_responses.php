@@ -1,6 +1,6 @@
 <?= view('Layouts/recruiter_header', [
     'title' => 'Jobs & Responses',
-    'pageStyles' => [base_url('jobboard/css/recruiter-jobs.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-jobs.css'))],
+    'pageStyles' => [base_url('jobboard/css/recruiter-jobs.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-jobs.min.css'))],
 ]) ?>
 
   <div
@@ -214,15 +214,22 @@
                                                         <a class="hm-job-dropdown-item" href="<?= base_url('recruiter/jobs/edit/' . $job['id']) ?>">Edit Job</a>
                                                         <div class="hm-job-dropdown-separator"></div>
                                                         <?php if ($isOpen): ?>
-                                                        <form method="post" action="<?= base_url('recruiter/jobs/close/' . $job['id']) ?>" onsubmit="return confirm('Close this job?')">
-                                                            <?= csrf_field() ?>
-                                                            <button type="submit" class="hm-job-dropdown-item is-danger">Close Job</button>
-                                                        </form>
+                                                            <button
+                                                                type="submit"
+                                                                class="hm-job-dropdown-item is-danger"
+                                                                formaction="<?= base_url('recruiter/jobs/close/' . (int) $job['id']) ?>"
+                                                                formmethod="post"
+                                                                data-job-action="close"
+                                                                onclick="return confirm('Close this job?')"
+                                                            >Close Job</button>
                                                     <?php else: ?>
-                                                        <form method="post" action="<?= base_url('recruiter/jobs/reopen/' . $job['id']) ?>">
-                                                            <?= csrf_field() ?>
-                                                            <button type="submit" class="hm-job-dropdown-item">Reopen Job</button>
-                                                        </form>
+                                                            <button
+                                                                type="submit"
+                                                                class="hm-job-dropdown-item"
+                                                                formaction="<?= base_url('recruiter/jobs/reopen/' . (int) $job['id']) ?>"
+                                                                formmethod="post"
+                                                                data-job-action="reopen"
+                                                            >Reopen Job</button>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
                                                 </div>
@@ -304,6 +311,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (bulkForm) {
         bulkForm.addEventListener('submit', function (e) {
+            if (e.submitter && e.submitter.matches('[data-job-action]')) {
+                return;
+            }
             var checked = rowChecks.filter(function (input) { return input.checked; }).length;
             if (checked === 0 || !confirm('Close ' + checked + ' selected job' + (checked === 1 ? '?' : 's?'))) {
                 e.preventDefault();

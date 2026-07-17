@@ -81,7 +81,7 @@ $routes->get('admin/company-ats-mappings', 'AdminCompanyAtsMappings::index', ['f
 $routes->post('admin/company-ats-mappings/save', 'AdminCompanyAtsMappings::save', ['filter' => 'admin']);
 $routes->post('admin/company-ats-mappings/import', 'AdminCompanyAtsMappings::import', ['filter' => 'admin']);
 $routes->get('admin/company-ats-mappings/template', 'AdminCompanyAtsMappings::template', ['filter' => 'admin']);
-$routes->get('admin/company-ats-mappings/delete/(:num)', 'AdminCompanyAtsMappings::delete/$1', ['filter' => 'admin']);
+$routes->post('admin/company-ats-mappings/delete/(:num)', 'AdminCompanyAtsMappings::delete/$1', ['filter' => 'admin_csrf']);
 $routes->get('forgot-password', 'Auth::forgotPassword');
 $routes->post('forgot-password', 'Auth::sendPasswordResetLink');
 $routes->get('reset-password/(:any)', 'Auth::resetPassword/$1');
@@ -125,8 +125,8 @@ $routes->group('candidate', ['namespace' => 'App\Controllers', 'filter' => 'cand
     $routes->get('job-alerts', 'JobAlerts::index');
     $routes->post('job-alerts/settings', 'JobAlerts::updateSettings');
     $routes->post('job-alerts/create', 'JobAlerts::create');
-    $routes->get('job-alerts/toggle/(:num)', 'JobAlerts::toggle/$1');
-    $routes->get('job-alerts/delete/(:num)', 'JobAlerts::delete/$1');
+    $routes->post('job-alerts/toggle/(:num)', 'JobAlerts::toggle/$1', ['filter' => 'candidate_csrf']);
+    $routes->post('job-alerts/delete/(:num)', 'JobAlerts::delete/$1', ['filter' => 'candidate_csrf']);
     $routes->get('messages/(:num)', 'CandidateMessages::thread/$1');
     $routes->post('messages/(:num)/reply', 'CandidateMessages::reply/$1');
     $routes->get('blog/(:num)', 'CandidateDashboardController::blogDetail/$1');
@@ -142,13 +142,13 @@ $routes->group('career-transition', ['filter' => 'candidate'], function($routes)
     $routes->get('module/(:num)', 'CareerTransition::module/$1');
     $routes->get('lesson/(:num)', 'CareerTransition::lesson/$1');
     $routes->post('dismiss-suggestion', 'CareerTransition::dismissSuggestion');
-    $routes->get('reset', 'CareerTransition::reset');
+    $routes->post('reset', 'CareerTransition::reset', ['filter' => 'candidate_csrf']);
 });
 // NEW: PDF Download Route
 $routes->get('career-transition/download-pdf', 'CareerTransitionPDF_TCPDF::downloadCoursePDF', ['filter' => 'candidate']);
 // Career Transition History Routes
 $routes->get('career-transition/history', 'CareerTransition::history', ['filter' => 'candidate']);
-$routes->get('career-transition/reactivate/(:num)', 'CareerTransition::reactivate/$1', ['filter' => 'candidate']);
+$routes->post('career-transition/reactivate/(:num)', 'CareerTransition::reactivate/$1', ['filter' => 'candidate_csrf']);
 // Dashboard Routes (Admin)
 // AI Chatbot routes — no auth filter needed because the controller handles auth itself
 // and returns proper JSON errors instead of HTML redirects that break fetch()
@@ -249,15 +249,15 @@ $routes->post('candidate/remove-photo', 'Candidate::removePhoto', ['filter' => '
 $routes->post('candidate/upload-intro-video', 'Candidate::uploadIntroVideo', ['filter' => 'candidate']);
 $routes->post('candidate/remove-intro-video', 'Candidate::removeIntroVideo', ['filter' => 'candidate']);
 $routes->post('candidate/add-work-experience', 'Candidate::addWorkExperience', ['filter' => 'candidate']);
-$routes->get('candidate/delete-work-experience/(:num)', 'Candidate::deleteWorkExperience/$1', ['filter' => 'candidate']);
+$routes->post('candidate/delete-work-experience/(:num)', 'Candidate::deleteWorkExperience/$1', ['filter' => 'candidate_csrf']);
 $routes->post('candidate/add-education', 'Candidate::addEducation', ['filter' => 'candidate']);
-$routes->get('candidate/delete-education/(:num)', 'Candidate::deleteEducation/$1', ['filter' => 'candidate']);
+$routes->post('candidate/delete-education/(:num)', 'Candidate::deleteEducation/$1', ['filter' => 'candidate_csrf']);
 $routes->post('candidate/add-certification', 'Candidate::addCertification', ['filter' => 'candidate']);
-$routes->get('candidate/delete-certification/(:num)', 'Candidate::deleteCertification/$1', ['filter' => 'candidate']);
+$routes->post('candidate/delete-certification/(:num)', 'Candidate::deleteCertification/$1', ['filter' => 'candidate_csrf']);
 $routes->post('candidate/add-project', 'Candidate::addProject', ['filter' => 'candidate']);
-$routes->get('candidate/delete-project/(:num)', 'Candidate::deleteProject/$1', ['filter' => 'candidate']);
+$routes->post('candidate/delete-project/(:num)', 'Candidate::deleteProject/$1', ['filter' => 'candidate_csrf']);
 $routes->post('candidate/add-interest', 'Candidate::addInterest', ['filter' => 'candidate']);
-$routes->get('candidate/delete-interest/(:any)', 'Candidate::deleteInterest/$1', ['filter' => 'candidate']);
+$routes->post('candidate/delete-interest', 'Candidate::deleteInterest', ['filter' => 'candidate_csrf']);
 
 $routes->get('recruiter/candidate/(:num)', 'RecruiterCandidates::viewProfile/$1', ['filter' => 'recruiter']);
 $routes->get('recruiter/messages/(:num)', 'RecruiterCandidates::communication/$1', ['filter' => 'recruiter']);
