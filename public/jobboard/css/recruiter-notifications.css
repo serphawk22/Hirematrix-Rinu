@@ -195,3 +195,21 @@ body.dark.recruiter-jobboard .recruiter-notification-icon {
         margin-left: 0;
     }
 }
+
+/* Recruiter messages: keep the reply action on the dark theme palette. */
+body.dark.recruiter-jobboard .recruiter-message-card .btn-primary,
+body.recruiter-jobboard.dark-mode .recruiter-message-card .btn-primary {
+    background: transparent !important;
+    border: 1.5px solid #1fb7b5 !important;
+    color: #57d3d1 !important;
+    box-shadow: none !important;
+}
+
+body.dark.recruiter-jobboard .recruiter-message-card .btn-primary:hover,
+body.dark.recruiter-jobboard .recruiter-message-card .btn-primary:focus,
+body.recruiter-jobboard.dark-mode .recruiter-message-card .btn-primary:hover,
+body.recruiter-jobboard.dark-mode .recruiter-message-card .btn-primary:focus {
+    background: #1fb7b5 !important;
+    border-color: #1fb7b5 !important;
+    color: #fff !important;
+}
