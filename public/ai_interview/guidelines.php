@@ -252,6 +252,15 @@ body.dark.ai-guidelines-page .guidelines-note {
     <h2><i class="fas fa-check-circle" aria-hidden="true"></i> Qualification Criteria</h2>
     <p>Candidates must score <strong>70% or above in each round</strong> to proceed to the next round.<br>Failing to achieve the minimum score in any round will automatically disqualify the candidate from further rounds.</p>
 
+    <h2><i class="fas fa-arrow-right" aria-hidden="true"></i> Question Navigation Rules</h2>
+    <p>Once a candidate submits an answer and clicks <strong>Next</strong>, that question is locked and cannot be revisited.</p>
+    <ul>
+      <li>There is no option to go back to a previous question once you have moved forward</li>
+      <li>Review your answer carefully before clicking Next, as it cannot be changed afterward</li>
+      <li>Each question must be answered in the order it is presented</li>
+      <li>Skipped or unanswered questions cannot be returned to later</li>
+    </ul>
+
     <h2><i class="fas fa-shield-alt" aria-hidden="true"></i> Strict Proctoring Rules</h2>
     <p>To ensure a fair interview process, advanced AI proctoring and monitoring systems are active throughout the interview.</p>
     <p><strong>The following activities are strictly prohibited:</strong></p>

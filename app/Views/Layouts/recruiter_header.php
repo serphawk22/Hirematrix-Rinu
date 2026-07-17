@@ -171,9 +171,9 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
             <button class="hm-sb-item hm-sb-group-toggle sb-open <?= $isActive('recruiter/resdex') ? 'active' : '' ?>"
                     id="hmResdexBtn" aria-expanded="true">
                 <i class="fas fa-search sb-icon"></i>
-                <span class="sb-label">RESDEX</span>
+                <span class="sb-label">RESUME DATABASE</span>
                 <i class="fas fa-chevron-down sb-arrow"></i>
-                <span class="sb-tooltip">ResDex</span>
+                <span class="sb-tooltip">Resume Database</span>
             </button>
             <div class="hm-sb-sub sb-open" id="hmResdexSub">
                 <a href="<?= base_url('recruiter/resdex') ?>"

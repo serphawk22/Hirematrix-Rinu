@@ -303,6 +303,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <p>Warnings will be issued for suspicious activities.</p>
       <p>All detections are visible to recruiters/admins.</p>
+      <p>There is no option to go back to a previous question once you have moved forward</p>
+      <p>Review your answer carefully before clicking Next, as it cannot be changed afterward</p>
       <p><strong>Multiple violations may lead to automatic interview termination and disqualification.</strong></p>
 
       <p>👉 Please attend the interview honestly.</p>
