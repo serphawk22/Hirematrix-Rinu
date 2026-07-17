@@ -62,12 +62,9 @@ body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td .text-muted {
 <script src="<?= base_url('jobboard/js/bootstrap.bundle.min.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/isotope.pkgd.min.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/stickyfill.min.js') ?>"></script>
-<script src="<?= base_url('jobboard/js/jquery.fancybox.min.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/jquery.easing.1.3.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/jquery.waypoints.min.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/jquery.animateNumber.min.js') ?>"></script>
-<script src="<?= base_url('jobboard/js/owl.carousel.min.js') ?>"></script>
-<script src="<?= base_url('jobboard/js/bootstrap-select.min.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/custom.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/recruiter-pages.js') ?>"></script>
 <script src="<?= base_url('jobboard/js/recruiter-alerts.js?v=' . @filemtime(FCPATH . 'jobboard/js/recruiter-alerts.js')) ?>"></script>
@@ -81,13 +78,11 @@ body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td .text-muted {
     var firstDelayMs = 10000;
     var running = false;
 
+
     function setNotificationBadge(count) {
-        var notificationLink = document.querySelector('.hm-sb-item[href="<?= base_url('notifications') ?>"]');
-        if (!notificationLink) {
-            return;
-        }
-        var badge = notificationLink.querySelector('.js-recruiter-notification-badge');
-        if (count > 0) {
+        var notificationLink = document.querySelector('.hm-sb-subitem[href="<?= base_url('notifications') ?>"], .hm-sb-item[href="<?= base_url('notifications') ?>"]');
+        var badge = notificationLink ? notificationLink.querySelector('.js-recruiter-notification-badge') : null;
+        if (notificationLink && count > 0) {
             if (!badge) {
                 badge = document.createElement('span');
                 badge.className = 'sb-badge js-recruiter-notification-badge';
@@ -98,6 +93,7 @@ body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td .text-muted {
         } else if (badge) {
             badge.remove();
         }
+
     }
 
     function pollMailbox() {

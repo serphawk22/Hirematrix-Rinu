@@ -35,30 +35,44 @@
     <?php else: ?>
         <div class="recruiter-notification-list">
             <?php foreach ($notifications as $notification): ?>
-                <?php $config = model('NotificationModel')->getNotificationConfig($notification['type']); ?>
-                <div class="card shadow-sm recruiter-notification-card <?= $notification['is_read'] ? '' : 'is-unread' ?>" data-notification-card="<?= (int) $notification['id'] ?>">
+                <?php
+                    $config = model('NotificationModel')->getNotificationConfig($notification['type']);
+                    $compatibleIcons = [
+                        'candidate_email_reply' => 'fas fa-envelope',
+                        'candidate_message_reply' => 'fas fa-reply',
+                        'interview_scheduled' => 'fas fa-calendar-check',
+                        'interview_booked' => 'fas fa-calendar-check',
+                        'interview_rescheduled' => 'fas fa-calendar-alt',
+                        'application_status_changed' => 'fas fa-tasks',
+                        'offer_sent' => 'fas fa-file-alt',
+                    ];
+                    $notificationIcon = $compatibleIcons[$notification['type']] ?? ($config['icon'] ?? 'fas fa-bell');
+                ?>
+                <div class="card recruiter-notification-card <?= $notification['is_read'] ? 'is-read' : 'is-unread' ?> is-notification-<?= esc($config['color'] ?? 'info') ?>" data-notification-card="<?= (int) $notification['id'] ?>">
                     <div class="card-body">
                         <div class="recruiter-notification-row">
-                            
+                            <div class="recruiter-notification-icon" aria-hidden="true">
+                                <i class="<?= esc($notificationIcon) ?>"></i>
+                            </div>
 
                             <div class="recruiter-notification-copy">
                                 <div class="recruiter-notification-head">
-                                    <h5 class="mb-3 recruiter-text-1rem">
-                                        <?= esc($notification['title']) ?>
+                                    <h5 class="recruiter-notification-title">
                                         <?php if (!$notification['is_read']): ?>
-                                            <span class="badge badge-primary">New</span>
+                                            <span class="recruiter-unread-dot" aria-label="Unread"></span>
                                         <?php endif; ?>
+                                        <?= esc($notification['title']) ?>
                                     </h5>
-                                    <small class="text-muted recruiter-muted-12"><?= time_ago($notification['created_at']) ?></small>
+                                    <time class="recruiter-notification-time" datetime="<?= esc(date('c', strtotime($notification['created_at']))) ?>"><?= time_ago($notification['created_at']) ?></time>
                                 </div>
 
-                                <p class="mb-3 recruiter-muted-12"><?= esc($notification['message']) ?></p>
+                                <p class="recruiter-notification-message"><?= esc($notification['message']) ?></p>
 
                                 <div class="recruiter-notification-actions">
                                     <?php if ($notification['action_link']): ?>
                                         <form method="post" action="<?= base_url('notifications/mark-read/' . $notification['id']) ?>" class="d-inline">
                                             <?= csrf_field() ?>
-                                            <button type="submit" class="btn btn-sm btn-outline-primary"><?= esc($config['action_text'] ?? 'Open') ?></button>
+                                            <button type="submit" class="btn btn-sm btn-outline-primary recruiter-notification-open"><?= esc($config['action_text'] ?? 'Open') ?> <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
                                         </form>
                                     <?php endif; ?>
 

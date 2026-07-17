@@ -100,9 +100,9 @@ function insertRound($conn, $candidateId, $candidateName, $roundName, $jobrole, 
     // Check duplicate
     $checkStmt = $conn->prepare("
         SELECT id FROM interview_results 
-        WHERE candidate_id = ? AND round_name = ?
+        WHERE candidate_id = ? AND round_name = ? AND jobrole = ?
     ");
-    $checkStmt->bind_param("is", $candidateId, $roundName);
+    $checkStmt->bind_param("iss", $candidateId, $roundName, $jobrole);
     $checkStmt->execute();
     $checkStmt->store_result();
 

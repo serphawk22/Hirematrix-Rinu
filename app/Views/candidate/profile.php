@@ -781,12 +781,11 @@ $formatExperienceDisplay = static function (int $months): string {
                                                 <span class="profile-chip profile-chip-sky d-inline-flex align-items-center gap-1 px-3 py-2 profile-chip-compact">
                                                     <?= esc($interest) ?>
                                                     <span class="profile-edit-controls">
-                                                        <a href="<?= base_url('candidate/delete-interest/' . urlencode($interest)) ?>"
-                                                           onclick="return confirm('Remove this interest?')"
-                                                           class="text-white ms-1 profile-chip-remove"
-                                                           title="Remove">
-                                                            &times;
-                                                        </a>
+                                                        <form method="post" action="<?= base_url('candidate/delete-interest') ?>" class="d-inline" onsubmit="return confirm('Remove this interest?')">
+                                                            <?= csrf_field() ?>
+                                                            <input type="hidden" name="interest" value="<?= esc($interest) ?>">
+                                                            <button type="submit" class="text-white ms-1 profile-chip-remove border-0 bg-transparent p-0" title="Remove" aria-label="Remove <?= esc($interest) ?>">&times;</button>
+                                                        </form>
                                                     </span>
                                                 </span>
                                             <?php endforeach; ?>
@@ -880,7 +879,7 @@ $formatExperienceDisplay = static function (int $months): string {
                                             </div>
                                             <div class="profile-edit-controls">
                                                 <button class="btn btn-sm btn-outline-primary me-1" onclick='editExperience(<?= json_encode($exp) ?>)'><i class="fas fa-edit"></i></button>
-                                                <a href="<?= base_url('candidate/delete-work-experience/'.$exp['id']) ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this experience?')"><i class="fas fa-trash"></i></a>
+                                                <form method="post" action="<?= base_url('candidate/delete-work-experience/' . (int) $exp['id']) ?>" class="d-inline" onsubmit="return confirm('Delete this experience?')"><?= csrf_field() ?><button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Delete work experience"><i class="fas fa-trash"></i></button></form>
                                             </div>
                                         </div>
                                     </div>
@@ -920,7 +919,7 @@ $formatExperienceDisplay = static function (int $months): string {
                                             </div>
                                             <div class="profile-edit-controls">
                                                 <button class="btn btn-sm btn-outline-primary me-1" onclick='editEducation(<?= json_encode($edu) ?>)'><i class="fas fa-edit"></i></button>
-                                                <a href="<?= base_url('candidate/delete-education/'.$edu['id']) ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this education?')"><i class="fas fa-trash"></i></a>
+                                                <form method="post" action="<?= base_url('candidate/delete-education/' . (int) $edu['id']) ?>" class="d-inline" onsubmit="return confirm('Delete this education?')"><?= csrf_field() ?><button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Delete education"><i class="fas fa-trash"></i></button></form>
                                             </div>
                                         </div>
                                     </div>
@@ -971,7 +970,7 @@ $formatExperienceDisplay = static function (int $months): string {
                                             </div>
                                             <div class="profile-edit-controls">
                                                 <button class="btn btn-sm btn-outline-primary me-1" onclick='editProject(<?= json_encode($project) ?>)'><i class="fas fa-edit"></i></button>
-                                                <a href="<?= base_url('candidate/delete-project/' . $project['id']) ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this project?')"><i class="fas fa-trash"></i></a>
+                                                <form method="post" action="<?= base_url('candidate/delete-project/' . (int) $project['id']) ?>" class="d-inline" onsubmit="return confirm('Delete this project?')"><?= csrf_field() ?><button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Delete project"><i class="fas fa-trash"></i></button></form>
                                             </div>
                                         </div>
                                     </div>
@@ -1011,7 +1010,7 @@ $formatExperienceDisplay = static function (int $months): string {
                                             </div>
                                             <div class="profile-edit-controls">
                                                 <button class="btn btn-sm btn-outline-primary me-1" onclick='editCertification(<?= json_encode($cert) ?>)'><i class="fas fa-edit"></i></button>
-                                                <a href="<?= base_url('candidate/delete-certification/'.$cert['id']) ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this certification?')"><i class="fas fa-trash"></i></a>
+                                                <form method="post" action="<?= base_url('candidate/delete-certification/' . (int) $cert['id']) ?>" class="d-inline" onsubmit="return confirm('Delete this certification?')"><?= csrf_field() ?><button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Delete certification"><i class="fas fa-trash"></i></button></form>
                                             </div>
                                         </div>
                                     </div>

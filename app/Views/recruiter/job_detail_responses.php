@@ -1,6 +1,6 @@
 <?= view('Layouts/recruiter_header', [
     'title' => 'Job Detail Pipeline',
-    'pageStyles' => [base_url('jobboard/css/recruiter-pipeline.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-pipeline.css'))],
+    'pageStyles' => [base_url('jobboard/css/recruiter-pipeline.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-pipeline.min.css'))],
 ]) ?>
 <?php
 $statusTones = [
@@ -36,9 +36,7 @@ $metaParts = array_filter([
 $statusLabel = ucfirst((string) ($job['status'] ?? 'open'));
 $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-open' : 'is-closed';
 ?>
-
-
-
+ 
 <div
     id="recruiterPipelinePage"
     class="recruiter-pipeline-page recruiter-applications-jobboard recruiter-leaderboard-jobboard"

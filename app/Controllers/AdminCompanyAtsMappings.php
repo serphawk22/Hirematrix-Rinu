@@ -102,6 +102,10 @@ class AdminCompanyAtsMappings extends BaseController
         }
 
         $model = new CompanyAtsMappingModel();
+        if (!$model->find($id)) {
+            return redirect()->to(base_url('admin/company-ats-mappings'))->with('error', 'Mapping not found.');
+        }
+
         $model->delete($id);
 
         return redirect()->to(base_url('admin/company-ats-mappings'))->with('success', 'Mapping deleted.');

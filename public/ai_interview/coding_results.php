@@ -78,11 +78,11 @@ function insertRound($conn, $candidateId, $candidateName, $roundName, $jobrole, 
     $pct = ($totalQ > 0) ? round(($score / $totalQ) * 100) : 0;
 
     // Check duplicate
-    $checkStmt = $conn->prepare("
+  $checkStmt = $conn->prepare("
         SELECT id FROM interview_results 
-        WHERE candidate_id = ? AND round_name = ?
+        WHERE candidate_id = ? AND round_name = ? AND jobrole = ?
     ");
-    $checkStmt->bind_param("is", $candidateId, $roundName);
+    $checkStmt->bind_param("iss", $candidateId, $roundName, $jobrole);
     $checkStmt->execute();
     $checkStmt->store_result();
 
@@ -329,7 +329,7 @@ Passed: <?= $passedTests ?> / <?= $totalTests ?>
 <?php endforeach; ?>
 
 <!-- ACTION -->
-<?php if ($score >= 70): ?>
+<?php if ($score >= 60): ?>
      <a href="#" onclick="submitCodingRound()" class="btn btn-secondary btn-lg">
     🎤 AI Interview
 </a>
