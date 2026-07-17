@@ -225,14 +225,12 @@
       </div>
 
       <!-- FOOTER -->
-      <div class="exam-footer">
-        <button class="btn btn-secondary" id="prevBtn" ${state.idx<=rStart?'disabled':''}>← Previous</button>
-        <div style="display:flex;gap:10px">
-          <button class="btn btn-danger btn-sm" id="skipBtn">Skip →</button>
-          <button class="btn btn-primary" id="nextBtn">${state.idx>=rEnd?'🏁 Submit Round':'Next →'}</button>
-        </div>
-      </div>
-    </div>`;
+      <div class="exam-footer" style="display:flex !important;justify-content:flex-end !important">
+  <div style="display:flex;gap:10px;margin-left:auto">
+    <button class="btn btn-danger btn-sm" id="skipBtn">Skip →</button>
+    <button class="btn btn-primary" id="nextBtn">${state.idx>=rEnd?'🏁 Submit Round':'Next →'}</button>
+  </div>
+</div>`;
 
     // Init drag-drop if needed
     if (type==='drag_drop' && !saved) initDragDrop();
