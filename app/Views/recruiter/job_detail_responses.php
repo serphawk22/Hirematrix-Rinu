@@ -2,6 +2,39 @@
     'title' => 'Job Detail Pipeline',
     'pageStyles' => [base_url('jobboard/css/recruiter-pipeline.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-pipeline.css'))],
 ]) ?>
+<style>
+/* Widen the AI Interview Report modal */
+.ai-modal .modal-dialog.modal-xl {
+  max-width: 1020px; /* increase from Bootstrap's default 1140px xl width if needed */
+  width: 82%;
+}
+
+/* If 1140px isn't wide enough, go even bigger */
+.ai-modal .modal-dialog.ai-modal-wide {
+  max-width: 1020px;
+  width: 82%;
+}
+
+@media (max-width: 1400px) {
+  .ai-modal .modal-dialog.ai-modal-wide {
+    max-width: 95vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .ai-modal .modal-dialog.ai-modal-wide {
+    max-width: 100%;
+    width: 100%;
+    margin: 0.5rem;
+  }
+}
+/* Blur the page behind the AI Interview Report modal */
+.modal-backdrop.ai-report-backdrop {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  background-color: rgba(15, 23, 42, 0.35);
+}
+    </style>
 <?php
 $statusTones = [
     'applied' => 'neutral',
@@ -777,7 +810,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
 </div>
 
 <div class="modal fade ai-modal recruiter-rounded-hidden" id="aiReportModal" tabindex="-1">
-  <div class="modal-dialog modal-xl modal-dialog-centered">
+  <div class="modal-dialog modal-xl ai-modal-wide modal-dialog-centered">
     <div class="modal-content ai-modal-content">
       <div class="modal-header ai-header">
         <div class="ai-title">
