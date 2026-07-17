@@ -78,13 +78,11 @@ body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td .text-muted {
     var firstDelayMs = 10000;
     var running = false;
 
+
     function setNotificationBadge(count) {
-        var notificationLink = document.querySelector('.hm-sb-item[href="<?= base_url('notifications') ?>"]');
-        if (!notificationLink) {
-            return;
-        }
-        var badge = notificationLink.querySelector('.js-recruiter-notification-badge');
-        if (count > 0) {
+        var notificationLink = document.querySelector('.hm-sb-subitem[href="<?= base_url('notifications') ?>"], .hm-sb-item[href="<?= base_url('notifications') ?>"]');
+        var badge = notificationLink ? notificationLink.querySelector('.js-recruiter-notification-badge') : null;
+        if (notificationLink && count > 0) {
             if (!badge) {
                 badge = document.createElement('span');
                 badge.className = 'sb-badge js-recruiter-notification-badge';
@@ -95,6 +93,7 @@ body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td .text-muted {
         } else if (badge) {
             badge.remove();
         }
+
     }
 
     function pollMailbox() {

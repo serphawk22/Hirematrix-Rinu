@@ -32,6 +32,7 @@
     <?php endforeach; ?>
     <link rel="stylesheet" href="<?= base_url('jobboard/css/portal-ui-system.css?v=' . @filemtime(FCPATH . 'jobboard/css/portal-ui-system.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/recruiter-pages.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-pages.min.css')) ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/recruiter-notifications.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-notifications.css')) ?>">
 
 </head>
 
@@ -270,6 +271,7 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     }
 
     applyCollapsed();
+
  
     toggleArea.addEventListener('click', function () {
         if (window.innerWidth <= 991) return;

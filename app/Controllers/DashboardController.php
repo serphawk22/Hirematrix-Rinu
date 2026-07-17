@@ -102,13 +102,17 @@ class DashboardController extends BaseController
                 ->countAllResults();
 
         $staleJobs = $this->getStaleJobsNeedingAttention($jobIds, 14);
-        $awaitingReplies = $this->getCandidateRepliesAwaitingResponse($currentUserId, $jobIds, 3);
+        $awaitingReplyCount = model('NotificationModel')
+            ->where('user_id', $currentUserId)
+            ->whereIn('type', ['candidate_message_reply', 'candidate_email_reply'])
+            ->where('is_read', 0)
+            ->countAllResults();
         $pendingActions = [
             'pending_screening' => $pendingScreeningCount,
             'hr_interviews_today' => $hrInterviewsTodayCount,
             'stale_jobs' => count($staleJobs),
             'unread_messages' => $unreadMessagesCount,
-            'awaiting_replies' => count($awaitingReplies),
+            'awaiting_replies' => $awaitingReplyCount,
             // 'pending_offers' => $applicationModel->where('status', 'selected')
             //                                      ->where('offer_status', 'pending')
             // ->whereIn('job_id', $jobIds ?: [0])
@@ -275,7 +279,6 @@ class DashboardController extends BaseController
             'monthlyTrends' => $monthlyTrends,
             'reminders' => $reminders,
             'staleJobs' => $staleJobs,
-            'awaitingReplies' => $awaitingReplies,
             'unread_count' => $unreadNotificationsCount,
             'upcomingInterviews' => $upcomingInterviews,
             'interviewDates' => $interviewDates,
