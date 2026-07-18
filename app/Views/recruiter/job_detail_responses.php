@@ -479,7 +479,21 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                             <td>
                                                 <div class="recruiter-booking-person">
                                                     <strong><?= esc($booking['candidate_name'] ?? 'Candidate') ?></strong>
-                                                    <span><?= esc($booking['email'] ?? '') ?></span>
+                                                    <div class="response-contact-reveal mt-1">
+                                                        <button
+                                                            type="button"
+                                                            class="response-contact-button js-view-contact"
+                                                            data-contact-url="<?= esc(base_url(
+                                                                'recruiter/candidate/' . (int) ($booking['user_id'] ?? 0)
+                                                                . '/view-contact?application_id=' . (int) ($booking['application_id'] ?? 0)
+                                                                . '&job_id=' . (int) ($booking['job_id'] ?? $job['id'] ?? 0)
+                                                            )) ?>"
+                                                            aria-label="View contact details for <?= esc($booking['candidate_name'] ?? 'candidate') ?>"
+                                                        >
+                                                            <i class="fas fa-address-card" aria-hidden="true"></i>
+                                                            View contact
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td>
@@ -694,8 +708,21 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                             <td>
                                                 <div class="candidate-info">
                                                     <strong><?= esc($candidate['candidate_name'] ?? $candidate['name'] ?? 'Candidate') ?></strong>
-                                                    <br>
-                                                    <small class="text-muted"><?= esc($candidate['candidate_email'] ?? $candidate['email'] ?? '') ?></small>
+                                                    <div class="response-contact-reveal mt-1">
+                                                        <button
+                                                            type="button"
+                                                            class="response-contact-button js-view-contact"
+                                                            data-contact-url="<?= esc(base_url(
+                                                                'recruiter/candidate/' . (int) ($candidate['candidate_id'] ?? 0)
+                                                                . '/view-contact?application_id=' . (int) ($candidate['id'] ?? 0)
+                                                                . '&job_id=' . (int) ($candidate['job_id'] ?? $job['id'] ?? 0)
+                                                            )) ?>"
+                                                            aria-label="View contact details for <?= esc($candidate['candidate_name'] ?? $candidate['name'] ?? 'candidate') ?>"
+                                                        >
+                                                            <i class="fas fa-address-card" aria-hidden="true"></i>
+                                                            View contact
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td><?= esc($candidate['job_title'] ?? $job['title']) ?></td>

@@ -10,6 +10,32 @@ body.recruiter-jobboard .recruiter-notification-list {
     gap: 10px !important;
 }
 
+body.recruiter-jobboard .recruiter-notification-empty {
+    width: 100% !important;
+    max-width: none !important;
+    margin-inline: 0 !important;
+    min-height: 240px;
+}
+
+body.recruiter-jobboard .recruiter-notification-empty > .card-body {
+    display: flex;
+    min-height: 240px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+body.recruiter-jobboard .recruiter-notification-empty .recruiter-text-1rem,
+body.recruiter-jobboard .recruiter-notification-empty .recruiter-text-1rem::before {
+    color: var(--hm-primary, var(--primary, #1fb7b5)) !important;
+    font-size: 24px !important;
+}
+
+body.dark.recruiter-jobboard .recruiter-notification-empty {
+    background: #111 !important;
+    border-color: #2d3338 !important;
+}
+
 body.recruiter-jobboard .recruiter-notification-card {
     position: relative;
     overflow: hidden;

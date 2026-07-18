@@ -1,0 +1,155 @@
+body.recruiter-jobboard .recruiter-message-card {
+    display: flex;
+    max-height: calc(100vh - 150px);
+    min-height: 560px;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+body.recruiter-jobboard .recruiter-message-list {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 280px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(13, 138, 144, .55) #edf8f5;
+}
+
+body.recruiter-jobboard .recruiter-message-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+body.recruiter-jobboard .recruiter-message-list::-webkit-scrollbar-track {
+    background: #edf8f5;
+}
+
+body.recruiter-jobboard .recruiter-message-list::-webkit-scrollbar-thumb {
+    background: rgba(13, 138, 144, .55);
+    border: 2px solid #edf8f5;
+    border-radius: 999px;
+}
+
+body.recruiter-jobboard .recruiter-message-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 9px;
+    margin-bottom: 16px;
+}
+
+body.recruiter-jobboard .recruiter-message-row.is-outbound {
+    flex-direction: row-reverse;
+}
+
+body.recruiter-jobboard .recruiter-message-sender-icon {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    flex: 0 0 30px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #edf8f5;
+    color: #0d8a90;
+    font-size: 12px;
+}
+
+body.recruiter-jobboard .recruiter-message-row.is-outbound .recruiter-message-sender-icon {
+    background: rgba(31, 183, 181, .16);
+}
+
+body.recruiter-jobboard .recruiter-message-bubble {
+    max-width: min(68%, 760px);
+}
+
+body.recruiter-jobboard .recruiter-message-row.is-outbound .recruiter-message-meta {
+    justify-content: flex-end;
+}
+
+body.recruiter-jobboard .recruiter-message-unread-separator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0;
+    color: #0d8a90;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+body.recruiter-jobboard .recruiter-message-unread-separator::before,
+body.recruiter-jobboard .recruiter-message-unread-separator::after {
+    content: "";
+    height: 1px;
+    flex: 1 1 auto;
+    background: rgba(31, 183, 181, .35);
+}
+
+body.recruiter-jobboard .recruiter-message-card > .card-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    flex: 0 0 auto;
+    background: var(--hm-card, #fff) !important;
+}
+
+body.recruiter-jobboard .recruiter-message-composer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+body.recruiter-jobboard .recruiter-message-send-status {
+    color: var(--hm-muted, #64748b);
+    font-size: 12px;
+}
+
+body.recruiter-jobboard .recruiter-message-send-button:disabled {
+    cursor: wait;
+    opacity: .72;
+    transform: none !important;
+}
+
+body.dark.recruiter-jobboard .recruiter-message-list,
+body.recruiter-jobboard.dark-mode .recruiter-message-list {
+    scrollbar-color: #4b6269 #0a0a0a !important;
+}
+
+body.dark.recruiter-jobboard .recruiter-message-list::-webkit-scrollbar-track,
+body.recruiter-jobboard.dark-mode .recruiter-message-list::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+
+body.dark.recruiter-jobboard .recruiter-message-list::-webkit-scrollbar-thumb,
+body.recruiter-jobboard.dark-mode .recruiter-message-list::-webkit-scrollbar-thumb {
+    background: #4b6269;
+    border-color: #0a0a0a;
+}
+
+body.dark.recruiter-jobboard .recruiter-message-sender-icon,
+body.recruiter-jobboard.dark-mode .recruiter-message-sender-icon {
+    background: #18262b;
+    color: #57d3d1;
+}
+
+body.dark.recruiter-jobboard .recruiter-message-card > .card-footer,
+body.recruiter-jobboard.dark-mode .recruiter-message-card > .card-footer {
+    background: #050505 !important;
+    border-color: #2a2a2a !important;
+}
+
+@media (max-width: 767.98px) {
+    body.recruiter-jobboard .recruiter-message-card {
+        max-height: none;
+        min-height: 0;
+    }
+
+    body.recruiter-jobboard .recruiter-message-list {
+        max-height: 58vh;
+    }
+
+    body.recruiter-jobboard .recruiter-message-bubble {
+        max-width: calc(100% - 39px);
+    }
+}
