@@ -220,7 +220,7 @@ if (!empty($availableRates)) {
             <?php if (empty($noJobs)): ?>
             <div class="card recruiter-radius-16">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold recruiter-weight-600"><i class="fas fa-bolt"></i> Action Center</h6>
+                    <h6 class="m-0 font-weight-bold recruiter-weight-600">Action Center</h6>
                 </div>
                 <div class="card-body p-0">
                     <?php $hasActions = ((int)($pendingActions['pending_screening'] ?? 0) > 0) || ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0) || ((int)($pendingActions['stale_jobs'] ?? 0) > 0) || ((int)($pendingActions['awaiting_replies'] ?? 0) > 0); ?>
@@ -282,7 +282,7 @@ if (!empty($availableRates)) {
             <div class="interview-today-card">
                 <div class="card-header py-2 recruiter-card-header-rounded">
                     <h6 class="m-0 recruiter-heading-small">
-                        <i class="fas fa-clock"></i> Today's Interviews
+                        Today's Interviews
                         <?php if (count($todayInterviews) > 0): ?>
                             <span class="badge ml-1 recruiter-count-badge"><?= count($todayInterviews) ?></span>
                         <?php endif; ?>
@@ -309,7 +309,7 @@ if (!empty($availableRates)) {
             <!-- ── Actionable mini-card: pending screening ── -->
             <div class="card recruiter-radius-16">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold recruiter-weight-600"><i class="fas fa-funnel-dollar mr-1"></i> Conversion Metrics</h6>
+                    <h6 class="m-0 font-weight-bold recruiter-weight-600">Conversion Metrics</h6>
                 </div>
                 <div class="card-body">
                     <div class="conversion-overall-card">

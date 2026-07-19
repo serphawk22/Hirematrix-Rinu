@@ -1450,7 +1450,7 @@ class JobResponsesController extends BaseController
         $bookingModel = model('InterviewBookingModel');
 
         return $bookingModel
-            ->select('interview_bookings.*, users.name as candidate_name, users.email, jobs.title as job_title, interview_slots.slot_date, interview_slots.slot_time, interview_booking_reviews.id as review_id, interview_booking_reviews.attendance_status as review_attendance_status, interview_booking_reviews.decision as review_decision, interview_booking_reviews.notes as review_notes, interview_booking_reviews.reviewed_at as review_reviewed_at')
+            ->select('interview_bookings.*, users.name as candidate_name, jobs.title as job_title, interview_slots.slot_date, interview_slots.slot_time, interview_booking_reviews.id as review_id, interview_booking_reviews.attendance_status as review_attendance_status, interview_booking_reviews.decision as review_decision, interview_booking_reviews.notes as review_notes, interview_booking_reviews.reviewed_at as review_reviewed_at')
             ->join('users', 'users.id = interview_bookings.user_id', 'left')
             ->join('jobs', 'jobs.id = interview_bookings.job_id', 'left')
             ->join('interview_slots', 'interview_slots.id = interview_bookings.slot_id', 'left')

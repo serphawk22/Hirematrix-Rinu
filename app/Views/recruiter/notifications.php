@@ -7,7 +7,7 @@
             <p class="page-board-subtitle recruiter-muted-text">Track candidate activity, applications, and recruiter actions in one place.</p>
             <div class="company-profile-meta">
                 <span class="status-pill"><strong id="recruiterUnreadCount"><?= number_format((int) $unread_count) ?></strong> Unread</span>
-                <span class="status-pill"><strong><?= number_format(count($notifications ?? [])) ?></strong> Total</span>
+                <span class="status-pill"><strong><?= number_format((int) ($total_count ?? count($notifications ?? []))) ?></strong> Total</span>
             </div>
         </div>
         <div class="page-board-actions">
@@ -28,8 +28,8 @@
         <div class="card shadow-sm recruiter-notification-empty">
             <div class="card-body py-5 text-center">
                 <span class="icon-bell-slash text-muted mb-3 d-inline-block recruiter-text-1rem"></span>
-                <h5>No Notifications</h5>
-                <p class="text-muted mb-0">You're all caught up!</p>
+                <h5>No notifications yet</h5>
+                <p class="text-muted mb-0">New candidate activity and replies will appear here.</p>
             </div>
         </div>
     <?php else: ?>
