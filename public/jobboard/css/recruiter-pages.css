@@ -14016,3 +14016,66 @@ body.dark.recruiter-jobboard .hm-page-content {
     border-left: 0 !important;
     box-shadow: none !important;
 }
+
+/* Keep the sidebar head and desktop toolbar on one shared boundary. */
+@media (min-width: 768px) {
+    body.recruiter-jobboard .hm-sb-head,
+    body.recruiter-jobboard .hm-topbar {
+        box-sizing: border-box;
+        height: var(--topbar-h) !important;
+        min-height: var(--topbar-h) !important;
+        border-bottom-width: 1px !important;
+    }
+}
+
+/* The search field owns one border; global input focus styles must not add a second ring. */
+body.recruiter-jobboard .hm-recruiter-search-input,
+body.recruiter-jobboard .hm-recruiter-search-input:focus,
+body.dark.recruiter-jobboard .hm-recruiter-search-input,
+body.dark.recruiter-jobboard .hm-recruiter-search-input:focus {
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+/* One search boundary: the form is the shell; its input and button are borderless children. */
+body.recruiter-jobboard .hm-recruiter-search {
+    height: 42px;
+    border: 1px solid var(--hm-border, #d9ece5) !important;
+    border-radius: 10px;
+    background: var(--hm-card, #fff);
+    box-shadow: none !important;
+    overflow: hidden;
+}
+
+body.recruiter-jobboard .hm-recruiter-search:focus-within {
+    border-color: var(--hm-primary, #1FB7B5) !important;
+    box-shadow: none !important;
+}
+
+body.recruiter-jobboard .hm-recruiter-search-input,
+body.recruiter-jobboard .hm-recruiter-search-input:focus,
+body.dark.recruiter-jobboard .hm-recruiter-search-input,
+body.dark.recruiter-jobboard .hm-recruiter-search-input:focus {
+    height: 40px;
+    border: 0 !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+body.recruiter-jobboard .hm-recruiter-search-submit,
+body.recruiter-jobboard .hm-recruiter-search-submit:hover,
+body.recruiter-jobboard .hm-recruiter-search-submit:focus {
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+body.dark.recruiter-jobboard .hm-recruiter-search {
+    background: #101010 !important;
+    border-color: #2a2a2a !important;
+}
+
+body.dark.recruiter-jobboard .hm-recruiter-search:focus-within {
+    border-color: #1FB7B5 !important;
+}
