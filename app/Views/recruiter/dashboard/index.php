@@ -146,7 +146,7 @@ if (!empty($availableRates)) {
                     <a href="<?= $jobsUrl ?>" class="btn btn-outline-primary btn-sm">Review Jobs</a>
                 </div>
                 <div class="card-body">
-                    <?php $screeningCompleted = (int)($funnel['ai_interview_completed'] ?? 0) + (int)($funnel['shortlisted'] ?? 0) + (int)($funnel['rejected'] ?? 0); ?>
+                    <?php $screeningCompleted = (int) ($funnel['screening_completed'] ?? 0); ?>
                     <div class="row text-center align-items-center g-3">
                         <div class="col-md col-6">
                             <div class="pipeline-stat-icon"><i class="fas fa-inbox"></i></div>
@@ -307,7 +307,7 @@ if (!empty($availableRates)) {
             </div>
 
             <!-- ── Actionable mini-card: pending screening ── -->
-            <div class="card recruiter-radius-16">
+            <div class="card recruiter-radius-16" id="conversion-metrics">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold recruiter-weight-600">Conversion Metrics</h6>
                 </div>
@@ -329,12 +329,12 @@ if (!empty($availableRates)) {
                             foreach ($stages as $key => $label): ?>
                                 <tr>
                                     <td><?= $label ?></td>
-                                    <td class="text-right"><span class="status-pill"><?= $formatRate($conversionMetrics[$key] ?? null) ?></span></td>
+                                    <td class="text-right"><span class="status-pill conversion-rate-pill"><?= $formatRate($conversionMetrics[$key] ?? null) ?></span></td>
                                 </tr>
                             <?php endforeach; ?>
                             <tr class="font-weight-bold">
                                 <td>Hire Conversion</td>
-                                <td class="text-right"><span class="status-pill"><?= number_format((float)($conversionMetrics['overall_conversion'] ?? 0), 1) ?>%</span></td>
+                                <td class="text-right"><span class="status-pill conversion-rate-pill"><?= number_format((float)($conversionMetrics['overall_conversion'] ?? 0), 1) ?>%</span></td>
                             </tr>
                         </tbody>
                     </table>
