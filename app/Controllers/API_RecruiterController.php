@@ -242,12 +242,47 @@ class API_RecruiterController extends ResourceController
 
         $dashboardController = new \App\Controllers\DashboardController();
         $staleJobs = $dashboardController->getStaleJobsNeedingAttention($jobIds, 14);
-        $awaitingReplies = $dashboardController->getCandidateRepliesAwaitingResponse((int)$recruiterId, $jobIds, 3);
+        $awaitingReplyCount = model('NotificationModel')
+            ->where('user_id', $recruiterId)
+            ->whereIn('type', ['candidate_message_reply', 'candidate_email_reply'])
+            ->where('is_read', 0)
+            ->countAllResults();
         $unreadMessagesCount = model('NotificationModel')
             ->where('user_id', $recruiterId)
             ->where('type', 'candidate_message_reply')
             ->where('is_read', 0)
             ->countAllResults();
+
+        $funnel = [
+            'total_applications' => 0,
+            'ai_interview_started' => 0,
+            'ai_interview_completed' => 0,
+            'screening_completed' => 0,
+            'shortlisted' => 0,
+            'rejected' => 0,
+            'interview_slot_booked' => 0
+        ];
+
+        if (!empty($jobIds)) {
+            $funnel['total_applications'] = $appModel->whereIn('job_id', $jobIds)->countAllResults();
+            $funnel['ai_interview_completed'] = $appModel->whereIn('job_id', $jobIds)->where('status', 'ai_interview_completed')->countAllResults();
+            $funnel['screening_completed'] = $appModel
+                ->whereIn('job_id', $jobIds)
+                ->whereIn('status', [
+                    'ai_interview_completed',
+                    'shortlisted',
+                    'interview_slot_booked',
+                    'selected',
+                    'hired',
+                    'rejected',
+                    'hold',
+                    'filtered_out',
+                ])
+                ->countAllResults();
+            $funnel['shortlisted'] = $appModel->whereIn('job_id', $jobIds)->where('status', 'shortlisted')->countAllResults();
+            $funnel['rejected'] = $appModel->whereIn('job_id', $jobIds)->where('status', 'rejected')->countAllResults();
+            $funnel['interview_slot_booked'] = $appModel->whereIn('job_id', $jobIds)->where('status', 'interview_slot_booked')->countAllResults();
+        }
 
         return $this->respond([
             'success' => true,
@@ -275,9 +310,10 @@ class API_RecruiterController extends ResourceController
                     'hr_interviews_today' => count($todayInterviews),
                     'stale_jobs' => count($staleJobs),
                     'unread_messages' => $unreadMessagesCount,
-                    'awaiting_replies' => count($awaitingReplies),
+                    'awaiting_replies' => $awaitingReplyCount,
                 ]
             ],
+            'funnel' => $funnel,
             'pipeline_stats' => $pipeline,
             'upcomingInterviews' => $upcomingInterviews,
             'interviewDates' => $interviewDates,
@@ -378,7 +414,13 @@ class API_RecruiterController extends ResourceController
             }
             
             // Calculate Attention Metrics
-            $allApps = $appModel->where('job_id', $job['id'])->findAll();
+            $db = \Config\Database::connect();
+            $allApps = $db->table('applications')
+                ->select('applications.id, applications.candidate_id, applications.status, candidate_profiles.total_experience_months, candidate_profiles.resume_path')
+                ->join('candidate_profiles', 'candidate_profiles.user_id = applications.candidate_id', 'left')
+                ->where('applications.job_id', $job['id'])
+                ->get()
+                ->getResultArray();
             $atsScores = [];
             foreach ($allApps as $appRec) {
                 $candForAts = $appRec;
@@ -397,7 +439,9 @@ class API_RecruiterController extends ResourceController
             $priorityScore = 0;
             $createdAt = strtotime((string) ($job['created_at'] ?? ''));
             $isOpen = strtolower((string) ($job['status'] ?? '')) === 'open';
-            $jobAgeDays = $createdAt ? max(0, (int) floor((time() - $createdAt) / 86400)) : 0;
+            $createdDt = new \DateTime($job['created_at'] ?? 'now');
+            $nowDt = new \DateTime();
+            $jobAgeDays = (int) $nowDt->diff($createdDt)->days;
             
             if ($isOpen && $jobAgeDays >= 14) {
                 $priorityScore += 20;
@@ -1530,7 +1574,7 @@ class API_RecruiterController extends ResourceController
 
             // Fetch lightweight application rows for this job
             $appRows = $db->table('applications')
-                ->select('applications.status, applications.applied_at, candidate_profiles.key_skills, jobs.required_skills, jobs.experience_level')
+                ->select('applications.status, applications.applied_at, applications.candidate_id, candidate_profiles.total_experience_months, candidate_profiles.resume_path, candidate_profiles.key_skills, jobs.required_skills, jobs.experience_level')
                 ->join('jobs', 'jobs.id = applications.job_id', 'left')
                 ->join('candidate_profiles', 'candidate_profiles.user_id = applications.candidate_id', 'left')
                 ->where('applications.job_id', $jobId)
@@ -1552,22 +1596,16 @@ class API_RecruiterController extends ResourceController
                     $newApplications++;
                 }
 
-                // Quick ATS via skill overlap
-                $candidateSkills = $this->splitSkills((string) ($appRow['key_skills'] ?? ''));
-                $requiredRaw     = (string) ($appRow['required_skills'] ?? '');
-                $requiredSkills  = $this->splitSkills($requiredRaw);
-                if (!empty($requiredSkills)) {
-                    $matched  = count(array_intersect(
-                        array_map('strtolower', $candidateSkills),
-                        array_map('strtolower', $requiredSkills)
-                    ));
-                    $atsTotal += (int) round(($matched / count($requiredSkills)) * 100);
-                }
+                $candForAts = $appRow;
+                $candForAts['candidate_skills'] = $this->getLeaderboardCandidateSkills($appRow['candidate_id']);
+                $atsTotal += $this->calculateLeaderboardAtsScore($candForAts);
             }
 
             $avgMatch  = $applicantCount > 0 ? (int) round($atsTotal / $applicantCount) : 0;
-            $createdAt = strtotime((string) ($job['created_at'] ?? ''));
-            $jobAgeDays = $createdAt ? max(0, (int) floor((time() - $createdAt) / 86400)) : 0;
+            
+            $createdDt = new \DateTime($job['created_at'] ?? 'now');
+            $nowDt = new \DateTime();
+            $jobAgeDays = (int) $nowDt->diff($createdDt)->days;
 
             if ($newApplications > 0) {
                 $alerts[] = [
