@@ -19813,6 +19813,81 @@ body.dark.candidate-app .profile-jobboard .profile-right-pane > .mb-4 {
     }
 }
 
+/* Profile sections have one outline only: the card owns it, never its wrapper. */
+body.candidate-app .profile-jobboard .profile-section,
+body.dark.candidate-app .profile-jobboard .profile-section {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+}
+
+body.candidate-app .profile-jobboard .profile-section > .card,
+body.dark.candidate-app .profile-jobboard .profile-section > .card {
+    border: 1px solid var(--candidate-line, var(--border, #d9ece5)) !important;
+    box-shadow: none !important;
+    filter: none !important;
+    outline: 0 !important;
+}
+
+body.candidate-app .profile-jobboard .profile-section > .card::before,
+body.candidate-app .profile-jobboard .profile-section > .card::after,
+body.dark.candidate-app .profile-jobboard .profile-section > .card::before,
+body.dark.candidate-app .profile-jobboard .profile-section > .card::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Keep the independently scrolling profile panes consistent with the active theme. */
+body.candidate-app .profile-jobboard .profile-left-pane,
+body.candidate-app .profile-jobboard .profile-right-pane {
+    scrollbar-color: #a8b8c5 transparent;
+    scrollbar-width: thin;
+}
+
+body.dark.candidate-app .profile-jobboard .profile-left-pane,
+body.dark.candidate-app .profile-jobboard .profile-right-pane {
+    color-scheme: dark;
+    scrollbar-color: #555f68 #111111;
+}
+
+body.candidate-app .profile-jobboard .profile-left-pane::-webkit-scrollbar,
+body.candidate-app .profile-jobboard .profile-right-pane::-webkit-scrollbar {
+    width: 10px;
+}
+
+body.candidate-app .profile-jobboard .profile-left-pane::-webkit-scrollbar-track,
+body.candidate-app .profile-jobboard .profile-right-pane::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+body.candidate-app .profile-jobboard .profile-left-pane::-webkit-scrollbar-thumb,
+body.candidate-app .profile-jobboard .profile-right-pane::-webkit-scrollbar-thumb {
+    background: #a8b8c5;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+}
+
+body.dark.candidate-app .profile-jobboard .profile-left-pane::-webkit-scrollbar-track,
+body.dark.candidate-app .profile-jobboard .profile-right-pane::-webkit-scrollbar-track {
+    background: #111111;
+}
+
+body.dark.candidate-app .profile-jobboard .profile-left-pane::-webkit-scrollbar-thumb,
+body.dark.candidate-app .profile-jobboard .profile-right-pane::-webkit-scrollbar-thumb {
+    background: #555f68;
+    border-color: #111111;
+    background-clip: padding-box;
+}
+
+body.dark.candidate-app .profile-jobboard .profile-left-pane::-webkit-scrollbar-thumb:hover,
+body.dark.candidate-app .profile-jobboard .profile-right-pane::-webkit-scrollbar-thumb:hover {
+    background: #707b85;
+    background-clip: padding-box;
+}
+
 /* Resume Studio and Premium Plans: keep the page header as its own box. */
 body.candidate-app .resume-studio-jobboard .resume-studio-content-canvas,
 body.candidate-app .premium-plans-jobboard .career-transition-content,

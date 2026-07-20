@@ -74,26 +74,92 @@ body.recruiter-jobboard .ai-modal #aiReportContent .table tbody td .text-muted {
     'use strict';
 
     var pollUrl = '<?= base_url('recruiter/mailbox/poll') ?>';
-    var intervalMs = 60000;
-    var firstDelayMs = 10000;
+    var intervalMs = 5000;
+    var firstDelayMs = 2000;
     var running = false;
+    var audioContext = null;
+    var audioEnabled = false;
 
-    function setNotificationBadge(count) {
-        var notificationLink = document.querySelector('.hm-sb-item[href="<?= base_url('notifications') ?>"]');
-        if (!notificationLink) {
+    function enableNotificationAudio() {
+        audioEnabled = true;
+        try {
+            var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) {
+                audioContext = audioContext || new AudioContextClass();
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            }
+        } catch (error) {}
+        document.removeEventListener('pointerdown', enableNotificationAudio);
+        document.removeEventListener('keydown', enableNotificationAudio);
+    }
+
+    function playNotificationChime() {
+        if (!audioEnabled) {
             return;
         }
-        var badge = notificationLink.querySelector('.js-recruiter-notification-badge');
-        if (count > 0) {
+        try {
+            var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) {
+                return;
+            }
+            audioContext = audioContext || new AudioContextClass();
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            var now = audioContext.currentTime;
+            [
+                { frequency: 660, start: 0, duration: .11 },
+                { frequency: 880, start: .12, duration: .16 }
+            ].forEach(function (tone) {
+                var oscillator = audioContext.createOscillator();
+                var gain = audioContext.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(tone.frequency, now + tone.start);
+                gain.gain.setValueAtTime(0.0001, now + tone.start);
+                gain.gain.exponentialRampToValueAtTime(0.045, now + tone.start + .018);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + tone.start + tone.duration);
+                oscillator.connect(gain);
+                gain.connect(audioContext.destination);
+                oscillator.start(now + tone.start);
+                oscillator.stop(now + tone.start + tone.duration + .02);
+            });
+        } catch (error) {}
+    }
+
+    document.addEventListener('pointerdown', enableNotificationAudio, { once: true });
+    document.addEventListener('keydown', enableNotificationAudio, { once: true });
+
+
+    function setNotificationBadge(count) {
+        var notificationLink = document.querySelector('.hm-topbar-notifications[href="<?= base_url('notifications') ?>"]');
+        var previousCount = notificationLink
+            ? (parseInt(notificationLink.getAttribute('data-unread-count'), 10) || 0)
+            : 0;
+        var badge = notificationLink ? notificationLink.querySelector('.js-recruiter-notification-badge') : null;
+        if (notificationLink && count > 0) {
             if (!badge) {
                 badge = document.createElement('span');
-                badge.className = 'sb-badge js-recruiter-notification-badge';
-                var tooltip = notificationLink.querySelector('.sb-tooltip');
-                notificationLink.insertBefore(badge, tooltip || null);
+                badge.className = 'hm-notif-badge js-recruiter-notification-badge';
+                notificationLink.appendChild(badge);
             }
             badge.textContent = count > 99 ? '99+' : String(count);
         } else if (badge) {
             badge.remove();
+        }
+        if (notificationLink) {
+            notificationLink.setAttribute('data-unread-count', String(count));
+            notificationLink.setAttribute('aria-label', count > 0
+                ? 'Notifications (' + count + ' unread)'
+                : 'Notifications');
+            if (count > previousCount) {
+                notificationLink.classList.remove('has-new-notification');
+                void notificationLink.offsetWidth;
+                notificationLink.classList.add('has-new-notification');
+                playNotificationChime();
+            }
         }
     }
 

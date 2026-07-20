@@ -73,33 +73,6 @@ if (!empty($availableRates)) {
     </div>
     <?php endif; ?>
 
-    <?php if (empty($noJobs) && array_sum($pendingActions) > 0): ?>
-    <?php
-        $pendingSummaryItems = [];
-        if ((int)($pendingActions['pending_screening'] ?? 0) > 0) {
-            $count = (int)$pendingActions['pending_screening'];
-            $pendingSummaryItems[] = '<span class="badge badge-warning ml-1">' . $count . '</span> application' . ($count === 1 ? '' : 's') . ' to screen';
-        }
-        if ((int)($pendingActions['stale_jobs'] ?? 0) > 0) {
-            $count = (int)$pendingActions['stale_jobs'];
-            $pendingSummaryItems[] = '<span class="badge badge-danger ml-1">' . $count . '</span> stale job' . ($count === 1 ? '' : 's') . ' with no shortlist';
-        }
-        if ((int)($pendingActions['awaiting_replies'] ?? 0) > 0) {
-            $count = (int)$pendingActions['awaiting_replies'];
-            $pendingSummaryItems[] = '<span class="badge badge-info ml-1">' . $count . '</span> candidate' . ($count === 1 ? '' : 's') . ' awaiting reply 3+ days';
-        }
-        if ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0) {
-            $count = (int)$pendingActions['hr_interviews_today'];
-            $pendingSummaryItems[] = '<span class="badge badge-primary ml-1">' . $count . '</span> interview' . ($count === 1 ? '' : 's') . ' today';
-        }
-    ?>
-    <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
-        <i class="fas fa-exclamation-triangle"></i> Pending Actions:
-        <?= implode('<span class="mx-1">&middot;</span>', $pendingSummaryItems) ?>
-        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-    </div>
-    <?php endif; ?>
-
     <!-- ════════════════════ ROW 1: 4 STAT CARDS ════════════════════ -->
     <div class="row recruiter-dashboard-stat-row mb-4 recruiter-row-gap-16">
         <div class="col-xl-3 col-md-6">
@@ -247,7 +220,7 @@ if (!empty($availableRates)) {
             <?php if (empty($noJobs)): ?>
             <div class="card recruiter-radius-16">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold recruiter-weight-600"><i class="fas fa-bolt"></i> Action Center</h6>
+                    <h6 class="m-0 font-weight-bold recruiter-weight-600">Action Center</h6>
                 </div>
                 <div class="card-body p-0">
                     <?php $hasActions = ((int)($pendingActions['pending_screening'] ?? 0) > 0) || ((int)($pendingActions['hr_interviews_today'] ?? 0) > 0) || ((int)($pendingActions['stale_jobs'] ?? 0) > 0) || ((int)($pendingActions['awaiting_replies'] ?? 0) > 0); ?>
@@ -274,7 +247,7 @@ if (!empty($availableRates)) {
                         <a href="<?= base_url('notifications') ?>" class="recruiter-action-center-link d-flex align-items-center justify-content-between p-3">
                             <div>
                                 <strong><i class="fas fa-comments recruiter-warning-icon"></i> Candidates Awaiting Reply</strong>
-                                <small class="d-block text-muted">Candidate replies have waited 3+ days without a recruiter response.</small>
+                                <small class="d-block text-muted">Unread candidate replies need your attention.</small>
                             </div>
                             <span class="badge recruiter-badge-warning-soft"><?= (int)$pendingActions['awaiting_replies'] ?></span>
                         </a>
@@ -309,7 +282,7 @@ if (!empty($availableRates)) {
             <div class="interview-today-card">
                 <div class="card-header py-2 recruiter-card-header-rounded">
                     <h6 class="m-0 recruiter-heading-small">
-                        <i class="fas fa-clock"></i> Today's Interviews
+                        Today's Interviews
                         <?php if (count($todayInterviews) > 0): ?>
                             <span class="badge ml-1 recruiter-count-badge"><?= count($todayInterviews) ?></span>
                         <?php endif; ?>
@@ -336,7 +309,7 @@ if (!empty($availableRates)) {
             <!-- ── Actionable mini-card: pending screening ── -->
             <div class="card recruiter-radius-16">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold recruiter-weight-600"><i class="fas fa-funnel-dollar mr-1"></i> Conversion Metrics</h6>
+                    <h6 class="m-0 font-weight-bold recruiter-weight-600">Conversion Metrics</h6>
                 </div>
                 <div class="card-body">
                     <div class="conversion-overall-card">

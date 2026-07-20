@@ -179,7 +179,7 @@ class CandidateSearchModel extends Model
         $clauses = [];
         foreach (array_values($terms) as $i => $term) {
             $key = "{$prefix}_{$i}";
-            $clauses[] = "(cp.key_skills LIKE :{$key}: OR cp.headline LIKE :{$key}: OR cp.preferred_job_titles LIKE :{$key}:)";
+            $clauses[] = "(u.name LIKE :{$key}: OR cp.key_skills LIKE :{$key}: OR cp.headline LIKE :{$key}: OR cp.preferred_job_titles LIKE :{$key}:)";
             $binds[$key] = "%{$term}%";
         }
         if (empty($clauses)) return '';
@@ -226,7 +226,7 @@ class CandidateSearchModel extends Model
 
         foreach ($tokens as $idx => $tok) {
             $key    = "{$prefix}_{$idx}";
-            $clause = "(cp.key_skills LIKE :{$key}: OR cp.headline LIKE :{$key}: OR cp.preferred_job_titles LIKE :{$key}:)";
+            $clause = "(u.name LIKE :{$key}: OR cp.key_skills LIKE :{$key}: OR cp.headline LIKE :{$key}: OR cp.preferred_job_titles LIKE :{$key}:)";
             $binds[$key] = "%{$tok['term']}%";
 
             if ($tok['op'] === 'NOT') {

@@ -269,6 +269,14 @@ class NotificationModel extends Model
                     ->limit($limit)
                     ->findAll();
     }
+
+    /**
+     * Get the complete notification count for a user.
+     */
+    public function getUserNotificationCount(int $userId): int
+    {
+        return $this->where('user_id', $userId)->countAllResults();
+    }
     
     /**
      * Mark notification as read

@@ -5584,8 +5584,50 @@ html.hm-dark-preload .loader .spinner-border {
 
 /* Phone widths use a compact topbar to open the off-canvas recruiter nav. */
 body.recruiter-jobboard .hm-topbar {
-    display: none !important;
+    display: flex !important;
+    min-height: 64px;
+    height: auto;
 }
+.hm-topbar-title { color: var(--hm-text); text-decoration: none; white-space: nowrap; }
+.hm-topbar-title:hover { color: var(--hm-primary, #0D8A90); text-decoration: none; }
+.hm-recruiter-search { position: relative; display: flex; align-items: center; width: min(620px, 60vw); margin-left: auto; }
+.hm-recruiter-search-icon { position: absolute; left: 14px; color: var(--hm-muted, #64748b); pointer-events: none; }
+.hm-recruiter-search-input { width: 100%; height: 42px; padding: 0 94px 0 40px; border: 1px solid var(--hm-border, #d9ece5); border-radius: 10px; background: var(--hm-card, #fff); color: var(--hm-text, #16212b); outline: none; }
+.hm-recruiter-search-input:focus { border-color: var(--hm-primary, #1FB7B5); box-shadow: 0 0 0 3px rgba(31, 183, 181, .12); }
+.hm-recruiter-search-submit { position: absolute; right: 4px; height: 34px; padding: 0 15px; border: 0; border-radius: 8px; background: var(--hm-primary, #1FB7B5); color: #fff; font-weight: 600; cursor: pointer; }
+.hm-recruiter-search-submit:hover { background: var(--hm-primary-dark, #0D8A90); }
+.hm-topbar-notifications { flex: 0 0 42px; margin-left: 6px; }
+.hm-topbar-notifications.active { background: var(--hm-active-bg, #edf8f5); color: var(--hm-primary-dark, #0D8A90); }
+.hm-topbar-notifications .hm-notif-badge { top: 1px; right: 0; padding: 0 4px; }
+.hm-topbar-notifications.has-new-notification { animation: hm-bell-pulse 1.25s ease-out; }
+.hm-topbar-notifications.has-new-notification i { animation: hm-bell-ring 1s ease-in-out; transform-origin: 50% 10%; }
+.hm-topbar-notifications.has-new-notification .hm-notif-badge { animation: hm-badge-pop .65s ease-out; }
+@keyframes hm-bell-pulse {
+    0% { background: rgba(31, 183, 181, .34); box-shadow: 0 0 0 0 rgba(31, 183, 181, .55); }
+    45% { background: rgba(31, 183, 181, .18); box-shadow: 0 0 0 12px rgba(31, 183, 181, 0); }
+    70% { box-shadow: 0 0 0 0 rgba(31, 183, 181, 0); }
+    100% { background: transparent; box-shadow: none; }
+}
+@keyframes hm-bell-ring {
+    0%, 100% { transform: rotate(0); }
+    15% { transform: rotate(24deg) scale(1.18); }
+    30% { transform: rotate(-22deg) scale(1.18); }
+    45% { transform: rotate(18deg) scale(1.12); }
+    60% { transform: rotate(-15deg) scale(1.12); }
+    75% { transform: rotate(10deg); }
+    90% { transform: rotate(-5deg); }
+}
+@keyframes hm-badge-pop {
+    0% { transform: scale(.4); }
+    55% { transform: scale(1.45); }
+    100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .hm-topbar-notifications.has-new-notification,
+    .hm-topbar-notifications.has-new-notification i,
+    .hm-topbar-notifications.has-new-notification .hm-notif-badge { animation: none; }
+}
+body.dark.recruiter-jobboard .hm-recruiter-search-input { background: #101010 !important; border-color: #2a2a2a !important; color: #f5f5f5 !important; }
 @media (max-width: 767.98px) {
     body.recruiter-jobboard .hm-topbar {
         display: flex !important;
@@ -5593,6 +5635,9 @@ body.recruiter-jobboard .hm-topbar {
     body.recruiter-jobboard .hm-mobile-toggle {
         display: inline-flex !important;
     }
+    body.recruiter-jobboard .hm-topbar { padding: 10px 16px; flex-wrap: wrap; }
+    .hm-recruiter-search { order: 3; width: 100%; margin-left: 0; }
+    .hm-topbar-notifications { margin-left: auto; }
     body.recruiter-jobboard .hm-sidebar.sb-mobile-open {
         width: min(300px, 86vw) !important;
     }
@@ -5852,9 +5897,18 @@ body.recruiter-jobboard.dark-mode .recruiter-messages-jobboard .btn-outline-seco
 }
 body.dark .recruiter-message-card .btn-primary,
 body.recruiter-jobboard.dark-mode .recruiter-message-card .btn-primary {
-    background: #e5e7eb !important;
-    border-color: #e5e7eb !important;
-    color: #030712 !important;
+    background: transparent !important;
+    border: 1.5px solid #1fb7b5 !important;
+    color: #57d3d1 !important;
+    box-shadow: none !important;
+}
+body.dark .recruiter-message-card .btn-primary:hover,
+body.dark .recruiter-message-card .btn-primary:focus,
+body.recruiter-jobboard.dark-mode .recruiter-message-card .btn-primary:hover,
+body.recruiter-jobboard.dark-mode .recruiter-message-card .btn-primary:focus {
+    background: #1fb7b5 !important;
+    border-color: #1fb7b5 !important;
+    color: #fff !important;
 }
 @media (max-width: 991px) {
     .recruiter-messages-jobboard .container {
@@ -13961,4 +14015,67 @@ body.dark.recruiter-jobboard .hm-main,
 body.dark.recruiter-jobboard .hm-page-content {
     border-left: 0 !important;
     box-shadow: none !important;
+}
+
+/* Keep the sidebar head and desktop toolbar on one shared boundary. */
+@media (min-width: 768px) {
+    body.recruiter-jobboard .hm-sb-head,
+    body.recruiter-jobboard .hm-topbar {
+        box-sizing: border-box;
+        height: var(--topbar-h) !important;
+        min-height: var(--topbar-h) !important;
+        border-bottom-width: 1px !important;
+    }
+}
+
+/* The search field owns one border; global input focus styles must not add a second ring. */
+body.recruiter-jobboard .hm-recruiter-search-input,
+body.recruiter-jobboard .hm-recruiter-search-input:focus,
+body.dark.recruiter-jobboard .hm-recruiter-search-input,
+body.dark.recruiter-jobboard .hm-recruiter-search-input:focus {
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+/* One search boundary: the form is the shell; its input and button are borderless children. */
+body.recruiter-jobboard .hm-recruiter-search {
+    height: 42px;
+    border: 1px solid var(--hm-border, #d9ece5) !important;
+    border-radius: 10px;
+    background: var(--hm-card, #fff);
+    box-shadow: none !important;
+    overflow: hidden;
+}
+
+body.recruiter-jobboard .hm-recruiter-search:focus-within {
+    border-color: var(--hm-primary, #1FB7B5) !important;
+    box-shadow: none !important;
+}
+
+body.recruiter-jobboard .hm-recruiter-search-input,
+body.recruiter-jobboard .hm-recruiter-search-input:focus,
+body.dark.recruiter-jobboard .hm-recruiter-search-input,
+body.dark.recruiter-jobboard .hm-recruiter-search-input:focus {
+    height: 40px;
+    border: 0 !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+body.recruiter-jobboard .hm-recruiter-search-submit,
+body.recruiter-jobboard .hm-recruiter-search-submit:hover,
+body.recruiter-jobboard .hm-recruiter-search-submit:focus {
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+body.dark.recruiter-jobboard .hm-recruiter-search {
+    background: #101010 !important;
+    border-color: #2a2a2a !important;
+}
+
+body.dark.recruiter-jobboard .hm-recruiter-search:focus-within {
+    border-color: #1FB7B5 !important;
 }

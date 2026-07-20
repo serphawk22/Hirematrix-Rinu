@@ -85,12 +85,14 @@ class NotificationController extends BaseController
         
         $notifications = $notificationModel->getUserNotifications($userId, 50);
         $unreadCount = $notificationModel->getUnreadCount($userId);
+        $totalCount = $notificationModel->getUserNotificationCount($userId);
 
         $view = $role === 'recruiter' ? 'recruiter/notifications' : 'candidate/notifications';
 
         return view($view, [
             'notifications' => $notifications,
-            'unread_count' => $unreadCount
+            'unread_count' => $unreadCount,
+            'total_count' => $totalCount,
         ]);
     }
     

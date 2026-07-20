@@ -59,6 +59,7 @@ if ($profileParams !== []) {
                 <?php if ($communicationItems === []): ?>
                     <p class="recruiter-message-empty">No messages yet.</p>
                 <?php else: ?>
+                    <?php $unreadSeparatorShown = false; ?>
                     <?php foreach ($communicationItems as $item): ?>
                         <?php
                         $source = (string) ($item['source'] ?? 'Portal Message');
@@ -66,7 +67,16 @@ if ($profileParams !== []) {
                         $isOutbound = ($item['direction'] ?? '') === 'outbound';
                         $isHighlight = $emailActivityId > 0 && (string) ($item['id'] ?? '') === 'email-' . $emailActivityId;
                         ?>
-                        <div class="mb-3 d-flex <?= $isOutbound ? 'justify-content-end' : 'justify-content-start' ?>">
+                        <?php if ($isHighlight && !$unreadSeparatorShown): ?>
+                            <div class="recruiter-message-unread-separator" role="separator" aria-label="New reply">
+                                <span>New reply</span>
+                            </div>
+                            <?php $unreadSeparatorShown = true; ?>
+                        <?php endif; ?>
+                        <div class="recruiter-message-row <?= $isOutbound ? 'is-outbound' : 'is-inbound' ?>">
+                            <span class="recruiter-message-sender-icon" aria-hidden="true">
+                                <i class="fas <?= $isOutbound ? 'fa-user-tie' : 'fa-user' ?>"></i>
+                            </span>
                             <div class="recruiter-message-bubble <?= $isOutbound ? 'recruiter-message-bubble--self' : 'recruiter-message-bubble--other' ?> <?= $isHighlight ? 'recruiter-message-bubble--highlight' : '' ?>" id="<?= esc((string) ($item['id'] ?? '')) ?>">
                                 <div class="recruiter-message-meta">
                                     <span class="recruiter-message-chip <?= $isEmail ? 'recruiter-message-chip--email' : 'recruiter-message-chip--portal' ?>">
@@ -86,7 +96,7 @@ if ($profileParams !== []) {
                 <?php endif; ?>
             </div>
             <div class="card-footer bg-white">
-                <form method="post" action="<?= base_url('recruiter/candidate/' . $candidateId . '/send-message') ?>">
+                <form method="post" action="<?= base_url('recruiter/candidate/' . $candidateId . '/send-message') ?>" class="recruiter-message-composer" id="recruiterMessageComposer">
                     <?= csrf_field() ?>
                     <input type="hidden" name="application_id" value="<?= $applicationId ?>">
                     <input type="hidden" name="job_id" value="<?= $jobId ?>">
@@ -94,7 +104,13 @@ if ($profileParams !== []) {
                     <div class="form-group mb-2">
                         <textarea name="message" class="form-control" rows="3" maxlength="1000" placeholder="Write your reply..." required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Send Reply</button>
+                    <div class="recruiter-message-composer-actions">
+                        <span class="recruiter-message-send-status" role="status" aria-live="polite"></span>
+                        <button type="submit" class="btn btn-primary recruiter-message-send-button">
+                            <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                            <span>Send Reply</span>
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -109,6 +125,23 @@ document.addEventListener('DOMContentLoaded', function () {
         highlighted.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else if (list) {
         list.scrollTop = list.scrollHeight;
+    }
+
+    var composer = document.getElementById('recruiterMessageComposer');
+    if (composer) {
+        composer.addEventListener('submit', function () {
+            var button = composer.querySelector('.recruiter-message-send-button');
+            var label = button ? button.querySelector('span') : null;
+            var icon = button ? button.querySelector('i') : null;
+            var status = composer.querySelector('.recruiter-message-send-status');
+            if (button) {
+                button.disabled = true;
+                button.setAttribute('aria-busy', 'true');
+            }
+            if (label) label.textContent = 'Sending...';
+            if (icon) icon.className = 'fas fa-spinner fa-spin';
+            if (status) status.textContent = 'Sending your reply';
+        });
     }
 });
 </script>

@@ -32,6 +32,8 @@
     <?php endforeach; ?>
     <link rel="stylesheet" href="<?= base_url('jobboard/css/portal-ui-system.css?v=' . @filemtime(FCPATH . 'jobboard/css/portal-ui-system.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/recruiter-pages.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-pages.min.css')) ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/recruiter-notifications.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-notifications.css')) ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/recruiter-messages.css?v=' . @filemtime(FCPATH . 'jobboard/css/recruiter-messages.css')) ?>">
 
 </head>
 
@@ -83,16 +85,6 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
                    class="hm-sb-subitem <?= $isActive('recruiter/dashboard') ?>">
                     <i class="fas fa-th-large sb-icon"></i>
                     <span class="sb-label">Dashboard</span>
-                </a>
-                <a href="<?= base_url('notifications') ?>"
-                   class="hm-sb-subitem <?= $isActive('notifications') ?>">
-                    <i class="fas fa-bell sb-icon"></i>
-                    <span class="sb-label">Notifications</span>
-                    <?php if ($recruiterUnreadNotificationCount > 0): ?>
-                        <span class="sb-badge js-recruiter-notification-badge">
-                            <?= $recruiterUnreadNotificationCount > 99 ? '99+' : $recruiterUnreadNotificationCount ?>
-                        </span>
-                    <?php endif; ?>
                 </a>
             </div>
 
@@ -230,11 +222,38 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     <!-- ═══════════ MAIN ═══════════ -->
     <div class="hm-main" id="hmMain"> 
 
-        <div class="hm-topbar" aria-label="Recruiter mobile navigation">
+        <div class="hm-topbar" aria-label="Recruiter toolbar">
             <button class="hm-mobile-toggle" id="hmMobileToggle" type="button" aria-label="Open navigation">
                 <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
-            <span class="hm-topbar-title">Recruiter Portal</span>
+            <form class="hm-recruiter-search" action="<?= base_url('recruiter/resdex') ?>" method="get" role="search">
+                <input type="hidden" name="search" value="1">
+                <label class="sr-only" for="hmRecruiterSearch">Search candidates by skill, role or name</label>
+                <i class="fas fa-search hm-recruiter-search-icon" aria-hidden="true"></i>
+                <input
+                    id="hmRecruiterSearch"
+                    class="hm-recruiter-search-input"
+                    type="search"
+                    name="keywords"
+                    value="<?= esc((string) (service('request')->getGet('keywords') ?? ''), 'attr') ?>"
+                    placeholder="Search candidates by skill, role or name"
+                    autocomplete="off"
+                    required
+                >
+                <button class="hm-recruiter-search-submit" type="submit">Search</button>
+            </form>
+            <a href="<?= base_url('notifications') ?>"
+               class="hm-tb-btn hm-topbar-notifications <?= $isActive('notifications') ?>"
+               data-unread-count="<?= $recruiterUnreadNotificationCount ?>"
+               aria-label="Notifications<?= $recruiterUnreadNotificationCount > 0 ? ' (' . $recruiterUnreadNotificationCount . ' unread)' : '' ?>"
+               title="Notifications">
+                <i class="fas fa-bell" aria-hidden="true"></i>
+                <?php if ($recruiterUnreadNotificationCount > 0): ?>
+                    <span class="hm-notif-badge js-recruiter-notification-badge">
+                        <?= $recruiterUnreadNotificationCount > 99 ? '99+' : $recruiterUnreadNotificationCount ?>
+                    </span>
+                <?php endif; ?>
+            </a>
         </div>
 
         <div class="hm-page-content">
@@ -270,6 +289,7 @@ $isActive = fn(string $path) => str_starts_with($currentUri, $path) ? 'active' :
     }
 
     applyCollapsed();
+
  
     toggleArea.addEventListener('click', function () {
         if (window.innerWidth <= 991) return;

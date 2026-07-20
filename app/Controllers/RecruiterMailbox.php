@@ -218,7 +218,8 @@ class RecruiterMailbox extends BaseController
 
         try {
             $result = (new RecruiterMailboxService())->syncRecruiterIfStale($recruiterId, 60);
-            $unreadCount = (int) model('NotificationModel')->getUnreadCount($recruiterId);
+            $notificationModel = model('NotificationModel');
+            $unreadCount = (int) $notificationModel->getUnreadCount($recruiterId);
 
             return $this->response->setJSON([
                 'success' => $result === null || !empty($result['ok']),
