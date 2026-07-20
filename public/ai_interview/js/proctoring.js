@@ -1437,12 +1437,7 @@ async function verifyCandidateFace() {
         updateVerificationOverlay(
             "Identity verified. Starting your interview..."
         );
-
-        // reportViolation(
-        //     "Face verification passed (distance: " +
-        //     lastDistance.toFixed(3) +
-        //     ")"
-        // );
+ 
 
         await new Promise(
             (r) => setTimeout(r, 800)
@@ -1527,12 +1522,7 @@ async function startCamera() {
 
             startFaceDetection();
 
-        }
-        /*
-        |--------------------------------------------------------------------------
-        | IF NOT VERIFIED, OVERLAY STAYS UP WITH "TRY AGAIN" BUTTON
-        |--------------------------------------------------------------------------
-        */
+        } 
 
     } catch (error) {
 
@@ -1543,13 +1533,7 @@ async function startCamera() {
 }
 function showPermissionPopup() {
 
-    injectThemeVariables();
-
-    /*
-    |--------------------------------------------------------------------------
-    | REMOVE EXISTING POPUP
-    |--------------------------------------------------------------------------
-    */
+    injectThemeVariables(); 
 
     const existingPopup =
         document.getElementById(
