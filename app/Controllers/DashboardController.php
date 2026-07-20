@@ -30,6 +30,7 @@ class DashboardController extends BaseController
                     'total_applications' => 0,
                     'ai_interview_started' => 0,
                     'ai_interview_completed' => 0,
+                    'screening_completed' => 0,
                     'shortlisted' => 0,
                     'rejected' => 0,
                     'interview_slot_booked' => 0
@@ -74,6 +75,19 @@ class DashboardController extends BaseController
             'total_applications' => $applicationModel->whereIn('job_id', $jobIds)->countAllResults(),
             'ai_interview_started' => 0,
             'ai_interview_completed' => $applicationModel->whereIn('job_id', $jobIds)->where('status', 'ai_interview_completed')->countAllResults(),
+            'screening_completed' => $applicationModel
+                ->whereIn('job_id', $jobIds)
+                ->whereIn('status', [
+                    'ai_interview_completed',
+                    'shortlisted',
+                    'interview_slot_booked',
+                    'selected',
+                    'hired',
+                    'rejected',
+                    'hold',
+                    'filtered_out',
+                ])
+                ->countAllResults(),
             'shortlisted' => $applicationModel->whereIn('job_id', $jobIds)->where('status', 'shortlisted')->countAllResults(),
             'rejected' => $applicationModel->whereIn('job_id', $jobIds)->where('status', 'rejected')->countAllResults(),
             'interview_slot_booked' => $applicationModel->whereIn('job_id', $jobIds)->where('status', 'interview_slot_booked')->countAllResults()
