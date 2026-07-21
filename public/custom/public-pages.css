@@ -219,6 +219,35 @@ body.dark .public-auth-page select.auth-input option {
   width: 100%;
 }
 
+.public-auth-page .auth-redirect-context {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  margin: 0 0 14px;
+  padding: 11px 13px;
+  border: 1px solid rgba(31, 183, 181, .34);
+  border-radius: 10px;
+  background: rgba(31, 183, 181, .08);
+  color: #315466;
+  font-size: .82rem;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.public-auth-page .auth-redirect-context i {
+  flex: 0 0 auto;
+  margin-top: 3px;
+  color: #0d8a90;
+}
+
+html.hm-auth-dark body.public-auth-page .auth-redirect-context,
+html.hm-dark-preload body.public-auth-page .auth-redirect-context {
+  border-color: rgba(31, 183, 181, .30);
+  background: rgba(31, 183, 181, .10);
+  color: #cbd5e1;
+}
+
 .public-auth-page .btn.auth-primary-btn,
 .public-auth-page .btn.auth-secondary-btn {
   background: var(--primary, #1FB7B5) !important;
@@ -410,4 +439,127 @@ html.hm-dark-preload body.change-password-auth-page input:-webkit-autofill:focus
   -webkit-text-fill-color: #e2e8f0;
   box-shadow: 0 0 0 1000px #0f1720 inset !important;
   caret-color: #1FB7B5;
+}
+
+/* One neutral dark system for every public authentication page. */
+@media (prefers-color-scheme: dark) {
+  body.public-auth-page {
+    --primary: #1fb7b5;
+    --primary-dark: #0d8a90;
+    background: #0d1117 !important;
+    color: #e6edf3 !important;
+  }
+
+  body.public-auth-page .auth-page-shell {
+    background: #0d1117 !important;
+  }
+
+  body.public-auth-page .auth-page-card,
+  body.public-auth-page .verification-card {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+    box-shadow: none !important;
+  }
+
+  body.public-auth-page .auth-page-title,
+  body.public-auth-page .verification-title,
+  body.public-auth-page .auth-field-label {
+    color: #e6edf3 !important;
+  }
+
+  body.public-auth-page .auth-page-subtitle,
+  body.public-auth-page .auth-remember,
+  body.public-auth-page .auth-footer-copy p,
+  body.public-auth-page .text-muted,
+  body.public-auth-page small {
+    color: #8b949e !important;
+  }
+
+  body.public-auth-page .auth-input,
+  body.public-auth-page .form-control,
+  body.public-auth-page .custom-select,
+  body.public-auth-page .otp-input,
+  body.public-auth-page .btn-google-auth {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+    color: #e6edf3 !important;
+    box-shadow: none !important;
+  }
+
+  body.public-auth-page .auth-input::placeholder,
+  body.public-auth-page .form-control::placeholder,
+  body.public-auth-page .auth-field-icon,
+  body.public-auth-page .auth-password-toggle {
+    color: #6e7681 !important;
+  }
+
+  body.public-auth-page .auth-divider-line {
+    background: #30363d !important;
+  }
+
+  body.public-auth-page .auth-divider-text {
+    background: #161b22 !important;
+    color: #8b949e !important;
+  }
+
+  body.public-auth-page .auth-input:focus,
+  body.public-auth-page .form-control:focus,
+  body.public-auth-page .custom-select:focus {
+    border-color: #1fb7b5 !important;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.14) !important;
+  }
+
+  body.public-auth-page .otp-input:focus {
+    border-color: #1fb7b5 !important;
+    box-shadow: 0 0 0 3px rgba(31, 183, 181, 0.14) !important;
+  }
+
+  body.public-auth-page .auth-footer-link,
+  body.public-auth-page .btn-link,
+  body.public-auth-page .auth-field-wrap:focus-within .auth-field-icon,
+  body.public-auth-page .auth-password-toggle:hover {
+    color: #1fb7b5 !important;
+  }
+
+  body.public-auth-page header.site-navbar .landing-header-signin,
+  body.public-auth-page header.site-navbar .btn-outline-primary {
+    background: transparent !important;
+    border-color: #1fb7b5 !important;
+    color: #1fb7b5 !important;
+  }
+
+  body.public-auth-page header.site-navbar .landing-header-signin:hover,
+  body.public-auth-page header.site-navbar .landing-header-signin:focus,
+  body.public-auth-page header.site-navbar .btn-outline-primary:hover,
+  body.public-auth-page header.site-navbar .btn-outline-primary:focus {
+    background: #1fb7b5 !important;
+    border-color: #1fb7b5 !important;
+    color: #ffffff !important;
+  }
+
+  body.public-auth-page .btn.auth-primary-btn,
+  body.public-auth-page .btn.auth-secondary-btn {
+    background: #1fb7b5 !important;
+    border-color: #1fb7b5 !important;
+    color: #ffffff !important;
+  }
+
+  body.public-auth-page .btn.auth-primary-btn:hover,
+  body.public-auth-page .btn.auth-primary-btn:focus,
+  body.public-auth-page .btn.auth-secondary-btn:hover,
+  body.public-auth-page .btn.auth-secondary-btn:focus {
+    background: #0d8a90 !important;
+    border-color: #0d8a90 !important;
+  }
+
+  body.public-auth-page input:-webkit-autofill,
+  body.public-auth-page input:-webkit-autofill:hover,
+  body.public-auth-page input:-webkit-autofill:focus,
+  body.public-auth-page input:-webkit-autofill:active {
+    -webkit-text-fill-color: #e6edf3 !important;
+    -webkit-box-shadow: 0 0 0 1000px #0d1117 inset !important;
+    box-shadow: 0 0 0 1000px #0d1117 inset !important;
+    caret-color: #e6edf3 !important;
+    border-color: #30363d !important;
+  }
 }

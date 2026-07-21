@@ -5977,6 +5977,119 @@ body.dark .radio-mark { border-color: #b8bec8; }
 .resume-version-preview{max-height:180px;overflow:hidden;position:relative;font-size:.85rem}
 .resume-version-fade{position:absolute;right:0;bottom:0;left:0;height:40px;background:linear-gradient(180deg,rgba(255,255,255,0),var(--candidate-surface,#ffffff))}
 .resume-preview-frame{width:100%;height:75vh;border:0}
+
+/* Resume Studio preview: keep the printable page white, but theme its viewer chrome. */
+.resume-studio-jobboard + #resumePreviewModal #previewIframeContainer,
+#resumePreviewModal #previewIframeContainer {
+    padding: 16px !important;
+    background: #e9eef3 !important;
+}
+
+#resumePreviewModal .resume-preview-frame {
+    display: block !important;
+    height: calc(75vh - 32px) !important;
+    margin: 0 auto !important;
+    background: #ffffff !important;
+    border: 1px solid #d9e1e8 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, .12) !important;
+}
+
+body.dark.candidate-app #resumePreviewModal .modal-content,
+body.dark.candidate-app #resumePreviewModal .modal-header,
+body.dark.candidate-app #resumePreviewModal .modal-footer {
+    background: #111111 !important;
+    border-color: #2b2b2b !important;
+    color: #f4f4f5 !important;
+}
+
+body.dark.candidate-app #resumePreviewModal .modal-body,
+body.dark.candidate-app #resumePreviewModal #previewLoading,
+body.dark.candidate-app #resumePreviewModal #previewIframeContainer {
+    background: #181818 !important;
+    color: #d4d4d8 !important;
+}
+
+body.dark.candidate-app #resumePreviewModal .modal-title,
+body.dark.candidate-app #resumePreviewModal .close {
+    color: #f4f4f5 !important;
+}
+
+body.dark.candidate-app #resumePreviewModal .close {
+    opacity: .78 !important;
+    text-shadow: none !important;
+}
+
+body.dark.candidate-app #resumePreviewModal .close:hover {
+    opacity: 1 !important;
+}
+
+body.dark.candidate-app #resumePreviewModal .resume-preview-frame {
+    border-color: #3a3a3a !important;
+    box-shadow: 0 14px 38px rgba(0, 0, 0, .45) !important;
+}
+
+/* Saved resume cards contain print-oriented inline styles; normalize them in dark mode. */
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content {
+    background: #0f0f0f !important;
+    border-color: #2f2f2f !important;
+    color: #e4e4e7 !important;
+    scrollbar-color: #5a5a5f #181818 !important;
+    scrollbar-width: thin !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content::-webkit-scrollbar-track {
+    background: #181818 !important;
+    border-radius: 999px !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content::-webkit-scrollbar-thumb {
+    background: #5a5a5f !important;
+    border: 2px solid #181818 !important;
+    border-radius: 999px !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content::-webkit-scrollbar-thumb:hover {
+    background: #74747a !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content div,
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content span,
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content li,
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content td {
+    color: #d4d4d8 !important;
+    border-color: #343434 !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content div[style*="font-size:26pt"],
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content div[style*="font-size:23pt"],
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content td[style*="font-size:12pt"] {
+    color: #f4f4f5 !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content div[style*="background-color:#eaf7f1"] {
+    background: #16312e !important;
+    color: #5eead4 !important;
+    box-shadow: none !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content td[style*="background-color:#0f172a"] {
+    background-color: #101827 !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content td[style*="background-color:#0f172a"] div,
+body.dark.candidate-app .resume-studio-jobboard .resume-version-content td[style*="background-color:#0f172a"] span {
+    color: #f8fafc !important;
+}
+
+body.dark.candidate-app .resume-studio-jobboard .resume-version-fade {
+    background: linear-gradient(180deg, rgba(15, 15, 15, 0), #0f0f0f) !important;
+}
 .mobile-filter-body{padding:20px}
 .mobile-filter-label{font-size:.8rem;font-weight:600;color:var(--slate)}
 .mobile-filter-select{font-size:.85rem}
@@ -17836,6 +17949,22 @@ body.candidate-app .resume-studio-jobboard .template-preview {
     background-repeat: no-repeat !important;
 }
 
+body.candidate-app .resume-studio-jobboard .template-preview-frame {
+    display: block !important;
+    width: 100% !important;
+    height: 120px !important;
+    min-height: 120px !important;
+    flex: 0 0 120px !important;
+    margin: 0 !important;
+    padding: 0 0 4px !important;
+    position: relative !important;
+}
+
+body.candidate-app .resume-studio-jobboard .template-preview-frame > .template-preview {
+    position: relative !important;
+    inset: auto !important;
+}
+
 body.candidate-app .resume-studio-jobboard .template-card strong {
     display: block !important;
     min-height: 2.4em !important;
@@ -17844,6 +17973,9 @@ body.candidate-app .resume-studio-jobboard .template-card strong {
     font-size: .95rem !important;
     font-weight: 800 !important;
     line-height: 1.2 !important;
+    position: static !important;
+    transform: none !important;
+    z-index: auto !important;
 }
 
 body.candidate-app .resume-studio-jobboard .template-card small.text-muted {
@@ -19811,6 +19943,27 @@ body.dark.candidate-app .profile-jobboard .profile-right-pane > .mb-4 {
         padding-right: 8px !important;
         scrollbar-gutter: stable !important;
     }
+}
+
+body.candidate-app .notifications-jobboard .notification-card.is-actionable {
+    cursor: pointer !important;
+    transition: border-color 0.18s ease, transform 0.18s ease;
+}
+
+body.candidate-app .notifications-jobboard .notification-card.is-actionable:hover {
+    border-color: rgba(31, 183, 181, 0.55) !important;
+    transform: translateY(-1px);
+}
+
+body.candidate-app .notifications-jobboard .notification-card.is-actionable:focus-visible {
+    outline: 3px solid rgba(31, 183, 181, 0.22);
+    outline-offset: 2px;
+    border-color: #1fb7b5 !important;
+}
+
+body.candidate-app .notifications-jobboard .notification-secondary-actions {
+    margin-left: auto !important;
+    text-align: right;
 }
 
 /* Profile sections have one outline only: the card owns it, never its wrapper. */

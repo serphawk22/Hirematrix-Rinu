@@ -448,7 +448,7 @@ class Candidate extends BaseController
             'target_role' => (string) ($resumeVersion['target_role'] ?? ''),
             'summary' => (string) ($resumeVersion['summary'] ?? ''),
             'highlight_skills' => $this->splitCsvList((string) ($resumeVersion['highlight_skills'] ?? '')),
-        ]);
+        ], $this->request->getGet('theme') === 'dark');
     }
 
     public function deleteResumeVersion($versionId)

@@ -137,7 +137,9 @@ $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' 
                                             <label class="template-option <?= $isTemplateDisabled ? 'is-disabled' : '' ?>">
                                                 <input type="radio" name="template_key" value="<?= esc($templateKey) ?>" <?= $templateKey === 'modern_professional' ? 'checked' : '' ?> <?= $isTemplateDisabled ? 'disabled' : '' ?>>
                                                 <span class="template-card candidate-text-left">
-                                                    <span class="template-preview <?= esc($previewClass) ?>"></span>
+                                                    <span class="template-preview-frame" aria-hidden="true">
+                                                        <span class="template-preview <?= esc($previewClass) ?>"></span>
+                                                    </span>
                                                     <strong class="d-block mb-1"><?= esc($template['label']) ?></strong>
                                                     <small class="text-muted d-block"><?= esc($template['description']) ?></small>
                                                     <?php if ($isTemplateDisabled): ?>
@@ -303,7 +305,8 @@ function previewResumeVersion(versionId) {
     loading.classList.remove('d-none');
     container.classList.add('d-none');
     modal.modal('show');
-    iframe.src = `<?= base_url('candidate/resume-version') ?>/${versionId}/preview`;
+    const previewTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
+    iframe.src = `<?= base_url('candidate/resume-version') ?>/${versionId}/preview?theme=${previewTheme}&v=${Date.now()}`;
     iframe.onload = function() {
         loading.classList.add('d-none');
         container.classList.remove('d-none');

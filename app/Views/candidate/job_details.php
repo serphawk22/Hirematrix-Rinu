@@ -604,7 +604,7 @@ function copyCoverLetter() {
       <?php if (!empty($interviewNudge['video_url'])): ?>
         <div class="ain-video-title"><?= esc($interviewNudge['video_title']) ?></div>
         <div class="ain-video-wrap">
-          <video controls preload="metadata" src="<?= esc($interviewNudge['video_url']) ?>"></video>
+          <video controls data-ai-tour-bgm preload="metadata" src="<?= esc($interviewNudge['video_url']) ?>"></video>
         </div>
       <?php endif; ?>
 
@@ -665,6 +665,7 @@ if (!alreadyShown) {
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeNudge(); });
 })(); 
 </script>
+<script src="<?= base_url('jobboard/js/ai-tour-bgm.js') ?>"></script>
 <?php endif; ?>
 <?= view('Layouts/candidate_footer') ?>
 

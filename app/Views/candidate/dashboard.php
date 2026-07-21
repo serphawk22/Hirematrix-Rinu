@@ -220,7 +220,7 @@ $proFeatureSlides = [
             </button>
         </div>
         <div class="dash-pro-video-modal-body">
-            <video id="dashProVideoModalPlayer" controls controlsList="nofullscreen noremoteplayback" preload="none"></video>
+            <video id="dashProVideoModalPlayer" controls data-ai-tour-bgm controlsList="nofullscreen noremoteplayback" preload="none"></video>
         </div>
     </div>
 </div>
@@ -268,6 +268,7 @@ document.getElementById('dashProVideoModal').addEventListener('click', function(
 });
  
 </script>
+<script src="<?= base_url('jobboard/js/ai-tour-bgm.js') ?>"></script>
 <?php endif; ?>
 <!-- ═══════════════ END PRO FEATURE PROMO ═══════════════ -->
 

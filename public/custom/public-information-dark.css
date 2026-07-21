@@ -415,14 +415,14 @@ body.public-information-page h2.info-section-title {
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --info-bg: #111111;
-    --info-surface: #111111;
-    --info-surface-soft: #162327;
-    --info-muted-surface: #1b2a2f;
-    --info-border: #23343a;
-    --info-text: #f8fafc;
-    --info-muted: #94a3b8;
-    --info-subtle: #7a8b96;
+    --info-bg: #0d1117;
+    --info-surface: #161b22;
+    --info-surface-soft: #161b22;
+    --info-muted-surface: #21262d;
+    --info-border: #30363d;
+    --info-text: #e6edf3;
+    --info-muted: #8b949e;
+    --info-subtle: #6e7681;
     --info-primary: #1fb7b5;
     --info-primary-dark: #0d8a90;
     --info-primary-soft: rgba(31, 183, 181, 0.12);

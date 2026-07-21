@@ -63,11 +63,7 @@
     @media (prefers-color-scheme: dark) {
         .site-legal-footer {
             border-top-color: #23343A;
-<<<<<<< HEAD
             background: #0d1117;
-=======
-            background: #111111 !important;
->>>>>>> a45b839080c0d98ed1b38aefe937538e7e0d2a9b
         }
 
         .site-legal-footer__inner {
@@ -91,10 +87,23 @@
         }
     }
 
+    html.hm-system-dark-preload .site-legal-footer,
+    html.hm-dark-preload .site-legal-footer,
+    body.dark .site-legal-footer,
+    html.hm-system-dark-preload .site-legal-footer--landing .site-legal-footer__inner,
+    html.hm-dark-preload .site-legal-footer--landing .site-legal-footer__inner,
+    body.dark .site-legal-footer--landing .site-legal-footer__inner {
+        background: #0d1117 !important;
+    }
+
     .site-legal-footer--landing {
         border-top: 0;
         background: transparent;
         padding: 24px 20px 10px;
+    }
+
+    body.landing-page .site-legal-footer--landing {
+        margin-top: 0;
     }
 
     .site-legal-footer--landing .site-legal-footer__inner {
@@ -139,16 +148,16 @@
 
     @media (prefers-color-scheme: dark) { 
         .site-legal-footer--landing .site-legal-footer__inner {
-            background: #000000;
+            background: #0d1117;
             border-color: #23343A;
             box-shadow: none;
         } 
        .site-legal-footer.site-legal-footer--landing {
-        background: #000000 !important;
+        background: #0d1117 !important;
     }
 
     .site-legal-footer--landing .site-legal-footer__inner {
-        background: #000000 !important;
+        background: #0d1117 !important;
         border-color: #23343A;
         box-shadow: none;
     } 
@@ -165,6 +174,22 @@
             background: rgba(31, 183, 181, 0.14);
             color: #7EE3DD !important;
         }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        body.landing-page .site-legal-footer--landing,
+        body.landing-page .site-legal-footer--landing .site-legal-footer__inner {
+            background: #000000 !important;
+        }
+    }
+
+    html.hm-system-dark-preload body.landing-page .site-legal-footer--landing,
+    html.hm-dark-preload body.landing-page .site-legal-footer--landing,
+    body.dark.landing-page .site-legal-footer--landing,
+    html.hm-system-dark-preload body.landing-page .site-legal-footer--landing .site-legal-footer__inner,
+    html.hm-dark-preload body.landing-page .site-legal-footer--landing .site-legal-footer__inner,
+    body.dark.landing-page .site-legal-footer--landing .site-legal-footer__inner {
+        background: #000000 !important;
     }
 
     @media (max-width: 767.98px) {

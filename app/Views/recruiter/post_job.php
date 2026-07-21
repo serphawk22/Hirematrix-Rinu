@@ -22,8 +22,8 @@ $jobCategoryOptions = [
     'Cybersecurity',
 ];
 $selectedCategory = old('category');
-$aiInterviewCategories = ['Software Development', 'Data Science', 'DevOps', 'Quality Assurance', 'UI/UX Design', 'Cybersecurity'];
-$aiInterviewAllowed = in_array(strtolower((string) $selectedCategory), array_map('strtolower', $aiInterviewCategories), true);
+$aiInterviewCategories = \App\Models\JobModel::AI_INTERVIEW_CATEGORIES;
+$aiInterviewAllowed = \App\Models\JobModel::supportsAiInterviewForCategory($selectedCategory);
 $postedFor = old('posted_for', 'own_company');
 $clientDisclosure = old('client_disclosure', 'visible');
 $payrollType = old('payroll_type', '');
@@ -177,7 +177,12 @@ $payrollType = old('payroll_type', '');
                                 </div>
                             </div>
                             <?php $selectedPolicy = $aiInterviewAllowed ? old('ai_interview_policy', 'REQUIRED_HARD') : 'OFF'; ?>
-                            <div class="col-12" id=<div class="col-sm-6" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
+                            <div class="col-12" id="aiInterviewUnavailableWrap" <?= $aiInterviewAllowed ? 'style="display: none;"' : '' ?>>
+                                <div class="alert alert-info py-2 mb-3" role="status">
+                                    AI interview settings are available only for supported technical job categories.
+                                </div>
+                            </div>
+                            <div class="col-sm-6" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
                                 <div class="form-group">
                                     <label>AI Interview Policy</label>
                                     <select class="form-control" name="ai_interview_policy" id="ai_interview_policy" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>
@@ -267,14 +272,7 @@ $payrollType = old('payroll_type', '');
 </div>
 <script>
 (function () {
-    const aiInterviewCategories = [
-        'Software Development',
-        'Data Science',
-        'DevOps',
-        'Quality Assurance',
-        'UI/UX Design',
-        'Cybersecurity'
-    ];
+    const aiInterviewCategories = <?= json_encode(array_values($aiInterviewCategories)) ?>;
     const categorySelect = document.getElementById('category');
     const unavailableWrap = document.getElementById('aiInterviewUnavailableWrap');
     const policyWrap = document.getElementById('aiInterviewPolicyWrap');

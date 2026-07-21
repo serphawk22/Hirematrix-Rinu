@@ -28,8 +28,8 @@ $jobCategoryOptions = [
 ];
 $selectedCategory = (string) old('category', $job['category'] ?? '');
 $hasCustomCategory = $selectedCategory !== '' && !in_array($selectedCategory, $jobCategoryOptions, true);
-$aiInterviewCategories = ['Software Development', 'Data Science', 'DevOps', 'Quality Assurance', 'UI/UX Design', 'Cybersecurity'];
-$aiInterviewAllowed = in_array(strtolower($selectedCategory), array_map('strtolower', $aiInterviewCategories), true);
+$aiInterviewCategories = \App\Models\JobModel::AI_INTERVIEW_CATEGORIES;
+$aiInterviewAllowed = \App\Models\JobModel::supportsAiInterviewForCategory($selectedCategory);
 $postedFor = (string) old('posted_for', $job['posted_for'] ?? 'own_company');
 $clientDisclosure = (string) old('client_disclosure', $job['client_disclosure'] ?? 'visible');
 $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
@@ -203,7 +203,13 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
                                  data-initial-items="<?= esc(json_encode(array_values($questionnaireRows)), 'attr') ?>"></div>
                         </div>
 
-<div class="form-group" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
+                        <div id="aiInterviewUnavailableWrap" <?= $aiInterviewAllowed ? 'style="display: none;"' : '' ?>>
+                            <div class="alert alert-info py-2" role="status">
+                                AI interview settings are available only for supported technical job categories.
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
                             <?php $policy = $aiInterviewAllowed ? strtoupper(old('ai_interview_policy', $job['ai_interview_policy'] ?? 'REQUIRED_HARD')) : 'OFF'; ?>
                             <label>AI Interview Policy *</label>
                             <select name="ai_interview_policy" id="ai_interview_policy" class="form-control" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>
@@ -245,14 +251,7 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
 </div>
 <script>
 (function () {
-    const aiInterviewCategories = [
-        'Software Development',
-        'Data Science',
-        'DevOps',
-        'Quality Assurance',
-        'UI/UX Design',
-        'Cybersecurity'
-    ];
+    const aiInterviewCategories = <?= json_encode(array_values($aiInterviewCategories)) ?>;
     const categorySelect = document.getElementById('category');
     const unavailableWrap = document.getElementById('aiInterviewUnavailableWrap');
     const policyWrap = document.getElementById('aiInterviewPolicyWrap');

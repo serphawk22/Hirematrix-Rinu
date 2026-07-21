@@ -1,3 +1,8 @@
+<?php
+$successFlash = session()->getFlashdata('success');
+$errorFlash = session()->getFlashdata('error');
+$candidateInvitations = is_array($candidateInvitations ?? null) ? $candidateInvitations : [];
+?>
 <?= view('Layouts/recruiter_header', ['title' => 'Search Resumes']) ?>
 
 <style>
@@ -142,6 +147,77 @@
 .bulk-action-bar .bulk-invite-note {
   border: 1px solid var(--border); border-radius: 8px; font-size: 12.5px; padding: 8px 12px;
   background: var(--background); color: var(--foreground); min-width: 220px; resize: vertical;
+}
+.bulk-note-details { position: relative; }
+.bulk-note-details summary {
+  color: var(--primary-dark);
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 700;
+  list-style: none;
+  white-space: nowrap;
+}
+.bulk-note-details summary::-webkit-details-marker { display: none; }
+.bulk-note-details summary::before { content: '+ '; }
+.bulk-note-details[open] summary::before { content: '\2212  '; }
+.bulk-note-details .bulk-invite-note { display: block; margin-top: 8px; }
+.bulk-invite-feedback {
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.bulk-invite-feedback.is-visible { display: inline-flex; }
+.bulk-invite-feedback.is-success { color: #047857; background: #ECFDF5; border: 1px solid #6EE7B7; }
+.bulk-invite-feedback.is-error { color: #B91C1C; background: #FEF2F2; border: 1px solid #FCA5A5; }
+body.dark .bulk-invite-feedback.is-success { color: #6EE7B7; background: rgba(6,95,70,.28); border-color: #047857; }
+body.dark .bulk-invite-feedback.is-error { color: #FCA5A5; background: rgba(127,29,29,.30); border-color: #B91C1C; }
+.candidate-invited-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 7px;
+  padding: 3px 8px;
+  border: 1px solid rgba(31,183,181,.38);
+  border-radius: 999px;
+  background: rgba(31,183,181,.10);
+  color: var(--primary-dark);
+  font-size: 10.5px;
+  font-weight: 800;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+body.dark .candidate-invited-badge { color: #5EEAD4; }
+.bulk-invite-warning {
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border: 1px solid #EF4444;
+  border-radius: 8px;
+  background: #FEF2F2;
+  color: #B91C1C;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.25;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.10);
+}
+.bulk-invite-warning.is-visible {
+  display: inline-flex;
+  animation: bulk-warning-pulse .28s ease-out;
+}
+body.dark .bulk-invite-warning {
+  background: rgba(127, 29, 29, 0.32);
+  border-color: #F87171;
+  color: #FCA5A5;
+}
+@keyframes bulk-warning-pulse {
+  0% { transform: scale(.96); opacity: .35; }
+  100% { transform: scale(1); opacity: 1; }
 }
 .bulk-clear-btn {
   background: none; border: none; color: var(--muted-foreground); font-size: 12.5px;
@@ -572,8 +648,7 @@ body.dark .alert-success {
               <input type="checkbox" id="selectAllCandidates">
               Select all on this page
             </label>
-          </div>
-
+          </div> 
           <!-- Bulk action bar: hidden until at least one candidate is checked -->
           <div class="bulk-action-bar" id="bulkActionBar">
             <div class="bulk-count"><span id="bulkSelectedCount">0</span> selected</div>
@@ -584,12 +659,24 @@ body.dark .alert-success {
                 <option value="<?= (int) $job['id'] ?>"><?= esc($job['title'] ?? 'Untitled job') ?></option>
               <?php endforeach; ?>
             </select>
-            <textarea id="bulkInviteNote" class="bulk-invite-note" rows="1" maxlength="500"
-                      placeholder="Optional invite note" aria-label="Optional invitation note"></textarea>
+            <details class="bulk-note-details" id="bulkInviteNoteDetails">
+              <summary>Add optional note</summary>
+              <textarea id="bulkInviteNote" class="bulk-invite-note" rows="2" maxlength="500"
+                        placeholder="Add a personal message" aria-label="Optional invitation note"></textarea>
+            </details>
             <button type="button" class="btn btn-primary btn-sm" id="bulkInviteBtn" data-has-open-jobs="<?= empty($recruiterJobs) ? '0' : '1' ?>"
                     <?= empty($recruiterJobs) ? 'disabled title="Post an open job before inviting candidates"' : '' ?>>
               <i class="fas fa-paper-plane"></i> Invite
             </button>
+            <span class="bulk-invite-warning" id="bulkInviteWarning" role="alert" aria-live="assertive">
+              <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+              <span>Select a job before sending invitations.</span>
+            </span>
+            <span class="bulk-invite-feedback <?= $successFlash ? 'is-visible is-success' : ($errorFlash ? 'is-visible is-error' : '') ?>"
+                  id="bulkInviteFeedback" role="status" aria-live="polite">
+              <i class="fas <?= $successFlash ? 'fa-check-circle' : 'fa-exclamation-circle' ?>" aria-hidden="true"></i>
+              <span><?= esc((string) ($successFlash ?: $errorFlash ?: '')) ?></span>
+            </span>
 
             <?php if (!empty($folders)): ?>
               <span class="folder-select-wrap">
@@ -663,7 +750,7 @@ body.dark .alert-success {
                 ? (preg_match('/^https?:\/\//i', $candidatePhotoPath) ? $candidatePhotoPath : base_url($candidatePhotoPath))
                 : '';
             ?>
-            <div class="candidate-card">
+            <div class="candidate-card" data-candidate-id="<?= (int) $candidate['user_id'] ?>">
               <div class="candidate-select-wrap">
                 <input type="checkbox" class="candidate-select" value="<?= (int) $candidate['user_id'] ?>">
               </div>
@@ -674,7 +761,15 @@ body.dark .alert-success {
                 <?php endif; ?>
               </div>
               <div class="candidate-main">
-                <h3 class="candidate-name"><?= esc($candidate['name'] ?? 'Candidate') ?></h3>
+                <?php $latestInvitation = $candidateInvitations[(int) $candidate['user_id']] ?? null; ?>
+                <h3 class="candidate-name">
+                  <?= esc($candidate['name'] ?? 'Candidate') ?>
+                  <?php if ($latestInvitation): ?>
+                    <span class="candidate-invited-badge" title="Invited to <?= esc($latestInvitation['job_title'] ?? 'a job', 'attr') ?>">
+                      <i class="fas fa-paper-plane" aria-hidden="true"></i> Invited
+                    </span>
+                  <?php endif; ?>
+                </h3>
                 <p class="candidate-headline"><?= esc($candidate['headline'] ?? 'No headline provided') ?>   </p>
                 <div class="candidate-meta">
                   <?php if (!empty($candidate['location'])): ?>
@@ -870,6 +965,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const inviteBtn   = document.getElementById('bulkInviteBtn');
   const inviteJob   = document.getElementById('bulkInviteJobSelect');
   const inviteNote  = document.getElementById('bulkInviteNote');
+  const inviteWarning = document.getElementById('bulkInviteWarning');
+  const inviteFeedback = document.getElementById('bulkInviteFeedback');
+  const inviteNoteDetails = document.getElementById('bulkInviteNoteDetails');
 
   if (!checkboxes.length || !bar) return;
 
@@ -877,9 +975,51 @@ document.addEventListener('DOMContentLoaded', function () {
     return Array.from(checkboxes).filter(function (cb) { return cb.checked; });
   }
 
+  function setInviteWarning(visible) {
+    if (!inviteWarning) return;
+    inviteWarning.classList.toggle('is-visible', visible);
+  }
+
+  function setInviteFeedback(message, type) {
+    if (!inviteFeedback) return;
+    const icon = inviteFeedback.querySelector('i');
+    const text = inviteFeedback.querySelector('span');
+    inviteFeedback.classList.remove('is-success', 'is-error', 'is-visible');
+    if (!message) return;
+    text.textContent = message;
+    icon.className = 'fas ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
+    inviteFeedback.classList.add('is-visible', type === 'success' ? 'is-success' : 'is-error');
+  }
+
+  function updateCsrfToken(payload) {
+    if (!payload || !payload.csrfName || !payload.csrfHash) return;
+    Array.from(inviteForm.elements).forEach(function (field) {
+      if (field.name === payload.csrfName) field.value = payload.csrfHash;
+    });
+  }
+
+  function markCandidateInvited(candidateId, jobTitle) {
+    const card = document.querySelector('.candidate-card[data-candidate-id="' + candidateId + '"]');
+    if (!card) return;
+    const heading = card.querySelector('.candidate-name');
+    if (!heading) return;
+    let badge = heading.querySelector('.candidate-invited-badge');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'candidate-invited-badge';
+      badge.innerHTML = '<i class="fas fa-paper-plane" aria-hidden="true"></i> Invited';
+      heading.appendChild(badge);
+    }
+    badge.title = 'Invited to ' + jobTitle;
+  }
+
   function refreshBar() {
     const selected = getSelected();
     countEl.textContent = selected.length;
+
+    if (selected.length === 0) {
+      setInviteWarning(false);
+    }
 
     if (inviteBtn) {
       inviteBtn.disabled = selected.length === 0 || inviteBtn.dataset.hasOpenJobs !== '1';
@@ -912,8 +1052,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  if (inviteJob) {
+    inviteJob.addEventListener('change', function () {
+      setInviteWarning(!inviteJob.value);
+    });
+  }
+
   if (inviteBtn && inviteForm && inviteJob) {
-    inviteBtn.addEventListener('click', function () {
+    inviteBtn.addEventListener('click', async function () {
       const selected = getSelected().map(function (cb) { return cb.value; });
 
       if (!selected.length) {
@@ -921,10 +1067,13 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
       if (!inviteJob.value) {
-        alert('Select a job before sending invitations.');
+        setInviteWarning(true);
         inviteJob.focus();
         return;
       }
+
+      setInviteWarning(false);
+      setInviteFeedback('', 'success');
 
       inviteForm.querySelectorAll('[data-dynamic-invite-field]').forEach(function (field) {
         field.remove();
@@ -944,8 +1093,39 @@ document.addEventListener('DOMContentLoaded', function () {
       selected.forEach(function (id) { addField('candidate_ids[]', id); });
 
       inviteBtn.disabled = true;
+      const originalHtml = inviteBtn.innerHTML;
       inviteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-      inviteForm.submit();
+
+      try {
+        const response = await fetch(inviteForm.action, {
+          method: 'POST',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+          body: new FormData(inviteForm)
+        });
+        const payload = await response.json();
+        updateCsrfToken(payload);
+
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.message || 'Could not send the invitation.');
+        }
+
+        const selectedOption = inviteJob.options[inviteJob.selectedIndex];
+        const jobTitle = selectedOption ? selectedOption.textContent.trim() : 'selected job';
+        (payload.invitedCandidateIds || []).forEach(function (candidateId) {
+          markCandidateInvited(candidateId, jobTitle);
+          const checkbox = document.querySelector('.candidate-select[value="' + candidateId + '"]');
+          if (checkbox) checkbox.checked = false;
+        });
+
+        setInviteFeedback(payload.message || 'Invitation sent successfully.', 'success');
+        if (inviteNote) inviteNote.value = '';
+        if (inviteNoteDetails) inviteNoteDetails.open = false;
+      } catch (error) {
+        setInviteFeedback(error.message || 'Could not send the invitation.', 'error');
+      } finally {
+        inviteBtn.innerHTML = originalHtml;
+        refreshBar();
+      }
     });
   }
 
