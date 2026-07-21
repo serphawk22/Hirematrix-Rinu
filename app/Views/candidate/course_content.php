@@ -21,9 +21,16 @@ $lessonCount = count($lessons ?? []);
                     <a href="<?= base_url('career-transition') ?>" class="btn btn-outline-primary">
                         <i class="fas fa-arrow-left"></i> Career Transition
                     </a>
-                    <a href="<?= base_url('career-transition') ?>#change-transition-form" class="btn btn-primary">
-                        <i class="fas fa-sync"></i> Change Path
-                    </a>
+                    <button type="button"
+                            class="btn btn-primary"
+                            data-course-pdf-button
+                            data-prepare-url="<?= base_url('career-transition/prepare-pdf') ?>"
+                            data-download-url="<?= base_url('career-transition/download-pdf') ?>"
+                            data-csrf-name="<?= csrf_token() ?>"
+                            data-csrf-value="<?= csrf_hash() ?>">
+                        <i class="fas fa-file-pdf"></i>
+                        <span data-pdf-label>Download PDF</span>
+                    </button>
                 </div>
             </div>
 
@@ -106,8 +113,14 @@ $lessonCount = count($lessons ?? []);
 
                                 <div class="course-lesson-detail" data-course-lesson-detail hidden>
                                     <div class="course-lesson-loading">
-                                        <span class="spinner-border spinner-border-sm" role="status"></span>
-                                        Preparing full lesson...
+                                        <div class="course-lesson-loading-title">
+                                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                                            <span>Preparing full lesson...</span>
+                                        </div>
+                                        <div class="course-lesson-loading-track" aria-hidden="true"><span></span></div>
+                                        <div class="course-lesson-loading-lines" aria-hidden="true">
+                                            <span></span><span></span><span></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -119,5 +132,43 @@ $lessonCount = count($lessons ?? []);
         </div>
     </section>
 </div>
+
+<style>
+.course-content-jobboard .lesson-preparing-animation{display:grid;gap:12px;max-width:720px;padding:14px 0 6px}
+.course-content-jobboard .lesson-preparing-head{display:flex;align-items:center;gap:9px;color:var(--muted-foreground);font-weight:600;font-size:14px}
+.course-content-jobboard .lesson-preparing-orbit{position:relative;width:20px;height:20px;border:2px solid rgba(31,183,181,.2);border-top-color:var(--primary);border-radius:50%;animation:lessonPreparingSpin .8s linear infinite}
+.course-content-jobboard .lesson-preparing-progress{height:4px;overflow:hidden;border-radius:999px;background:rgba(31,183,181,.12)}
+.course-content-jobboard .lesson-preparing-progress span{display:block;width:34%;height:100%;border-radius:inherit;background:var(--primary);animation:lessonPreparingMove 1.25s ease-in-out infinite}
+.course-content-jobboard .lesson-preparing-skeleton{display:grid;gap:8px}
+.course-content-jobboard .lesson-preparing-skeleton span{height:9px;border-radius:999px;background:rgba(31,183,181,.13);animation:lessonPreparingGlow 1.25s ease-in-out infinite}
+.course-content-jobboard .lesson-preparing-skeleton span:nth-child(1){width:92%}
+.course-content-jobboard .lesson-preparing-skeleton span:nth-child(2){width:74%;animation-delay:.14s}
+.course-content-jobboard .lesson-preparing-skeleton span:nth-child(3){width:55%;animation-delay:.28s}
+@keyframes lessonPreparingSpin{to{transform:rotate(360deg)}}
+@keyframes lessonPreparingMove{from{transform:translateX(-110%)}to{transform:translateX(310%)}}
+@keyframes lessonPreparingGlow{0%,100%{opacity:.28}50%{opacity:.9}}
+@media (prefers-reduced-motion:reduce){.course-content-jobboard .lesson-preparing-animation *{animation:none!important}}
+</style>
+<script>
+(function () {
+    var loadingMarkup = '<div class="lesson-preparing-animation" role="status" aria-live="polite">' +
+        '<div class="lesson-preparing-head"><span class="lesson-preparing-orbit" aria-hidden="true"></span><span>Building your full lesson...</span></div>' +
+        '<div class="lesson-preparing-progress" aria-hidden="true"><span></span></div>' +
+        '<div class="lesson-preparing-skeleton" aria-hidden="true"><span></span><span></span><span></span></div>' +
+    '</div>';
+
+    document.addEventListener('click', function (event) {
+        var button = event.target.closest('.js-load-course-lesson');
+        if (!button) return;
+        window.setTimeout(function () {
+            var card = button.closest('[data-course-lesson-card]');
+            var detail = card ? card.querySelector('[data-course-lesson-detail]') : null;
+            if (detail && detail.getAttribute('data-loaded') !== '1' && !detail.querySelector('.lesson-preparing-animation')) {
+                detail.innerHTML = loadingMarkup;
+            }
+        }, 0);
+    });
+})();
+</script>
 
 <?= view('Layouts/candidate_footer') ?>

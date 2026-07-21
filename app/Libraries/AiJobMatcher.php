@@ -20,7 +20,7 @@ class AiJobMatcher
         $this->apiUrl = 'https://api.openai.com/v1/chat/completions';
     }
 
-    public function generateSuggestions($candidateId, $limit = 15)
+    public function generateSuggestions($candidateId, $limit = 15, bool $allowRemoteGeneration = true)
     {
         $jobModel        = new JobModel();
         $suggestionModel = new JobSuggestionModel();
@@ -45,6 +45,28 @@ class AiJobMatcher
         if (!empty($freshSuggestions)) {
             // Return cached suggestions — no AI call needed
             return $freshSuggestions;
+        }
+
+        // Interactive job tabs must never wait on a remote AI request. Reuse
+        // older ranked suggestions when available, then fall back to the fast
+        // local matcher. A scheduled/background refresh can still call this
+        // method with remote generation enabled.
+        if (!$allowRemoteGeneration) {
+            $cachedSuggestions = $db->query("
+                SELECT j.*, js.score as match_score, js.reason as match_reason
+                FROM job_suggestions js
+                JOIN jobs j ON js.job_id = j.id
+                WHERE js.candidate_id = ?
+                  AND j.status = 'open'
+                  AND (j.application_deadline IS NULL OR j.application_deadline = '' OR j.application_deadline >= CURDATE())
+                  AND js.score > 0
+                ORDER BY js.created_at DESC, js.score DESC
+                LIMIT ?
+            ", [$candidateId, $limit])->getResultArray();
+
+            return !empty($cachedSuggestions)
+                ? $cachedSuggestions
+                : $jobModel->getSuggestedJobsBasic($candidateId, $limit);
         }
 
         // ── NO FRESH CACHE: Call AI ──

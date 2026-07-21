@@ -253,7 +253,7 @@ class Jobs extends BaseController
                     break;
 
                 case 'ai':
-                    $aiPrimarySuggestions = (new AiJobMatcher())->generateSuggestions($candidateId, 20);
+                    $aiPrimarySuggestions = (new AiJobMatcher())->generateSuggestions($candidateId, 20, false);
                     $suggestedJobsByAi = $this->buildOtherRecommendations($aiPrimarySuggestions, [], [], 20);
                     $suggestedJobs = $suggestedJobsByAi;
                     break;
@@ -646,6 +646,13 @@ class Jobs extends BaseController
 
     private function rankJobsByApplicationBehavior(int $candidateId, array $behavior, int $limit): array
     {
+        $cache = cache();
+        $cacheKey = 'recommended_jobs_applies_' . $candidateId . '_' . $limit;
+        $cached = $cache->get($cacheKey);
+        if (is_array($cached)) {
+            return $cached;
+        }
+
         $jobModel = new JobModel();
         $jobsBuilder = $jobModel->where('status', 'open')
             ->whereNotIn('id', static function ($builder) use ($candidateId) {
@@ -708,11 +715,20 @@ class Jobs extends BaseController
         }
 
         usort($ranked, static fn (array $a, array $b): int => ((float) ($b['match_score'] ?? 0.0)) <=> ((float) ($a['match_score'] ?? 0.0)));
-        return array_slice($ranked, 0, $limit);
+        $result = array_slice($ranked, 0, $limit);
+        $cache->save($cacheKey, $result, 300);
+        return $result;
     }
 
     private function rankJobsByPreferences(int $candidateId, array $behavior, array $candidateInterests, int $limit): array
     {
+        $cache = cache();
+        $cacheKey = 'recommended_jobs_preferences_' . $candidateId . '_' . $limit;
+        $cached = $cache->get($cacheKey);
+        if (is_array($cached)) {
+            return $cached;
+        }
+
         $jobModel = new JobModel();
         $userModel = new \App\Models\UserModel();
 
@@ -795,7 +811,9 @@ class Jobs extends BaseController
         }
 
         usort($ranked, static fn (array $a, array $b): int => ((float) ($b['match_score'] ?? 0.0)) <=> ((float) ($a['match_score'] ?? 0.0)));
-        return array_slice($ranked, 0, $limit);
+        $result = array_slice($ranked, 0, $limit);
+        $cache->save($cacheKey, $result, 300);
+        return $result;
     }
 
     private function buildOtherRecommendations(array $aiJobs, array $skillsJobs, array $preferencesJobs, int $limit): array

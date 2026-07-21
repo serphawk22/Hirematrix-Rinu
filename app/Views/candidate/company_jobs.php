@@ -267,7 +267,7 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
     let cachePollAttempts = 0;
     let lastPolledJobCount = 0;
     let stableCachePolls = 0;
-    const maxCachePollAttempts = 30;
+    const maxCachePollAttempts = 12;
 
     const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
         '&': '&amp;',
@@ -356,11 +356,38 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
             return;
         }
 
+        emptyState.classList.remove('is-discovering');
+
         emptyState.innerHTML = [
             '<span class="company-jobs-empty-icon"><i class="' + escapeHtml(iconClass) + '"></i></span>',
             '<div>',
             '  <strong>' + escapeHtml(title) + '</strong>',
             '  <p>' + escapeHtml(message) + '</p>',
+            '</div>'
+        ].join('');
+    };
+
+    const showDiscoveryLoading = () => {
+        if (!emptyState) {
+            return;
+        }
+
+        emptyState.classList.add('is-discovering');
+        emptyState.innerHTML = [
+            '<div class="company-discovery-animation" role="status" aria-live="polite">',
+            '  <div class="company-discovery-heading">',
+            '    <span class="company-discovery-icon" aria-hidden="true"><i class="fas fa-search"></i></span>',
+            '    <div class="company-discovery-copy">',
+            '      <strong>Finding current openings at ' + escapeHtml(companyName) + '</strong>',
+            '      <span>Checking official careers and trusted job sources...</span>',
+            '    </div>',
+            '  </div>',
+            '  <div class="company-discovery-progress" aria-hidden="true"><span></span></div>',
+            '  <div class="company-discovery-placeholders" aria-hidden="true">',
+            '    <div><i></i><span><b></b><em></em></span></div>',
+            '    <div><i></i><span><b></b><em></em></span></div>',
+            '    <div><i></i><span><b></b><em></em></span></div>',
+            '  </div>',
             '</div>'
         ].join('');
     };
@@ -530,11 +557,7 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
         }
 
         const previousHtml = externalList.innerHTML;
-        setEmptyStateContent(
-            'Loading current openings at ' + companyName,
-            'Matching roles will appear here as soon as they are available.',
-            'fas fa-spinner fa-spin'
-        );
+        showDiscoveryLoading();
         if (emptyState) {
             emptyState.hidden = portalCount > 0;
         }
@@ -545,7 +568,7 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
 
         const discoverParams = new URLSearchParams({
             company: companyName,
-            limit: '20'
+            limit: '10'
         });
         if (companyWebsite) {
             discoverParams.set('website', companyWebsite);
@@ -554,8 +577,12 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
             discoverParams.set('career_url', companyCareerPage);
         }
 
+        const discoveryController = new AbortController();
+        const discoveryTimeout = window.setTimeout(() => discoveryController.abort(), 30000);
+
         fetch(discoverUrl + '?' + discoverParams.toString(), {
-            headers: { 'Accept': 'application/json' }
+            headers: { 'Accept': 'application/json' },
+            signal: discoveryController.signal
         })
             .then((response) => response.text().then((text) => {
                 if (!text.trim()) {
@@ -576,6 +603,7 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
                 return payload;
             }))
             .then((payload) => {
+                window.clearTimeout(discoveryTimeout);
                 if (!payload || payload.success === false || payload.error) {
                     throw new Error(payload && payload.error ? payload.error : 'Could not check latest jobs.');
                 }
@@ -585,14 +613,15 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
                 }
             })
             .catch((error) => {
+                window.clearTimeout(discoveryTimeout);
                 if (previousHtml && !externalList.innerHTML) {
                     externalList.innerHTML = previousHtml;
                 }
                 setCounts(initialExternalCount);
-                if (emptyState && cachePollAttempts >= maxCachePollAttempts) {
+                if (emptyState) {
                     setEmptyStateContent(
-                        'Openings are not available right now',
-                        'Please try again shortly.',
+                        'Current openings are still being checked',
+                        'This company did not return jobs quickly. Please check again shortly.',
                         'fas fa-exclamation-circle'
                     );
                     emptyState.hidden = renderedJobCardCount() > 0;
