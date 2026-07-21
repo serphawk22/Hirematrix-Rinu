@@ -102,4 +102,3 @@
 </div>
 
 <?= view('Layouts/candidate_footer') ?>
-
