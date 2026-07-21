@@ -460,7 +460,7 @@ header.site-navbar.landing-header .landing-header-logo-text {
 
                 <!-- Right Actions -->
                 <div class="right-cta-menu text-right d-flex justify-content-end align-items-center col-auto landing-header-actions">
-                    <a href="<?= site_url('login') ?>" class="btn btn-outline-primary" role="button">Sign In</a>
+                    <a href="<?= site_url('register') ?>" class="btn btn-outline-primary" role="button">Sign Up</a>
                     <a href="#" class="site-menu-toggle js-menu-toggle d-inline-block d-lg-none mt-lg-2 ml-3">
                         <span class="icon-menu h3 m-0 p-0 mt-2"></span>
                     </a>

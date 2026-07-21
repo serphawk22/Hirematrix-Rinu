@@ -3,9 +3,7 @@ session_start();
 require_once 'config.php';
 if (
     empty($_SESSION['candidate']) ||
-    empty($_SESSION['coding_problems']) || 
-    empty($_SESSION['totalScore']) ||
-    $_SESSION['totalScore'] < 35
+    empty($_SESSION['coding_problems'])  
 ) {
     header("Location: index.php");
     exit;

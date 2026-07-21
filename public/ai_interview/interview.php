@@ -1,7 +1,6 @@
 <?php
 session_start(); require_once 'config.php';
-if (empty($_SESSION['candidate']) || empty($_SESSION['totalScore']) || $_SESSION['totalScore'] < 35 || empty($_SESSION['coding_score']) || $_SESSION['coding_score'] < 50) { header('Location: index.php'); exit; }
-//|| $_SESSION['totalScore'] > 70 || $_SESSION['coding_score'] > 50
+if (empty($_SESSION['candidate'])) { header('Location: index.php'); exit; } 
 $cand = $_SESSION['candidate'];
 ?>
 <!DOCTYPE html><html lang="en"><head>

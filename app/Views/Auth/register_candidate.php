@@ -136,7 +136,7 @@
     }
 }</style>
 </head>
-<?= view('Layouts/public_header', ['body_class' => 'public-auth-page']) ?>
+<?= view('Layouts/auth_header', ['body_class' => 'public-auth-page']) ?>
 
   <section class="auth-page-shell"> 
     <div class="auth-page-column auth-page-column--md">
