@@ -239,27 +239,87 @@ class ApiJobsController extends ResourceController
                 }
             }
         }
+        $companyIds = [];
+        $companyNames = [];
+        foreach ($jobSets as $set) {
+            foreach ($set as $job) {
+                $coId = (int) ($job['company_id'] ?? 0);
+                if ($coId > 0) {
+                    $companyIds[] = $coId;
+                }
+                $cName = strtolower(trim((string) ($job['company'] ?? '')));
+                if ($cName !== '') {
+                    $companyNames[] = $cName;
+                }
+            }
+        }
+        
         $companyIds = array_values(array_unique($companyIds));
+        $companyNames = array_values(array_unique($companyNames));
 
         $companyLogoMap = [];
-        if (!empty($companyIds)) {
-            $companies = (new CompanyModel())
-                ->select('id, logo')
-                ->whereIn('id', $companyIds)
-                ->findAll();
+        $companyWebsiteMap = [];
+        $companyNameLogoMap = [];
+        $companyNameWebsiteMap = [];
+
+        if (!empty($companyIds) || !empty($companyNames)) {
+            $builder = (new CompanyModel())->select('id, name, logo, website');
+            if (!empty($companyIds) && !empty($companyNames)) {
+                $builder->groupStart()
+                        ->whereIn('id', $companyIds)
+                        ->orWhereIn('LOWER(name)', $companyNames)
+                        ->groupEnd();
+            } elseif (!empty($companyIds)) {
+                $builder->whereIn('id', $companyIds);
+            } else {
+                $builder->whereIn('LOWER(name)', $companyNames);
+            }
+            
+            $companies = $builder->findAll();
             foreach ($companies as $company) {
+                $id = (int) $company['id'];
+                $name = strtolower(trim((string) ($company['name'] ?? '')));
                 $logo = (string) ($company['logo'] ?? '');
-                if ($logo !== '' && !preg_match('/^https?:\/\//i', $logo)) {
-                    $logo = base_url(ltrim($logo, '/'));
+                $website = (string) ($company['website'] ?? '');
+                
+                $companyLogoMap[$id] = $logo;
+                $companyWebsiteMap[$id] = $website;
+                if ($name !== '') {
+                    $companyNameLogoMap[$name] = $logo;
+                    $companyNameWebsiteMap[$name] = $website;
                 }
-                $companyLogoMap[(int) $company['id']] = $logo;
             }
         }
 
-        $applyLogosAndClientInfo = function (array $jobSet) use ($companyLogoMap): array {
+        $applyLogosAndClientInfo = function (array $jobSet) use ($companyLogoMap, $companyWebsiteMap, $companyNameLogoMap, $companyNameWebsiteMap): array {
             foreach ($jobSet as $index => $job) {
                 $id = (int) ($job['company_id'] ?? 0);
-                $jobSet[$index]['company_logo'] = $companyLogoMap[$id] ?? '';
+                $cName = strtolower(trim((string) ($job['company'] ?? '')));
+                
+                $logo = '';
+                $website = '';
+                
+                if ($id > 0 && isset($companyLogoMap[$id])) {
+                    $logo = $companyLogoMap[$id];
+                    $website = $companyWebsiteMap[$id] ?? '';
+                } elseif ($cName !== '' && isset($companyNameLogoMap[$cName])) {
+                    $logo = $companyNameLogoMap[$cName];
+                    $website = $companyNameWebsiteMap[$cName] ?? '';
+                }
+
+                if ($logo !== '') {
+                    if (!preg_match('/^https?:\/\//i', $logo)) {
+                        $logo = base_url(ltrim($logo, '/'));
+                    }
+                } else {
+                    $websiteHost = $website !== '' ? (parse_url($website, PHP_URL_HOST) ?: $website) : '';
+                    $websiteHost = preg_replace('/^www\./i', '', (string) $websiteHost) ?? '';
+                    if ($websiteHost !== '') {
+                        $logo = 'https://www.google.com/s2/favicons?domain=' . rawurlencode($websiteHost) . '&sz=96';
+                    }
+                }
+                
+                $jobSet[$index]['company_logo'] = $logo;
 
                 if (($job['posted_for'] ?? '') === 'client') {
                     if (($job['client_disclosure'] ?? '') === 'visible' && !empty($job['client_company_name'])) {
@@ -1074,6 +1134,23 @@ class ApiJobsController extends ResourceController
         $result = array_values($merged);
         usort($result, static fn (array $a, array $b): int => ((float) ($b['match_score'] ?? 0.0)) <=> ((float) ($a['match_score'] ?? 0.0)));
         return array_slice($result, 0, $limit);
+    }
+
+    public function markVisited($jobId = null)
+    {
+        if (!$jobId) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Job ID required']);
+        }
+
+        $db = \Config\Database::connect();
+        if ($db->fieldExists('visited_flag', 'jobs')) {
+            $db->table('jobs')
+                ->where('id', $jobId)
+                ->update(['visited_flag' => 1]);
+            return $this->response->setJSON(['status' => 'success']);
+        }
+
+        return $this->response->setJSON(['status' => 'error', 'message' => 'Feature not available']);
     }
 
     public function getSavedJobs($candidateId)

@@ -202,7 +202,7 @@ class ApiOnboardingController extends ResourceController
 
     private function saveExperience(int $candidateId, $json)
     {
-        $isFresher = ($json->is_fresher ?? false) === true;
+        $isFresher = !empty($json->is_fresher);
         $userModel = new UserModel();
 
         if ($isFresher) {

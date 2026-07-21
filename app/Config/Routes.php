@@ -138,6 +138,7 @@ $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->get('local-companies/init', 'Companies::initLocalCompanies');
     $routes->get('jobs/detail/(:num)', 'ApiJobsController::getJobDetails/$1');
     $routes->get('jobs/(:num)', 'ApiJobsController::getJobs/$1');
+    $routes->post('jobs/mark-visited/(:num)', 'ApiJobsController::markVisited/$1');
     $routes->get('jobs/saved/(:num)', 'ApiJobsController::getSavedJobs/$1');
     $routes->post('jobs/save', 'ApiJobsController::saveJob');
     $routes->post('jobs/unsave', 'ApiJobsController::unsaveJob');

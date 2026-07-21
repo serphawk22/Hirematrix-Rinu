@@ -301,23 +301,50 @@ class ApiDashboardController extends ResourceController
         }
 
         $companyIds = [];
+        $companyNames = [];
         foreach ($suggestedJobs as $job) {
             $companyId = (int) ($job['company_id'] ?? 0);
             if ($companyId > 0) {
                 $companyIds[] = $companyId;
             }
+            $cName = strtolower(trim((string) ($job['company'] ?? '')));
+            if ($cName !== '') {
+                $companyNames[] = $cName;
+            }
         }
 
+        $db = \Config\Database::connect();
         $companyLogoMap = [];
-        if (!empty($companyIds)) {
-            $companyModel = new CompanyModel();
-            $companies = $companyModel
-                ->select('id, logo')
-                ->whereIn('id', array_values(array_unique($companyIds)))
-                ->findAll();
-
+        $companyWebsiteMap = [];
+        $companyNameLogoMap = [];
+        $companyNameWebsiteMap = [];
+        
+        if (!empty($companyIds) || !empty($companyNames)) {
+            $builder = $db->table('companies')->select('id, name, logo, website');
+            if (!empty($companyIds) && !empty($companyNames)) {
+                $builder->groupStart()
+                        ->whereIn('id', array_unique($companyIds))
+                        ->orWhereIn('LOWER(name)', array_unique($companyNames))
+                        ->groupEnd();
+            } elseif (!empty($companyIds)) {
+                $builder->whereIn('id', array_unique($companyIds));
+            } else {
+                $builder->whereIn('LOWER(name)', array_unique($companyNames));
+            }
+            
+            $companies = $builder->get()->getResultArray();
             foreach ($companies as $company) {
-                $companyLogoMap[(int) $company['id']] = (string) ($company['logo'] ?? '');
+                $id = (int) $company['id'];
+                $name = strtolower(trim((string) ($company['name'] ?? '')));
+                $logo = (string) ($company['logo'] ?? '');
+                $website = (string) ($company['website'] ?? '');
+                
+                $companyLogoMap[$id] = $logo;
+                $companyWebsiteMap[$id] = $website;
+                if ($name !== '') {
+                    $companyNameLogoMap[$name] = $logo;
+                    $companyNameWebsiteMap[$name] = $website;
+                }
             }
         }
 
@@ -331,15 +358,32 @@ class ApiDashboardController extends ResourceController
             }
 
             $coId = (int) ($job['company_id'] ?? 0);
+            $cName = strtolower(trim((string) ($job['company'] ?? '')));
+            
+            $logo = '';
+            $website = '';
+            
             if ($coId > 0 && isset($companyLogoMap[$coId])) {
                 $logo = $companyLogoMap[$coId];
-                if ($logo !== '' && !preg_match('/^https?:\/\//i', $logo)) {
+                $website = $companyWebsiteMap[$coId] ?? '';
+            } elseif ($cName !== '' && isset($companyNameLogoMap[$cName])) {
+                $logo = $companyNameLogoMap[$cName];
+                $website = $companyNameWebsiteMap[$cName] ?? '';
+            }
+
+            if ($logo !== '') {
+                if (!preg_match('/^https?:\/\//i', $logo)) {
                     $logo = base_url(ltrim($logo, '/'));
                 }
-                $suggestedJobs[$idx]['company_logo'] = $logo;
             } else {
-                $suggestedJobs[$idx]['company_logo'] = '';
+                $websiteHost = $website !== '' ? (parse_url($website, PHP_URL_HOST) ?: $website) : '';
+                $websiteHost = preg_replace('/^www\./i', '', (string) $websiteHost) ?? '';
+                if ($websiteHost !== '') {
+                    $logo = 'https://www.google.com/s2/favicons?domain=' . rawurlencode($websiteHost) . '&sz=96';
+                }
             }
+            
+            $suggestedJobs[$idx]['company_logo'] = $logo;
         }
 
         return $suggestedJobs;
@@ -363,8 +407,17 @@ class ApiDashboardController extends ResourceController
         }));
 
         foreach ($filtered as &$row) {
-            if (!empty($row['logo']) && !preg_match('/^https?:\/\//i', $row['logo'])) {
-                $row['logo'] = base_url(ltrim($row['logo'], '/'));
+            if (!empty($row['logo'])) {
+                if (!preg_match('/^https?:\/\//i', $row['logo'])) {
+                    $row['logo'] = base_url(ltrim($row['logo'], '/'));
+                }
+            } else {
+                $website = (string) ($row['website'] ?? '');
+                $websiteHost = $website !== '' ? (parse_url($website, PHP_URL_HOST) ?: $website) : '';
+                $websiteHost = preg_replace('/^www\./i', '', (string) $websiteHost) ?? '';
+                if ($websiteHost !== '') {
+                    $row['logo'] = 'https://www.google.com/s2/favicons?domain=' . rawurlencode($websiteHost) . '&sz=96';
+                }
             }
         }
 
@@ -897,7 +950,20 @@ class ApiDashboardController extends ResourceController
         // Ensure URLs are absolute for mobile
         foreach ($companies as &$company) {
             $company['open_jobs_count'] = (int) ($company['open_jobs_count'] ?? 0);
-            $company['logo'] = !empty($company['logo']) ? base_url($company['logo']) : '';
+            if (!empty($company['logo'])) {
+                $company['logo'] = preg_match('/^https?:\/\//i', $company['logo'])
+                    ? $company['logo']
+                    : base_url(ltrim($company['logo'], '/'));
+            } else {
+                $website = (string) ($company['website'] ?? '');
+                $websiteHost = $website !== '' ? (parse_url($website, PHP_URL_HOST) ?: $website) : '';
+                $websiteHost = preg_replace('/^www\./i', '', (string) $websiteHost) ?? '';
+                if ($websiteHost !== '') {
+                    $company['logo'] = 'https://www.google.com/s2/favicons?domain=' . rawurlencode($websiteHost) . '&sz=96';
+                } else {
+                    $company['logo'] = '';
+                }
+            }
             $company['discovery_tags'] = $this->buildCompanyDiscoveryTags($company, $hasCompanyType, $hasCompanyTags, $hasVerified, $hasProfileStatus);
         }
         unset($company);
