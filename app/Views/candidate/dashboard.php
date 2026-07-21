@@ -1,6 +1,92 @@
 <?= view('Layouts/candidate_header', ['title' => 'Dashboard']) ?>
 
+<style>
+/* ================================================
+   FEATURE HIGHLIGHTS POPUP (dashboard)
+================================================ */
+.hm-modal-overlay {
+    position: fixed; inset: 0; background: rgba(17,24,39,.55);
+    display: none; align-items: center; justify-content: center;
+    z-index: 9999; padding: 20px; backdrop-filter: blur(2px);
+}
+.hm-modal-overlay.active { display: flex; }
 
+.hm-modal {
+    background: #fff; border-radius: 20px; max-width: 480px; width: 100%;
+    max-height: 90vh; overflow-y: auto; padding: 32px 32px 28px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.25);
+    position: relative; animation: hmPop .25s ease;
+}
+@keyframes hmPop { from{opacity:0; transform:translateY(12px) scale(.98);} to{opacity:1; transform:none;} }
+
+.hm-modal-close {
+    position: absolute; top: 18px; right: 18px;
+    width: 34px; height: 34px; border-radius: 9px; border: 1px solid #E5E7EB;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    color: #6b7280; cursor: pointer; transition: .15s; font-size: 14px;
+}
+.hm-modal-close:hover { background: #F9FAFB; color: #111827; }
+
+.hm-modal-eyebrow { font-size: 13px; font-weight: 800; letter-spacing: .08em; color: #0D8A90; text-transform: uppercase; margin-bottom: 4px; }
+.hm-modal-sub { font-size: 13px; color: #9CA3AF; margin-bottom: 16px; }
+.hm-modal-divider { height: 2px; background: linear-gradient(90deg,#1FB7B5,#53B86C,#B5D84E); border-radius: 2px; margin-bottom: 22px; }
+
+.hm-modal-title { font-size: 26px; font-weight: 600; color: #111827; margin-bottom: 12px; line-height: 1.25; }
+.hm-modal-title span { background: linear-gradient(135deg,#1FB7B5,#53B86C,#B5D84E); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.hm-intent-options { display: flex; flex-direction: column; gap: 14px; margin-top: 6px; }
+.hm-intent-btn {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 22px; border-radius: 14px;
+    border: 1.5px solid #D9ECE5; background: #fff;
+    text-decoration: none !important; color: inherit;
+    transition: .2s;
+}
+.hm-intent-btn:hover {
+    border-color: #1FB7B5;
+    box-shadow: 0 6px 20px rgba(31,183,181,.10);
+    transform: translateY(-2px);
+    text-decoration: none !important;
+}
+.hm-intent-icon {
+    width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #0D8A90;
+    background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%);
+    border: 1px solid #D9ECE5;
+}
+.hm-intent-text h4 { font-size: 17px; font-weight: 600; color: #111827; margin-bottom: 3px; }
+.hm-intent-text p { font-size: 13.5px; color: #6b7280; margin: 0; line-height: 1.4; }
+.hm-intent-arrow { margin-left: auto; color: #9CA3AF; font-size: 16px; flex-shrink: 0; }
+.hm-intent-skip {
+    display: block; text-align: center; margin-top: 18px;
+    font-size: 13.5px; color: #9CA3AF; background: none; border: none;
+    cursor: pointer; text-decoration: underline; outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.hm-intent-skip:focus { outline: none; box-shadow: none; }
+.hm-intent-skip:hover { color: #6b7280; }
+
+@media (max-width: 600px) {
+    .hm-modal { padding: 26px 20px 22px; }
+    .hm-modal-title { font-size: 22px; }
+}
+
+@media (prefers-color-scheme: dark) {
+    .hm-modal { background: #0B0B0B !important; border: 1px solid #23343A; }
+    .hm-modal-close { background: #0B0B0B !important; border-color: #23343A !important; color: #94A3B8 !important; }
+    .hm-modal-close:hover { background: #1B2A2F !important; color: #fff !important; }
+    .hm-modal-title { color: #F8FAFC !important; }
+    .hm-modal-sub { color: #7A8B96 !important; }
+    .hm-intent-btn { background: #0B0B0B !important; border-color: #23343A !important; }
+    .hm-intent-btn:hover { border-color: #1FB7B5 !important; }
+    .hm-intent-icon { background: linear-gradient(135deg,#162327 0%,#1B2A2F 100%) !important; border-color: #23343A !important; }
+    .hm-intent-text h4 { color: #F8FAFC !important; }
+    .hm-intent-text p { color: #94A3B8 !important; }
+    .hm-intent-skip { color: #7A8B96 !important; }
+    .hm-intent-skip:hover { color: #CBD5E1 !important; }
+}
+    </style>
 <?php
 $applicationCount = count($applications ?? []);
 $recentApps = array_slice($applications ?? [], 0, 5);
@@ -566,7 +652,73 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
     </div><!-- /.dash-grid__main -->
 
 </div><!-- /.dash-grid -->
+
+<!-- ═══════════════ FEATURE HIGHLIGHTS POPUP (fires 7s after load) ═══════════════ -->
+<?php if (empty($premiumSubscription ?? null)): ?>
+<div class="hm-modal-overlay" id="dashFeaturePopupModal">
+  <div class="hm-modal" role="dialog" aria-modal="true" aria-labelledby="dashFeaturePopupTitle">
+    <button type="button" class="hm-modal-close" onclick="hmCloseDashFeaturePopup()" aria-label="Close"><i class="fas fa-times"></i></button>
+
+    <div class="hm-modal-eyebrow">Why HireMatrix</div>
+    <div class="hm-modal-sub">Tools built to get you hired faster</div>
+    <div class="hm-modal-divider"></div>
+
+    <h3 class="hm-modal-title" id="dashFeaturePopupTitle">Explore what makes us <span>different</span></h3>
+
+    <div class="hm-intent-options">
+      <?php foreach ($proFeatureSlides as $slide): ?>
+        <a href="<?= esc($slide['cta_url'] ?? base_url('premium/plans')) ?>" class="hm-intent-btn">
+          <div class="hm-intent-icon"><i class="<?= esc($pickJobIcon($slide['eyebrow'] ?? '')) ?>"></i></div>
+          <div class="hm-intent-text">
+            <h4><?= esc($slide['title'] ?? ($slide['eyebrow'] ?? '')) ?></h4>
+            <p><?= esc($slide['rows'][0] ?? '') ?></p>
+          </div>
+          <i class="fas fa-chevron-right hm-intent-arrow"></i>
+        </a>
+      <?php endforeach; ?>
+    </div>
+
+    <button type="button" class="hm-intent-skip" onclick="hmCloseDashFeaturePopup()">Maybe later</button>
+  </div>
+</div>
+<?php endif; ?>
 </div><!-- /.dashboard-jobboard --> 
  
 
 <?= view('Layouts/candidate_footer') ?>
+<script>
+(function () {
+  var STORAGE_KEY = 'hm_dash_feature_popup_shown';
+  var DELAY_MS = 7000;
+
+  function showPopup() {
+    if (sessionStorage.getItem(STORAGE_KEY)) return;
+    var modal = document.getElementById('dashFeaturePopupModal');
+    if (!modal) return;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  window.hmCloseDashFeaturePopup = function () {
+    var modal = document.getElementById('dashFeaturePopupModal');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    sessionStorage.setItem(STORAGE_KEY, '1');
+  };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById('dashFeaturePopupModal');
+    if (modal) {
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) window.hmCloseDashFeaturePopup();
+      });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') window.hmCloseDashFeaturePopup();
+    });
+    setTimeout(showPopup, DELAY_MS);
+  });
+})();
+</script>

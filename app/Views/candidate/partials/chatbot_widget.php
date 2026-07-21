@@ -1,12 +1,153 @@
 <!-- ─── Candidate AI Assistant Widget ─── -->
 <meta name="csrf-name" content="<?= csrf_token() ?>">
 <meta name="csrf-hash" content="<?= csrf_hash() ?>">
+<style>
+.hirebot-widget {
+  position: fixed;
+  bottom: 48px;
+  right: 28px;
+  display: flex;
+  align-items: center;
+  z-index: 9999;
+  font-family: inherit;
+}
 
-<button class="hm-candidate-chat-fab" id="hmCandidateChatFab" aria-label="Open assistant" title="HireMate Candidate Assistant">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-    </svg>
-</button>
+/* ===== Badge — force circle, override any inherited button styles ===== */
+.hirebot-fab {
+  all: unset;
+  box-sizing: border-box;
+  width: 92px;
+  height: 92px;
+  min-width: 92px;
+  min-height: 92px;
+  border-radius: 50% !important;
+  padding: 3px;
+  background: var(--gradient-primary);
+  box-shadow: 0 8px 22px rgba(13, 138, 144, 0.3);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+}
+
+.hirebot-fab-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--gradient-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hirebot-fab-text {
+  background: linear-gradient(135deg, var(--primary-dark), var(--secondary-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+}
+
+/* ===== Tooltip ===== */
+.hirebot-tooltip {
+  position: relative;
+  background: var(--gradient-primary);
+  color: #fff;
+  padding: 13px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-style: italic;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(13, 138, 144, 0.3);
+  margin-right: 14px;
+  transform-origin: right center;
+  animation: hirebot-pop 5s ease-in-out infinite;
+}
+
+.hirebot-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  width: 12px;
+  height: 12px;
+  background: var(--secondary);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+@keyframes hirebot-pop {
+  0%, 10%   { opacity: 0; transform: scale(0.7) translateX(8px); }
+  20%       { opacity: 1; transform: scale(1.06) translateX(0); }
+  26%       { transform: scale(1) translateX(0); }
+  80%       { opacity: 1; transform: scale(1) translateX(0); }
+  92%, 100% { opacity: 0; transform: scale(0.85) translateX(8px); }
+}
+
+/* ===== Dark theme overrides ===== */
+body.dark .hirebot-fab {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+}
+
+body.dark .hirebot-tooltip {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.hm-candidate-chat-widget {
+    position: fixed;
+    bottom: 92px;
+    right: 24px;
+    width: 510px;
+    height: 450px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+    z-index: 10000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ===== Quick actions row (row 1) and suggestions row (row 2) ===== */
+.hm-candidate-chat-quick-actions,
+.hm-candidate-chat-suggestions {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+
+.hm-candidate-chat-quick-actions::-webkit-scrollbar,
+.hm-candidate-chat-suggestions::-webkit-scrollbar {
+  display: none;
+}
+
+.hm-candidate-chat-quick-actions button,
+.hm-candidate-chat-suggestions button {
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin: 0 !important;
+}
+</style>
+
+<div class="hirebot-widget" id="hirebotWidget">
+  <div class="hirebot-tooltip" id="hirebotTooltip">
+    Explore top career content
+  </div>
+  <button type="button" class="hirebot-fab" id="hmCandidateChatFab" aria-label="Open HireBot assistant">
+    <span class="hirebot-fab-inner">
+      <span class="hirebot-fab-text">Hire<br>Bot</span>
+    </span>
+  </button>
+</div>
 
 <div class="hm-candidate-chat-widget" id="hmCandidateChatWidget">
     <div class="hm-candidate-chat-header">
@@ -19,8 +160,7 @@
 
     <div class="hm-candidate-chat-messages" id="hmCandidateChatMessages">
         <div class="hm-candidate-chat-row bot"><div class="hm-candidate-chat-bubble bot">Welcome! 🚀 I'm your personal AI career coach and ChatBot</div></div>
-        <div class="hm-candidate-chat-row bot"><div class="hm-candidate-chat-bubble bot">Hi! I can help you review jobs, applications, saved roles, interviews, and your profile. Ask me anything.</div></div>
-        <div class="hm-candidate-chat-row bot"><div class="hm-candidate-chat-bubble bot">I can help you with career planning, skill development, interview preparation, resume optimization, and salary negotiation.</div></div>
+        <div class="hm-candidate-chat-row bot"><div class="hm-candidate-chat-bubble bot">Hi! I can help you review jobs, applications, career planning, interviews, and your profile. Ask me anything.</div></div> 
     </div>
 
     <?php
@@ -31,28 +171,29 @@
             : '';
     ?>
 
-    <!-- Quick Actions (career-mentor shortcuts) -->
+    <!-- Row 1: Quick Actions (career-mentor shortcuts) -->
     <div class="hm-candidate-chat-quick-actions" id="hmCandidateQuickActions" data-target-role="<?= esc($hmTargetRole, 'attr') ?>">
-        <button type="button" class="btn btn-sm btn-outline-primary me-2 mb-2" data-action="career-plan">
-         <i class="fas fa-briefcase me-1"></i> Career Plan  
+        <button type="button" class="btn btn-sm btn-outline-primary" data-action="career-plan">
+            <i class="fas fa-briefcase me-1"></i> Career Plan
         </button>
-        <button type="button" class="btn btn-sm btn-outline-primary me-2 mb-2" data-action="skill-gap">
+        <button type="button" class="btn btn-sm btn-outline-primary" data-action="skill-gap">
             <i class="fas fa-chart-bar me-1"></i> Skill Gap
         </button>
-        <button type="button" class="btn btn-sm btn-outline-primary me-2 mb-2" data-action="interview-prep">
+        <button type="button" class="btn btn-sm btn-outline-primary" data-action="interview-prep">
             <i class="fas fa-microphone me-1"></i> Interview Prep
         </button>
-        <button type="button" class="btn btn-sm btn-outline-primary me-2 mb-2" data-action="resume-review">
+        <button type="button" class="btn btn-sm btn-outline-primary" data-action="resume-review">
             <i class="fas fa-file-alt me-1"></i> Resume Review
         </button>
-        <button type="button" class="btn btn-sm btn-outline-primary me-2 mb-2" data-action="salary-tips">
+        <button type="button" class="btn btn-sm btn-outline-primary" data-action="salary-tips">
             <i class="fas fa-dollar-sign me-1"></i> Salary Tips
         </button>
-        <button type="button" class="btn btn-sm btn-outline-primary me-2 mb-2" data-action="enroll-course">
+        <button type="button" class="btn btn-sm btn-outline-primary" data-action="enroll-course">
             <i class="fas fa-graduation-cap me-1"></i> Enroll in Course
         </button>
     </div>
 
+    <!-- Row 2: Suggestions (loaded dynamically) -->
     <div class="hm-candidate-chat-suggestions" id="hmCandidateChatSuggestions"></div>
 
     <div class="hm-candidate-chat-input-wrap">
