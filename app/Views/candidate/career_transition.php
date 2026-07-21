@@ -63,6 +63,18 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
                                         Generating AI course...
                                     </span>
                                 </button>
+                                <div class="career-ai-loader" data-transition-loader role="status" aria-live="polite" hidden>
+                                    <div class="career-ai-loader-visual" aria-hidden="true">
+                                        <span class="career-ai-loader-node"><i class="fas fa-user"></i></span>
+                                        <span class="career-ai-loader-route"><span></span></span>
+                                        <span class="career-ai-loader-node career-ai-loader-node-target"><i class="fas fa-flag-checkered"></i></span>
+                                    </div>
+                                    <div class="career-ai-loader-copy">
+                                        <strong>Building your personalised learning path</strong>
+                                        <span data-transition-status>Analysing the skills between your current and target roles...</span>
+                                    </div>
+                                    <div class="career-ai-loader-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -111,15 +123,22 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
                                     </div>
 
                                     <div class="career-transition-actions">
-                                        <a href="<?= base_url('career-transition/course') ?>" class="btn btn-primary">
+                                        <a href="<?= !empty($firstModule['id'])
+                                            ? base_url('career-transition/module/' . (int) $firstModule['id'])
+                                            : base_url('career-transition/course') ?>" class="btn btn-primary">
                                             <i class="fas fa-book-open"></i> View Course
                                         </a>
-                                        <a href="<?= base_url('career-transition/download-pdf') ?>" class="btn btn-primary">
-                                            <i class="fas fa-file-pdf"></i> PDF
-                                        </a>
-                                        <a href="#change-transition-form" class="btn btn-outline-secondary">
-                                            <i class="fas fa-sync"></i> Change Path
-                                        </a>
+                                        <button type="button"
+                                                class="btn btn-primary"
+                                                id="careerCoursePdfButton"
+                                                data-course-pdf-button
+                                                data-prepare-url="<?= base_url('career-transition/prepare-pdf') ?>"
+                                                data-download-url="<?= base_url('career-transition/download-pdf') ?>"
+                                                data-csrf-name="<?= csrf_token() ?>"
+                                                data-csrf-value="<?= csrf_hash() ?>">
+                                            <i class="fas fa-file-pdf"></i>
+                                            <span data-pdf-label>Download PDF</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -156,6 +175,18 @@ $reactivationCount = (int) ($transition['reactivation_count'] ?? 0);
                                             Generating AI course...
                                         </span>
                                     </button>
+                                    <div class="career-ai-loader" data-transition-loader role="status" aria-live="polite" hidden>
+                                        <div class="career-ai-loader-visual" aria-hidden="true">
+                                            <span class="career-ai-loader-node"><i class="fas fa-user"></i></span>
+                                            <span class="career-ai-loader-route"><span></span></span>
+                                            <span class="career-ai-loader-node career-ai-loader-node-target"><i class="fas fa-flag-checkered"></i></span>
+                                        </div>
+                                        <div class="career-ai-loader-copy">
+                                            <strong>Creating your new career roadmap</strong>
+                                            <span data-transition-status>Analysing the skills between your current and target roles...</span>
+                                        </div>
+                                        <div class="career-ai-loader-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+                                    </div>
                                 </form>
                             </div>
                         </div>

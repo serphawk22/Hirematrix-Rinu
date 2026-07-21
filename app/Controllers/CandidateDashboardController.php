@@ -2042,10 +2042,40 @@ class CandidateDashboardController extends BaseController
         $segments = $this->companyDiscoverySegments();
         $activeSegment = $segments[$filters['segment']] ?? null;
 
+        $today = date('Y-m-d');
+        $hasDiscoveredJobs = $db->tableExists('mnc_external_jobs');
+        $externalCountSelect = '0';
+
         $companiesBuilder = $companyModel
-            ->select('companies.*, COUNT(DISTINCT jobs.id) AS open_jobs_count')
-            ->join('jobs', "jobs.company_id = companies.id AND jobs.status = 'open'", 'left')
-            ->groupBy('companies.id');
+            ->join(
+                'jobs',
+                "jobs.company_id = companies.id AND jobs.status = 'open'"
+                    . " AND (jobs.application_deadline IS NULL OR jobs.application_deadline = '' OR jobs.application_deadline >= " . $db->escape($today) . ')',
+                'left',
+                false
+            );
+
+        if ($hasDiscoveredJobs) {
+            $freshAfter = date('Y-m-d H:i:s', strtotime('-30 days'));
+            $externalJobsSql = '(SELECT LOWER(TRIM(company_name)) AS company_key, COUNT(*) AS external_jobs_count'
+                . ' FROM mnc_external_jobs'
+                . ' WHERE is_active = 1'
+                . ' AND last_sync_at >= ' . $db->escape($freshAfter)
+                . " AND apply_url IS NOT NULL AND apply_url != ''"
+                . ' GROUP BY LOWER(TRIM(company_name))) external_openings';
+            $companiesBuilder->join(
+                $externalJobsSql,
+                'external_openings.company_key = LOWER(TRIM(companies.name))',
+                'left',
+                false
+            );
+            $externalCountSelect = 'COALESCE(MAX(external_openings.external_jobs_count), 0)';
+        }
+
+        $companiesBuilder
+            ->select('companies.*, (COUNT(DISTINCT jobs.id) + ' . $externalCountSelect . ') AS open_jobs_count', false)
+            ->groupBy('companies.id')
+            ->having('open_jobs_count >', 0);
 
         if (!empty($filters['q'])) {
             $companiesBuilder->groupStart()
@@ -2081,9 +2111,8 @@ class CandidateDashboardController extends BaseController
             }
             $companiesBuilder->groupEnd();
         }
-        if ($filters['jobs'] === 'active') {
-            $companiesBuilder->having('open_jobs_count >', 0);
-        }
+        // Only companies with at least one current opening are listed. The
+        // hiring-status query option remains accepted for existing links.
 
         if ($hasFeatured) {
             $companiesBuilder->orderBy('companies.is_featured', 'DESC');
@@ -2098,6 +2127,79 @@ class CandidateDashboardController extends BaseController
         $viewAll = $this->request->getGet('view_all') === '1';
         $companiesPerPage = $viewAll ? 500 : 16;
         $companies = $companiesBuilder->paginate($companiesPerPage);
+
+        // Some discovered employers do not yet have a row in `companies`.
+        // Include those employers directly from the active external-job cache
+        // so the directory does not become portal-jobs-only.
+        $externalCompanyRows = [];
+        if ($hasDiscoveredJobs && empty($filters['industry']) && !$activeSegment) {
+            $externalCompanyBuilder = $db->table('mnc_external_jobs')
+                ->select('company_name AS name, COUNT(*) AS open_jobs_count, MAX(apply_url) AS sample_apply_url', false)
+                ->where('is_active', 1)
+                ->where('last_sync_at >=', $freshAfter)
+                ->where('apply_url IS NOT NULL', null, false)
+                ->where('apply_url !=', '');
+
+            if (!empty($filters['q'])) {
+                $externalCompanyBuilder->groupStart()
+                    ->like('company_name', $filters['q'], 'both')
+                    ->orLike('title', $filters['q'], 'both')
+                    ->groupEnd();
+            }
+            if (!empty($filters['location'])) {
+                $externalCompanyBuilder->like('location', $filters['location'], 'both');
+            }
+
+            $externalCompanyRows = $externalCompanyBuilder
+                ->groupBy('company_name')
+                ->orderBy('open_jobs_count', 'DESC')
+                ->limit($viewAll ? 500 : 100)
+                ->get()
+                ->getResultArray();
+        }
+
+        $companyDirectoryKey = static function (string $name): string {
+            $name = strtolower(trim($name));
+            $name = preg_replace('/[^a-z0-9]+/', '', $name) ?? '';
+            return preg_replace('/(?:privatelimited|pvtltd|limited|ltd|inc|llc|company|corp)$/', '', $name) ?? $name;
+        };
+        $knownCompanyKeys = [];
+        foreach ($companies as $companyRow) {
+            $knownCompanyKeys[$companyDirectoryKey((string) ($companyRow['name'] ?? ''))] = true;
+        }
+
+        foreach ($externalCompanyRows as $externalCompany) {
+            $externalName = trim((string) ($externalCompany['name'] ?? ''));
+            $externalKey = $companyDirectoryKey($externalName);
+            if ($externalName === '' || $externalKey === '' || isset($knownCompanyKeys[$externalKey])) {
+                continue;
+            }
+
+            $sampleApplyUrl = trim((string) ($externalCompany['sample_apply_url'] ?? ''));
+            $sampleHost = (string) (parse_url($sampleApplyUrl, PHP_URL_HOST) ?: '');
+            $companies[] = [
+                'id' => 0,
+                'name' => $externalName,
+                'website' => $sampleHost !== '' ? 'https://' . preg_replace('/^www\./i', '', $sampleHost) : '',
+                'hq' => '',
+                'industry' => '',
+                'short_description' => 'Explore current externally discovered openings at ' . $externalName . '.',
+                'open_jobs_count' => (int) ($externalCompany['open_jobs_count'] ?? 0),
+                'is_external_directory_company' => 1,
+            ];
+            $knownCompanyKeys[$externalKey] = true;
+        }
+
+        usort($companies, static function (array $left, array $right): int {
+            $countOrder = ((int) ($right['open_jobs_count'] ?? 0)) <=> ((int) ($left['open_jobs_count'] ?? 0));
+            return $countOrder !== 0
+                ? $countOrder
+                : strcasecmp((string) ($left['name'] ?? ''), (string) ($right['name'] ?? ''));
+        });
+        $hasMoreCompanies = !$viewAll && (count($companies) > 16 || ($companyModel->pager && $companyModel->pager->getPageCount() > 1));
+        if (!$viewAll) {
+            $companies = array_slice($companies, 0, 16);
+        }
 
         foreach ($companies as &$company) {
             $company['open_jobs_count'] = (int) ($company['open_jobs_count'] ?? 0);
@@ -2127,6 +2229,7 @@ class CandidateDashboardController extends BaseController
             'foundRegisteredCompanies' => $foundRegisteredCompanies,
             'shouldAutoTriggerAiSearch' => $shouldAutoTriggerAiSearch,
             'viewAll' => $viewAll,
+            'hasMoreCompanies' => $hasMoreCompanies,
         ]);
     }
 

@@ -26,6 +26,7 @@ class CareerTransition extends BaseController
         $this->requireCareerTransitionPremium($candidateId);
         $transitionModel = new CareerTransitionModel();
         $taskModel = new DailyTaskModel();
+        $moduleModel = new CourseModuleModel();
         $userModel = new \App\Models\UserModel();
         $skillsModel = new \App\Models\CandidateSkillsModel();
 
@@ -44,6 +45,9 @@ class CareerTransition extends BaseController
 
         $activeTransition = $transitionModel->getActiveTransition($candidateId);
         $tasks = $activeTransition ? $taskModel->getTasksByTransition($activeTransition['id']) : [];
+        $firstModule = $activeTransition
+            ? $moduleModel->where('transition_id', (int) $activeTransition['id'])->orderBy('module_number', 'ASC')->first()
+            : null;
 
         $user = $userModel->find($candidateId);
         $workExpModel = new \App\Models\WorkExperienceModel();
@@ -61,6 +65,7 @@ class CareerTransition extends BaseController
         return view('candidate/career_transition', [
             'transition'  => $activeTransition,
             'tasks'       => $tasks,
+            'firstModule' => $firstModule,
             'currentRole' => $currentRole,
             'targetRole'  => $targetRole ? urldecode($targetRole) : ''
         ]);
@@ -263,7 +268,7 @@ class CareerTransition extends BaseController
                 ->with('error', 'No course content is available yet. Generate your career transition roadmap first.');
         }
 
-        return redirect()->to('career-transition/module/' . (int) $modules[0]['id']);
+        return redirect()->to(base_url('career-transition/module/' . (int) $modules[0]['id']));
     }
 
     public function module($moduleId)
