@@ -2201,6 +2201,21 @@ class CandidateDashboardController extends BaseController
             $companies = array_slice($companies, 0, 16);
         }
 
+        // A company may be searched before it exists in our directory. Send
+        // that search to the live-opening page, which discovers jobs in the
+        // background and adds the employer only after openings are verified.
+        if (
+            empty($companies)
+            && $filters['q'] !== ''
+            && $filters['industry'] === ''
+            && $filters['location'] === ''
+            && $filters['segment'] === ''
+        ) {
+            return redirect()->to(
+                base_url('candidate/company-jobs/' . rawurlencode($filters['q']))
+            );
+        }
+
         foreach ($companies as &$company) {
             $company['open_jobs_count'] = (int) ($company['open_jobs_count'] ?? 0);
             $company['profile_url'] = base_url('company/' . $company['id']);

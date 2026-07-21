@@ -266,8 +266,9 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
     let cachePollTimer = null;
     let cachePollAttempts = 0;
     let lastPolledJobCount = 0;
-    let stableCachePolls = 0;
-    const maxCachePollAttempts = 12;
+    // Keep the page responsive: poll briefly for incremental inserts, then let
+    // the candidate retry instead of showing an indefinite loading state.
+    const maxCachePollAttempts = 22;
 
     const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
         '&': '&amp;',
@@ -513,14 +514,11 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
                 const jobs = payload && Array.isArray(payload.jobs) ? payload.jobs : [];
                 if (jobs.length > 0) {
                     renderExternalJobs(jobs);
-                    if (jobs.length === lastPolledJobCount) {
-                        stableCachePolls += 1;
-                    } else {
+                    if (jobs.length !== lastPolledJobCount) {
                         lastPolledJobCount = jobs.length;
-                        stableCachePolls = 0;
                     }
 
-                    if (stableCachePolls >= 3 || cachePollAttempts >= maxCachePollAttempts) {
+                    if (cachePollAttempts >= maxCachePollAttempts) {
                         stopCachePolling();
                     } else {
                         cachePollTimer = window.setTimeout(pollCachedJobs, 2000);
@@ -547,7 +545,6 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
         stopCachePolling();
         cachePollAttempts = 0;
         lastPolledJobCount = 0;
-        stableCachePolls = 0;
         cachePollTimer = window.setTimeout(pollCachedJobs, 1200);
     };
 
@@ -578,7 +575,7 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
         }
 
         const discoveryController = new AbortController();
-        const discoveryTimeout = window.setTimeout(() => discoveryController.abort(), 30000);
+        const discoveryTimeout = window.setTimeout(() => discoveryController.abort(), 45000);
 
         fetch(discoverUrl + '?' + discoverParams.toString(), {
             headers: { 'Accept': 'application/json' },
@@ -610,6 +607,8 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
                 if (Array.isArray(payload.jobs) && payload.jobs.length > 0) {
                     renderExternalJobs(payload.jobs);
                     stopCachePolling();
+                } else if (cachePollAttempts >= maxCachePollAttempts) {
+                    showNoResultsState();
                 }
             })
             .catch((error) => {
@@ -617,11 +616,13 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
                 if (previousHtml && !externalList.innerHTML) {
                     externalList.innerHTML = previousHtml;
                 }
-                setCounts(initialExternalCount);
-                if (emptyState) {
+                // Polling may still receive jobs written before a slow request
+                // ended. Do not replace the loader with a terminal warning
+                // while that background polling window is active.
+                if (emptyState && cachePollAttempts >= maxCachePollAttempts) {
                     setEmptyStateContent(
-                        'Current openings are still being checked',
-                        'This company did not return jobs quickly. Please check again shortly.',
+                        'Openings could not be refreshed',
+                        'Please try the search again shortly.',
                         'fas fa-exclamation-circle'
                     );
                     emptyState.hidden = renderedJobCardCount() > 0;
@@ -631,8 +632,10 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
 
     if (initialTotalCount === 0 && emptyState) {
         emptyState.hidden = false;
-        window.setTimeout(() => discoverJobs(true), 250);
     }
+    // Refresh on every company visit. Existing cards stay visible while the
+    // cache is checked; empty pages show the discovery animation immediately.
+    window.setTimeout(() => discoverJobs(true), initialTotalCount === 0 ? 250 : 900);
     syncEmptyStateVisibility();
     window.addEventListener('beforeunload', stopCachePolling);
 })();

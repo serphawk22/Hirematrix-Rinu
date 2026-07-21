@@ -9,11 +9,13 @@ class MncJobIngestor
 {
     private $apiKey;
     private $tavilyApiKey;
+    private bool $tavilyUnavailable = false;
 
     public function __construct()
     {
         $this->apiKey = getenv('OPENAI_API_KEY');
         $this->tavilyApiKey = getenv('TAVILY_API_KEY');
+        $this->tavilyUnavailable = (bool) cache()->get('mnc_tavily_temporarily_unavailable');
     }
 
     /**
@@ -33,7 +35,11 @@ class MncJobIngestor
         }
 
         $limit = max(1, min(100, $limit));
-        $careerUrls = $this->buildOfficialCareerUrlCandidates($companyName, $mapping, $companyInfo);
+        $careerUrls = array_slice(
+            $this->buildOfficialCareerUrlCandidates($companyName, $mapping, $companyInfo),
+            0,
+            2
+        );
 
         $failedHosts = [];
 
@@ -67,7 +73,7 @@ class MncJobIngestor
         }
 
         // Step 3: Company-specific LinkedIn jobs page. This avoids keyword-only matches.
-        foreach ($this->buildLinkedInCompanyJobsUrlCandidates($companyName, $companyInfo) as $linkedinJobsUrl) {
+        foreach (array_slice($this->buildLinkedInCompanyJobsUrlCandidates($companyName, $companyInfo), 0, 1) as $linkedinJobsUrl) {
             $linkedinCompanyJobsText = $this->fetchLinkedInCompanyJobsPageText($companyName, $linkedinJobsUrl, $limit);
             if ($linkedinCompanyJobsText !== '') {
                 $jobs = $this->parseResultsWithAi($companyName, $linkedinCompanyJobsText, $limit, $linkedinJobsUrl, true);
@@ -174,7 +180,7 @@ class MncJobIngestor
 
     private function fetchLinkedInCompanyJobsPageText(string $companyName, string $linkedinJobsUrl, int $limit): string
     {
-        $html = $this->curlGet($linkedinJobsUrl, 20);
+        $html = $this->curlGet($linkedinJobsUrl, 6);
         if ($html === '') {
             return '';
         }
@@ -245,7 +251,7 @@ class MncJobIngestor
 
     private function fetchOfficialCareerPageText(string $companyName, string $careerUrl, int $limit): string
     {
-        $html = $this->curlGet($careerUrl, 20);
+        $html = $this->curlGet($careerUrl, 6);
         if ($html === '') {
             return '';
         }
@@ -880,7 +886,7 @@ class MncJobIngestor
 
     private function tavilySearch(string $query, int $maxResults = 10, string $depth = 'advanced'): array
     {
-        if (!$this->tavilyApiKey) {
+        if (!$this->tavilyApiKey || $this->tavilyUnavailable) {
             return [];
         }
 
@@ -896,7 +902,8 @@ class MncJobIngestor
                 'search_depth' => $depth
             ]),
             CURLOPT_SSL_VERIFYPEER => (ENVIRONMENT !== 'development'), 
-            CURLOPT_TIMEOUT => 20
+            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_TIMEOUT => 8
         ]);
 
         $response = curl_exec($ch);
@@ -907,6 +914,15 @@ class MncJobIngestor
 
         if ($httpCode !== 200 || !$response) {
             log_message('error', "MncJobIngestor: Tavily API Error (HTTP $httpCode, cURL Error $errorNo: $errorMsg). Response: " . ($response ?: 'No response'));
+
+            // Quota/auth/rate-limit responses will not recover during this
+            // discovery request. Stop every later fallback from repeating the
+            // same failed remote call, and share that state briefly with other
+            // page requests.
+            if (in_array((int) $httpCode, [401, 403, 429, 432], true)) {
+                $this->tavilyUnavailable = true;
+                cache()->save('mnc_tavily_temporarily_unavailable', true, 900);
+            }
 
             return [];
         }
