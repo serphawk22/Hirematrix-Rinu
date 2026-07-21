@@ -52,10 +52,10 @@ class CandidateChatbotController extends BaseController
             ['text' => 'Find matching jobs from my profile', 'mode' => 'send'],
             ['text' => 'Show remote PHP jobs', 'mode' => 'send'],
             ['text' => 'Find hybrid jobs in Bangalore', 'mode' => 'send'],
-            ['text' => 'Save job #Name', 'mode' => 'edit'],
-            ['text' => 'Apply to job #Name', 'mode' => 'edit'],
-            ['text' => 'Compare job #Name and job #Name', 'mode' => 'edit'],
-            ['text' => 'Explain why job #Name matches me', 'mode' => 'edit'],
+            ['text' => 'Save jobs', 'mode' => 'edit'],
+            ['text' => 'Apply to jobs', 'mode' => 'edit'],
+            ['text' => 'Compare jobs', 'mode' => 'edit'],
+            ['text' => 'Explain why job matches me', 'mode' => 'edit'],
         ];
 
         return $this->response->setJSON([

@@ -1,4 +1,4 @@
-                        <!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -19,6 +19,160 @@
     <link rel="stylesheet" href="<?= base_url('jobboard/css/hirematrix-style.css?v=' . @filemtime(FCPATH . 'jobboard/css/hirematrix-style.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('custom/public-pages.css?v=' . @filemtime(FCPATH . 'custom/public-pages.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.css')) ?>"> 
+ 
+    <style>
+        .auth-back-link {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #53565A;
+            text-decoration: none;
+            z-index: 5;
+        }
+
+        .auth-back-link i {
+            font-size: 12px;
+        }
+
+        .auth-back-link:hover {
+            color: #1FB7B5;
+            text-decoration: none;
+        }
+
+        .auth-page-shell {
+            position: relative;
+        }
+
+        @media (prefers-color-scheme: dark) {
+    .auth-page-shell {
+        background: #111111 !important;
+    }
+
+    .auth-page-card {
+        background: #111111 !important;
+        border-color: #23343A !important;
+    }
+
+    .auth-page-card:hover {
+        transform: translateY(-1px);
+    }
+
+    .auth-back-link {
+        color: #7A8B96 !important;
+    }
+
+    .auth-back-link:hover {
+        color: #1FB7B5 !important;
+    }
+
+    /* Title & subtitle */
+    .auth-page-title,
+    .auth-page-title a {
+        color: #F8FAFC !important;
+    }
+
+    .auth-page-subtitle {
+        color: #7A8B96 !important;
+    }
+
+    /* Google button */
+  .btn-google-auth {
+    background: #111111 !important;
+    border: 1px solid #23343A  !important;
+    color: #E2E8F0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.btn-google-auth:hover,
+.btn-google-auth:focus,
+.btn-google-auth:active {
+    background: #111111 !important;
+    border: 1px solid #23343A  !important;
+    color: #E2E8F0 !important;
+    box-shadow: none !important;
+}
+
+    /* Divider */
+    .auth-divider-line {
+        background: #23343A !important;
+    }
+    .auth-divider-text {
+        color: #7A8B96 !important;
+        background: #111111 !important;
+    }
+
+    /* Labels */
+    .auth-field-label {
+        color: #94A3B8 !important;
+    }
+
+    /* Inputs */
+    .auth-input {
+        background: #111111 !important;
+        border-color: #23343A !important;
+        color: #E2E8F0 !important;
+    }
+    .auth-input::placeholder {
+        color: #3D5560 !important;
+    }
+    .auth-input:focus {
+        border-color: #0D8A90 !important;
+        box-shadow: none !important;
+    }
+
+    /* Field icon */
+    .auth-field-icon {
+        color: #3D5560 !important;
+    }
+
+    /* Password toggle */
+    .auth-password-toggle {
+        color: #3D5560 !important;
+    }
+
+    /* Remember me & links */
+    .auth-remember {
+        color: #94A3B8 !important;
+    }
+    .auth-footer-link {
+        color: #1FB7B5 !important;
+    }
+
+    /* Submit button */
+    .auth-primary-btn {
+        background: transparent !important;
+        border: 1.5px solid #1FB7B5 !important;
+        color: #1FB7B5 !important;
+    }
+    .auth-primary-btn:hover {
+        background: #1FB7B5 !important;
+        color: #ffffff !important;
+    }
+
+    /* Footer text */
+    .auth-footer-copy p {
+        color: #7A8B96 !important;
+    }
+
+    /* Alerts */
+    .alert-danger {
+        background: #2D1515 !important;
+        border-color: #7F1D1D !important;
+        color: #FCA5A5 !important;
+    }
+    .alert-success {
+        background: #052e16 !important;
+        border-color: #166534 !important;
+        color: #86efac !important;
+    }
+}
+    </style> 
   </head>
 <?= view('Layouts/public_header', [
     'body_class' => 'public-auth-page login-auth-page',
@@ -26,7 +180,10 @@
 ]) ?>
 
   <section class="auth-page-shell"> 
+  
+
     <div class="auth-page-column auth-page-column--sm">
+        
       <div class="auth-page-head">
         <h1 class="auth-page-title" style="font-weight:normal;"><?= esc($loginContext['heading'] ?? 'Welcome Back') ?></h1>
         <p class="auth-page-subtitle"><?= esc($loginContext['message'] ?? 'Sign in to your account to continue') ?></p>
@@ -108,13 +265,41 @@
       <div class="auth-footer-copy">
         <p>
           Don't have an account?
-          <a href="<?= base_url('register') ?>" class="auth-footer-link">Create one</a>
+          <a href="<?= base_url('register') ?>" class="auth-footer-link" id="createAccountLink">Create one</a>
         </p>
       </div>
     </div>
   </section>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var referrer   = document.referrer || '';
+    var backLink   = document.getElementById('authBackLink');
+    var createLink = document.getElementById('createAccountLink');
+
+    var candidateRegisterUrl = "<?= base_url('register') ?>";
+    var recruiterRegisterUrl = "<?= base_url('recruiter/register') ?>";
+
+    if (!referrer) {
+        return;
+    }
+
+    // Route the "Create one" link based on where the user came from
+    if (referrer.indexOf('/recruiter/register') !== -1) {
+        createLink.setAttribute('href', recruiterRegisterUrl);
+    } else if (referrer.indexOf('/register') !== -1) {
+        createLink.setAttribute('href', candidateRegisterUrl);
+    }
+
+    // Make the Back link go straight to the referrer if it's same-origin,
+    // otherwise fall back to history.back() (already set via onclick)
+    if (referrer.indexOf(window.location.origin) === 0) {
+        backLink.setAttribute('href', referrer);
+        backLink.removeAttribute('onclick');
+    }
+});
+</script>
+
 <?= view('Layouts/auth_footer') ?>
 </body>
 </html>
-            

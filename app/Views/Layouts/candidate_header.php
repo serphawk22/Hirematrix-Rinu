@@ -320,7 +320,7 @@
                         <span>Job Search Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="hm-drawer-link <?= $isCareerTransitionActive ? 'is-active' : '' ?>">
-                        <span class="cand-leftnav__icon"><i class="fas fa-rocket portal-gradient-text"></i></span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-rocket portal-gradient-text"></i></span> 
                         <span class="portal-gradient-text">Career Transition AI</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>

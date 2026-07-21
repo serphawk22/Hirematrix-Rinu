@@ -425,7 +425,32 @@ body.dark .alert-danger {
     background: #7F1D1D30 !important;
     border-color: #7F1D1D60 !important;
     color: #FCA5A5 !important;
-} 
+}
+.alert-success {
+    background: #DCFCE7 !important;
+    border: 1px solid #86EFAC !important;
+    color: #14532D !important;
+    border-radius: 8px;
+    font-size: 1rem;
+    padding: 12px 16px;
+    display: block;
+}
+body.dark .alert-success {
+    background: #14532D30 !important;
+    border-color: #14532D60 !important;
+    color: #86EFAC !important;
+}
+.alert .close {
+    background: none;
+    border: none;
+    float: right;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+}
+.alert .close:hover { opacity: 1; }
 </style> 
  
 <div class="resdex-wrap resdex-jobboard recruiter-resdex-jobboard">
@@ -445,6 +470,40 @@ body.dark .alert-danger {
         <i class="fas fa-folder"></i> My Folders
       </a>
     </div></div>
+
+    <!-- ============ FLASH MESSAGES ============
+         Hoisted above the results empty/non-empty branch so they always
+         render — previously these lived inside the "else" branch below
+         and only showed up when $results was non-empty. A bulk invite
+         redirect (e.g. back to a page with no active search) landed in
+         the empty-state branch and silently swallowed the flash message.
+
+         DEBUG COMMENT: view page source (Ctrl+U) after a bulk invite and
+         search for "FLASH DEBUG" below. If it shows success=NONE, the
+         flashdata never reached this view/request — the problem is in
+         session persistence, a redirect filter, or return_to pointing
+         somewhere else, NOT in this template. If it shows the actual
+         message text, the template is receiving it correctly and any
+         remaining invisibility is a CSS/JS issue (now fixed above). -->
+    <!-- FLASH DEBUG: success=<?= esc(session()->getFlashdata('success') ?? 'NONE') ?> | error=<?= esc(session()->getFlashdata('error') ?? 'NONE') ?> -->
+    <?php $flashSuccess = session()->getFlashdata('success'); ?>
+    <?php if ($flashSuccess): ?>
+      <div class="alert alert-success" role="alert" style="margin:16px 40px 20px;">
+        <?= esc($flashSuccess) ?>
+        <button type="button" class="close" onclick="this.closest('.alert').remove()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <?php endif; ?>
+    <?php $flashError = session()->getFlashdata('error'); ?>
+    <?php if ($flashError): ?>
+      <div class="alert alert-danger" role="alert" style="margin:16px 40px 20px;">
+        <?= esc($flashError) ?>
+        <button type="button" class="close" onclick="this.closest('.alert').remove()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <?php endif; ?>
 
     <div class="resdex-layout">
 
@@ -589,7 +648,7 @@ body.dark .alert-danger {
               <input type="checkbox" id="selectAllCandidates">
               Select all on this page
             </label>
-          </div>
+          </div> 
           <!-- Bulk action bar: hidden until at least one candidate is checked -->
           <div class="bulk-action-bar" id="bulkActionBar">
             <div class="bulk-count"><span id="bulkSelectedCount">0</span> selected</div>

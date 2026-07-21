@@ -249,9 +249,6 @@ body.dark.ai-guidelines-page .guidelines-note {
       <li><strong>AI Interview Round</strong><br>An AI-based live interview will evaluate communication, technical understanding, confidence, and behavior.</li>
     </ol>
 
-    <h2><i class="fas fa-check-circle" aria-hidden="true"></i> Qualification Criteria</h2>
-    <p>Candidates must score <strong>70% or above in each round</strong> to proceed to the next round.<br>Failing to achieve the minimum score in any round will automatically disqualify the candidate from further rounds.</p>
-
     <h2><i class="fas fa-arrow-right" aria-hidden="true"></i> Question Navigation Rules</h2>
     <p>Once a candidate submits an answer and clicks <strong>Next</strong>, that question is locked and cannot be revisited.</p>
     <ul>

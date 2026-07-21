@@ -312,7 +312,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                             ];
                         ?>
                         <?php foreach ($responseStageTabs as $stageKey => $stageTab): ?>
-                            <a class="stage-ajax-link <?= $safeActiveStage === $stageKey ? 'active' : '' ?>" href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=' . $stageKey) ?>" data-stage="<?= esc($stageKey) ?>" data-label="<?= esc($stageTab['label']) ?>" data-count="<?= (int) $stageTab['count'] ?>">
+                            <a class="stage-ajax-link <?= $safeActiveStage === $stageKey ? 'active' : '' ?>" href="<?= base_url('recruiter/jobs/view/' . $job['id'] . '?stage=' . $stageKey) ?>" data-stage="<?= esc($stageKey) ?>" data-label="<?= esc($stageTab['label']) ?>" data-count="<?= (int) $stageTab['count'] ?>" style="font-size:11px;">
                                 <?= esc($stageTab['label']) ?> (<?= (int) $stageTab['count'] ?>)
                             </a>
                         <?php endforeach; ?>
@@ -334,7 +334,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                         $nextActionBase = array_filter(array_merge($advancedFilters ?? [], ['stage' => $safeActiveStage]), static fn ($value) => $value !== '' && $value !== null);
                     ?>
                     <nav class="next-action-bar" aria-label="Next action filters">
-                        <span class="next-action-label">Next action</span>
+                        <span class="next-action-label" style="font-size:12px;">Next action</span>
                         <?php foreach ($nextActionLabels as $nextActionKey => $nextActionLabel): ?>
                             <?php
                                 $nextActionParams = $nextActionBase;
@@ -345,9 +345,9 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                                 }
                                 $nextActionUrl = base_url('recruiter/jobs/view/' . $job['id'] . '?' . http_build_query($nextActionParams));
                             ?>
-                            <a href="<?= esc($nextActionUrl) ?>" class="next-action-filter <?= $activeNextAction === $nextActionKey ? 'is-active' : '' ?>" data-next-action="<?= esc($nextActionKey) ?>">
+                            <a href="<?= esc($nextActionUrl) ?>" class="next-action-filter <?= $activeNextAction === $nextActionKey ? 'is-active' : '' ?>" data-next-action="<?= esc($nextActionKey) ?>" style="font-size:12px;">
                                 <?= esc($nextActionLabel) ?>
-                                <span data-next-action-count="<?= esc($nextActionKey) ?>"><?= (int) ($nextActionCounts[$nextActionKey] ?? 0) ?></span>
+                                <span data-next-action-count="<?= esc($nextActionKey) ?>" style="color:#1FB7B5;"><?= (int) ($nextActionCounts[$nextActionKey] ?? 0) ?></span>
                             </a>
                         <?php endforeach; ?>
                     </nav>

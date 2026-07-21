@@ -20,6 +20,11 @@ let previousFrame = null;
 
 let modelsLoaded = false;
 
+// NEW: global flag + custom event so other scripts on the page (e.g. the
+// interview boot sequence) can know exactly when face verification has
+// actually succeeded, instead of guessing based on timers.
+window.faceVerificationComplete = false;
+
 const FACE_MATCH_THRESHOLD = 0.5; // lower = stricter. 0.45 - 0.6 is a reasonable range
 const APP_BASE_PATH = (() => {
     const marker = "/ai_interview/";
@@ -1122,12 +1127,6 @@ function terminateInterview(reason) {
 |--------------------------------------------------------------------------
 */
 
-/*
-|--------------------------------------------------------------------------
-| GET CANDIDATE PROFILE PHOTO DESCRIPTOR
-|--------------------------------------------------------------------------
-*/
-
 async function getProfileDescriptor() {
 
     const res =
@@ -1140,7 +1139,7 @@ async function getProfileDescriptor() {
 
     if (!data.success) {
 
-        // ← NEW: Check if it's a missing photo error specifically
+        // Check if it's a missing photo error specifically
         if (
             data.reason === "no_photo" ||
             data.message?.toLowerCase().includes("not found") ||
@@ -1271,7 +1270,7 @@ async function verifyCandidateFace() {
 
         console.error(err);
 
-        // ← NEW: Handle missing photo case with Update Profile Photo button
+        // Handle missing photo case with Update Profile Photo button
         if (err.type === "no_photo") {
 
             const overlay = showVerificationOverlay();
@@ -1437,18 +1436,20 @@ async function verifyCandidateFace() {
         updateVerificationOverlay(
             "Identity verified. Starting your interview..."
         );
-
-        // reportViolation(
-        //     "Face verification passed (distance: " +
-        //     lastDistance.toFixed(3) +
-        //     ")"
-        // );
+ 
 
         await new Promise(
             (r) => setTimeout(r, 800)
         );
 
         hideVerificationOverlay();
+
+        // NEW: tell the rest of the page that identity verification has
+        // actually completed successfully. The interview boot sequence
+        // listens for this before letting Maya speak or starting the
+        // interview timer, instead of relying on an arbitrary delay.
+        window.faceVerificationComplete = true;
+        document.dispatchEvent(new CustomEvent("faceVerified"));
 
         return true;
     }
@@ -1527,12 +1528,7 @@ async function startCamera() {
 
             startFaceDetection();
 
-        }
-        /*
-        |--------------------------------------------------------------------------
-        | IF NOT VERIFIED, OVERLAY STAYS UP WITH "TRY AGAIN" BUTTON
-        |--------------------------------------------------------------------------
-        */
+        } 
 
     } catch (error) {
 
@@ -1543,13 +1539,7 @@ async function startCamera() {
 }
 function showPermissionPopup() {
 
-    injectThemeVariables();
-
-    /*
-    |--------------------------------------------------------------------------
-    | REMOVE EXISTING POPUP
-    |--------------------------------------------------------------------------
-    */
+    injectThemeVariables(); 
 
     const existingPopup =
         document.getElementById(
@@ -1854,7 +1844,6 @@ function showPermissionPopup() {
         }
     };
 }
-/*
 
 /*
 |--------------------------------------------------------------------------
@@ -2177,7 +2166,7 @@ e.preventDefault();
             e.key === "I"
         ) {
 
-           // e.preventDefault(); 
+            e.preventDefault(); 
             //   reportViolation(
             // //     "Developer tools detected"
             // // );

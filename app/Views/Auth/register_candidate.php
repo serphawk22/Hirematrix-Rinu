@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="<?= base_url('custom/public-pages.css?v=' . @filemtime(FCPATH . 'custom/public-pages.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.css')) ?>"> 
 </head>
-<?= view('Layouts/public_header', ['body_class' => 'public-auth-page']) ?>
+<?= view('Layouts/auth_header', ['body_class' => 'public-auth-page']) ?>
 
   <section class="auth-page-shell"> 
     <div class="auth-page-column auth-page-column--md">

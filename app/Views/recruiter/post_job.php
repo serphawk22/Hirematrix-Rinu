@@ -36,6 +36,11 @@ $payrollType = old('payroll_type', '');
             <h1 class="page-board-title">Post a Job</h1>
             <p class="page-board-subtitle">Create a clear role listing and control how AI interview screening applies to applicants.</p>
         </div>
+        <div class="page-board-actions">
+            <a href="<?= base_url('recruiter/jobs') ?>" class="btn btn-outline-primary">
+                 Back to Jobs
+            </a>
+        </div>
     </div>
 
     <?php if(session()->getFlashdata('success')): ?>
