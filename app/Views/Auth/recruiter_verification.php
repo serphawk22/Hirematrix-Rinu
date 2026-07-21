@@ -38,9 +38,15 @@
             -webkit-appearance: none;
             margin: 0;
         }
-    </style>
+
+        .recruiter-verification-page .verification-card {
+            border: 1px solid #d9ece5;
+            border-radius: 16px;
+        }
+
+</style>
 </head>
-<body class="hirematrix-app public-auth-page">
+<body class="hirematrix-app public-auth-page recruiter-verification-page">
 <div class="site-wrap">
     <?= view('Layouts/public_header', ['body_class' => 'public-auth-page']) ?>
 
@@ -48,8 +54,8 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-6">
-                    <h2 class="mb-4">Recruiter Verification</h2>
-                    <p class="text-muted">Please verify your company email address to activate your recruiter account.</p>
+                    <h2 class="mb-4 verification-title">Recruiter Verification</h2>
+                    <p class="text-muted verification-intro">Please verify your company email address to activate your recruiter account.</p>
 
                     <?php if (session()->getFlashdata('success')): ?>
                         <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
@@ -58,7 +64,7 @@
                         <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
                     <?php endif; ?>
 
-                    <div class="card mb-3">
+                    <div class="card mb-3 verification-card">
                         <div class="card-body">
                             <h5>Company Email Verification</h5>
                             <div class="form-group">

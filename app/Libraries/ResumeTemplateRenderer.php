@@ -31,6 +31,30 @@ class ResumeTemplateRenderer
                 'badge' => 'Tech Focus',
                 'preview_class' => 'tech',
             ],
+            'minimal_timeline' => [
+                'label' => 'Minimal Timeline',
+                'description' => 'A calm chronological layout that makes career progression and project history easy to follow.',
+                'tier' => 'free',
+                'accent' => '#475569',
+                'badge' => 'Chronological',
+                'preview_class' => 'timeline',
+            ],
+            'creative_bold' => [
+                'label' => 'Creative Bold',
+                'description' => 'A confident visual style for design, marketing, media, and other portfolio-led roles.',
+                'tier' => 'free',
+                'accent' => '#c026d3',
+                'badge' => 'Portfolio',
+                'preview_class' => 'creative',
+            ],
+            'elegant_classic' => [
+                'label' => 'Elegant Classic',
+                'description' => 'A refined, traditional format suited to consulting, finance, legal, and corporate roles.',
+                'tier' => 'free',
+                'accent' => '#92400e',
+                'badge' => 'Classic',
+                'preview_class' => 'classic',
+            ],
         ];
     }
 
@@ -50,7 +74,7 @@ class ResumeTemplateRenderer
         if (is_array($decoded) && isset($decoded['sections'])) {
         return [
             'template_key' => $this->normalizeTemplateKey((string) ($decoded['template_key'] ?? 'modern_professional')),
-            'name' => (string) ($decoded['name'] ?? ($fallback['name'] ?? 'Candidate')),
+            'name' => $this->formatCandidateName((string) ($decoded['name'] ?? ($fallback['name'] ?? 'Candidate'))),
             'target_role' => (string) ($decoded['target_role'] ?? ($fallback['target_role'] ?? '')),
             'summary' => (string) ($decoded['summary'] ?? ($fallback['summary'] ?? '')),
             'highlight_skills' => array_values(array_filter(array_map('trim', (array) ($decoded['highlight_skills'] ?? ($fallback['highlight_skills'] ?? []))))),
@@ -61,7 +85,7 @@ class ResumeTemplateRenderer
 
         return [
             'template_key' => $this->normalizeTemplateKey('modern_professional'),
-            'name' => (string) ($fallback['name'] ?? 'Candidate'),
+            'name' => $this->formatCandidateName((string) ($fallback['name'] ?? 'Candidate')),
             'target_role' => (string) ($fallback['target_role'] ?? ''),
             'summary' => (string) ($fallback['summary'] ?? ''),
             'highlight_skills' => array_values(array_filter(array_map('trim', (array) ($fallback['highlight_skills'] ?? [])))),
@@ -82,20 +106,44 @@ class ResumeTemplateRenderer
         return $this->renderPdfHtml($resume);
     }
 
-    public function renderDocument(string $content, array $fallback = []): string
+    public function renderDocument(string $content, array $fallback = [], bool $darkPreview = false): string
     {
         $resume = $this->decodeStoredContent($content, $fallback);
         if ($resume['legacy_text'] !== '') {
-            return '<!doctype html><html><head><meta charset="utf-8"><title>Resume</title></head><body><pre style="white-space:pre-wrap;font-family:Arial,sans-serif;">'
+            $legacyTheme = $darkPreview
+                ? '<style>html,body{background:#111;color:#f4f4f5}body{margin:0;padding:40px 60px}pre{color:#f4f4f5}</style>'
+                : '';
+            return '<!doctype html><html><head><meta charset="utf-8"><title>Resume</title>' . $legacyTheme . '</head><body><pre style="white-space:pre-wrap;font-family:Arial,sans-serif;">'
                 . esc($resume['legacy_text'])
                 . '</pre></body></html>';
         }
 
+        $previewTheme = $darkPreview ? $this->darkPreviewStyles() : '';
+
         return '<!doctype html><html><head><meta charset="utf-8"><title>'
             . esc(($resume['name'] ?: 'Candidate') . ' Resume')
-            . '</title></head><body style="margin:40px 60px;font-family:helvetica;background:#fff;">'
+            . '</title>' . $previewTheme . '</head><body style="margin:40px 60px;font-family:helvetica;background:#fff;">'
             . $this->renderPdfHtml($resume)
             . '</body></html>';
+    }
+
+    private function darkPreviewStyles(): string
+    {
+        return '<style>
+            html,body{background:#111!important;color:#f4f4f5!important;color-scheme:dark}
+            body>div{background:#111!important;color:#f4f4f5!important}
+            body div,body span,body li,body td{color:#e4e4e7!important;border-color:#353535!important}
+            body td[style*="background-color:#0f172a"]{background-color:#0f172a!important}
+            body td[style*="background-color:#0f172a"] div,
+            body td[style*="background-color:#0f172a"] span{color:#f8fafc!important}
+            body div[style*="background-color:#eaf7f1"]{background-color:#16312e!important;color:#5eead4!important}
+            body div[style*="color:#059669"],body td[style*="color:#059669"]{color:#5eead4!important}
+            body div[style*="color:#0f172a"],body td[style*="color:#0f172a"]{color:#f4f4f5!important}
+            body div[style*="color:#111827"],body td[style*="color:#111827"]{color:#f4f4f5!important}
+            body div[style*="color:#334155"],body td[style*="color:#334155"],body li[style*="color:#334155"]{color:#d4d4d8!important}
+            body div[style*="color:#475569"],body td[style*="color:#475569"]{color:#a1a1aa!important}
+            body div[style*="color:#64748b"],body td[style*="color:#64748b"]{color:#a1a1aa!important}
+        </style>';
     }
 
     public function createPdfFile(string $content, array $fallback, string $filenameBase): string
@@ -211,6 +259,10 @@ class ResumeTemplateRenderer
         }
 
         if ($templateKey === 'tech_compact') {
+            return $this->renderTechCompactPdf($resume, $sections, $accent);
+        }
+
+        if ($templateKey === 'creative_bold') {
             return $this->renderTechCompactPdf($resume, $sections, $accent);
         }
 
@@ -524,6 +576,18 @@ class ResumeTemplateRenderer
 
         if ($templateKey === 'tech_compact') {
             return $this->renderTechCompact($resume, $fullDocument);
+        }
+
+        if ($templateKey === 'minimal_timeline') {
+            return $this->renderMinimalTimeline($resume, $fullDocument);
+        }
+
+        if ($templateKey === 'creative_bold') {
+            return $this->renderCreativeBold($resume, $fullDocument);
+        }
+
+        if ($templateKey === 'elegant_classic') {
+            return $this->renderElegantClassic($resume, $fullDocument);
         }
 
         return $this->renderModernProfessional($resume, $fullDocument);
@@ -911,16 +975,6 @@ class ResumeTemplateRenderer
             return 'modern_professional';
         }
 
-        $aliases = [
-            'minimal_timeline' => 'modern_professional',
-            'creative_bold' => 'modern_professional',
-            'elegant_classic' => 'executive_sidebar',
-        ];
-
-        if (isset($aliases[$templateKey])) {
-            return $aliases[$templateKey];
-        }
-
         return array_key_exists($templateKey, $this->getTemplates()) ? $templateKey : 'modern_professional';
     }
 
@@ -931,5 +985,19 @@ class ResumeTemplateRenderer
         $value = trim((string) $value, '-');
 
         return $value !== '' ? $value : 'resume';
+    }
+
+    private function formatCandidateName(string $name): string
+    {
+        $name = trim(preg_replace('/\s+/u', ' ', $name) ?? $name);
+        if ($name === '') {
+            return 'Candidate';
+        }
+
+        return preg_replace_callback(
+            '/(^|[\s\-\'\x{2019}])(\p{L})/u',
+            static fn (array $match): string => $match[1] . mb_strtoupper($match[2], 'UTF-8'),
+            $name
+        ) ?? $name;
     }
 }

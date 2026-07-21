@@ -67,7 +67,6 @@ $backLabel = $isRecruiter ? 'Back to Dashboard' : 'Back to Profile';
     <link rel="stylesheet" href="<?= base_url('jobboard/css/animate.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/fontawesome-all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/style.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('jobboard/css/dark.css') ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/hirematrix-style.css?v=' . @filemtime(FCPATH . 'jobboard/css/hirematrix-style.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('custom/public-pages.css?v=' . @filemtime(FCPATH . 'custom/public-pages.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.css')) ?>">
@@ -89,123 +88,7 @@ $backLabel = $isRecruiter ? 'Back to Dashboard' : 'Back to Profile';
     transform: translateY(-1px);
 
 }
-@media not all {
-    .auth-page-shell {
-        background: #111111 !important;
-    }
-
-    .auth-page-card {
-        background: #111111 !important;
-        border-color: #23343A !important;
-    }
-
-    .auth-page-card:hover {
-        transform: translateY(-1px);
-    }
-
-    /* Title & subtitle */
-    .auth-page-title,
-    .auth-page-title a {
-        color: #F8FAFC !important;
-    }
-
-    .auth-page-subtitle {
-        color: #7A8B96 !important;
-    }
-
-    /* Google button */
-  .btn-google-auth {
-    background: #111111 !important;
-    border: 1px solid #23343A  !important;
-    color: #E2E8F0 !important;
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-.btn-google-auth:hover,
-.btn-google-auth:focus,
-.btn-google-auth:active {
-    background: #111111 !important;
-    border: 1px solid #23343A  !important;
-    color: #E2E8F0 !important;
-    box-shadow: none !important;
-}
-
-    /* Divider */
-    .auth-divider-line {
-        background: #23343A !important;
-    }
-    .auth-divider-text {
-        color: #7A8B96 !important;
-        background: #111111 !important;
-    }
-
-    /* Labels */
-    .auth-field-label {
-        color: #94A3B8 !important;
-    }
-
-    /* Inputs */
-    .auth-input {
-        background: #111111 !important;
-        border-color: #23343A !important;
-        color: #E2E8F0 !important;
-    }
-    .auth-input::placeholder {
-        color: #3D5560 !important;
-    }
-    .auth-input:focus {
-        border-color: #0D8A90 !important;
-        box-shadow: none !important;
-    }
-
-    /* Field icon */
-    .auth-field-icon {
-        color: #3D5560 !important;
-    }
-
-    /* Password toggle */
-    .auth-password-toggle {
-        color: #3D5560 !important;
-    }
-
-    /* Remember me & links */
-    .auth-remember {
-        color: #94A3B8 !important;
-    }
-    .auth-footer-link {
-        color: #1FB7B5 !important;
-    }
-
-    /* Submit button */
-    .auth-primary-btn {
-        background: transparent !important;
-        border: 1.5px solid #1FB7B5 !important;
-        color: #1FB7B5 !important;
-    }
-    .auth-primary-btn:hover {
-        background: #1FB7B5 !important;
-        color: #ffffff !important;
-    }
-
-    /* Footer text */
-    .auth-footer-copy p {
-        color: #7A8B96 !important;
-    }
-
-    /* Alerts */
-    .alert-danger {
-        background: #2D1515 !important;
-        border-color: #7F1D1D !important;
-        color: #FCA5A5 !important;
-    }
-    .alert-success {
-        background: #052e16 !important;
-        border-color: #166534 !important;
-        color: #86efac !important;
-    }
-}
-    </style>
+</style>
 </head>
 <?= view('Layouts/auth_header', ['body_class' => 'public-auth-page change-password-auth-page']) ?>
 

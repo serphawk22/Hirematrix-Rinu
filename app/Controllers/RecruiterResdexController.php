@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Libraries\RecruiterCandidateAccessService;
 use App\Models\CandidateSearchModel;
+use App\Models\RecruiterJobInvitationModel;
 
 class RecruiterResdexController extends BaseController
 {
@@ -59,6 +60,29 @@ public function index()
         ->orderBy('created_at', 'DESC')
         ->findAll();
 
+    $candidateInvitations = [];
+    $candidateIds = array_values(array_filter(array_map(
+        static fn (array $candidate): int => (int) ($candidate['user_id'] ?? 0),
+        (array) ($results['results'] ?? [])
+    )));
+    $db = \Config\Database::connect();
+    if ($candidateIds !== [] && $db->tableExists('recruiter_job_invitations')) {
+        $invitationRows = (new RecruiterJobInvitationModel())
+            ->select('recruiter_job_invitations.candidate_id, recruiter_job_invitations.status, recruiter_job_invitations.invited_at, jobs.title AS job_title')
+            ->join('jobs', 'jobs.id = recruiter_job_invitations.job_id', 'left')
+            ->where('recruiter_job_invitations.recruiter_id', $recruiterId)
+            ->whereIn('recruiter_job_invitations.candidate_id', $candidateIds)
+            ->orderBy('recruiter_job_invitations.id', 'DESC')
+            ->findAll();
+
+        foreach ($invitationRows as $invitation) {
+            $candidateId = (int) ($invitation['candidate_id'] ?? 0);
+            if ($candidateId > 0 && !isset($candidateInvitations[$candidateId])) {
+                $candidateInvitations[$candidateId] = $invitation;
+            }
+        }
+    }
+
     return view('recruiter/resdex', [
         'title'          => 'Search Resumes',
         'filters'        => $filters,
@@ -66,6 +90,7 @@ public function index()
         'hasSearched'    => $hasSearched,
         'folders'        => $this->getFoldersForRecruiter(),
         'recruiterJobs'  => $recruiterJobs,
+        'candidateInvitations' => $candidateInvitations,
         'recentSearches' => $this->candidateSearch->getSearches((int) session()->get('user_id'), false, 4),
     ]);
 }
