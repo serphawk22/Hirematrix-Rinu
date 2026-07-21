@@ -977,7 +977,7 @@ class CandidateChatbotService
             return ((int) ($a['is_external'] ?? 0)) <=> ((int) ($b['is_external'] ?? 0));
         });
 
-        return array_slice($jobs, 0, $limit);
+        return array_map([$this, 'normalizeJobRecord'], array_slice($jobs, 0, $limit));
     }
 
     private function findJobsByTitle(int $candidateId, string $title, int $limit = 3): array
@@ -1030,7 +1030,7 @@ class CandidateChatbotService
             return ((float) ($b['match_score'] ?? 0)) <=> ((float) ($a['match_score'] ?? 0));
         });
 
-        return array_slice($rows, 0, $limit);
+        return array_map([$this, 'normalizeJobRecord'], array_slice($rows, 0, $limit));
     }
 
     private function calculateTitleRank(string $jobTitle, string $query): int
@@ -1142,6 +1142,18 @@ class CandidateChatbotService
 
         if (!empty($job['application_deadline']) && strtotime($job['application_deadline'] . ' 23:59:59') < time()) {
             return null;
+        }
+
+        return $this->normalizeJobRecord($job);
+    }
+
+    private function normalizeJobRecord(array $job): array
+    {
+        foreach (['title', 'company', 'location', 'category', 'description', 'required_skills',
+            'experience_level', 'employment_type', 'salary_range', 'match_reason'] as $field) {
+            if (isset($job[$field]) && is_string($job[$field])) {
+                $job[$field] = ExternalJobTextNormalizer::normalize($job[$field]);
+            }
         }
 
         return $job;

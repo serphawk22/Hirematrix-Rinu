@@ -2007,45 +2007,45 @@ body.dark .recruiter-pipeline-page .candidate-cockpit-status {
 /* Compact pipeline controls: prioritize candidate rows above the fold */
 .recruiter-pipeline-page .response-tabs {
     flex-wrap: nowrap;
-    gap: 6px;
+    gap: 8px;
     overflow-x: auto;
-    padding: 7px 12px;
+    padding: 10px 14px;
     scrollbar-width: thin;
 }
 .recruiter-pipeline-page .response-tabs .stage-ajax-link {
     flex: 0 0 auto;
-    font-size: 10.5px;
-    min-height: 31px;
-    padding: 6px 10px !important;
+    font-size: 13px;
+    min-height: 38px;
+    padding: 8px 14px !important;
 }
 .recruiter-pipeline-page .next-action-bar {
     border-left: 0;
     border-radius: 0;
     border-right: 0;
     flex-wrap: nowrap;
-    gap: 6px;
+    gap: 8px;
     margin: 0;
     overflow-x: auto;
-    padding: 5px 12px;
+    padding: 9px 14px;
     scrollbar-width: thin;
 }
 .recruiter-pipeline-page .next-action-label {
     flex: 0 0 auto;
-    font-size: 9.5px;
-    margin-right: 2px;
+    font-size: 12px;
+    margin-right: 4px;
     white-space: nowrap;
 }
 .recruiter-pipeline-page .next-action-filter {
     flex: 0 0 auto;
-    font-size: 10px;
-    min-height: 27px;
-    padding: 4px 7px;
+    font-size: 12px;
+    min-height: 36px;
+    padding: 7px 11px;
 }
 .recruiter-pipeline-page .next-action-filter span {
-    font-size: 9px;
-    min-height: 17px;
-    min-width: 17px;
-    padding: 0 4px;
+    font-size: 10px;
+    min-height: 21px;
+    min-width: 21px;
+    padding: 1px 6px;
 }
 .recruiter-pipeline-page .response-toolbar {
     gap: 10px;
