@@ -51,6 +51,13 @@ $jobExperience = (string) ($job['experience_level'] ?? 'Not specified');
 $jobSalary = trim((string) ($job['salary_range'] ?? ''));
 $jobDeadline = trim((string) ($job['application_deadline'] ?? ''));
 $jobOpenings = trim((string) ($job['openings'] ?? ''));
+$isInternship = strcasecmp((string) ($job['employment_type'] ?? ''), 'Internship') === 0;
+$internshipDuration = trim((string) ($job['internship_duration'] ?? ''));
+$internshipStipend = trim((string) ($job['internship_stipend'] ?? ''));
+$internshipStartDate = trim((string) ($job['internship_start_date'] ?? ''));
+$internshipType = trim((string) ($job['internship_type'] ?? ''));
+$workMode = trim((string) ($job['work_mode'] ?? ''));
+$ppoAvailable = (int) ($job['ppo_available'] ?? 0) === 1;
 $jobPublished = !empty($job['created_at']) ? date('d M Y', strtotime((string) $job['created_at'])) : null;
 $companyInitial = strtoupper(substr($jobCompany, 0, 1) ?: 'C');
 
@@ -72,6 +79,14 @@ if ($jobDeadline !== '') {
 }
 if ($jobOpenings !== '') {
     $summaryRows[] = ['Openings', $jobOpenings];
+}
+if ($isInternship) {
+    if ($internshipType !== '') $summaryRows[] = ['Internship Type', $internshipType];
+    if ($internshipDuration !== '') $summaryRows[] = ['Duration', $internshipDuration];
+    if ($internshipStipend !== '') $summaryRows[] = ['Stipend', $internshipStipend];
+    if ($internshipStartDate !== '') $summaryRows[] = ['Start Date', date('d M Y', strtotime($internshipStartDate))];
+    if ($workMode !== '') $summaryRows[] = ['Work Mode', $workMode];
+    $summaryRows[] = ['PPO Opportunity', $ppoAvailable ? 'Available' : 'Not specified'];
 }
 if ($isExternalJob) {
     $summaryRows[] = ['Listing Type', 'Remote Listing'];
@@ -142,6 +157,9 @@ $interviewNudge = [
                     <span class="meta-chip"><i class="fas fa-building"></i> <?= esc($jobCompany) ?></span>
                     <span class="meta-chip"><i class="fas fa-map-pin"></i> <?= esc($jobLocation) ?></span>
                     <span class="meta-chip"><i class="fas fa-clock"></i> <?= esc($jobTypeLabel) ?></span>
+                    <?php if ($isInternship && $internshipDuration !== ''): ?><span class="meta-chip"><i class="fas fa-calendar-alt"></i> <?= esc($internshipDuration) ?></span><?php endif; ?>
+                    <?php if ($isInternship && $internshipStipend !== ''): ?><span class="meta-chip"><i class="fas fa-wallet"></i> <?= esc($internshipStipend) ?></span><?php endif; ?>
+                    <?php if ($isInternship && $ppoAvailable): ?><span class="meta-chip"><i class="fas fa-handshake"></i> PPO available</span><?php endif; ?>
                     <?php if ($isExternalJob): ?>
                         <span class="meta-chip"><i class="fas fa-globe"></i> Remote · Verified Listing</span>
                     <?php endif; ?>
@@ -317,7 +335,7 @@ $interviewNudge = [
                             <span>Job Description</span>
                         </div>
                         <div class="job-details-section-text">
-                            <p><?= nl2br(esc($job['description'])) ?></p>
+                            <div class="job-description-rich-content"><?= \App\Libraries\JobDescriptionSanitizer::sanitize((string) $job['description']) ?></div>
                         </div>
                     </div>
 

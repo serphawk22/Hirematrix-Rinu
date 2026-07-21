@@ -2,11 +2,22 @@
 
 defined('SYSTEMPATH') || exit('No direct script access allowed');
 
+if (!function_exists('subscriptionsEnabled')) {
+    function subscriptionsEnabled(): bool
+    {
+        return defined('SUBSCRIPTIONS_ENABLED') ? SUBSCRIPTIONS_ENABLED : true;
+    }
+}
+
 if (!function_exists('isPremiumUser')) {
     function isPremiumUser(int $userId): bool
     {
         if ($userId <= 0) {
             return false;
+        }
+
+        if (!subscriptionsEnabled()) {
+            return true;
         }
 
         $subscriptionModel = model('SubscriptionModel');

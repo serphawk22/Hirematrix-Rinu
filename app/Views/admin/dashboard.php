@@ -41,12 +41,14 @@
             </div>
         </div>
 
+        <?php if (SUBSCRIPTIONS_ENABLED): ?>
         <div class="col-md-4">
             <div class="card p-3 shadow-sm border-0 bg-light">
                 <div class="text-muted small">Total Revenue (INR)</div>
                 <div class="fs-4 fw-bold text-dark">₹<?= number_format($totalRevenue ?? 0, 2) ?></div>
         </div>
     </div>
+        <?php endif; ?>
         
     <div class="row g-3 mb-4">
 
@@ -58,6 +60,7 @@
         </div>
 
         </div>
+        <?php if (SUBSCRIPTIONS_ENABLED): ?>
         <div class="col-md-4">
             <div class="card p-3">
                 <div class="text-muted small">Active Subscriptions</div>
@@ -76,12 +79,14 @@
                 </div>
             </div>
         </div>
+        <?php endif; ?>
     </div>
 <!-- INFO -->
         <div class="alert alert-info mb-4">
             Cost = estimated API spend
         </div>
       <!-- SUBSCRIPTION CHARTS SECTION -->
+    <?php if (SUBSCRIPTIONS_ENABLED): ?>
     <div class="row g-4 mb-4">
         <div class="col-lg-8">
             <div class="card h-100 shadow-sm">
@@ -132,6 +137,7 @@
             </div>
         </div>
     </div>
+    <?php endif; ?>
 
     <!-- TABLES -->
     <div class="row g-3 mb-4">

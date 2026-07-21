@@ -1057,20 +1057,16 @@ text-decoration:none !important;
 
     <div class="pro-tools-header">
       <div>
-        <div class="pro-tools-badge">Pro tools</div>
-        <h2 class="pro-tools-title" style="font-size:clamp(25px,3vw,55px) !important; font-weight:500 !important;letter-spacing:-.04em;">Unlock more with <span class="grad-text">PRO</span></h2>
-        <p class="pro-tools-subtitle">AI-powered tools to help you land your next role faster.</p>
+        <div class="pro-tools-badge">AI career tools</div>
+        <h2 class="pro-tools-title" style="font-size:clamp(25px,3vw,55px) !important; font-weight:500 !important;letter-spacing:-.04em;">Move faster with <span class="grad-text">HireMatrix AI</span></h2>
+        <p class="pro-tools-subtitle">Available to every candidate to help you land your next role faster.</p>
       </div>
-      <a href="<?= base_url('register') ?>" class="pro-become-btn">Become a Pro</a>
+      <a href="<?= base_url('register') ?>" class="pro-become-btn">Get Started</a>
     </div>
 
     <div class="pro-cards-grid">
       <?php foreach ($proFeatureSlides as $slide): ?>
         <a href="<?= esc($slide['cta_url']) ?>" class="pro-card">
-          <?php if (empty($slide['has_video'])): ?>
-            <i class="fas fa-lock pro-card-lock" aria-hidden="true"></i>
-          <?php endif; ?>
-
           <div class="pro-card-icon">
             <i class="<?= esc($pickJobIcon($slide['eyebrow'])) ?>" aria-hidden="true"></i>
             <?php if (!empty($slide['has_video'])): ?>

@@ -50,6 +50,12 @@ class JobModel extends Model
         'salary_range',
         'application_deadline',
         'application_questionnaire',
+        'internship_duration',
+        'internship_stipend',
+        'internship_start_date',
+        'internship_type',
+        'work_mode',
+        'ppo_available',
     ];
 
     public static function isExternalJob(array $job): bool

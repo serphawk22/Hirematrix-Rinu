@@ -463,6 +463,12 @@ if (!empty($filters['salary_range'])) {
     $salaryLabel = $salaryRanges[(string) $filters['salary_range']] ?? (string) $filters['salary_range'];
     $addActiveChip('Salary: ' . $salaryLabel, $buildJobsUrl(['salary_range' => null], ['salary_range']));
 }
+if (!empty($filters['internship_type'])) {
+    $addActiveChip('Internship: ' . (string) $filters['internship_type'], $buildJobsUrl(['internship_type' => null], ['internship_type']));
+}
+if (!empty($filters['ppo_available'])) {
+    $addActiveChip('PPO: ' . ((string) $filters['ppo_available'] === 'yes' ? 'Available' : 'Not available'), $buildJobsUrl(['ppo_available' => null], ['ppo_available']));
+}
 foreach ((array) ($filters['employment_type'] ?? []) as $employmentType) {
     $employmentType = (string) $employmentType;
     $remaining = array_values(array_filter((array) ($filters['employment_type'] ?? []), static fn($value) => (string) $value !== $employmentType));
@@ -627,6 +633,24 @@ $activeFilterCount = count($activeFilterChips);
                                     <?php endforeach; ?>
                                 </div>
                             <?php endif; ?>
+
+                            <div class="filter-section">
+                                <span class="filter-label">Internship Type</span>
+                                <select name="internship_type" onchange="submitFilters()">
+                                    <option value="">All internships</option>
+                                    <?php foreach (['Summer', 'Winter', 'Part-time', 'Full-time', 'Virtual', 'Graduate'] as $internshipType): ?>
+                                        <option value="<?= esc($internshipType) ?>" <?= ($filters['internship_type'] ?? '') === $internshipType ? 'selected' : '' ?>><?= esc($internshipType) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="filter-section">
+                                <span class="filter-label">PPO Opportunity</span>
+                                <select name="ppo_available" onchange="submitFilters()">
+                                    <option value="">Any</option>
+                                    <option value="yes" <?= ($filters['ppo_available'] ?? '') === 'yes' ? 'selected' : '' ?>>PPO available</option>
+                                    <option value="no" <?= ($filters['ppo_available'] ?? '') === 'no' ? 'selected' : '' ?>>No PPO</option>
+                                </select>
+                            </div>
 
                             <?php
                             $uselessExp = ['not specified', 'not_specified', ''];

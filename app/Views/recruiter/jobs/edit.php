@@ -104,10 +104,12 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" id="jobTitleField">
                             <label>Job Title *</label>
                             <input type="text" name="title" class="form-control" value="<?= esc(old('title', $job['title'])) ?>" required>
                         </div>
+
+                        <?php $employmentType = old('employment_type', $job['employment_type'] ?? 'Full-time'); ?>
 
                         <div class="form-group">
                             <label>Category *</label>
@@ -128,7 +130,7 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
 
                         <div class="form-group">
                             <label>Description *</label>
-                            <textarea name="description" class="form-control" rows="5" required><?= esc(old('description', $job['description'])) ?></textarea>
+                            <textarea name="description" class="form-control js-rich-job-description" rows="5" required><?= esc(old('description', $job['description'])) ?></textarea>
                         </div>
 
                         <div class="row">
@@ -147,11 +149,10 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6" id="employmentTypeField">
                                 <div class="form-group">
-                                    <label>Employment Type</label>
-                                    <?php $employmentType = old('employment_type', $job['employment_type'] ?? 'Full-time'); ?>
-                                    <select name="employment_type" class="form-control">
+                                    <label>Listing / Employment Type *</label>
+                                    <select name="employment_type" id="employment_type" class="form-control">
                                         <option value="Full-time" <?= $employmentType === 'Full-time' ? 'selected' : '' ?>>Full-time</option>
                                         <option value="Part-time" <?= $employmentType === 'Part-time' ? 'selected' : '' ?>>Part-time</option>
                                         <option value="Contract" <?= $employmentType === 'Contract' ? 'selected' : '' ?>>Contract</option>
@@ -209,6 +210,21 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
                             </div>
                         </div>
 
+                        <div id="internshipFields" class="internship-details-wrap" style="display:none;">
+                            <div class="internship-details-panel">
+                            <div class="internship-details-head"><h5><i class="fas fa-user-graduate mr-2"></i>Complete the internship details</h5><span>Required</span></div>
+                            <p class="internship-details-note">Fill every starred field before updating this internship.</p>
+                            <div class="row">
+                                <div class="col-md-4 form-group"><label>Duration *</label><input class="form-control" name="internship_duration" value="<?= esc(old('internship_duration', $job['internship_duration'] ?? '')) ?>" placeholder="e.g., 3 months"></div>
+                                <div class="col-md-4 form-group"><label>Stipend *</label><input class="form-control" name="internship_stipend" value="<?= esc(old('internship_stipend', $job['internship_stipend'] ?? '')) ?>" placeholder="e.g., ₹15,000/month or Unpaid"></div>
+                                <div class="col-md-4 form-group"><label>Start Date *</label><input class="form-control" type="date" name="internship_start_date" value="<?= esc(old('internship_start_date', $job['internship_start_date'] ?? '')) ?>"></div>
+                                <div class="col-md-4 form-group"><label>Internship Type *</label><select class="form-control" name="internship_type"><option value="">Select type</option><?php $selectedInternshipType = old('internship_type', $job['internship_type'] ?? ''); foreach (['Summer', 'Winter', 'Part-time', 'Full-time', 'Virtual', 'Graduate'] as $type): ?><option value="<?= esc($type) ?>" <?= $selectedInternshipType === $type ? 'selected' : '' ?>><?= esc($type) ?></option><?php endforeach; ?></select></div>
+                                <div class="col-md-4 form-group"><label>Work Mode *</label><select class="form-control" name="work_mode"><option value="">Select mode</option><?php $selectedWorkMode = old('work_mode', $job['work_mode'] ?? ''); foreach (['On-site', 'Hybrid', 'Remote'] as $mode): ?><option value="<?= esc($mode) ?>" <?= $selectedWorkMode === $mode ? 'selected' : '' ?>><?= esc($mode) ?></option><?php endforeach; ?></select></div>
+                                <div class="col-md-4 form-group d-flex align-items-center"><div class="custom-control custom-checkbox mt-3"><input type="hidden" name="ppo_available" value="0"><input class="custom-control-input" id="ppo_available" type="checkbox" name="ppo_available" value="1" <?= old('ppo_available', $job['ppo_available'] ?? 0) ? 'checked' : '' ?>><label class="custom-control-label" for="ppo_available">Pre-placement offer (PPO) available</label></div></div>
+                            </div>
+                        </div>
+                        </div>
+
                         <div class="form-group" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
                             <?php $policy = $aiInterviewAllowed ? strtoupper(old('ai_interview_policy', $job['ai_interview_policy'] ?? 'REQUIRED_HARD')) : 'OFF'; ?>
                             <label>AI Interview Policy *</label>
@@ -250,6 +266,23 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
     </div>
 </div>
 <script>
+(function () {
+    const employmentType = document.getElementById('employment_type');
+    const fields = document.getElementById('internshipFields');
+    const employmentField = document.getElementById('employmentTypeField');
+    const titleField = document.getElementById('jobTitleField');
+    if (!employmentType || !fields || !employmentField || !titleField) return;
+    titleField.after(employmentField);
+    employmentField.after(fields);
+    function syncInternshipFields() {
+        const active = employmentType.value === 'Internship';
+        fields.style.display = active ? '' : 'none';
+        fields.querySelectorAll('input:not([type="hidden"]), select').forEach((field) => field.required = active && field.name !== 'ppo_available');
+    }
+    employmentType.addEventListener('change', syncInternshipFields);
+    syncInternshipFields();
+})();
+
 (function () {
     const aiInterviewCategories = <?= json_encode(array_values($aiInterviewCategories)) ?>;
     const categorySelect = document.getElementById('category');
@@ -444,5 +477,6 @@ $payrollType = (string) old('payroll_type', $job['payroll_type'] ?? '');
     }
 })();
 </script>
+<?= view('recruiter/partials/job_description_editor') ?>
 <?= view('Layouts/recruiter_footer') ?>
     

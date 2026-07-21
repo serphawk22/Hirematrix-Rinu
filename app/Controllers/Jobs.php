@@ -46,6 +46,8 @@ class Jobs extends BaseController
             'category'         => $this->request->getGet('category'),
             'experience_level' => $this->request->getGet('experience_level'),
             'employment_type'  => $this->request->getGet('employment_type'),
+            'internship_type'  => trim((string) $this->request->getGet('internship_type')),
+            'ppo_available'    => trim((string) $this->request->getGet('ppo_available')),
             'work_mode'        => (string) ($this->request->getGet('work_mode') ?? $this->request->getGet('remote') ?? ''),
             'salary_range'     => (string) ($this->request->getGet('salary_range') ?? ''),
             'posted_within'    => $this->request->getGet('posted_within'),
@@ -63,6 +65,8 @@ class Jobs extends BaseController
             'category',
             'experience_level',
             'employment_type',
+            'internship_type',
+            'ppo_available',
             'work_mode',
             'salary_range',
             'posted_within',
@@ -118,6 +122,13 @@ class Jobs extends BaseController
 
         if (!empty($filters['employment_type'])) {
             $this->applyNormalizedFieldFilter($builder, 'employment_type', $filters['employment_type'], 'employment');
+        }
+
+        if ($db->fieldExists('internship_type', 'jobs') && $filters['internship_type'] !== '') {
+            $builder->where('internship_type', $filters['internship_type']);
+        }
+        if ($db->fieldExists('ppo_available', 'jobs') && $filters['ppo_available'] !== '') {
+            $builder->where('ppo_available', $filters['ppo_available'] === 'yes' ? 1 : 0);
         }
 
         if (!empty($filters['work_mode'])) {
@@ -1192,6 +1203,15 @@ class Jobs extends BaseController
         $mode = strtolower(trim($workMode));
         if ($mode === '') {
             return;
+        }
+
+        $db = \Config\Database::connect();
+        if ($db->fieldExists('work_mode', 'jobs')) {
+            $labels = ['remote' => 'Remote', 'hybrid' => 'Hybrid', 'onsite' => 'On-site', 'on-site' => 'On-site', 'office' => 'On-site'];
+            if (isset($labels[$mode])) {
+                $builder->where('work_mode', $labels[$mode]);
+                return;
+            }
         }
 
         switch ($mode) {

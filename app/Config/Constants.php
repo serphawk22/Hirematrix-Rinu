@@ -49,6 +49,10 @@ defined('DECADE') || define('DECADE', 315_360_000);
  */
 defined('SUBSCRIPTION_TRIAL_DAYS') || define('SUBSCRIPTION_TRIAL_DAYS', 7);
 
+// Keep billing code available, but make paid access optional from one switch.
+// Set this back to true when subscriptions should be offered again.
+defined('SUBSCRIPTIONS_ENABLED') || define('SUBSCRIPTIONS_ENABLED', false);
+
 /*
  | --------------------------------------------------------------------------
  | Exit Status Codes

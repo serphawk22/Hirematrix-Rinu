@@ -60,7 +60,7 @@ class CandidateDashboardController extends BaseController
             // Check subscription status to determine if we should show trial promotions
             $subscriptionModel = model(SubscriptionModel::class);
             $activeSubscription = $subscriptionModel->getUserActiveSubscription($candidateId);
-            $hasActiveSubscription = !empty($activeSubscription);
+            $hasActiveSubscription = !SUBSCRIPTIONS_ENABLED || !empty($activeSubscription);
 
         // Top suggested jobs for dashboard (best matches only)
         $topSuggestedJobs = $this->getTopSuggestedJobs($candidateId, 4);
