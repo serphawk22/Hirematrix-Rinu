@@ -5588,6 +5588,10 @@ body.recruiter-jobboard .hm-topbar {
     min-height: 64px;
     height: auto;
 }
+
+.recruiter-dashboard-jobboard .conversion-rate-pill {
+    cursor: default !important;
+}
 .hm-topbar-title { color: var(--hm-text); text-decoration: none; white-space: nowrap; }
 .hm-topbar-title:hover { color: var(--hm-primary, #0D8A90); text-decoration: none; }
 .hm-recruiter-search { position: relative; display: flex; align-items: center; width: min(620px, 60vw); margin-left: auto; }
