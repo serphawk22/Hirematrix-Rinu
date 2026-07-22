@@ -152,9 +152,10 @@ class CareerTransitionPDF_TCPDF extends BaseController
                 $nextLesson,
                 $context
             );
-            $content = trim((string) ($generated['content'] ?? ''));
+            $content = $this->normalizeGeneratedLessonContent((string) ($generated['content'] ?? ''));
             if (!$this->isGeneratedLessonUsable($content)) {
-                throw new \RuntimeException('The generated lesson was too brief or missing its teaching sections.');
+                $wordCount = str_word_count(trim(strip_tags($content)));
+                throw new \RuntimeException('The generated lesson was too brief or missing its teaching sections (words: ' . $wordCount . ').');
             }
 
             $lessonModel->update((int) $nextLesson['id'], [
@@ -167,13 +168,40 @@ class CareerTransitionPDF_TCPDF extends BaseController
             return $this->pdfPreparationResponse($prepared >= $total, $prepared, $total);
         } catch (\Throwable $e) {
             log_message('error', 'PDF lesson preparation failed for lesson ' . (int) $nextLesson['id'] . ': ' . $e->getMessage());
-            return $this->response->setStatusCode(500)->setJSON([
+            return $this->response->setStatusCode($e instanceof \RuntimeException ? 422 : 500)->setJSON([
                 'success' => false,
+                'retryable' => true,
+                'prepared' => $prepared,
+                'total' => $total,
+                'csrfName' => csrf_token(),
+                'csrfHash' => csrf_hash(),
                 'message' => $e instanceof \RuntimeException
-                    ? 'The AI returned an incomplete lesson. Please try the download again.'
-                    : 'Could not prepare the next lesson. Please try again.',
+                    ? 'A lesson response was incomplete. Please try again.'
+                    : 'The lesson service was temporarily unavailable. Please try again.',
             ]);
         }
+    }
+
+    private function normalizeGeneratedLessonContent(string $content): string
+    {
+        $content = trim($content);
+        if ($content === '') {
+            return '';
+        }
+
+        $sectionNames = 'What You Will Build|Lesson|Guided Walkthrough|Worked Example|Practice Lab|Common Mistakes|Career Application|Knowledge Check|Completion Checklist';
+        $content = preg_replace(
+            '/^\s*\*\*\s*(' . $sectionNames . ')\s*:?\s*\*\*\s*$/mi',
+            '## $1',
+            $content
+        ) ?? $content;
+        $content = preg_replace(
+            '/^\s*#{1,4}\s+(' . $sectionNames . ')\s*:?\s*$/mi',
+            '## $1',
+            $content
+        ) ?? $content;
+
+        return trim($content);
     }
 
     private function pdfPreparationResponse(bool $ready, int $prepared, int $total)
@@ -274,7 +302,7 @@ class CareerTransitionPDF_TCPDF extends BaseController
             return true;
         }
 
-        if (str_word_count($plainText) < 400) {
+        if (str_word_count($plainText) < 350) {
             return true;
         }
 
@@ -285,7 +313,7 @@ class CareerTransitionPDF_TCPDF extends BaseController
     private function isGeneratedLessonUsable(string $content): bool
     {
         $plainText = trim(strip_tags($content));
-        if (str_word_count($plainText) < 400) {
+        if (str_word_count($plainText) < 350) {
             return false;
         }
 

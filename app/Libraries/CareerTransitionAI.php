@@ -288,7 +288,7 @@ Return ONLY valid JSON with this exact schema:
   \"exercises\": [\"exercise text\"]
 }
 
-The content must be 1200-1800 words and must read like an actual course lesson, not an outline or advice checklist.
+The content must be 850-1200 words and must read like an actual course lesson, not an outline or advice checklist.
 Teach the topic directly with explanations, examples, and guided work.
 Use these markdown sections exactly:
 ## What You Will Build
@@ -311,7 +311,9 @@ Requirements:
 - Resources must be real high-quality URLs from official documentation or trusted learning references.
 - Exercises must be hands-on and specific.";
 
-        $response = $this->callOpenAI($prompt, 6000, 120);
+        // A focused lesson comfortably fits this budget and is less likely to
+        // be cut off mid-JSON than the previous 1,800-word response target.
+        $response = $this->callOpenAI($prompt, 4800, 90);
         $data = json_decode($response, true);
 
         if (!is_array($data) || trim((string) ($data['content'] ?? '')) === '') {
