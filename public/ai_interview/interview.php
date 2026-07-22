@@ -3,7 +3,24 @@ session_start(); require_once 'config.php';
 if (empty($_SESSION['candidate'])) { header('Location: index.php'); exit; } 
 $cand = $_SESSION['candidate'];
 ?>
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html><html lang="en"><head><script>
+(function () {
+    "use strict";
+    // If this page is ever opened as a real top-level browser navigation
+    // (direct URL, bookmark, old link) instead of inside the persistent
+    // fullscreen shell, bounce into the shell so fullscreen still survives
+    // the rest of the flow. No-op when already embedded in shell.php's
+    // iframe (window.top !== window.self in that case).
+    try {
+        if (window.top === window.self) {
+            var here = window.location.pathname.split('/').pop() || 'index.php';
+            var qs = window.location.search ? window.location.search.slice(1) : '';
+            var target = 'shell.php?p=' + encodeURIComponent(here) + (qs ? '&' + qs : '');
+            window.location.replace(target);
+        }
+    } catch (e) {}
+})();
+</script>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>AI Interview - HireMatrix AI</title>
 <link rel="icon" type="image/png" href="../jobboard/images/Serp Hwak Logo.png">
@@ -101,6 +118,17 @@ body{overflow:hidden;background:#040810}
 </style>
 <link rel="stylesheet" href="css/style.css?v=candidate-ui"/>
 </head><body>
+<script>
+    window.candidate_id   = <?= (int) ($_SESSION['candidateId'] ?? 0); ?>;
+    window.job_id         = <?= (int) ($_SESSION['jobid'] ?? 0); ?>;
+    window.candidate_name = <?= json_encode($_SESSION['candidateName'] ?? null); ?>;
+    window.jobrole        = <?= json_encode($_SESSION['position'] ?? null); ?>;
+    window.FullscreenLockConfig = {
+        maxViolations: 0,
+        showStartOverlay: false
+    };
+</script>
+<script src="js/fullscreen-lock.js"></script>
   <?php include 'theme-toggle.php'; ?>
 <canvas id="particleCanvas"></canvas>
 
@@ -429,11 +457,14 @@ async function endInterview(){
   try{
     const r=await fetch('api/analyze_interview.php',{method:'POST'});
     const d=await r.json();
-    if(d.success) window.location.href='interview_results.php';
+    if(d.success) { if (window.FullscreenLock) window.FullscreenLock.stop(); window.location.href='interview_results.php'; }
     else{ setState('idle','Analysis failed'); isEnded=false; document.getElementById('endBtn').disabled=false; }
   }catch(e){ setState('idle','Error — try again'); isEnded=false; document.getElementById('endBtn').disabled=false; }
 }
-document.getElementById('endBtn').addEventListener('click',()=>{ if(confirm('End interview and generate your report?')) endInterview(); });
+document.getElementById('endBtn').addEventListener('click',()=>{
+  (window.AiInterviewDialog ? window.AiInterviewDialog.confirm('End interview and generate your report?', 'End Interview', 'Keep Going') : Promise.resolve(confirm('End interview and generate your report?')))
+    .then((ok) => { if (ok) endInterview(); });
+});
 
 // ── Boot ───────────────────────────────────────────────
 async function boot(){
