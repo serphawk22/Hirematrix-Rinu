@@ -1,7 +1,6 @@
 <?php
 session_start(); require_once 'config.php';
-if (empty($_SESSION['candidate']) || empty($_SESSION['totalScore']) || $_SESSION['totalScore'] < 35 || empty($_SESSION['coding_score']) || $_SESSION['coding_score'] < 50) { header('Location: index.php'); exit; }
-//|| $_SESSION['totalScore'] > 70 || $_SESSION['coding_score'] > 50
+if (empty($_SESSION['candidate'])) { header('Location: index.php'); exit; } 
 $cand = $_SESSION['candidate'];
 ?>
 <!DOCTYPE html><html lang="en"><head>
@@ -125,10 +124,10 @@ body{overflow:hidden;background:#040810}
     <div class="avatar-core">🤖</div>
   </div>
 
-  <div class="state-chip idle" id="stateChip">Connecting…</div>
+  <div class="state-chip idle" id="stateChip">Verifying your identity…</div>
 
   <div class="question-card">
-    <div class="question-text" id="questionText">Preparing your interview…</div>
+    <div class="question-text" id="questionText">Please complete identity verification to begin…</div>
   </div>
 
   <div class="waveform idle" id="waveform">
@@ -177,7 +176,7 @@ const candidate_name = <?= json_encode($_SESSION['candidateName'] ?? ($_SESSION[
 const jobrole = <?= json_encode($_SESSION['position'] ?? '') ?>;
 </script>
 <!-- PROCTORING -->
-<script src="js/proctoring.js?v=2"></script>
+<script src="js/proctoring.js?v=3"></script>
 <script>
 
 const proctoringBox =
@@ -266,13 +265,20 @@ let finalTranscript='', interimTranscript='';
 let noSpeechRetries=0;
 
 // ── Timer ──────────────────────────────────────────────
-timerInt=setInterval(()=>{
-  timerLeft--;
-  const m=String(Math.floor(timerLeft/60)).padStart(2,'0'), s=String(timerLeft%60).padStart(2,'0');
-  document.getElementById('timerChip').textContent=`${m}:${s}`;
-  document.getElementById('timerChip').style.color=timerLeft>600?'#e2e8f0':timerLeft>300?'#fcd34d':'#fca5a5';
-  if(timerLeft<=0) endInterview();
-},1000);
+// NOTE: this no longer starts automatically at page load. It's started
+// from inside boot() (via startInterviewTimer()) so the candidate's 20
+// minutes only begins counting once the interview actually starts —
+// not while they're still going through identity verification.
+function startInterviewTimer(){
+  if (timerInt) return; // guard against double-start
+  timerInt=setInterval(()=>{
+    timerLeft--;
+    const m=String(Math.floor(timerLeft/60)).padStart(2,'0'), s=String(timerLeft%60).padStart(2,'0');
+    document.getElementById('timerChip').textContent=`${m}:${s}`;
+    document.getElementById('timerChip').style.color=timerLeft>600?'#e2e8f0':timerLeft>300?'#fcd34d':'#fca5a5';
+    if(timerLeft<=0) endInterview();
+  },1000);
+}
 
 // ── Progress dots ──────────────────────────────────────
 function updateProgress(n){
@@ -431,6 +437,11 @@ document.getElementById('endBtn').addEventListener('click',()=>{ if(confirm('End
 
 // ── Boot ───────────────────────────────────────────────
 async function boot(){
+  // Interview officially starts now: kick off the 20-minute countdown
+  // here instead of at page load, so identity verification time doesn't
+  // eat into the candidate's interview time.
+  startInterviewTimer();
+
   setState('processing','Connecting to Maya…');
   try{
     const res=await fetch('api/chat.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'START_INTERVIEW'})});
@@ -441,9 +452,47 @@ async function boot(){
     speak(fb,()=>{isProcessing=false;startListening();});
   }
 }
-// Wait for voices
-const tryBoot=()=>{ if(window.speechSynthesis.getVoices().length>0) boot(); else setTimeout(tryBoot,300); };
-setTimeout(tryBoot,500);
+
+// ── Boot gating: wait for BOTH speech-synthesis voices to be ready AND
+//    identity (face) verification to actually complete before Maya is
+//    allowed to speak or the interview timer starts. Previously this
+//    only waited on voices being ready (via a fixed 500ms poll), which
+//    let Maya start talking while face verification was still running
+//    in proctoring.js, completely independent of it. ───────────────────
+let voicesReady = false;
+let faceVerified = false;
+let hasBooted = false;
+
+function maybeBoot(){
+  if (voicesReady && faceVerified && !hasBooted) {
+    hasBooted = true;
+    boot();
+  }
+}
+
+const tryVoices = () => {
+  if (window.speechSynthesis.getVoices().length > 0) {
+    voicesReady = true;
+    maybeBoot();
+  } else {
+    setTimeout(tryVoices, 300);
+  }
+};
+setTimeout(tryVoices, 500);
+
+// proctoring.js sets window.faceVerificationComplete = true and fires a
+// "faceVerified" event on document once verifyCandidateFace() succeeds.
+// Handle both orderings: verification may finish before this script runs,
+// or the event may fire later while we're still waiting on voices.
+if (window.faceVerificationComplete) {
+  faceVerified = true;
+  maybeBoot();
+} else {
+  document.addEventListener('faceVerified', () => {
+    faceVerified = true;
+    maybeBoot();
+  });
+}
 </script>
 <script src="js/prevent-back.js"></script> 
 <script src="js/theme.js"></script>

@@ -82,40 +82,8 @@ class MncJobController extends BaseController
             $companyInfo['career_page'] = $hintCareerUrl;
         }
         
-        // Enrichment logic: If company exists but lacks description or industry, trigger AI discovery
-        $needsEnrichment = !$companyInfo || empty($companyInfo['short_description']) || empty($companyInfo['industry']);
-
-        if ($needsEnrichment) {
-            // AI Company Profile discovery is a slow network call
-            $discoveredInfo = $ingestor->discoverCompanyProfile($companyName);
-            
-            // Reconnect after the AI call
-            \Config\Database::connect()->reconnect();
-
-            if (!empty($discoveredInfo)) {
-                $companyData = [
-                    'name'              => $discoveredInfo['name'] ?? $companyName,
-                    'industry'          => $discoveredInfo['industry'] ?? ($companyInfo['industry'] ?? null),
-                    'hq'                => $discoveredInfo['hq'] ?? ($companyInfo['hq'] ?? null),
-                    'size'              => $discoveredInfo['size'] ?? ($companyInfo['size'] ?? null),
-                    'website'           => $discoveredInfo['website'] ?? ($companyInfo['website'] ?? null),
-                    'short_description' => $discoveredInfo['short_description'] ?? ($companyInfo['short_description'] ?? null),
-                    'linkedin'          => $discoveredInfo['linkedin'] ?? ($companyInfo['linkedin'] ?? null),
-                    'twitter'           => $discoveredInfo['twitter'] ?? ($companyInfo['twitter'] ?? null),
-                    'facebook'          => $discoveredInfo['facebook'] ?? ($companyInfo['facebook'] ?? null),
-                    'instagram'         => $discoveredInfo['instagram'] ?? ($companyInfo['instagram'] ?? null),
-                    'youtube'           => $discoveredInfo['youtube'] ?? ($companyInfo['youtube'] ?? null),
-                ];
-
-                if ($companyInfo) {
-                    // Enrich existing company info for this request session only
-                    $companyInfo = array_merge($companyInfo, $companyData);
-                } else {
-                    // Use discovered data directly without persisting it to the database
-                    $companyInfo = $companyData;
-                }
-            }
-        }
+        // Company-profile enrichment is unrelated to loading job cards and can
+        // add another remote AI call. Keep this endpoint focused on openings.
 
         // Prepare profile for response
         if ($companyInfo) {
@@ -143,19 +111,50 @@ class MncJobController extends BaseController
 
         // 1. Check if we have recently discovered jobs (Cache to save API costs)
         $jobs = $this->filterUsableJobs($this->getCachedJobsForCompanyAliases($model, $companyName, $companyInfo, $limit), $companyName, $limit);
-        $jobs = $this->filterLiveJobs($jobs, $ingestor, $model);
+        $jobs = $this->filterUsableJobs($jobs, $companyName, $limit);
+
+        $emptyDiscoveryCacheKey = 'mnc_empty_discovery_' . sha1(strtolower(trim($companyName)));
+        $runningDiscoveryCacheKey = 'mnc_running_discovery_' . sha1(strtolower(trim($companyName)));
+        if (empty($jobs) && cache()->get($emptyDiscoveryCacheKey)) {
+            return $this->response->setJSON([
+                'success' => true,
+                'company' => $companyName,
+                'limit' => $limit,
+                'count' => 0,
+                'company_info' => $companyInfo,
+                'jobs' => [],
+                'source' => 'Recent discovery cache',
+                'message' => 'No current openings were found in the latest check.',
+            ]);
+        }
+
+        if (empty($jobs) && cache()->get($runningDiscoveryCacheKey)) {
+            return $this->response->setJSON([
+                'success' => true,
+                'company' => $companyName,
+                'limit' => $limit,
+                'count' => 0,
+                'company_info' => $companyInfo,
+                'jobs' => [],
+                'source' => 'Discovery in progress',
+                'message' => 'Openings are already being checked for this company.',
+            ]);
+        }
 
         if (count($jobs) < $limit) {
             // 2. Perform AI discovery if cache is empty or old
             // This is the longest running part of the request
             log_message('info', "MncJobController: Cache miss for $companyName. Triggering AI discovery for up to $limit jobs.");
+            cache()->save($runningDiscoveryCacheKey, true, 180);
             $discovered = $ingestor->discoverJobs($companyName, $limit, $mapping, $companyInfo);
+            cache()->delete($runningDiscoveryCacheKey);
             
             // Critical: Reconnect after the deep search/AI parsing loop
             \Config\Database::connect()->reconnect();
 
             if (empty($discovered)) {
                 log_message('notice', "MncJobController: AI discovery returned 0 jobs for $companyName.");
+                cache()->save($emptyDiscoveryCacheKey, true, 600);
             }
 
             if (!empty($discovered)) {
@@ -166,14 +165,8 @@ class MncJobController extends BaseController
                     $postedAtRaw = trim((string) ($job['posted_at_raw'] ?? ''));
                     $sourcePlatform = trim((string) ($job['source_platform'] ?? '')) ?: ($mapping['platform'] ?? 'Official Career Site');
                     $discoveredEmployer = trim((string) ($job['employer'] ?? $job['company'] ?? ''));
-                    $officialApplyUrl = $ingestor->resolveOfficialApplyUrl($companyName, $title, $applyUrl, $mapping, $companyInfo);
-                    if ($officialApplyUrl !== '' && $officialApplyUrl !== $applyUrl) {
-                        $applyUrl = $officialApplyUrl;
-                        $sourcePlatform = parse_url($officialApplyUrl, PHP_URL_HOST) ?: 'Official Career Site';
-                    }
-
-                    // Ensure DB connection is alive before checking/inserting into the loop,
-                    // as resolveOfficialApplyUrl can take a long time.
+                    // Ensure the DB connection is alive before inserting jobs
+                    // returned by remote discovery.
                     try {
                         \Config\Database::connect()->reconnect();
                     } catch (\Throwable $e) {
@@ -197,16 +190,6 @@ class MncJobController extends BaseController
                         continue;
                     }
 
-                    if ($ingestor->verifyJobIsLive($applyUrl) === false) {
-                        $existingExpired = $model->where('company_name', $companyName)
-                            ->where('apply_url', $applyUrl)
-                            ->first();
-                        if ($existingExpired) {
-                            $model->update($existingExpired['id'], ['is_active' => 0]);
-                        }
-                        continue;
-                    }
-                    
                     // Check if this specific job link already exists for this company
                     $existing = $model->where('company_name', $companyName)
                                     ->where('apply_url', $applyUrl)
@@ -234,11 +217,17 @@ class MncJobController extends BaseController
                 }
 
                 $jobs = $this->filterUsableJobs($this->getCachedJobsForCompanyAliases($model, $companyName, $companyInfo, $limit), $companyName, $limit);
-                $jobs = $this->filterLiveJobs($jobs, $ingestor, $model);
+                $jobs = $this->filterUsableJobs($jobs, $companyName, $limit);
+                if (!empty($jobs)) {
+                    cache()->delete($emptyDiscoveryCacheKey);
+                }
             }
         }
 
         \Config\Database::connect()->reconnect();
+        if (!empty($jobs)) {
+            $this->persistCompanyWithOpenings($companyModel, $companyName, $companyInfo, $mapping, $jobs);
+        }
         $jobs = $this->markSavedExternalJobs($jobs);
 
         return $this->response->setJSON([
@@ -250,6 +239,58 @@ class MncJobController extends BaseController
             'jobs'    => $jobs,
             'source'  => 'AI Job Discovery Engine'
         ]);
+    }
+
+    /**
+     * Add a newly searched employer to the directory only after live openings
+     * have been discovered. Existing profiles are enriched without replacing
+     * any populated profile fields.
+     */
+    private function persistCompanyWithOpenings($companyModel, string $companyName, array $companyInfo, ?array $mapping, array $jobs): void
+    {
+        $companyName = trim($companyName);
+        if ($companyName === '' || empty($jobs)) {
+            return;
+        }
+
+        $existing = $companyModel->where('name', $companyName)->first();
+        if (!$existing && strlen($companyModel->normalizeBrandKey($companyName)) > 3) {
+            $existing = $companyModel->like('name', $companyName, 'both')->first();
+        }
+
+        $website = trim((string) ($companyInfo['website'] ?? $mapping['website_url'] ?? ''));
+        $careerPage = trim((string) ($companyInfo['career_page'] ?? $mapping['career_url'] ?? ''));
+        $location = '';
+        foreach ($jobs as $job) {
+            $candidateLocation = trim((string) ($job['location'] ?? ''));
+            if ($candidateLocation !== '' && !in_array(strtolower($candidateLocation), ['remote/multiple', 'multiple', 'remote'], true)) {
+                $location = $candidateLocation;
+                break;
+            }
+        }
+
+        $data = ['name' => $companyName];
+        $defaults = [
+            'website' => $website,
+            'career_page' => $careerPage,
+            'hq' => $location,
+            'short_description' => 'Explore current openings at ' . $companyName . '.',
+            'source' => 'job_discovery',
+            'data_source_note' => 'Added automatically after current openings were verified.',
+            'last_enriched_at' => date('Y-m-d H:i:s'),
+        ];
+
+        foreach ($defaults as $field => $value) {
+            if ($value !== '' && empty($existing[$field])) {
+                $data[$field] = $value;
+            }
+        }
+
+        try {
+            $companyModel->upsertByName($companyName, $data);
+        } catch (\Throwable $e) {
+            log_message('error', 'Could not add discovered company "' . $companyName . '" to the directory: ' . $e->getMessage());
+        }
     }
 
     public function save(int $jobId)
@@ -503,25 +544,6 @@ class MncJobController extends BaseController
      * @param array<int, array<string, mixed>> $jobs
      * @return array<int, array<string, mixed>>
      */
-    private function filterLiveJobs(array $jobs, MncJobIngestor $ingestor, MncJobModel $model): array
-    {
-        $liveJobs = [];
-
-        foreach ($jobs as $job) {
-            if ($ingestor->verifyJobIsLive((string) ($job['apply_url'] ?? '')) === false) {
-                $jobId = (int) ($job['id'] ?? 0);
-                if ($jobId > 0) {
-                    $model->update($jobId, ['is_active' => 0]);
-                }
-                continue;
-            }
-
-            $liveJobs[] = $job;
-        }
-
-        return $liveJobs;
-    }
-
     /**
      * Rejects generic search pages and incomplete AI guesses before they reach the UI.
      *

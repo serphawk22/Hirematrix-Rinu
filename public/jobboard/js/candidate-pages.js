@@ -135,6 +135,8 @@
         });
     }
 
+    var recommendationHtmlCache = Object.create(null);
+
     function setJobsLoadingState(isLoading) {
         var jobsMain = document.querySelector('.jobs-page-jobboard .jobs-main');
         if (jobsMain) {
@@ -919,6 +921,107 @@
                     submitBtn.classList.add('is-loading');
                     submitBtn.setAttribute('aria-busy', 'true');
                 }
+
+                var loader = transitionForm.querySelector('[data-transition-loader]');
+                var status = loader ? loader.querySelector('[data-transition-status]') : null;
+                if (loader) {
+                    loader.hidden = false;
+                    window.requestAnimationFrame(function () {
+                        loader.classList.add('is-visible');
+                        loader.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    });
+                }
+
+                if (status) {
+                    var messages = [
+                        'Analysing the skills between your current and target roles...',
+                        'Mapping the most useful learning modules...',
+                        'Designing practical lessons and exercises...',
+                        'Personalising your roadmap and milestones...'
+                    ];
+                    var messageIndex = 0;
+                    window.setInterval(function () {
+                        messageIndex = (messageIndex + 1) % messages.length;
+                        status.classList.add('is-changing');
+                        window.setTimeout(function () {
+                            status.textContent = messages[messageIndex];
+                            status.classList.remove('is-changing');
+                        }, 180);
+                    }, 2400);
+                }
+            });
+        });
+
+        document.querySelectorAll('[data-course-pdf-button]').forEach(function (button) {
+            if (button.dataset.pdfBound === '1') {
+                return;
+            }
+            button.dataset.pdfBound = '1';
+
+            var label = button.querySelector('[data-pdf-label]');
+            var icon = button.querySelector('i');
+            button.addEventListener('click', async function () {
+                if (button.disabled) {
+                    return;
+                }
+
+                button.disabled = true;
+                button.setAttribute('aria-busy', 'true');
+                if (icon) icon.className = 'fas fa-spinner fa-spin';
+                if (label) label.textContent = 'Preparing course...';
+
+                try {
+                    var lessonRetryCount = 0;
+                    while (true) {
+                        var body = new URLSearchParams();
+                        body.set(button.dataset.csrfName, button.dataset.csrfValue);
+                        var response = await fetch(button.dataset.prepareUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: body.toString()
+                        });
+                        var result = await response.json().catch(function () { return {}; });
+                        if (result.csrfName && result.csrfHash) {
+                            button.dataset.csrfName = result.csrfName;
+                            button.dataset.csrfValue = result.csrfHash;
+                        }
+                        if (!response.ok || !result.success) {
+                            if (result.retryable && lessonRetryCount < 2) {
+                                lessonRetryCount += 1;
+                                if (label) {
+                                    label.textContent = 'Retrying lesson ' + ((result.prepared || 0) + 1) + '...';
+                                }
+                                await new Promise(function (resolve) {
+                                    window.setTimeout(resolve, 1200 * lessonRetryCount);
+                                });
+                                continue;
+                            }
+                            throw new Error(result.message || 'Could not prepare the PDF. Please try again.');
+                        }
+                        lessonRetryCount = 0;
+                        if (label) {
+                            label.textContent = result.ready
+                                ? 'Starting download...'
+                                : 'Preparing ' + result.prepared + ' of ' + result.total + ' lessons...';
+                        }
+                        if (result.ready) {
+                            window.location.assign(button.dataset.downloadUrl);
+                            break;
+                        }
+                    }
+                } catch (error) {
+                    window.alert(error.message);
+                } finally {
+                    window.setTimeout(function () {
+                        button.disabled = false;
+                        button.removeAttribute('aria-busy');
+                        if (icon) icon.className = 'fas fa-file-pdf';
+                        if (label) label.textContent = 'Download PDF';
+                    }, 1200);
+                }
             });
         });
 
@@ -1159,7 +1262,11 @@
                     return;
                 }
 
-                detail.innerHTML = '<div class="course-lesson-loading"><span class="spinner-border spinner-border-sm" role="status"></span> Preparing full lesson...</div>';
+                detail.innerHTML = '<div class="course-lesson-loading">' +
+                    '<div class="course-lesson-loading-title"><span class="spinner-border spinner-border-sm" role="status"></span><span>Preparing full lesson...</span></div>' +
+                    '<div class="course-lesson-loading-track" aria-hidden="true"><span></span></div>' +
+                    '<div class="course-lesson-loading-lines" aria-hidden="true"><span></span><span></span><span></span></div>' +
+                '</div>';
                 fetch(getBaseUrl() + '/career-transition/lesson/' + lessonId, {
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
@@ -1232,7 +1339,11 @@
                         '</div>' +
                     '</div>' +
                     '<div class="course-lesson-detail" data-course-lesson-detail hidden>' +
-                        '<div class="course-lesson-loading"><span class="spinner-border spinner-border-sm" role="status"></span> Preparing full lesson...</div>' +
+                        '<div class="course-lesson-loading">' +
+                            '<div class="course-lesson-loading-title"><span class="spinner-border spinner-border-sm" role="status"></span><span>Preparing full lesson...</span></div>' +
+                            '<div class="course-lesson-loading-track" aria-hidden="true"><span></span></div>' +
+                            '<div class="course-lesson-loading-lines" aria-hidden="true"><span></span><span></span><span></span></div>' +
+                        '</div>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1405,6 +1516,13 @@
             e.preventDefault();
         }
 
+        var currentTab = document.querySelector('.jobs-page-jobboard .tab-pill.active[data-rec-type]');
+        var currentRecType = currentTab ? currentTab.getAttribute('data-rec-type') : '';
+        var currentJobsMain = document.querySelector('.jobs-page-jobboard .jobs-main');
+        if (currentRecType && currentRecType !== recType && currentJobsMain && !recommendationHtmlCache[currentRecType]) {
+            recommendationHtmlCache[currentRecType] = '<div class="jobs-page-jobboard">' + currentJobsMain.outerHTML + '</div>';
+        }
+
         setRecommendationTabState(recType);
         if (showRecommendationPane(recType)) {
             var instantUrl = new URL(getBaseUrl() + '/jobs', window.location.origin);
@@ -1420,6 +1538,15 @@
         var url = new URL(getBaseUrl() + '/jobs', window.location.origin);
         url.searchParams.set('tab', 'recommended');
         url.searchParams.set('rec', recType);
+        var cacheKey = recType;
+
+        if (recommendationHtmlCache[cacheKey]) {
+            replaceJobsMainFromHtml(recommendationHtmlCache[cacheKey], url.toString());
+            ensureRecommendationResultState(recType);
+            setJobsLoadingState(false);
+            return;
+        }
+
         var loadingStartedAt = Date.now();
         showRecommendationLoading(recType);
         setJobsLoadingState(true);
@@ -1430,6 +1557,7 @@
                 });
             })
             .then(function (html) {
+                recommendationHtmlCache[cacheKey] = html;
                 if (!replaceJobsMainFromHtml(html, url.toString())) {
                     window.location.href = url.toString();
                     return;

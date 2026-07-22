@@ -36,7 +36,10 @@ class Auth extends BaseController
             return redirect()->to($this->resolveNextUrl($next, $default));
         }
 
-        return view('Auth/login', ['next' => $next]);
+        return view('Auth/login', [
+            'next' => $next,
+            'loginContext' => $this->getLoginContext($next),
+        ]);
     }
 
     public function authenticate()
@@ -291,6 +294,7 @@ class Auth extends BaseController
     {
         $clientId = trim((string) (env('google.clientId') ?? env('GOOGLE_CLIENT_ID') ?? ''));
         $redirectUri = base_url('auth/google/callback');
+        $next = $this->resolveNextUrl((string) $this->request->getGet('next'), '');
 
         if ($clientId === '') {
             return redirect()->to(base_url('register'))
@@ -298,7 +302,10 @@ class Auth extends BaseController
         }
 
         $state = bin2hex(random_bytes(16));
-        session()->set('google_oauth_state', $state);
+        session()->set([
+            'google_oauth_state' => $state,
+            'google_oauth_next' => $next,
+        ]);
 
         $query = http_build_query([
             'client_id' => $clientId,
@@ -325,7 +332,9 @@ class Auth extends BaseController
 
         $state = (string) $request->getGet('state');
         $expectedState = (string) $session->get('google_oauth_state');
+        $next = (string) $session->get('google_oauth_next');
         $session->remove('google_oauth_state');
+        $session->remove('google_oauth_next');
 
         if ($state === '' || $expectedState === '' || !hash_equals($expectedState, $state)) {
             return redirect()->to(base_url('register'))
@@ -493,7 +502,7 @@ class Auth extends BaseController
             'login_at' => date('Y-m-d H:i:s'),
         ]);
 
-        return redirect()->to($this->resolveCandidateTarget($user));
+        return redirect()->to($this->resolveNextUrl($next, $this->resolveCandidateTarget($user)));
     }
 
     /**
@@ -1454,6 +1463,48 @@ class Auth extends BaseController
         }
 
         return $default;
+    }
+
+    private function getLoginContext(string $next): array
+    {
+        $context = [
+            'page_title' => 'Sign In - HireMatrix',
+            'heading' => 'Welcome Back',
+            'message' => 'Sign in to your account to continue',
+            'notice' => '',
+        ];
+
+        $trustedNext = $this->resolveNextUrl($next, '');
+        if ($trustedNext === '') {
+            return $context;
+        }
+
+        $path = (string) (parse_url($trustedNext, PHP_URL_PATH) ?? '');
+        $basePath = rtrim((string) (parse_url(base_url(), PHP_URL_PATH) ?? ''), '/');
+        if ($basePath !== '' && str_starts_with($path, $basePath)) {
+            $path = substr($path, strlen($basePath));
+        }
+        $routePath = '/' . ltrim($path, '/');
+
+        if (preg_match('#^/jobs(?:/|$)#', $routePath)) {
+            return [
+                'page_title' => 'Sign In to View Jobs - HireMatrix',
+                'heading' => 'Sign in to explore jobs',
+                'message' => 'Access job listings, recommendations, and application tools.',
+                'notice' => 'Please sign in to view jobs. You will return to the jobs page after signing in.',
+            ];
+        }
+
+        if (preg_match('#^/career-transition(?:/|$)#', $routePath)) {
+            return [
+                'page_title' => 'Sign In for Career Transition - HireMatrix',
+                'heading' => 'Continue your career transition',
+                'message' => 'Sign in to access your personalised career roadmap and progress.',
+                'notice' => 'Please sign in to use Career Transition. You will return there after signing in.',
+            ];
+        }
+
+        return $context;
     }
 
     private function resolveCandidateTarget(array $user): string

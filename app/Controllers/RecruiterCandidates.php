@@ -961,12 +961,21 @@ class RecruiterCandidates extends BaseController
         $returnTo = trim((string) $this->request->getPost('return_to'));
 
         if (empty($candidateIds)) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setStatusCode(422)->setJSON([
+                    'ok' => false,
+                    'message' => 'Select at least one candidate to send invitations.',
+                    'csrfName' => csrf_token(),
+                    'csrfHash' => csrf_hash(),
+                ]);
+            }
             return redirect()->back()->with('error', 'Select at least one candidate to send invitations.');
         }
 
         $successCount = 0;
         $skippedCount = 0;
         $firstError = '';
+        $invitedCandidateIds = [];
 
         foreach ($candidateIds as $candidateId) {
             if ($candidateId <= 0) {
@@ -976,6 +985,7 @@ class RecruiterCandidates extends BaseController
             $result = $this->performJobInvitation((int) session()->get('user_id'), $candidateId, $jobId, $customMessage);
             if ($result['ok'] ?? false) {
                 $successCount++;
+                $invitedCandidateIds[] = $candidateId;
                 continue;
             }
 
@@ -997,10 +1007,32 @@ class RecruiterCandidates extends BaseController
                 }
             }
 
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'ok' => true,
+                    'message' => $message,
+                    'successCount' => $successCount,
+                    'skippedCount' => $skippedCount,
+                    'invitedCandidateIds' => $invitedCandidateIds,
+                    'csrfName' => csrf_token(),
+                    'csrfHash' => csrf_hash(),
+                ]);
+            }
+
             return redirect()->to($redirectTarget)->with('success', $message);
         }
 
-        return redirect()->to($redirectTarget)->with('error', $firstError !== '' ? $firstError : 'No invitations were sent.');
+        $message = $firstError !== '' ? $firstError : 'No invitations were sent.';
+        if ($this->request->isAJAX()) {
+            return $this->response->setStatusCode(422)->setJSON([
+                'ok' => false,
+                'message' => $message,
+                'csrfName' => csrf_token(),
+                'csrfHash' => csrf_hash(),
+            ]);
+        }
+
+        return redirect()->to($redirectTarget)->with('error', $message);
     }
 
     public function sendBulkEmail()

@@ -70,7 +70,7 @@ $adminNav = [
     ['url' => 'admin/users', 'label' => 'Users', 'icon' => 'fas fa-users', 'active' => url_is('admin/users*')],
     ['url' => 'admin/companies', 'label' => 'Companies', 'icon' => 'fas fa-building', 'active' => url_is('admin/companies*') || url_is('admin/company/*')],
     ['url' => 'admin/company-ats-mappings', 'label' => 'Company ATS', 'icon' => 'fas fa-sitemap', 'active' => url_is('admin/company-ats-mappings*')],
-    ['url' => 'admin/subscriptions', 'label' => 'Subscriptions', 'icon' => 'fas fa-credit-card', 'active' => url_is('admin/subscriptions*') || url_is('admin/subscription/*')],
+    ...(SUBSCRIPTIONS_ENABLED ? [['url' => 'admin/subscriptions', 'label' => 'Subscriptions', 'icon' => 'fas fa-credit-card', 'active' => url_is('admin/subscriptions*') || url_is('admin/subscription/*')]] : []),
     ['url' => 'admin/blogs', 'label' => 'Blogs', 'icon' => 'fas fa-newspaper', 'active' => url_is('admin/blogs*')],
     ['url' => 'admin/feedback', 'label' => 'Feedback', 'icon' => 'fas fa-comments', 'active' => url_is('admin/feedback*')],
 ];

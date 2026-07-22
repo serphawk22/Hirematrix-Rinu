@@ -280,7 +280,7 @@ $conn->close();
 
   <!-- Actions -->
   <div class="results-actions animate-in">
- <?php if($totalScore >= 35) {?>
+ 
     <a href="#" onclick="submitCodingRound()" class="btn btn-secondary btn-lg">
     <i class="fas fa-laptop" aria-hidden="true"></i> Coding Round
 </a>
@@ -290,8 +290,8 @@ $conn->close();
     <input type="hidden" name="resume" value="<?= $_SESSION['resume']; ?>">
     <input type="hidden" name="experience" value="<?= $_SESSION['experience']; ?>">
     <input type="hidden" name="mode" value="coding">
-</form> <?php } else{?>
-<button id="endInterviewBtn" class="btn btn-primary"><i class="fas fa-sync-alt" aria-hidden="true"></i> End Interview</button><?php }?>
+</form> 
+<button id="endInterviewBtn" class="btn btn-primary"><i class="fas fa-sync-alt" aria-hidden="true"></i> End Interview</button> 
     <button class="btn btn-secondary btn-lg" id="copyReportLinkBtn">Copy Share Link</button>
     <button class="btn btn-secondary btn-lg" id="downloadHtmlBtn">Download HTML Report</button>
     <button class="btn btn-secondary btn-lg" onclick="window.print()"><i class="fas fa-print" aria-hidden="true"></i> Print Report</button>

@@ -49,10 +49,9 @@ $activeFilters = array_filter([
                     <input id="companyDiscoveryLocation" type="text" name="location" class="form-control" value="<?= esc($filters['location'] ?? '') ?>" placeholder="Bangalore, Kochi, Chennai">
                 </div>
                 <div>
-                    <label for="companyDiscoveryJobs">Hiring status</label>
+                    <label for="companyDiscoveryJobs">Availability</label>
                     <select id="companyDiscoveryJobs" name="jobs" class="form-control">
-                        <option value="">All companies</option>
-                        <option value="active" <?= ($filters['jobs'] ?? '') === 'active' ? 'selected' : '' ?>>Actively hiring</option>
+                        <option value="active" selected>Companies with openings</option>
                     </select>
                 </div>
                 <?php if ($activeSegmentKey !== ''): ?>
@@ -65,7 +64,6 @@ $activeFilters = array_filter([
         <div class="company-discovery-segments">
             <a href="<?= esc($baseDiscoveryUrl) ?>" class="company-segment-card <?= $activeSegmentKey === '' ? 'is-active' : '' ?>">
                 <strong>All Companies</strong>
-                <small><?= $allCompanyCount ?> profiles</small>
             </a>
             <?php foreach ($segments as $segment): ?>
                 <?php
@@ -74,7 +72,6 @@ $activeFilters = array_filter([
                 ?>
                 <a href="<?= esc($segmentUrl) ?>" class="company-segment-card <?= $activeSegmentKey === $segmentKey ? 'is-active' : '' ?>">
                     <strong><?= esc($segment['label'] ?? 'Companies') ?></strong>
-                    <small><?= (int) ($segment['count'] ?? 0) ?> profiles</small>
                 </a>
             <?php endforeach; ?>
         </div>
@@ -83,8 +80,8 @@ $activeFilters = array_filter([
             <div class="card">
                 <div class="card-body text-center py-5">
                     <i class="fas fa-building fa-3x text-muted mb-3"></i>
-                    <h4 class="mb-2">No companies found</h4>
-                    <p class="text-muted mb-0">Try another category, city, industry, or company name.</p>
+                    <h4 class="mb-2">Checking company openings</h4>
+                    <p class="text-muted mb-0">Try another category, city, or industry while current openings are being refreshed.</p>
                 </div>
             </div>
         <?php else: ?>
@@ -135,7 +132,7 @@ $activeFilters = array_filter([
                 <?php endforeach; ?>
             </div>
 
-            <?php if (!($viewAll ?? false) && isset($pager) && $pager->getPageCount() > 1): ?>
+            <?php if (!($viewAll ?? false) && !empty($hasMoreCompanies)): ?>
                 <div class="text-center mt-4">
                     <?php $viewMoreUrl = $baseDiscoveryUrl . '?' . http_build_query(array_merge($activeFilters, $activeSegmentKey !== '' ? ['segment' => $activeSegmentKey] : [], ['view_all' => 1])); ?>
                     <a href="<?= esc($viewMoreUrl) ?>" class="btn btn-primary px-4">View More Companies <i class="fas fa-plus ml-2"></i></a>

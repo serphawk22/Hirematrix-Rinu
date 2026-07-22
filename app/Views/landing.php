@@ -31,6 +31,58 @@ $formatAge = static function ($value): string {
     if ($date === false) return 'Recently';
     return date('M d, Y', $date);
 };
+
+// ── PRO feature card data ────────────────────────────────────────────
+$proFeatureSlides = [
+    [
+        'eyebrow' => 'AI Interview Practice',
+        'title' => 'Practice with the AI Interview',
+        'rows' => [
+            'Role-specific mock interview rounds',
+            'Structured answer frameworks',
+            'Instant post-round feedback',
+        ],
+        'cta_label' => 'Watch the guide',
+        'cta_url' =>  base_url('register'),
+        'has_video' => true,
+    ],
+    [
+        'eyebrow' => 'Career Transition AI',
+        'title' => 'Plan Your Next Career Move',
+        'rows' => [
+            'Personalised role-change roadmap',
+            'Skill gap analysis vs target role',
+            'Certification & learning path guide',
+        ],
+        'cta_label' => 'Generate my roadmap',
+        'cta_url' =>  base_url('register'),
+        'has_video' => false,
+    ],
+    [
+        'eyebrow' => 'Resume Studio',
+        'title' => 'Build a Resume That Gets Noticed',
+        'rows' => [
+            'Role-targeted resume per job',
+            'ATS-friendly formatting checks',
+            'AI rewrite & positioning tips',
+        ],
+        'cta_label' => 'Build my resume',
+        'cta_url' => base_url('register'),
+        'has_video' => false,
+    ],
+    [
+        'eyebrow' => 'AI Career Mentor',
+        'title' => 'Get Guidance, Anytime You Need It',
+        'rows' => [
+            'Unlimited mentor chat sessions',
+            'Personalised career guidance',
+            'Interview & negotiation tips',
+        ],
+        'cta_label' => 'Chat with mentor',
+        'cta_url' => base_url('register'),
+        'has_video' => false,
+    ],
+];
 ?>
 <!doctype html>
 <html lang="en">
@@ -262,133 +314,203 @@ $formatAge = static function ($value): string {
 }
 
 /* ================================================
-   CAREER TRANSITION
-================================================ */  
-
-.landing-career-transition{
-    position:relative;
-    overflow:hidden;
-
-    padding:50px 0 !important;
-
-    background:
-    radial-gradient(
-        circle at top right,
-        rgba(31,183,181,.12),
-        transparent 35%
-    ),
-    radial-gradient(
-        circle at bottom left,
-        rgba(181,216,78,.10),
-        transparent 35%
-    ),
-    #ffffff;
+   PRO TOOLS FEATURE CARDS (full-bleed section, replaces career transition)
+================================================ */
+.pro-tools-section {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    padding: 64px 0 72px;
+   background:
+    linear-gradient(rgba(31, 183, 181, 0.02), transparent 180%),
+    linear-gradient(rgba(246, 249, 249, 0.02), transparent 180%),
+    linear-gradient(to bottom, transparent 0%, #ffffff 65%),
+    var(--gradient-soft);
+    position: relative;
+    overflow: hidden;
 }
 
-.career-bg-glow{
-    position:absolute;
-    inset:0;
-    pointer-events:none;
+.pro-tools-inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
 }
 
-.career-content{
-    max-width:1100px;
-    margin:auto;
-    position:relative;
-    z-index:2;
+.pro-tools-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 36px;
 }
 
-.career-badge{
-    display:inline-flex;
-    align-items:center;
-
-    padding:10px 18px;
-
-    border-radius:999px;
-
-    background:
-    rgba(31,183,181,.08);
-
-    color:#0D8A90;
-
-    font-size:14px;
-    font-weight:700;
-
-    margin-bottom:32px;
+.pro-tools-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background:linear-gradient(135deg, #1FB7B5, #53B86C);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    margin-bottom: 14px;
 }
 
-.career-title{
-    font-size:clamp(25px,3vw,55px) !important;
-    line-height:0.8 !important;
-
-    font-weight:500 !important;
-
-    letter-spacing:-.06em;
-
-    color:#111827;
-
-    margin-bottom:32px;
-} 
-.career-title span{
-    display:inline !important;
-
-    background:
-    linear-gradient(
-        135deg,
-        #1FB7B5,
-        #53B86C,
-        #B5D84E
-    );
-
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
+.pro-tools-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 8px;
+    letter-spacing: -.02em;
+}
+.pro-tools-title .grad-text {
+    background: linear-gradient(135deg, #1FB7B5 0%, #53B86C 55%, #B5D84E 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 
-.career-description{
-    max-width:760px;
-
-    margin:auto;
-
-    font-size:20px !important;
-
-    line-height:1.9;
-
-    color:#6b7280;
-
-    margin-bottom:50px;
+.pro-tools-subtitle {
+    font-size: 15px;
+    color: #6b7280;
+    margin: 0;
+    max-width: 460px;
 }
 
-.career-actions{
-    display:flex;
-    justify-content:center;
-    gap:16px;
-    flex-wrap:wrap;
-
-    margin-bottom:40px !important;
+.pro-become-btn {
+    flex-shrink: 0;
+    background: transparent;
+    border: 1.5px solid #1FB7B5;
+    color: #1FB7B5;
+    padding: 11px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none !important;
+    transition: .2s;
+    white-space: nowrap;
+    align-self: flex-start;
 }
- 
-@media(max-width:768px){
-
-    .landing-career-transition{
-        padding:100px 0;
-    }
-
-    .career-title{
-        font-size:52px;
-    }
-
-    .career-description{
-        font-size:17px;
-    }
-
-    .career-stats{
-        gap:40px;
-    }
-
-    .career-stat strong{
-        font-size:38px;
-    }
+.pro-become-btn:hover {
+    background: #1FB7B5;
+    color: #ffffff;
 }
+
+.pro-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.pro-card {
+    position: relative;
+    background: #fff;
+    border: 1px solid #D9ECE5;
+    border-radius: 18px;
+    padding: 24px 22px;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none !important;
+    color: inherit;
+    cursor: pointer;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.pro-card:hover {
+    transform: translateY(-3px);
+    border-color: #1FB7B5;
+    box-shadow: 0 2px 12px rgba(13,138,144,.10);
+}
+
+.pro-card-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%);
+    border: 1px solid #D9ECE5;
+    display: flex; align-items: center; justify-content: center;
+    color: #0D8A90; font-size: 17px;
+    margin-bottom: 16px;
+    position: relative;
+}
+.pro-card-icon .pro-play-badge {
+    position: absolute; bottom: -6px; right: -6px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #1FB7B5; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+}
+
+.pro-card-lock {
+    position: absolute; top: 20px; right: 20px;
+    color: #9CA3AF; font-size: 14px;
+}
+
+.pro-card-label {
+    display: inline-block;
+    font-size: 11px; font-weight: 700; letter-spacing: .04em;
+    color: #0D8A90;
+    background: rgba(31,183,181,.08);
+    border: 1px solid #D9ECE5;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    width: fit-content;
+}
+
+.pro-card-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 14px;
+    line-height: 1.3;
+}
+
+.pro-card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    flex: 1;
+}
+.pro-card-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13.5px;
+    color: #4b5563;
+    line-height: 1.4;
+}
+.pro-card-list li i {
+    color: #53B86C;
+    font-size: 12px;
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+
+.pro-card-cta {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0D8A90;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.pro-card:hover .pro-card-cta { color: #1FB7B5; gap: 9px; }
+.pro-card-cta i { font-size: 11px; transition: .2s; }
+
+@media (max-width: 992px) {
+    .pro-cards-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 576px) {
+    .pro-tools-header { flex-direction: column; }
+    .pro-become-btn { width: 100%; text-align: center; }
+    .pro-cards-grid { grid-template-columns: 1fr; }
+    .pro-tools-title { font-size: 26px; }
+}
+
 /* ================================================
    GET STARTED
 ================================================ */
@@ -641,21 +763,36 @@ text-decoration:none !important;
         color: #1FB7B5 !important;
     }
 
-    /* ── Career Transition ── */
-    .landing-career-transition {
+    /* ── Pro Tools (full-bleed) ── */
+    .pro-tools-section {
         background:
+            radial-gradient(circle at top right, rgba(31,183,181,.06), transparent 35%),
+            radial-gradient(circle at bottom left, rgba(181,216,78,.06), transparent 35%),
             #000000 !important;
     }
-    .career-title {
-        color: #FFFFFF !important;
+    .pro-tools-title {  color: #F8FAFC !important; }
+    .pro-tools-subtitle { color: #94A3B8 !important; }
+    .pro-become-btn { border-color: #1FB7B5 !important; color: #1FB7B5 !important; }
+    .pro-become-btn:hover { background: #1FB7B5 !important; color: #fff !important; }
+    .pro-card {
+        background: #0B0B0B !important;
+        border-color: #23343A !important;
     }
-    .career-description {
-        color: #94A3B8 !important;
-    }
-    .career-badge {
-        background: rgba(31,183,181,.08) !important;
+    .pro-card:hover { border-color: #1FB7B5 !important; }
+    .pro-card-icon {
+        background: linear-gradient(135deg,#162327 0%,#1B2A2F 100%) !important;
+        border-color: #23343A !important;
         color: #1FB7B5 !important;
     }
+    .pro-card-lock { color: #7A8B96 !important; }
+    .pro-card-label {
+        background: rgba(31,183,181,.08) !important;
+        border-color: #23343A !important;
+        color: #1FB7B5 !important;
+    }
+    .pro-card-title { color: #F8FAFC !important; }
+    .pro-card-list li { color: #94A3B8 !important; }
+    .pro-card-cta { color: #1FB7B5 !important; }
 
     /* ── Get Started / Choices ── */
     .landing-choices {
@@ -688,9 +825,146 @@ text-decoration:none !important;
     }
 }
 
+/* ================================================
+   MODAL BASE (required for popup to display/position/hide correctly)
+================================================ */
+.hm-modal-overlay {
+    position: fixed; inset: 0; background: rgba(17,24,39,.55);
+    display: none; align-items: center; justify-content: center;
+    z-index: 9999; padding: 20px; backdrop-filter: blur(2px);
+}
+.hm-modal-overlay.active { display: flex; }
+
+.hm-modal {
+    background: #fff; border-radius: 20px; max-width: 560px; width: 100%;
+    max-height: 90vh; overflow-y: auto; padding: 32px 32px 28px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.25);
+    position: relative; animation: hmPop .25s ease;
+}
+@keyframes hmPop { from{opacity:0; transform:translateY(12px) scale(.98);} to{opacity:1; transform:none;} }
+
+.hm-modal-close {
+    position: absolute; top: 18px; right: 18px;
+    width: 34px; height: 34px; border-radius: 9px; border: 1px solid #E5E7EB;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    color: #6b7280; cursor: pointer; transition: .15s; font-size: 14px;
+}
+.hm-modal-close:hover { background: #F9FAFB; color: #111827; }
+
+.hm-modal-eyebrow { font-size: 13px; font-weight: 800; letter-spacing: .08em; color: #0D8A90; text-transform: uppercase; margin-bottom: 4px; }
+.hm-modal-sub { font-size: 13px; color: #9CA3AF; margin-bottom: 16px; }
+.hm-modal-divider { height: 2px; background: linear-gradient(90deg,#1FB7B5,#53B86C,#B5D84E); border-radius: 2px; margin-bottom: 22px; }
+
+.hm-modal-title { font-size: 26px; font-weight: 600; color: #111827; margin-bottom: 12px; line-height: 1.25; }
+.hm-modal-title span { background: linear-gradient(135deg,#1FB7B5,#53B86C,#B5D84E); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+@media (max-width: 600px) {
+    .hm-modal { padding: 26px 20px 22px; }
+    .hm-modal-title { font-size: 22px; }
+}
+
+@media (prefers-color-scheme: dark) {
+    .hm-modal { background: #0B0B0B !important; border: 1px solid #23343A; }
+    .hm-modal-close { background: #0B0B0B !important; border-color: #23343A !important; color: #94A3B8 !important; }
+    .hm-modal-close:hover { background: #1B2A2F !important; color: #fff !important; }
+    .hm-modal-title { color: #F8FAFC !important; }
+    .hm-modal-sub { color: #7A8B96 !important; }
+}
+
+/*popup*/ 
+/* ================================================
+   AUTO INTENT POPUP (like Naukri)
+================================================ */
+.hm-intent-options {
+    display: flex; flex-direction: column; gap: 14px; margin-top: 6px;
+}
+.hm-intent-btn {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 22px; border-radius: 14px;
+    border: 1.5px solid #D9ECE5; background: #fff;
+    text-decoration: none !important; color: inherit;
+    transition: .2s;
+}
+.hm-intent-btn:hover {
+    border-color: #1FB7B5;
+    box-shadow: 0 6px 20px rgba(31,183,181,.10);
+    transform: translateY(-2px);
+    text-decoration: none !important;
+}
+.hm-intent-icon {
+    width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #0D8A90;
+    background: linear-gradient(135deg, #F4FBFA 0%, #EEF9F2 100%);
+    border: 1px solid #D9ECE5;
+}
+.hm-intent-text h4 {
+    font-size: 17px; font-weight: 600; color: #111827; margin-bottom: 3px;
+}
+.hm-intent-text p {
+    font-size: 13.5px; color: #6b7280; margin: 0; line-height: 1.4;
+}
+.hm-intent-arrow { margin-left: auto; color: #9CA3AF; font-size: 16px; flex-shrink: 0; }
+.hm-intent-skip {
+    display: block; text-align: center; margin-top: 18px;
+    font-size: 13.5px; color: #9CA3AF; background: none; border: none;
+    cursor: pointer; text-decoration: underline;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.hm-intent-skip:focus {
+    outline: none;
+    box-shadow: none;
+}
+.hm-intent-skip:hover { color: #6b7280; }
+
+@media (prefers-color-scheme: dark) {
+    .hm-intent-btn { background: #0B0B0B !important; border-color: #23343A !important; }
+    .hm-intent-btn:hover { border-color: #1FB7B5 !important; }
+    .hm-intent-icon { background: linear-gradient(135deg,#162327 0%,#1B2A2F 100%) !important; border-color: #23343A !important; }
+    .hm-intent-text h4 { color: #F8FAFC !important; }
+    .hm-intent-text p { color: #94A3B8 !important; }
+    .hm-intent-skip { color: #7A8B96 !important; }
+    .hm-intent-skip:hover { color: #CBD5E1 !important; }
+}
 </style>
 </head>
 <?= view('Layouts/public_header', ['body_class' => 'landing-page']) ?>
+
+<!-- ═══════════════ AUTO SIGNUP INTENT POPUP ═══════════════ -->
+<div class="hm-modal-overlay" id="intentModal">
+  <div class="hm-modal" role="dialog" aria-modal="true" aria-labelledby="intentModalTitle" style="max-width: 480px;">
+    <button type="button" class="hm-modal-close" onclick="hmCloseIntent()" aria-label="Close"><i class="fas fa-times"></i></button>
+
+    <div class="hm-modal-eyebrow">Welcome to HireMatrix</div>
+    <div class="hm-modal-sub">Tell us why you're here</div>
+    <div class="hm-modal-divider"></div>
+
+    <h3 class="hm-modal-title" id="intentModalTitle">What brings you here <span>today?</span></h3>
+
+    <div class="hm-intent-options">
+      <a href="<?= base_url('register') ?>" class="hm-intent-btn">
+        <div class="hm-intent-icon"><i class="fas fa-users"></i></div>
+        <div class="hm-intent-text">
+          <h4>I'm looking for a job</h4>
+          <p>AI matching, resume tools, career roadmaps</p>
+        </div>
+        <i class="fas fa-chevron-right hm-intent-arrow"></i>
+      </a>
+
+      <a href="<?= base_url('recruiter/register') ?>" class="hm-intent-btn">
+        <div class="hm-intent-icon"><i class="fas fa-briefcase"></i></div>
+        <div class="hm-intent-text">
+          <h4>I'm hiring talent</h4>
+          <p>Candidate sourcing, AI screening, automation</p>
+        </div>
+        <i class="fas fa-chevron-right hm-intent-arrow"></i>
+      </a>
+    </div>
+
+    <button type="button" class="hm-intent-skip" onclick="hmCloseIntent()">I'm just browsing, skip for now</button>
+  </div>
+</div>
 
 <!-- ═══════════════ HERO ═══════════════ -->
 <section class="hero py-5">
@@ -777,41 +1051,44 @@ text-decoration:none !important;
   </div>
 </section>
 
-<!-- ═══════════════ CAREER TRANSITION ═══════════════ -->
-<section class="landing-career-transition">
+<!-- ═══════════════ PRO TOOLS FEATURE CARDS (full-bleed) ═══════════════ -->
+<section class="pro-tools-section">
+  <div class="pro-tools-inner">
 
-    <div class="career-bg-glow"></div>
-
-    <div class="container-fluid px-lg-5">
-
-        <div class="career-content text-center">
- 
-            <h2 class="career-title">
-                Transition Into Your&#160;<span>Dream Career</span>&#160;With AI Guidance
-            </h2>
-
-            <p class="career-description">
-                Discover skill gaps, build personalized learning paths,
-                identify certifications, and generate a complete roadmap
-                to move from your current role into the career you want.
-            </p>
-
-            <div class="career-actions">
-                <a href="<?= base_url('career-transition') ?>"
-                   class="btn btn-outline-primary">
-                    Generate My Roadmap
-                </a>
-
-                <a href="<?= base_url('jobs') ?>"
-                   class="btn btn-outline-primary">
-                    Explore Careers
-                </a>
-            </div>
-
-        </div>
-
+    <div class="pro-tools-header">
+      <div>
+        <div class="pro-tools-badge">AI career tools</div>
+        <h2 class="pro-tools-title" style="font-size:clamp(25px,3vw,55px) !important; font-weight:500 !important;letter-spacing:-.04em;">Move faster with <span class="grad-text">HireMatrix AI</span></h2>
+        <p class="pro-tools-subtitle">Available to every candidate to help you land your next role faster.</p>
+      </div>
+      <a href="<?= base_url('register') ?>" class="pro-become-btn">Get Started</a>
     </div>
 
+    <div class="pro-cards-grid">
+      <?php foreach ($proFeatureSlides as $slide): ?>
+        <a href="<?= esc($slide['cta_url']) ?>" class="pro-card">
+          <div class="pro-card-icon">
+            <i class="<?= esc($pickJobIcon($slide['eyebrow'])) ?>" aria-hidden="true"></i>
+            <?php if (!empty($slide['has_video'])): ?>
+              <span class="pro-play-badge"><i class="fas fa-play"></i></span>
+            <?php endif; ?>
+          </div>
+
+          <span class="pro-card-label"><?= esc($slide['eyebrow']) ?></span>
+          <h3 class="pro-card-title"><?= esc($slide['title']) ?></h3>
+
+          <ul class="pro-card-list">
+            <?php foreach ($slide['rows'] as $row): ?>
+              <li><i class="fas fa-check-circle"></i> <?= esc($row) ?></li>
+            <?php endforeach; ?>
+          </ul>
+
+          <span class="pro-card-cta"><?= esc($slide['cta_label']) ?> <i class="fas fa-arrow-right"></i></span>
+        </a>
+      <?php endforeach; ?>
+    </div>
+
+  </div>
 </section>
 
 <!-- ═══════════════ GET STARTED ═══════════════ -->
@@ -880,6 +1157,49 @@ text-decoration:none !important;
 <?= view('Layouts/public_footer') ?>
 
 <!-- ═══════════════ SCRIPTS ═══════════════ -->
+
+<!-- Auto intent popup (fires 3s after DOM ready) -->
+<script>
+(function () {
+  var STORAGE_KEY = 'hm_intent_popup_shown';
+
+  function showIntentPopup() {
+    // don't show again once dismissed in this browser session
+    if (sessionStorage.getItem(STORAGE_KEY)) return;
+
+    var modal = document.getElementById('intentModal');
+    if (!modal) return;
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  window.hmCloseIntent = function () {
+    var modal = document.getElementById('intentModal');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    sessionStorage.setItem(STORAGE_KEY, '1');
+  };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById('intentModal');
+    if (modal) {
+      // click on backdrop closes it too
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) window.hmCloseIntent();
+      });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') window.hmCloseIntent();
+    });
+
+    // fire 3 seconds after DOM is ready
+    setTimeout(showIntentPopup, 3000);
+  });
+})();
+</script>
 
 <!-- Hero canvas particle animation -->
 <script>

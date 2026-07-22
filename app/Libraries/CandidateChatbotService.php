@@ -131,7 +131,7 @@ class CandidateChatbotService
         foreach (array_slice($jobs, 0, 8) as $job) {
             $score = (int) round((float) ($job['match_score'] ?? 0));
             $parts = [
-                'Job #' . (int) $job['id'],
+                'Job ' . (int) $job['id'],
                 (string) ($job['title'] ?? 'Untitled role'),
                 (string) ($job['company'] ?? 'Company not listed'),
                 (string) ($job['location'] ?? 'Location not listed'),
@@ -150,8 +150,8 @@ class CandidateChatbotService
 
         $lines[] = '';
         $lines[] = $forSaveRequest
-            ? 'To save one, ask: save job #ID or #Name. I will not save multiple jobs automatically without the exact IDs.'
-            : 'You can ask: "save job #ID or #Name", "apply to job #ID or #Name", "compare job #ID or #Name and job #ID or #Name", or "explain why job #ID or #Name matches me".';
+            ? 'To save one, ask: save job jobName. I will not save multiple jobs automatically without the exact IDs.'
+            : 'You can ask: "save job", "apply to job", "compare jobs", or "explain why job matches me".';
 
         return implode("\n", $lines);
     }
@@ -162,7 +162,7 @@ class CandidateChatbotService
         if ($jobId > 0) {
             $job = $this->findOpenJob($jobId);
             if (!$job) {
-                return 'I could not find an open job with ID #' . $jobId . '.';
+                return 'I could not find an open job with ID ' . $jobId . '.';
             }
 
             return $this->formatJobDetails($candidateId, $job);
@@ -178,7 +178,7 @@ class CandidateChatbotService
             $lines = ['I found multiple matching portal jobs. Ask for details with the job ID:'];
             foreach ($exactTitleJobs as $job) {
                 $lines[] = sprintf(
-                    '- Job #%d | %s | %s | %s | Match: %d%%',
+                    '- Job %d | %s | %s | %s | Match: %d%%',
                     (int) $job['id'],
                     $job['title'] ?? 'Untitled role',
                     $job['company'] ?? 'Company not listed',
@@ -192,7 +192,7 @@ class CandidateChatbotService
 
         $jobs = $this->fetchRecommendedJobs($candidateId, $filters, 3);
         if (empty($jobs)) {
-            return 'I could not find an open job matching that title. Try asking "find PHP Developer jobs" or include a job ID like "job #12 details".';
+            return 'I could not find an open job matching that title. Try asking "find PHP Developer jobs" or include a job ID like "job 12 details".';
         }
 
         if (count($jobs) === 1) {
@@ -202,7 +202,7 @@ class CandidateChatbotService
         $lines = ['I found multiple matching jobs. Ask for details with the job ID:'];
         foreach ($jobs as $job) {
             $lines[] = sprintf(
-                '- Job #%d | %s | %s | %s | Match: %d%%',
+                '- Job %d | %s | %s | %s | Match: %d%%',
                 (int) $job['id'],
                 $job['title'] ?? 'Untitled role',
                 $job['company'] ?? 'Company not listed',
@@ -223,7 +223,7 @@ class CandidateChatbotService
         }
 
         $lines = [
-            'Job #' . (int) $job['id'] . ' - ' . ($job['title'] ?? 'Untitled role'),
+            'Job ' . (int) $job['id'] . ' - ' . ($job['title'] ?? 'Untitled role'),
             'Company: ' . (($job['company'] ?? '') !== '' ? $job['company'] : 'Not listed'),
             'Location: ' . (($job['location'] ?? '') !== '' ? $job['location'] : 'Not listed'),
             'Type: ' . (($job['employment_type'] ?? '') !== '' ? $job['employment_type'] : 'Not listed'),
@@ -243,7 +243,7 @@ class CandidateChatbotService
         }
 
         $lines[] = '';
-        $lines[] = 'Next actions: save job #' . (int) $job['id'] . ', apply to job #' . (int) $job['id'] . ', or explain why job #' . (int) $job['id'] . ' matches me.';
+        $lines[] = 'Next actions: save job ' . (int) $job['id'] . ', apply to job ' . (int) $job['id'] . ', or explain why job ' . (int) $job['id'] . ' matches me.';
 
         return implode("\n", $lines);
     }
@@ -261,7 +261,7 @@ class CandidateChatbotService
 
         $job = $this->findOpenJob($jobId);
         if (!$job) {
-            return 'I could not find an open job with ID #' . $jobId . '.';
+            return 'I could not find an open job with ID ' . $jobId . '.';
         }
 
         $savedJobModel = new \App\Models\SavedJobModel();
@@ -278,7 +278,7 @@ class CandidateChatbotService
         }
 
         return ($existing ? 'This job was already saved: ' : 'Saved this job: ')
-            . '#' . $jobId . ' ' . ($job['title'] ?? 'Untitled role') . '.';
+            . $jobId . ' ' . ($job['title'] ?? 'Untitled role') . '.';
     }
 
     private function applyToJobFromPrompt(int $candidateId, string $question): string
@@ -294,11 +294,11 @@ class CandidateChatbotService
 
         $job = $this->findOpenJob($jobId);
         if (!$job) {
-            return 'I could not find an open job with ID #' . $jobId . '.';
+            return 'I could not find an open job with ID ' . $jobId . '.';
         }
 
         if (!empty($job['application_deadline']) && strtotime($job['application_deadline'] . ' 23:59:59') < time()) {
-            return 'The application deadline for job #' . $jobId . ' has passed.';
+            return 'The application deadline for job ' . $jobId . ' has passed.';
         }
 
         if (\App\Models\JobModel::isExternalJob($job)) {
@@ -321,7 +321,7 @@ class CandidateChatbotService
             ->where('status !=', 'withdrawn')
             ->first();
         if ($alreadyApplied) {
-            return 'You have already applied to job #' . $jobId . '. Current status: ' . ucwords(str_replace('_', ' ', (string) ($alreadyApplied['status'] ?? 'applied'))) . '.';
+            return 'You have already applied to job ' . $jobId . '. Current status: ' . ucwords(str_replace('_', ' ', (string) ($alreadyApplied['status'] ?? 'applied'))) . '.';
         }
 
         $questionnaire = trim((string) ($job['application_questionnaire'] ?? ''));
@@ -356,7 +356,7 @@ class CandidateChatbotService
             }
         }
 
-        return 'Application submitted for job #' . $jobId . ' ' . ($job['title'] ?? 'Untitled role') . '. Status: Applied.';
+        return 'Application submitted for job ' . $jobId . ' ' . ($job['title'] ?? 'Untitled role') . '. Status: Applied.';
     }
 
     private function resolveSingleOpenJobFromPrompt(int $candidateId, string $question): array
@@ -365,7 +365,7 @@ class CandidateChatbotService
         if ($title === '') {
             return [
                 'job' => null,
-                'message' => 'Please include a job ID or title, for example: apply to job #12 or apply to job #PHP Developer.',
+                'message' => 'Please include a job ID or title, for example: apply to job 12 or apply to job PHP Developer.',
             ];
         }
 
@@ -398,7 +398,7 @@ class CandidateChatbotService
         $lines = ['I found multiple matching jobs. Please choose the exact job ID:'];
         foreach ($jobs as $job) {
             $lines[] = sprintf(
-                '- Job #%d | %s | %s | %s',
+                '- Job %d | %s | %s | %s',
                 (int) $job['id'],
                 $job['title'] ?? 'Untitled role',
                 $job['company'] ?? 'Company not listed',
@@ -451,7 +451,7 @@ class CandidateChatbotService
         $lines = ['I found multiple jobs matching "' . $title . '". Please choose one by title or job ID:'];
         foreach ($jobs as $job) {
             $lines[] = sprintf(
-                '- Job #%d | %s | %s | %s',
+                '- Job %d | %s | %s | %s',
                 (int) $job['id'],
                 $job['title'] ?? 'Untitled role',
                 $job['company'] ?? 'Company not listed',
@@ -508,7 +508,7 @@ class CandidateChatbotService
         foreach ($jobs as $job) {
             $match = $job['_match'];
             $lines[] = sprintf(
-                '- Job #%d | %s | %s | %s | Match: %d%% | Matched skills: %s | Missing: %s',
+                '- Job %d | %s | %s | %s | Match: %d%% | Matched skills: %s | Missing: %s',
                 (int) $job['id'],
                 $job['title'] ?? 'Untitled role',
                 $job['company'] ?? 'Company not listed',
@@ -521,7 +521,7 @@ class CandidateChatbotService
 
         $winner = ((int) $jobs[0]['_match']['score'] >= (int) $jobs[1]['_match']['score']) ? $jobs[0] : $jobs[1];
         $lines[] = '';
-        $lines[] = 'Best fit based on your profile right now: Job #' . (int) $winner['id'] . ' ' . ($winner['title'] ?? 'Untitled role') . '.';
+        $lines[] = 'Best fit based on your profile right now: Job ' . (int) $winner['id'] . ' ' . ($winner['title'] ?? 'Untitled role') . '.';
 
         return implode("\n", $lines);
     }
@@ -604,12 +604,12 @@ class CandidateChatbotService
 
         $job = $this->findOpenJob($jobId);
         if (!$job) {
-            return 'I could not find an open job with ID #' . $jobId . '.';
+            return 'I could not find an open job with ID ' . $jobId . '.';
         }
 
         $match = $this->buildJobMatchBreakdown($candidateId, $job);
         $lines = [
-            'Job #' . $jobId . ' - ' . ($job['title'] ?? 'Untitled role'),
+            'Job ' . $jobId . ' - ' . ($job['title'] ?? 'Untitled role'),
             'Overall match: ' . (int) $match['score'] . '%',
             '',
             'Why it matches',
@@ -634,7 +634,7 @@ class CandidateChatbotService
         }
 
         $lines[] = '';
-        $lines[] = 'Next actions: save job #' . $jobId . ' or apply to job #' . $jobId . '.';
+        $lines[] = 'Next actions: save job ' . $jobId . ' or apply to job ' . $jobId . '.';
 
         return implode("\n", $lines);
     }
@@ -977,7 +977,7 @@ class CandidateChatbotService
             return ((int) ($a['is_external'] ?? 0)) <=> ((int) ($b['is_external'] ?? 0));
         });
 
-        return array_slice($jobs, 0, $limit);
+        return array_map([$this, 'normalizeJobRecord'], array_slice($jobs, 0, $limit));
     }
 
     private function findJobsByTitle(int $candidateId, string $title, int $limit = 3): array
@@ -1030,7 +1030,7 @@ class CandidateChatbotService
             return ((float) ($b['match_score'] ?? 0)) <=> ((float) ($a['match_score'] ?? 0));
         });
 
-        return array_slice($rows, 0, $limit);
+        return array_map([$this, 'normalizeJobRecord'], array_slice($rows, 0, $limit));
     }
 
     private function calculateTitleRank(string $jobTitle, string $query): int
@@ -1142,6 +1142,18 @@ class CandidateChatbotService
 
         if (!empty($job['application_deadline']) && strtotime($job['application_deadline'] . ' 23:59:59') < time()) {
             return null;
+        }
+
+        return $this->normalizeJobRecord($job);
+    }
+
+    private function normalizeJobRecord(array $job): array
+    {
+        foreach (['title', 'company', 'location', 'category', 'description', 'required_skills',
+            'experience_level', 'employment_type', 'salary_range', 'match_reason'] as $field) {
+            if (isset($job[$field]) && is_string($job[$field])) {
+                $job[$field] = ExternalJobTextNormalizer::normalize($job[$field]);
+            }
         }
 
         return $job;

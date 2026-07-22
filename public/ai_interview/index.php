@@ -276,8 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <li>Coding Round</li>
         <li>AI Interview</li>
       </ul>
-
-      <p><strong>Minimum 70% score is required in each round to proceed further.</strong></p>
+ 
 
       <p><strong>Strictly prohibited:</strong></p>
       <ul>

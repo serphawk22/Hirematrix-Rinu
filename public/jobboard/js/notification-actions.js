@@ -21,7 +21,23 @@
             return;
         }
 
-        target.innerHTML = '<div class="alert alert-' + type + ' recruiter-alert">' + message + '</div>';
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-' + type + ' alert-dismissible fade show recruiter-alert';
+        alert.setAttribute('role', 'alert');
+
+        const messageNode = document.createElement('span');
+        messageNode.textContent = String(message || '');
+        alert.appendChild(messageNode);
+
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.className = 'close';
+        closeButton.setAttribute('data-dismiss', 'alert');
+        closeButton.setAttribute('aria-label', 'Close');
+        closeButton.innerHTML = '<span aria-hidden="true">&times;</span>';
+        alert.appendChild(closeButton);
+
+        target.replaceChildren(alert);
     }
 
     function setHeaderBadge(count) {
@@ -101,6 +117,23 @@
             button.innerHTML = button.dataset.originalHtml;
         }
         button.disabled = false;
+    }
+
+    function openNotificationCard(card) {
+        if (!card) {
+            return;
+        }
+
+        const form = card.querySelector('.js-open-notification-form');
+        if (!form) {
+            return;
+        }
+
+        if (typeof form.requestSubmit === 'function') {
+            form.requestSubmit();
+        } else {
+            form.submit();
+        }
     }
 
     async function postNotificationAction(form) {
@@ -206,6 +239,26 @@
                 .finally(function () {
                     setBusy(button, false);
                 });
+            return;
         }
+
+        const card = event.target.closest('.recruiter-notification-card.is-actionable, .notification-card.is-actionable');
+        if (card && !event.target.closest('a, button, input, select, textarea, form, label')) {
+            openNotificationCard(card);
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Enter') {
+            return;
+        }
+
+        const card = event.target.closest('.recruiter-notification-card.is-actionable, .notification-card.is-actionable');
+        if (!card || event.target !== card) {
+            return;
+        }
+
+        event.preventDefault();
+        openNotificationCard(card);
     });
 })();

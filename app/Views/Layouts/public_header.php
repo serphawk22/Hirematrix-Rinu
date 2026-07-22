@@ -1,5 +1,6 @@
 <?php
 $bodyClass = trim('hirematrix-app public-header-page ' . ($body_class ?? ''));
+$hideSignIn = (bool) ($hide_sign_in ?? false);
 ?>
 <script>
     (function () {
@@ -352,8 +353,10 @@ header.site-navbar.landing-header .landing-header-logo-text {
 ================================= */
 @media (prefers-color-scheme: dark) {
 
-    body {
-        background: #111111 !important;
+    body,
+    body.public-header-page,
+    body.public-header-page > .site-wrap {
+        background: #0d1117 !important;
     }
 
     /* ── Navbar always transparent ── */
@@ -372,7 +375,7 @@ header.site-navbar.landing-header .landing-header-logo-text {
         body.landing-page header.site-navbar.landing-header,
         body.landing-page header.site-navbar.landing-header.navbar-scrolled,
         body.landing-page header.site-navbar.landing-header.site-navbar-target {
-            background: #111111 !important;
+            background: #0d1117 !important;
             border-bottom: 1px solid #23343A !important;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.34) !important;
         }
@@ -460,7 +463,10 @@ header.site-navbar.landing-header .landing-header-logo-text {
 
                 <!-- Right Actions -->
                 <div class="right-cta-menu text-right d-flex justify-content-end align-items-center col-auto landing-header-actions">
-                    <a href="<?= site_url('login') ?>" class="btn btn-outline-primary" role="button">Sign In</a>
+ 
+                    <?php if (!$hideSignIn): ?>
+                        <a href="<?= site_url('login') ?>" class="btn btn-outline-primary" role="button">Sign In</a>
+                    <?php endif; ?> 
                     <a href="#" class="site-menu-toggle js-menu-toggle d-inline-block d-lg-none mt-lg-2 ml-3">
                         <span class="icon-menu h3 m-0 p-0 mt-2"></span>
                     </a>

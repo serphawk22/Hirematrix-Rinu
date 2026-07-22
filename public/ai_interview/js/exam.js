@@ -106,7 +106,7 @@
     <div class="transition-screen animate-in">
       <div class="glass-card transition-card">
         <span class="badge badge-success" style="margin-bottom:20px">✓ Round 1 Complete</span>
-        <h2 class="text-gradient" style="margin-bottom:8px">Well done, ${CANDIDATE.name.split(' ')[0]}!</h2>
+        <h2 class="text-gradient" style="margin-bottom:8px">Aptitude Round Done, ${CANDIDATE.name.split(' ')[0]}!</h2>
         <p class="text-muted" style="margin-bottom:24px">Round 1 results snapshot.</p>
         <div class="score-preview">
           <div class="score-big text-gradient">${r1s}<span style="font-size:1.5rem;color:#94a3b8">/${R1N}</span></div>

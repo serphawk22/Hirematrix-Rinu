@@ -347,7 +347,7 @@ $statusClass = strtolower((string) ($job['status'] ?? 'open')) === 'open' ? 'is-
                             ?>
                             <a href="<?= esc($nextActionUrl) ?>" class="next-action-filter <?= $activeNextAction === $nextActionKey ? 'is-active' : '' ?>" data-next-action="<?= esc($nextActionKey) ?>">
                                 <?= esc($nextActionLabel) ?>
-                                <span data-next-action-count="<?= esc($nextActionKey) ?>"><?= (int) ($nextActionCounts[$nextActionKey] ?? 0) ?></span>
+                                <span data-next-action-count="<?= esc($nextActionKey) ?>" style="color:#1FB7B5;"><?= (int) ($nextActionCounts[$nextActionKey] ?? 0) ?></span>
                             </a>
                         <?php endforeach; ?>
                     </nav>

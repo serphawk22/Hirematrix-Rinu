@@ -12,6 +12,7 @@
     if (btn) {
       btn.setAttribute("aria-pressed", isDark ? "true" : "false");
       btn.setAttribute("title", isDark ? "Switch to light mode" : "Switch to dark mode");
+      btn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
     }
   }
 

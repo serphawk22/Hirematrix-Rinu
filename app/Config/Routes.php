@@ -341,7 +341,7 @@ $routes->group('career-transition', ['filter' => 'candidate'], function($routes)
 });
 // NEW: PDF Download Route
 $routes->get('career-transition/download-pdf', 'CareerTransitionPDF_TCPDF::downloadCoursePDF', ['filter' => 'candidate']);
-$routes->get('career-transition/download-pdf/(:num)', 'CareerTransitionPDF_TCPDF::downloadCoursePDF/$1');
+$routes->post('career-transition/prepare-pdf', 'CareerTransitionPDF_TCPDF::prepareCoursePDF', ['filter' => 'candidate_csrf']);
 // Career Transition History Routes
 $routes->get('career-transition/history', 'CareerTransition::history', ['filter' => 'candidate']);
 $routes->post('career-transition/reactivate/(:num)', 'CareerTransition::reactivate/$1', ['filter' => 'candidate_csrf']);

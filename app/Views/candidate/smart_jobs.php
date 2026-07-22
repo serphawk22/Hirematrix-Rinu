@@ -38,6 +38,8 @@ $workModes = [
     'onsite' => 'On-site',
 ];
 
+$cleanJobText = static fn(string $value): string => \App\Libraries\ExternalJobTextNormalizer::normalize($value);
+
 $recommendationSets = [
     'applies' => $suggestedJobsByApplies,
     'skills' => $suggestedJobsBySkills,
@@ -249,7 +251,7 @@ $pickRequiredSkillBadges = static function (array $job, int $limit = 3) use ($fo
     return $badges;
 };
 
-$renderRecommendedPane = static function (string $recType, array $jobs, string $tabLabel) use ($recommendationType, $formatPostedMeta, $pickRequiredSkillBadges, $isRemoteJob, $savedJobIds, $appliedJobMap, $resolveAssetUrl, $hasBaseResume, $primaryResumeId, $loadedRecommendationTypes): string {
+$renderRecommendedPane = static function (string $recType, array $jobs, string $tabLabel) use ($recommendationType, $formatPostedMeta, $pickRequiredSkillBadges, $isRemoteJob, $savedJobIds, $appliedJobMap, $resolveAssetUrl, $hasBaseResume, $primaryResumeId, $loadedRecommendationTypes, $cleanJobText): string {
     ob_start();
     $isActivePane = $recommendationType === $recType;
     $isLoadedPane = in_array($recType, (array) $loadedRecommendationTypes, true);
@@ -260,19 +262,15 @@ $renderRecommendedPane = static function (string $recType, array $jobs, string $
             <div class="row g-4 mb-4 alljobs-scope">
                 <?php foreach ($jobs as $job): ?>
                     <?php
-                    $stripBadChars = static function (string $text): string {
-                        // Collapse runs of 2+ literal '?' (typical artifact of lost emoji/unicode chars)
-                        $text = preg_replace('/\?{2,}\s*/u', '', $text);
-                        return trim($text);
-                    };
-
-                    $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
-                    $company = (string) ($job['company'] ?? 'Company');
-                    $location = $stripBadChars((string) ($job['location'] ?? 'N/A'));
+                    $title = $cleanJobText((string) ($job['title'] ?? 'Untitled Role'));
+                    $company = $cleanJobText((string) ($job['company'] ?? 'Company'));
+                    $location = $cleanJobText((string) ($job['location'] ?? 'N/A'));
+                    $employmentType = $cleanJobText((string) ($job['employment_type'] ?? ''));
+                    $matchReason = $cleanJobText((string) ($job['match_reason'] ?? ''));
                     $postedMeta = $formatPostedMeta($job['created_at'] ?? null);
                     $isSaved = in_array((int) ($job['id'] ?? 0), $savedJobIds, true);
                     $appliedStatus = $appliedJobMap[(int) ($job['id'] ?? 0)] ?? null;
-                    $type = strtolower((string) ($job['employment_type'] ?? ''));
+                    $type = strtolower($employmentType);
                     $typeBadge = str_contains($type, 'part') ? 'badge-secondary' : 'badge-primary';
                     $companyInitial = strtoupper(substr($company, 0, 1) ?: 'C');
                     $companyLogo = trim((string) ($job['company_logo'] ?? ''));
@@ -304,7 +302,7 @@ $renderRecommendedPane = static function (string $recType, array $jobs, string $
                                     <?php endif; ?>
                                 </div>
                                 <div class="job-card-tags">
-                                    <span class="badge <?= $typeBadge ?>"><?= esc($job['employment_type'] ?: 'Full Time') ?></span>
+                                    <span class="badge <?= $typeBadge ?>"><?= esc($employmentType !== '' ? $employmentType : 'Full Time') ?></span>
                                     <?php if ($showRemoteBadge): ?>
                                         <span class="badge badge-warning">Remote</span>
                                     <?php endif; ?>
@@ -315,8 +313,8 @@ $renderRecommendedPane = static function (string $recType, array $jobs, string $
                                         <span class="badge job-card-applied-badge"><i class="fas fa-check-circle"></i> Applied</span>
                                     <?php endif; ?>
                                 </div>
-                                <?php if (!empty($job['match_reason'])): ?>
-                                    <div class="small mb-2"><?= esc($job['match_reason']) ?></div>
+                                <?php if ($matchReason !== ''): ?>
+                                    <div class="small mb-2"><?= esc($matchReason) ?></div>
                                 <?php endif; ?>
 
                                 <div class="progress-container">
@@ -464,6 +462,12 @@ if (!empty($filters['work_mode'])) {
 if (!empty($filters['salary_range'])) {
     $salaryLabel = $salaryRanges[(string) $filters['salary_range']] ?? (string) $filters['salary_range'];
     $addActiveChip('Salary: ' . $salaryLabel, $buildJobsUrl(['salary_range' => null], ['salary_range']));
+}
+if (!empty($filters['internship_type'])) {
+    $addActiveChip('Internship: ' . (string) $filters['internship_type'], $buildJobsUrl(['internship_type' => null], ['internship_type']));
+}
+if (!empty($filters['ppo_available'])) {
+    $addActiveChip('PPO: ' . ((string) $filters['ppo_available'] === 'yes' ? 'Available' : 'Not available'), $buildJobsUrl(['ppo_available' => null], ['ppo_available']));
 }
 foreach ((array) ($filters['employment_type'] ?? []) as $employmentType) {
     $employmentType = (string) $employmentType;
@@ -629,6 +633,24 @@ $activeFilterCount = count($activeFilterChips);
                                     <?php endforeach; ?>
                                 </div>
                             <?php endif; ?>
+
+                            <div class="filter-section">
+                                <span class="filter-label">Internship Type</span>
+                                <select name="internship_type" onchange="submitFilters()">
+                                    <option value="">All internships</option>
+                                    <?php foreach (['Summer', 'Winter', 'Part-time', 'Full-time', 'Virtual', 'Graduate'] as $internshipType): ?>
+                                        <option value="<?= esc($internshipType) ?>" <?= ($filters['internship_type'] ?? '') === $internshipType ? 'selected' : '' ?>><?= esc($internshipType) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="filter-section">
+                                <span class="filter-label">PPO Opportunity</span>
+                                <select name="ppo_available" onchange="submitFilters()">
+                                    <option value="">Any</option>
+                                    <option value="yes" <?= ($filters['ppo_available'] ?? '') === 'yes' ? 'selected' : '' ?>>PPO available</option>
+                                    <option value="no" <?= ($filters['ppo_available'] ?? '') === 'no' ? 'selected' : '' ?>>No PPO</option>
+                                </select>
+                            </div>
 
                             <?php
                             $uselessExp = ['not specified', 'not_specified', ''];
@@ -827,19 +849,14 @@ $activeFilterCount = count($activeFilterChips);
                                     <div class="row g-4 mb-4">
                                         <?php foreach ($jobs as $job): ?>
                                             <?php
-                                            $stripBadChars = static function (string $text): string {
-                                                // Collapse runs of 2+ literal '?' (typical artifact of lost emoji/unicode chars)
-                                                $text = preg_replace('/\?{2,}\s*/u', '', $text);
-                                                return trim($text);
-                                            };
-
-                                            $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
-                                            $company = (string) ($job['company'] ?? 'Company');
-                                            $location = (string) ($job['location'] ?? 'N/A');
+                                            $title = $cleanJobText((string) ($job['title'] ?? 'Untitled Role'));
+                                            $company = $cleanJobText((string) ($job['company'] ?? 'Company'));
+                                            $location = $cleanJobText((string) ($job['location'] ?? 'N/A'));
+                                            $employmentType = $cleanJobText((string) ($job['employment_type'] ?? ''));
                                             $postedMeta = $formatPostedMeta($job['created_at'] ?? null);
                                             $isSaved = in_array((int) ($job['id'] ?? 0), $savedJobIds, true);
                                             $appliedStatus = $appliedJobMap[(int) ($job['id'] ?? 0)] ?? null;
-                                            $type = strtolower((string) ($job['employment_type'] ?? ''));
+                                            $type = strtolower($employmentType);
                                             $typeBadge = str_contains($type, 'part') ? 'badge-secondary' : 'badge-primary';
                                             $companyInitial = strtoupper(substr($company, 0, 1) ?: 'C');
                                             $companyLogo = trim((string) ($job['company_logo'] ?? ''));
@@ -874,7 +891,7 @@ $activeFilterCount = count($activeFilterChips);
                                                         </div>
                                                         <div class="job-card-tags">
                                                             <span
-                                                                class="badge <?= $typeBadge ?>"><?= esc($job['employment_type'] ?: 'Full Time') ?></span>
+                                                                class="badge <?= $typeBadge ?>"><?= esc($employmentType !== '' ? $employmentType : 'Full Time') ?></span>
                                                             <?php if ($showRemoteBadge): ?>
                                                                 <span class="badge badge-warning">Remote</span>
                                                             <?php endif; ?>

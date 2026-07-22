@@ -1,5 +1,105 @@
 <?= view('Layouts/recruiter_header', ['title' => 'Recruiter Dashboard', 'showHero' => false]) ?>
+<style>
+/* ================================================
+   AI INTERVIEW FEATURE POPUP (recruiter dashboard)
+================================================ */
+.hm-modal-overlay {
+    position: fixed; inset: 0; background: rgba(17,24,39,.55);
+    display: none; align-items: center; justify-content: center;
+    z-index: 9999; padding: 20px; backdrop-filter: blur(2px);
+}
+.hm-modal-overlay.active { display: flex; }
 
+.hm-modal {
+    background: #fff; border-radius: 20px; max-width: 500px; width: 100%;
+    max-height: 90vh; overflow-y: auto; padding: 32px 32px 28px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.25);
+    position: relative; animation: hmPop .25s ease;
+}
+@keyframes hmPop { from{opacity:0; transform:translateY(12px) scale(.98);} to{opacity:1; transform:none;} }
+
+.hm-modal-close {
+    position: absolute; top: 18px; right: 18px;
+    width: 34px; height: 34px; border-radius: 9px; border: 1px solid #E5E7EB;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    color: #6b7280; cursor: pointer; transition: .15s; font-size: 14px;
+}
+.hm-modal-close:hover { background: #F9FAFB; color: #111827; }
+
+.hm-modal-eyebrow { font-size: 13px; font-weight: 800; letter-spacing: .08em; color: #0D8A90; text-transform: uppercase; margin-bottom: 4px; }
+.hm-modal-sub { font-size: 13px; color: #9CA3AF; margin-bottom: 16px; }
+.hm-modal-divider { height: 2px; background: linear-gradient(90deg,#1FB7B5,#53B86C,#B5D84E); border-radius: 2px; margin-bottom: 22px; }
+
+.hm-modal-title { font-size: 25px; font-weight: 600; color: #111827; margin-bottom: 14px; line-height: 1.28; }
+.hm-modal-title span { background: linear-gradient(135deg,#1FB7B5,#53B86C,#B5D84E); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+/* Single feature spotlight card */
+.hm-feature-spotlight {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 20px 22px; border-radius: 14px;
+    border: 1.5px solid #D9ECE5; background: linear-gradient(135deg,#F4FBFA 0%,#EEF9F2 100%);
+    margin-bottom: 20px;
+}
+.hm-feature-spotlight-icon {
+    width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #fff;
+    background: linear-gradient(135deg,#1FB7B5,#53B86C);
+}
+.hm-feature-spotlight-text p { margin: 0; font-size: 14.5px; color: #4b5563; line-height: 1.5; }
+
+.hm-feature-list {
+    list-style: none; padding: 0; margin: 0 0 22px;
+    display: flex; flex-direction: column; gap: 11px;
+}
+.hm-feature-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 14px; color: #374151; line-height: 1.4;
+}
+.hm-feature-list li i {
+    color: #53B86C; font-size: 13px; margin-top: 3px; flex-shrink: 0;
+}
+.hm-feature-list li strong { color: #111827; }
+
+.hm-modal-cta-row { display: flex; gap: 12px; align-items: center; }
+.hm-modal-cta-btn {
+    flex: 1; text-align: center;
+    background: linear-gradient(135deg,#1FB7B5,#53B86C);
+    color: #fff !important; padding: 13px 20px;
+    border-radius: 10px; font-weight: 600; font-size: 14.5px;
+    text-decoration: none !important; transition: .2s; border: none; cursor: pointer;
+}
+.hm-modal-cta-btn:hover { opacity: .9; transform: translateY(-1px); color: #fff !important; }
+
+.hm-intent-skip {
+    display: block; text-align: center; margin-top: 16px;
+    font-size: 13.5px; color: #9CA3AF; background: none; border: none;
+    cursor: pointer; text-decoration: underline; outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.hm-intent-skip:focus { outline: none; box-shadow: none; }
+.hm-intent-skip:hover { color: #6b7280; }
+
+@media (max-width: 600px) {
+    .hm-modal { padding: 26px 20px 22px; }
+    .hm-modal-title { font-size: 21px; }
+    .hm-modal-cta-row { flex-direction: column; }
+}
+
+@media (prefers-color-scheme: dark) {
+    .hm-modal { background: #0B0B0B !important; border: 1px solid #23343A; }
+    .hm-modal-close { background: #0B0B0B !important; border-color: #23343A !important; color: #94A3B8 !important; }
+    .hm-modal-close:hover { background: #1B2A2F !important; color: #fff !important; }
+    .hm-modal-title { color: #F8FAFC !important; }
+    .hm-modal-sub { color: #7A8B96 !important; }
+    .hm-feature-spotlight { background: linear-gradient(135deg,#162327 0%,#1B2A2F 100%) !important; border-color: #23343A !important; }
+    .hm-feature-spotlight-text p { color: #94A3B8 !important; }
+    .hm-feature-list li { color: #CBD5E1 !important; }
+    .hm-feature-list li strong { color: #F8FAFC !important; }
+    .hm-intent-skip { color: #7A8B96 !important; }
+    .hm-intent-skip:hover { color: #CBD5E1 !important; }
+}
+</style>
 <div class="recruiter-dashboard-jobboard">
 <?php
 $applicationsUrl = base_url('recruiter/jobs');
@@ -343,8 +443,69 @@ if (!empty($availableRates)) {
         </div>
     </div>
 
-</div><!-- /.recruiter-dashboard-main -->
+    <!-- ═══════════════ AI INTERVIEW FEATURE POPUP (fires 7s after load) ═══════════════ -->
+<div class="hm-modal-overlay" id="recruiterAiInterviewPopup">
+  <div class="hm-modal" role="dialog" aria-modal="true" aria-labelledby="recruiterAiInterviewTitle">
+    <button type="button" class="hm-modal-close" onclick="hmCloseRecruiterAiPopup()" aria-label="Close"><i class="fas fa-times"></i></button>
 
+    <div class="hm-modal-eyebrow">Hiring Feature</div>
+    <div class="hm-modal-sub">Screen candidates without the manual grind</div>
+    <div class="hm-modal-divider"></div>
+
+    <h3 class="hm-modal-title" id="recruiterAiInterviewTitle">Let <span>AI Interviews</span> do the first pass</h3>
+
+    <div class="hm-feature-spotlight"> 
+      <div class="hm-feature-spotlight-text">
+        <p>Run structured, AI-led interview rounds that evaluate every applicant consistently — before they ever reach your calendar.</p>
+      </div>
+    </div>
+
+    <ul class="hm-feature-list">
+      <li><i class="fas fa-check-circle"></i> <span><strong>Aptitude testing</strong> — logic and reasoning checks scored automatically</span></li>
+      <li><i class="fas fa-check-circle"></i> <span><strong>Technical &amp; coding rounds</strong> — role-specific problems evaluated in real time</span></li>
+      <li><i class="fas fa-check-circle"></i> <span><strong>Communication assessment</strong> — clarity, confidence, and articulation scoring</span></li>
+      <li><i class="fas fa-check-circle"></i> <span><strong>Faster shortlisting</strong> — ranked results so you only speak with top candidates</span></li>
+    </ul>
+ 
+  </div>
+</div>
+</div><!-- /.recruiter-dashboard-main -->
+<script>
+(function () {
+  var STORAGE_KEY = 'hm_recruiter_ai_interview_popup_shown';
+  var DELAY_MS = 7000;
+
+  function showPopup() {
+    if (sessionStorage.getItem(STORAGE_KEY)) return;
+    var modal = document.getElementById('recruiterAiInterviewPopup');
+    if (!modal) return;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  window.hmCloseRecruiterAiPopup = function () {
+    var modal = document.getElementById('recruiterAiInterviewPopup');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    sessionStorage.setItem(STORAGE_KEY, '1');
+  };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById('recruiterAiInterviewPopup');
+    if (modal) {
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) window.hmCloseRecruiterAiPopup();
+      });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') window.hmCloseRecruiterAiPopup();
+    });
+    setTimeout(showPopup, DELAY_MS);
+  });
+})();
+</script>
 <script>
 (function() {
     'use strict';

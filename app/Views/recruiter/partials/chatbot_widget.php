@@ -1,12 +1,124 @@
-<!-- ─── Recruiter AI Chatbot Widget ─── -->
-<button class="hm-chat-fab" id="hmChatFab" aria-label="Open AI assistant">
-    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="14" rx="2"/>
-        <line x1="9" y1="10" x2="15" y2="10"/>
-        <line x1="12" y1="7" x2="12" y2="13"/>
-        <path d="M9 17l-3 4h12l-3-4"/>
-    </svg>
-</button>
+ <style>
+.hirebot-widget {
+  position: fixed;
+  bottom: 48px;
+  right: 28px;
+  display: flex;
+  align-items: center;
+  z-index: 9999;
+  font-family: inherit;
+}
+
+/* ===== Badge — force circle, override any inherited button styles ===== */
+.hirebot-fab {
+  all: unset;
+  box-sizing: border-box;
+  width: 92px;
+  height: 92px;
+  min-width: 92px;
+  min-height: 92px;
+  border-radius: 50% !important;
+  padding: 3px;
+  background: var(--gradient-primary);
+  box-shadow: 0 8px 22px rgba(13, 138, 144, 0.3);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+}
+
+.hirebot-fab-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--gradient-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hirebot-fab-text {
+  background: linear-gradient(135deg, #0D8A90, #3F9E58);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+}
+
+/* ===== Tooltip ===== */
+.hirebot-tooltip {
+  position: relative;
+  background: var(--gradient-primary);
+  color: #fff;
+  padding: 13px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-style: italic;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(13, 138, 144, 0.3);
+  margin-right: 14px;
+  transform-origin: right center;
+  animation: hirebot-pop 5s ease-in-out infinite;
+}
+
+.hirebot-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  width: 12px;
+  height: 12px;
+  background: #53B86C;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+@keyframes hirebot-pop {
+  0%, 10%   { opacity: 0; transform: scale(0.7) translateX(8px); }
+  20%       { opacity: 1; transform: scale(1.06) translateX(0); }
+  26%       { transform: scale(1) translateX(0); }
+  80%       { opacity: 1; transform: scale(1) translateX(0); }
+  92%, 100% { opacity: 0; transform: scale(0.85) translateX(8px); }
+}
+
+/* ===== Dark theme overrides ===== */
+body.dark .hirebot-fab {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+}
+
+body.dark .hirebot-tooltip {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.hm-chat-widget {
+    position: fixed;
+    bottom: 92px;
+    right: 24px;
+    width: 510px;
+    height: 450px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+    z-index: 10000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+ 
+</style>
+
+<div class="hirebot-widget" id="hirebotWidget">
+  <div class="hirebot-tooltip" id="hirebotTooltip">
+    Explore top career content
+  </div>
+  <button type="button" class="hirebot-fab" id="hmChatFab" aria-label="Open HireBot assistant">
+    <span class="hirebot-fab-inner">
+      <span class="hirebot-fab-text">Hire<br>Bot</span>
+    </span>
+  </button>
+</div>
 
 <div class="hm-chat-widget" id="hmChatWidget">
     <div class="hm-chat-header">
@@ -18,14 +130,14 @@
                 <path d="M9 17l-3 4h12l-3-4"/>
             </svg>
         </div>
-        <div class="hm-chat-header-title">HireMate AI</div>
+        <div class="hm-chat-header-title">HireBot AI</div>
         <button class="hm-chat-header-close" id="hmChatClose">&times;</button>
     </div>
 
     <div class="hm-chat-messages" id="hmChatMessages">
         <div class="hm-msg bot">
             <div class="hm-msg-bubble">
-                Hi! I'm HireMate, your AI recruitment assistant. Ask me anything about your jobs, applications, candidates, or interviews.
+                Hi! I'm HireBot, your AI recruitment assistant. Ask me anything about your jobs, applications, candidates, or interviews.
             </div>
             <div class="hm-msg-time">Just now</div>
         </div>
@@ -166,7 +278,7 @@
                 appendMessage('bot', data.answer, data.actions || []);
             })
             .catch(function (err) {
-                console.warn('HireMate: Could not load morning brief (' + err.message + ')');
+                console.warn('HireBot: Could not load morning brief (' + err.message + ')');
             });
     }
 
@@ -212,7 +324,7 @@
                 });
             })
             .catch(function (err) {
-                console.warn('HireMate: Could not load suggestions (' + err.message + ')');
+                console.warn('HireBot: Could not load suggestions (' + err.message + ')');
             });
     }
 

@@ -40,7 +40,9 @@
                     <?php foreach ($notifications as $notification): ?>
                         <?php $config = model('NotificationModel')->getNotificationConfig($notification['type']); ?>
                         
-                        <div class="card mb-3 notification-card <?= $notification['is_read'] ? '' : 'is-unread' ?>" data-notification-card="<?= (int) $notification['id'] ?>">
+                        <div class="card mb-3 notification-card <?= $notification['is_read'] ? '' : 'is-unread' ?> <?= $notification['action_link'] ? 'is-actionable' : '' ?>"
+                             data-notification-card="<?= (int) $notification['id'] ?>"
+                             <?= $notification['action_link'] ? 'role="link" tabindex="0" aria-label="Open ' . esc($notification['title'], 'attr') . '"' : '' ?>>
                             <div class="card-body">
                                 <div class="d-flex">
                                     <div class="notification-icon <?= $config['color'] ?> mr-3">
@@ -64,17 +66,14 @@
                                         
                                         <div class="d-flex justify-content-between align-items-center">
                                             <?php if ($notification['action_link']): ?>
-                                                <form method="post" action="<?= base_url('notifications/mark-read/' . $notification['id']) ?>" class="d-inline">
+                                                <form method="post" action="<?= base_url('notifications/mark-read/' . $notification['id']) ?>" class="d-none js-open-notification-form" aria-hidden="true">
                                                     <?= csrf_field() ?>
-                                                    <button type="submit" class="btn btn-sm btn-outline-primary notification-action-btn">
-                                                        <?= esc($config['action_text'] ?? 'Take Action') ?> <i class="fas fa-arrow-right ml-1"></i>
-                                                    </button>
                                                 </form>
                                             <?php else: ?>
                                                 <span></span>
                                             <?php endif; ?>
                                             
-                                            <div>
+                                            <div class="ml-auto notification-secondary-actions">
                                                 <?php if (!$notification['is_read']): ?>
                                                     <form method="post" action="<?= base_url('notifications/mark-read/' . $notification['id']) ?>" class="d-inline">
                                                         <?= csrf_field() ?>

@@ -22,8 +22,8 @@ $jobCategoryOptions = [
     'Cybersecurity',
 ];
 $selectedCategory = old('category');
-$aiInterviewCategories = ['Software Development', 'Data Science', 'DevOps', 'Quality Assurance', 'UI/UX Design', 'Cybersecurity'];
-$aiInterviewAllowed = in_array(strtolower((string) $selectedCategory), array_map('strtolower', $aiInterviewCategories), true);
+$aiInterviewCategories = \App\Models\JobModel::AI_INTERVIEW_CATEGORIES;
+$aiInterviewAllowed = \App\Models\JobModel::supportsAiInterviewForCategory($selectedCategory);
 $postedFor = old('posted_for', 'own_company');
 $clientDisclosure = old('client_disclosure', 'visible');
 $payrollType = old('payroll_type', '');
@@ -35,6 +35,11 @@ $payrollType = old('payroll_type', '');
         <div class="page-board-copy"> 
             <h1 class="page-board-title">Post a Job</h1>
             <p class="page-board-subtitle">Create a clear role listing and control how AI interview screening applies to applicants.</p>
+        </div>
+        <div class="page-board-actions">
+            <a href="<?= base_url('recruiter/jobs') ?>" class="btn btn-outline-primary">
+                 Back to Jobs
+            </a>
         </div>
     </div>
 
@@ -73,6 +78,20 @@ $payrollType = old('payroll_type', '');
                                     <small>Consultancies should choose client company when hiring for a client.</small>
                                 </div>
                             </div>
+                            <div class="col-12 internship-details-wrap" id="internshipFields" style="display:none;">
+                                <div class="internship-details-panel">
+                                    <div class="internship-details-head"><h5><i class="fas fa-user-graduate mr-2"></i>Complete the internship details</h5><span>Required</span></div>
+                                    <p class="internship-details-note">Fill every starred field before publishing this internship.</p>
+                                    <div class="row">
+                                        <div class="col-md-4 form-group"><label>Duration *</label><input class="form-control" name="internship_duration" value="<?= old('internship_duration') ?>" placeholder="e.g., 3 months"></div>
+                                        <div class="col-md-4 form-group"><label>Stipend *</label><input class="form-control" name="internship_stipend" value="<?= old('internship_stipend') ?>" placeholder="e.g., ₹15,000/month or Unpaid"></div>
+                                        <div class="col-md-4 form-group"><label>Start Date *</label><input class="form-control" type="date" name="internship_start_date" value="<?= old('internship_start_date') ?>"></div>
+                                        <div class="col-md-4 form-group"><label>Internship Type *</label><select class="form-control" name="internship_type"><option value="">Select type</option><?php foreach (['Summer', 'Winter', 'Part-time', 'Full-time', 'Virtual', 'Graduate'] as $type): ?><option value="<?= esc($type) ?>" <?= old('internship_type') === $type ? 'selected' : '' ?>><?= esc($type) ?></option><?php endforeach; ?></select></div>
+                                        <div class="col-md-4 form-group"><label>Work Mode *</label><select class="form-control" name="work_mode"><option value="">Select mode</option><?php foreach (['On-site', 'Hybrid', 'Remote'] as $mode): ?><option value="<?= esc($mode) ?>" <?= old('work_mode') === $mode ? 'selected' : '' ?>><?= esc($mode) ?></option><?php endforeach; ?></select></div>
+                                        <div class="col-md-4 form-group d-flex align-items-center"><div class="custom-control custom-checkbox mt-3"><input type="hidden" name="ppo_available" value="0"><input class="custom-control-input" id="ppo_available" type="checkbox" name="ppo_available" value="1" <?= old('ppo_available') ? 'checked' : '' ?>><label class="custom-control-label" for="ppo_available">Pre-placement offer (PPO) available</label></div></div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label>Payroll Type</label>
@@ -102,7 +121,7 @@ $payrollType = old('payroll_type', '');
                                     <small >Candidate fees are never allowed on this portal.</small>
                                 </div>
                             </div>
-                            <div class="col-sm-12">
+                            <div class="col-sm-12" id="jobTitleField">
                                 <div class="form-group">
                                     <label>Job Title *</label>
                                     <input class="form-control" name="title" id="title" type="text" value="<?= old('title') ?>" placeholder="Job Title" required>
@@ -133,7 +152,7 @@ $payrollType = old('payroll_type', '');
                             <div class="col-12">
                                 <div class="form-group">
                                     <label>Description *</label>
-                                    <textarea class="form-control w-100" name="description" id="description" cols="30" rows="9" placeholder="Job Description" required><?= old('description') ?></textarea>
+                                    <textarea class="form-control w-100 js-rich-job-description" name="description" id="description" cols="30" rows="9" placeholder="Job Description" required><?= old('description') ?></textarea>
                                     <small class="text-danger" id="description-error"></small>
                                 </div>
                             </div>
@@ -144,9 +163,9 @@ $payrollType = old('payroll_type', '');
                                     <small class="text-danger" id="experience_level-error"></small>
                                 </div>
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-6" id="employmentTypeField">
                                 <div class="form-group">
-                                    <label>Employment Type</label>
+                                    <label>Listing / Employment Type *</label>
                                     <select class="form-control" name="employment_type" id="employment_type">
                                         <option value="Full-time" <?= old('employment_type') === 'Full-time' ? 'selected' : '' ?>>Full-time</option>
                                         <option value="Part-time" <?= old('employment_type') === 'Part-time' ? 'selected' : '' ?>>Part-time</option>
@@ -172,7 +191,12 @@ $payrollType = old('payroll_type', '');
                                 </div>
                             </div>
                             <?php $selectedPolicy = $aiInterviewAllowed ? old('ai_interview_policy', 'REQUIRED_HARD') : 'OFF'; ?>
-                            <div class="col-12" id=<div class="col-sm-6" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
+                            <div class="col-12" id="aiInterviewUnavailableWrap" <?= $aiInterviewAllowed ? 'style="display: none;"' : '' ?>>
+                                <div class="alert alert-info py-2 mb-3" role="status">
+                                    AI interview settings are available only for supported technical job categories.
+                                </div>
+                            </div>
+                            <div class="col-sm-6" id="aiInterviewPolicyWrap" <?= $aiInterviewAllowed ? '' : 'style="display: none;"' ?>>
                                 <div class="form-group">
                                     <label>AI Interview Policy</label>
                                     <select class="form-control" name="ai_interview_policy" id="ai_interview_policy" <?= $aiInterviewAllowed ? '' : 'disabled' ?>>
@@ -262,14 +286,24 @@ $payrollType = old('payroll_type', '');
 </div>
 <script>
 (function () {
-    const aiInterviewCategories = [
-        'Software Development',
-        'Data Science',
-        'DevOps',
-        'Quality Assurance',
-        'UI/UX Design',
-        'Cybersecurity'
-    ];
+    const employmentType = document.getElementById('employment_type');
+    const fields = document.getElementById('internshipFields');
+    const employmentField = document.getElementById('employmentTypeField');
+    const titleField = document.getElementById('jobTitleField');
+    if (!employmentType || !fields || !employmentField || !titleField) return;
+    titleField.after(employmentField);
+    employmentField.after(fields);
+    function syncInternshipFields() {
+        const active = employmentType.value === 'Internship';
+        fields.style.display = active ? '' : 'none';
+        fields.querySelectorAll('input:not([type="hidden"]), select').forEach((field) => field.required = active && field.name !== 'ppo_available');
+    }
+    employmentType.addEventListener('change', syncInternshipFields);
+    syncInternshipFields();
+})();
+
+(function () {
+    const aiInterviewCategories = <?= json_encode(array_values($aiInterviewCategories)) ?>;
     const categorySelect = document.getElementById('category');
     const unavailableWrap = document.getElementById('aiInterviewUnavailableWrap');
     const policyWrap = document.getElementById('aiInterviewPolicyWrap');
@@ -486,5 +520,6 @@ $payrollType = old('payroll_type', '');
     fillIfEmpty('required_skills', data.required_skills);
 })();
 </script>
+<?= view('recruiter/partials/job_description_editor') ?>
 <?= view('Layouts/recruiter_footer') ?>
     

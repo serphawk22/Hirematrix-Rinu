@@ -197,7 +197,8 @@
             $premiumSubscription = null;
         }
     }
-    $premiumLocked = !$premiumSubscription;
+    $subscriptionsEnabled = SUBSCRIPTIONS_ENABLED;
+    $premiumLocked = $subscriptionsEnabled && !$premiumSubscription;
     $careerTransitionUrl = $premiumLocked ? base_url('premium/plans?service=career-transition') : base_url('career-transition');
     $resumeStudioUrl = $premiumLocked ? base_url('premium/plans?service=resume-studio') : base_url('candidate/resume-studio');
     ?>
@@ -320,7 +321,7 @@
                         <span>Job Search Strategy Coach</span>
                     </a>
                     <a href="<?= esc($careerTransitionUrl) ?>" class="hm-drawer-link <?= $isCareerTransitionActive ? 'is-active' : '' ?>">
-                        <span class="cand-leftnav__icon"><i class="fas fa-rocket portal-gradient-text"></i></span>
+                        <span class="cand-leftnav__icon"><i class="fas fa-rocket portal-gradient-text"></i></span> 
                         <span class="portal-gradient-text">Career Transition AI</span>
                         <?php if ($premiumLocked): ?><span class="hm-drawer-pro">Pro</span><?php endif; ?>
                     </a>
@@ -342,6 +343,7 @@
                         <span class="hm-drawer-link-icon"><i class="fas fa-cog"></i></span>
                         <span>Settings</span>
                     </a>
+                    <?php if ($subscriptionsEnabled): ?>
                     <a href="<?= base_url('premium/plans') ?>" class="hm-drawer-link">
                         <span class="hm-drawer-link-icon"><i class="fas fa-gem"></i></span>
                         <span>Premium Plans</span>
@@ -350,6 +352,7 @@
                         <span class="hm-drawer-link-icon"><i class="fas fa-file-alt"></i></span>
                         <span>Payment History</span>
                     </a>
+                    <?php endif; ?>
                 </div>
 
             </div>
@@ -491,8 +494,10 @@
                     </div>
                     <a href="<?= base_url('candidate/profile') ?>" class="<?= $isCandidateProfileActive ? 'is-active' : '' ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
                     <a href="<?= base_url('candidate/settings') ?>" class="<?= $isCandidateSettingsActive ? 'is-active' : '' ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
+                    <?php if ($subscriptionsEnabled): ?>
                     <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link <?= $isPremiumPlansActive ? 'is-active' : '' ?>"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
                     <a href="<?= base_url('payment/history') ?>" class="<?= $isPaymentHistoryActive ? 'is-active' : '' ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
+                    <?php endif; ?>
                     <a href="<?= base_url('logout') ?>" class="cand-leftnav__logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
                 </div>
                 <button type="button" class="cand-leftnav__user-btn" id="candidateLeftnavUserBtn" aria-haspopup="true" aria-expanded="false">
@@ -560,8 +565,10 @@
                     </div>
                     <a href="<?= base_url('candidate/profile') ?>" class="<?= $isCandidateProfileActive ? 'is-active' : '' ?>"><i class="fas fa-user"></i><span>My Profile</span></a>
                     <a href="<?= base_url('candidate/settings') ?>" class="<?= $isCandidateSettingsActive ? 'is-active' : '' ?>"><i class="fas fa-cog"></i><span>Settings</span></a>
+                    <?php if ($subscriptionsEnabled): ?>
                     <a href="<?= base_url('premium/plans') ?>" class="cand-leftnav__premium-link <?= $isPremiumPlansActive ? 'is-active' : '' ?>"><i class="fas fa-gem"></i><span>Premium Plans</span></a>
                     <a href="<?= base_url('payment/history') ?>" class="<?= $isPaymentHistoryActive ? 'is-active' : '' ?>"><i class="fas fa-credit-card"></i><span>Payment History</span></a>
+                    <?php endif; ?>
                     <a href="<?= base_url('logout') ?>" class="cand-leftnav__logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
                 </div>
             </div>

@@ -238,6 +238,15 @@ $serviceCards = [
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 document.querySelectorAll('.js-pay-btn').forEach(function(btn) {
+    function restoreButton(button) {
+        button.disabled = false;
+        button.textContent = 'Subscribe \u20B9' + button.dataset.price;
+    }
+
+    function showPaymentError(message) {
+        alert(message || 'Payment could not be completed. Please try another payment method or contact support.');
+    }
+
     btn.addEventListener('click', function() {
         var planId   = this.dataset.planId;
         var planName = this.dataset.planName;
@@ -249,18 +258,26 @@ document.querySelectorAll('.js-pay-btn').forEach(function(btn) {
         // Step 1: create Razorpay order on server
         fetch('<?= base_url('payment/create-order') ?>', {
             method: 'POST',
+            cache: 'no-store',
+            credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'X-Requested-With': 'XMLHttpRequest'
             },
             body: 'plan_id=' + planId + '&<?= csrf_token() ?>=' + '<?= csrf_hash() ?>'
         })
-        .then(function(r) { return r.json(); })
+        .then(function(r) {
+            return r.json().then(function(payload) {
+                if (!r.ok) {
+                    throw new Error(payload.error || 'Could not create a payment session.');
+                }
+                return payload;
+            });
+        })
         .then(function(data) {
             if (data.error) {
                 alert(data.error);
-                self.disabled = false;
-                self.textContent = 'Subscribe \u20B9' + self.dataset.price;
+                restoreButton(self);
                 return;
             }
 
@@ -273,10 +290,15 @@ document.querySelectorAll('.js-pay-btn').forEach(function(btn) {
                 description: planName,
                 order_id:    data.order_id,
                 theme:       { color: '#1FB7B5' },
+                retry:       { enabled: true, max_count: 3 },
+                timeout:     300,
+                remember_customer: false,
                 handler: function(response) {
                     // Step 3: verify payment on server
                     fetch('<?= base_url('payment/verify') ?>', {
                         method: 'POST',
+                        cache: 'no-store',
+                        credentials: 'same-origin',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
                             'X-Requested-With': 'XMLHttpRequest'
@@ -294,26 +316,29 @@ document.querySelectorAll('.js-pay-btn').forEach(function(btn) {
                             window.location.href = result.redirect;
                         } else {
                             alert(result.error || 'Payment verification failed. Please contact support.');
-                            self.disabled = false;
-                            self.textContent = 'Subscribe \u20B9' + self.dataset.price;
+                            restoreButton(self);
                         }
                     });
                 },
                 modal: {
                     ondismiss: function() {
-                        self.disabled = false;
-                        self.textContent = 'Subscribe \u20B9' + self.dataset.price;
+                        restoreButton(self);
                     }
                 }
             };
 
             var rzp = new Razorpay(options);
+            rzp.on('payment.failed', function(response) {
+                var details = response && response.error ? response.error : {};
+                var reason = details.description || details.reason || 'The payment session failed.';
+                showPaymentError(reason + ' Please retry with a fresh QR or choose Cards/Netbanking.');
+                restoreButton(self);
+            });
             rzp.open();
         })
-        .catch(function() {
-            alert('Something went wrong. Please try again.');
-            self.disabled = false;
-            self.textContent = 'Subscribe \u20B9' + self.dataset.price;
+        .catch(function(error) {
+            showPaymentError(error && error.message ? error.message : 'Something went wrong. Please try again.');
+            restoreButton(self);
         });
     });
 });

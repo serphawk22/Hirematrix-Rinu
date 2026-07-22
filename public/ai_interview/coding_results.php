@@ -329,7 +329,7 @@ Passed: <?= $passedTests ?> / <?= $totalTests ?>
 <?php endforeach; ?>
 
 <!-- ACTION -->
-<?php if ($score >= 60): ?>
+ 
      <a href="#" onclick="submitCodingRound()" class="btn btn-secondary btn-lg">
     🎤 AI Interview
 </a>
@@ -340,11 +340,9 @@ Passed: <?= $passedTests ?> / <?= $totalTests ?>
     <input type="hidden" name="experience" value="<?= $_SESSION['experience']; ?>">
     <input type="hidden" name="mode" value="interview">
 </form>
-
-<?php else: ?>
-   <button id="endInterviewBtn" class="btn btn-primary">🔄 End Interview</button>
  
-<?php endif; ?>
+   <button id="endInterviewBtn" class="btn btn-primary">🔄 End Interview</button>
+  
 </div> 
 <script src="js/theme.js"></script>
 <script>

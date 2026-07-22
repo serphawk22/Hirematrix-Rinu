@@ -63,6 +63,16 @@ body.recruiter-jobboard .recruiter-notification-card:hover {
     transform: translateY(-1px);
 }
 
+body.recruiter-jobboard .recruiter-notification-card.is-actionable {
+    cursor: pointer;
+}
+
+body.recruiter-jobboard .recruiter-notification-card.is-actionable:focus-visible {
+    outline: 3px solid rgba(31, 183, 181, .22);
+    outline-offset: 2px;
+    border-color: #1fb7b5 !important;
+}
+
 body.recruiter-jobboard .recruiter-notification-card > .card-body {
     padding: 16px 18px !important;
 }
@@ -156,12 +166,6 @@ body.recruiter-jobboard .recruiter-notification-actions {
     align-items: center !important;
     justify-content: space-between !important;
     gap: 12px !important;
-}
-
-body.recruiter-jobboard .recruiter-notification-open {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
 }
 
 body.recruiter-jobboard .recruiter-notification-links {
