@@ -145,6 +145,24 @@ $conn->close();
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function () {
+    "use strict";
+    // If this page is ever opened as a real top-level browser navigation
+    // (direct URL, bookmark, old link) instead of inside the persistent
+    // fullscreen shell, bounce into the shell so fullscreen still survives
+    // the rest of the flow. No-op when already embedded in shell.php's
+    // iframe (window.top !== window.self in that case).
+    try {
+        if (window.top === window.self) {
+            var here = window.location.pathname.split('/').pop() || 'index.php';
+            var qs = window.location.search ? window.location.search.slice(1) : '';
+            var target = 'shell.php?p=' + encodeURIComponent(here) + (qs ? '&' + qs : '');
+            window.location.replace(target);
+        }
+    } catch (e) {}
+})();
+</script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Results - HireMatrix AI Interview</title>
@@ -154,6 +172,17 @@ $conn->close();
 <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body class="hirematrix-app candidate-app ai-results-page">
+<script>
+    window.candidate_id   = <?= (int) ($_SESSION['candidateId'] ?? 0); ?>;
+    window.job_id         = <?= (int) ($_SESSION['jobid'] ?? 0); ?>;
+    window.candidate_name = <?= json_encode($_SESSION['candidateName'] ?? null); ?>;
+    window.jobrole        = <?= json_encode($_SESSION['position'] ?? null); ?>;
+    window.FullscreenLockConfig = {
+        maxViolations: 0,
+        showStartOverlay: false
+    };
+</script>
+<script src="js/fullscreen-lock.js"></script>
   <?php include 'theme-toggle.php'; ?>
 <canvas id="particleCanvas"></canvas>
 <div id="app" style="position:relative;z-index:1">
@@ -351,7 +380,11 @@ window.addEventListener('load', () => {
         linkBtn.textContent = 'Link Copied';
         setTimeout(() => (linkBtn.textContent = prev), 1400);
       } catch (e) {
-        window.prompt('Copy this link:', url);
+        if (window.AiInterviewDialog) {
+          window.AiInterviewDialog.alert('Copy this link:\n' + url);
+        } else {
+          window.prompt('Copy this link:', url);
+        }
       }
     });
   }
@@ -381,6 +414,7 @@ window.addEventListener('load', () => {
 </script>
  <script>
 function submitCodingRound() {
+    if (window.FullscreenLock) window.FullscreenLock.stop();
     document.getElementById("codingForm").submit();
 }
 </script>
@@ -412,7 +446,8 @@ document.getElementById("endInterviewBtn").addEventListener("click", async funct
         console.error("Status update failed", e);
     }
 
-    window.location.href = appUrl("candidate/applications");
+    if (window.FullscreenLock) window.FullscreenLock.stop();
+    (window.top || window).location.href = appUrl("candidate/applications");
 });
     </script> 
 </body>

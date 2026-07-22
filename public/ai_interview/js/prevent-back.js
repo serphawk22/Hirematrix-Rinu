@@ -28,9 +28,13 @@
         |--------------------------------------------------------------------------
         */
 
-        alert(
-            "Back navigation is disabled during interview."
-        );
+        if (window.AiInterviewDialog) {
+            window.AiInterviewDialog.alert("Back navigation is disabled during interview.");
+        } else {
+            alert(
+                "Back navigation is disabled during interview."
+            );
+        }
     };
 
 })();

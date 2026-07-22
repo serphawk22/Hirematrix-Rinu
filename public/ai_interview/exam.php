@@ -15,6 +15,24 @@ $timeout = Q_TIMEOUT;
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function () {
+    "use strict";
+    // If this page is ever opened as a real top-level browser navigation
+    // (direct URL, bookmark, old link) instead of inside the persistent
+    // fullscreen shell, bounce into the shell so fullscreen still survives
+    // the rest of the flow. No-op when already embedded in shell.php's
+    // iframe (window.top !== window.self in that case).
+    try {
+        if (window.top === window.self) {
+            var here = window.location.pathname.split('/').pop() || 'index.php';
+            var qs = window.location.search ? window.location.search.slice(1) : '';
+            var target = 'shell.php?p=' + encodeURIComponent(here) + (qs ? '&' + qs : '');
+            window.location.replace(target);
+        }
+    } catch (e) {}
+})();
+</script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Interview in Progress - HireMatrix AI</title>
@@ -58,6 +76,17 @@ $timeout = Q_TIMEOUT;
     </style>
 </head>
 <body>
+<script>
+    window.candidate_id   = <?= (int) ($_SESSION['candidateId'] ?? 0); ?>;
+    window.job_id         = <?= (int) ($_SESSION['jobid'] ?? 0); ?>;
+    window.candidate_name = <?= json_encode($_SESSION['candidateName'] ?? null); ?>;
+    window.jobrole        = <?= json_encode($_SESSION['position'] ?? null); ?>;
+    window.FullscreenLockConfig = {
+        maxViolations: 0,
+        showStartOverlay: false
+    };
+</script>
+<script src="js/fullscreen-lock.js"></script>
    
 <canvas id="particleCanvas"></canvas>
 <div id="app">

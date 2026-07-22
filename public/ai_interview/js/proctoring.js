@@ -1240,7 +1240,11 @@ async function verifyCandidateFace() {
 
          console.error("MODEL ERROR:", err);
 
-    alert(err.message);
+    if (window.AiInterviewDialog) {
+        window.AiInterviewDialog.alert(err.message);
+    } else {
+        alert(err.message);
+    }
 
     updateVerificationOverlay(
         err.message,
@@ -1838,9 +1842,13 @@ function showPermissionPopup() {
 
             console.error(err);
 
-            alert(
-                "Permission still denied"
-            );
+            if (window.AiInterviewDialog) {
+                window.AiInterviewDialog.alert("Permission still denied");
+            } else {
+                alert(
+                    "Permission still denied"
+                );
+            }
         }
     };
 }
@@ -1892,49 +1900,26 @@ function reportViolation(message) {
 |--------------------------------------------------------------------------
 | TAB SWITCH DETECTION
 |--------------------------------------------------------------------------
+| Intentionally removed from here. This fired a small toast on top of
+| the blocking modal that fullscreen-lock.js already shows for the exact
+| same visibilitychange event, so every tab switch produced two different
+| warnings at once. fullscreen-lock.js's tabHiddenViolationMessage now
+| covers this - do not re-add a separate listener here.
 */
-
-document.addEventListener(
-    "visibilitychange",
-    () => {
-
-        if (document.hidden) {
-
-            showWarning(
-                "Tab switched"
-            );
-
-            reportViolation(
-                "Tab switched"
-            );
-        }
-    }
-);
 
 /*
 |--------------------------------------------------------------------------
 | FULLSCREEN EXIT DETECTION
 |--------------------------------------------------------------------------
+| Intentionally removed from here. Fullscreen enter/exit/re-entry is now
+| owned entirely by js/fullscreen-lock.js (loaded on every page). Having
+| two separate fullscreenchange listeners - this one silently forcing
+| enableFullscreen() with no user click, and fullscreen-lock.js's modal
+| waiting for a real "Resume" click - raced each other and caused the
+| fullscreen state to flicker in/out repeatedly. Do not re-add fullscreen
+| handling here; add it to fullscreen-lock.js instead so there is only
+| ever one source of truth for this on the page.
 */
-
-document.addEventListener(
-    "fullscreenchange",
-    () => {
-
-        if (!document.fullscreenElement) {
-
-            showWarning(
-                "Fullscreen mode exited"
-            );
-
-            reportViolation(
-                "Fullscreen mode exited"
-            );
-
-            enableFullscreen();
-        }
-    }
-);
 
 /*
 |--------------------------------------------------------------------------
