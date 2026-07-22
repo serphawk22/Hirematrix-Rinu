@@ -19,6 +19,9 @@ class PaymentController extends BaseController
      */
     public function createOrder(): \CodeIgniter\HTTP\ResponseInterface
     {
+        $this->response
+            ->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->setHeader('Pragma', 'no-cache');
         $userId = (int) session()->get('user_id');
         if ($userId <= 0) {
             return $this->response->setStatusCode(401)->setJSON(['error' => 'Not authenticated']);
@@ -77,6 +80,7 @@ class PaymentController extends BaseController
             'currency'  => $payload['currency'],
             'key_id'    => $credentials['key_id'],
             'plan_name' => $plan['name'],
+            'session_created_at' => time(),
         ]);
     }
 
@@ -86,6 +90,9 @@ class PaymentController extends BaseController
      */
     public function verify(): \CodeIgniter\HTTP\ResponseInterface
     {
+        $this->response
+            ->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->setHeader('Pragma', 'no-cache');
         $userId = (int) session()->get('user_id');
         if ($userId <= 0) {
             return $this->response->setStatusCode(401)->setJSON(['error' => 'Not authenticated']);

@@ -552,7 +552,7 @@ $formatExperienceDisplay = static function (int $months): string {
                                         <div class="d-flex justify-content-between align-items-start flex-wrap candidate-flex-gap-12">
                                             <div>
                                                 <h6 class="mb-1">AI Resume Studio</h6>
-                                                <p class="text-muted mb-0">Create premium AI resume versions, choose templates, manage job-specific resumes, and export polished PDFs from a dedicated page.</p>
+                                                <p class="text-muted mb-0">Create AI resume versions, choose templates, manage job-specific resumes, and export polished PDFs from a dedicated page.</p>
                                             </div>
                                             <a href="<?= base_url('candidate/resume-studio') ?>" class="btn btn-dark btn-sm">
                                                 <i class="fas fa-arrow-right"></i> Open Studio

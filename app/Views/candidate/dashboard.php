@@ -227,7 +227,7 @@ $proFeatureSlides = [
     <div class="dash-grid__main">
           <!-- ═══════════════ PRO FEATURE PROMO (top of page) ═══════════════ -->
   <!-- ═══════════════ PRO FEATURE PROMO (top of page) ═══════════════ -->
-<?php if (empty($premiumSubscription ?? null)): ?>
+<?php if (SUBSCRIPTIONS_ENABLED && empty($premiumSubscription ?? null)): ?>
 <div class="dash-pro-panel">
 
         <div class="dash-pro-panel-head">
@@ -654,7 +654,7 @@ $title = $stripBadChars((string) ($job['title'] ?? 'Untitled Role'));
 </div><!-- /.dash-grid -->
 
 <!-- ═══════════════ FEATURE HIGHLIGHTS POPUP (fires 7s after load) ═══════════════ -->
-<?php if (empty($premiumSubscription ?? null)): ?>
+<?php if (SUBSCRIPTIONS_ENABLED && empty($premiumSubscription ?? null)): ?>
 <div class="hm-modal-overlay" id="dashFeaturePopupModal">
   <div class="hm-modal" role="dialog" aria-modal="true" aria-labelledby="dashFeaturePopupTitle">
     <button type="button" class="hm-modal-close" onclick="hmCloseDashFeaturePopup()" aria-label="Close"><i class="fas fa-times"></i></button>

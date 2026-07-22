@@ -32,6 +32,7 @@ class PremiumCareerMentorController extends BaseController
 
     public function __construct()
     {
+        helper('premium');
         $this->subscriptionModel = new SubscriptionModel();
         $this->usageModel        = new ChatbotUsageModel();
         $this->sessionModel      = new PremiumCareerSessionModel();
@@ -129,6 +130,23 @@ class PremiumCareerMentorController extends BaseController
     private function processPremiumCareerChat($message, $userId, $sessionId)
     {
         $subscription = $this->subscriptionModel->getUserActiveSubscription($userId);
+        if (!$subscription && !subscriptionsEnabled()) {
+            $subscription = [
+                'features' => json_encode([
+                    'Career chat',
+                    'Smart goals',
+                    'Progress reviews',
+                    'Career transition support',
+                    'Career acceleration',
+                    'Skill gap analysis',
+                    'Learning roadmap',
+                    'Interview preparation',
+                    'Industry insights',
+                    'Resume guidance',
+                ]),
+                'chat_limit' => null,
+            ];
+        }
         $userProfile = $this->getUserCareerProfile($userId);
         $conversationHistory = $this->getConversationHistory($userId);
         $mentorMemory = $this->getPersistentMentorMemory($userId);
@@ -298,6 +316,10 @@ class PremiumCareerMentorController extends BaseController
 
     private function checkUsageLimit($userId)
     {
+        if (!subscriptionsEnabled()) {
+            return ['allowed' => true];
+        }
+
         $subscription = $this->subscriptionModel->getUserActiveSubscription($userId);
         
         if (!$subscription) {

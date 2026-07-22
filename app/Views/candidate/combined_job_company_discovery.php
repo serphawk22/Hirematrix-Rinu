@@ -80,8 +80,8 @@ $activeFilters = array_filter([
             <div class="card">
                 <div class="card-body text-center py-5">
                     <i class="fas fa-building fa-3x text-muted mb-3"></i>
-                    <h4 class="mb-2">No companies found</h4>
-                    <p class="text-muted mb-0">Try another category, city, industry, or company name.</p>
+                    <h4 class="mb-2">Checking company openings</h4>
+                    <p class="text-muted mb-0">Try another category, city, or industry while current openings are being refreshed.</p>
                 </div>
             </div>
         <?php else: ?>

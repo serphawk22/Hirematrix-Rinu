@@ -60,7 +60,7 @@ class CandidateDashboardController extends BaseController
             // Check subscription status to determine if we should show trial promotions
             $subscriptionModel = model(SubscriptionModel::class);
             $activeSubscription = $subscriptionModel->getUserActiveSubscription($candidateId);
-            $hasActiveSubscription = !empty($activeSubscription);
+            $hasActiveSubscription = !SUBSCRIPTIONS_ENABLED || !empty($activeSubscription);
 
         // Top suggested jobs for dashboard (best matches only)
         $topSuggestedJobs = $this->getTopSuggestedJobs($candidateId, 4);
@@ -2199,6 +2199,21 @@ class CandidateDashboardController extends BaseController
         $hasMoreCompanies = !$viewAll && (count($companies) > 16 || ($companyModel->pager && $companyModel->pager->getPageCount() > 1));
         if (!$viewAll) {
             $companies = array_slice($companies, 0, 16);
+        }
+
+        // A company may be searched before it exists in our directory. Send
+        // that search to the live-opening page, which discovers jobs in the
+        // background and adds the employer only after openings are verified.
+        if (
+            empty($companies)
+            && $filters['q'] !== ''
+            && $filters['industry'] === ''
+            && $filters['location'] === ''
+            && $filters['segment'] === ''
+        ) {
+            return redirect()->to(
+                base_url('candidate/company-jobs/' . rawurlencode($filters['q']))
+            );
         }
 
         foreach ($companies as &$company) {

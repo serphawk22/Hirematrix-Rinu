@@ -325,13 +325,40 @@ body.dark .hirebot-tooltip {
     }
 
     // ── Message rendering ───────────────────────────────────────────
+    function cleanBotReply(text) {
+        // Replies are displayed as plain text, so hide Markdown heading prefixes
+        // while preserving hashes that appear within normal content.
+        return String(text ?? '').replace(/^\s{0,3}#{1,6}[ \t]+/gm, '');
+    }
+
+    function renderBotReply(bubble, text) {
+        const reply = cleanBotReply(text);
+        const boldPattern = /\*\*([^*\n]+)\*\*/g;
+        let lastIndex = 0;
+        let match;
+
+        while ((match = boldPattern.exec(reply)) !== null) {
+            bubble.appendChild(document.createTextNode(reply.slice(lastIndex, match.index)));
+            const strong = document.createElement('strong');
+            strong.textContent = match[1];
+            bubble.appendChild(strong);
+            lastIndex = boldPattern.lastIndex;
+        }
+
+        bubble.appendChild(document.createTextNode(reply.slice(lastIndex)));
+    }
+
     function addMessage(text, type, premiumFeatures) {
         const row = document.createElement('div');
         row.className = 'hm-candidate-chat-row ' + type;
 
         const bubble = document.createElement('div');
         bubble.className = 'hm-candidate-chat-bubble ' + type;
-        bubble.textContent = text;
+        if (type === 'bot') {
+            renderBotReply(bubble, text);
+        } else {
+            bubble.textContent = text;
+        }
 
         if (type === 'bot' && Array.isArray(premiumFeatures) && premiumFeatures.length) {
             const wrap = document.createElement('div');

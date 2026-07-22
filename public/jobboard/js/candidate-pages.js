@@ -971,6 +971,7 @@
                 if (label) label.textContent = 'Preparing course...';
 
                 try {
+                    var lessonRetryCount = 0;
                     while (true) {
                         var body = new URLSearchParams();
                         body.set(button.dataset.csrfName, button.dataset.csrfValue);
@@ -983,13 +984,24 @@
                             body: body.toString()
                         });
                         var result = await response.json().catch(function () { return {}; });
-                        if (!response.ok || !result.success) {
-                            throw new Error(result.message || 'Could not prepare the PDF. Please try again.');
-                        }
                         if (result.csrfName && result.csrfHash) {
                             button.dataset.csrfName = result.csrfName;
                             button.dataset.csrfValue = result.csrfHash;
                         }
+                        if (!response.ok || !result.success) {
+                            if (result.retryable && lessonRetryCount < 2) {
+                                lessonRetryCount += 1;
+                                if (label) {
+                                    label.textContent = 'Retrying lesson ' + ((result.prepared || 0) + 1) + '...';
+                                }
+                                await new Promise(function (resolve) {
+                                    window.setTimeout(resolve, 1200 * lessonRetryCount);
+                                });
+                                continue;
+                            }
+                            throw new Error(result.message || 'Could not prepare the PDF. Please try again.');
+                        }
+                        lessonRetryCount = 0;
                         if (label) {
                             label.textContent = result.ready
                                 ? 'Starting download...'

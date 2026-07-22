@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\JobModel;
+use App\Libraries\JobDescriptionSanitizer;
 
 class RecruiterJobs extends BaseController
 {
@@ -59,11 +60,18 @@ class RecruiterJobs extends BaseController
 
         $title = trim((string) $this->request->getPost('title'));
         $category = trim((string) $this->request->getPost('category'));
-        $description = trim((string) $this->request->getPost('description'));
+        $description = JobDescriptionSanitizer::sanitize((string) $this->request->getPost('description'));
         $location = trim((string) $this->request->getPost('location'));
         $requiredSkills = trim((string) $this->request->getPost('required_skills'));
         $experienceLevel = trim((string) $this->request->getPost('experience_level'));
         $employmentType = trim((string) $this->request->getPost('employment_type'));
+        $isInternship = strcasecmp($employmentType, 'Internship') === 0;
+        $internshipDuration = trim((string) $this->request->getPost('internship_duration'));
+        $internshipStipend = trim((string) $this->request->getPost('internship_stipend'));
+        $internshipStartDate = trim((string) $this->request->getPost('internship_start_date'));
+        $internshipType = $this->normalizeOption((string) $this->request->getPost('internship_type'), ['Summer', 'Winter', 'Part-time', 'Full-time', 'Virtual', 'Graduate'], '');
+        $workMode = $this->normalizeOption((string) $this->request->getPost('work_mode'), ['On-site', 'Hybrid', 'Remote'], '');
+        $ppoAvailable = (int) $this->request->getPost('ppo_available') === 1 ? 1 : 0;
         $salaryRange = trim((string) $this->request->getPost('salary_range'));
         $applicationDeadlineRaw = trim((string) $this->request->getPost('application_deadline'));
         $postedFor = $this->normalizeOption((string) $this->request->getPost('posted_for'), self::POSTED_FOR_OPTIONS, 'own_company');
@@ -75,7 +83,7 @@ class RecruiterJobs extends BaseController
         $minAiCutoff = $minAiCutoffRaw === '' ? null : (int) $minAiCutoffRaw;
         [$questionnaire, $questionnaireError] = $this->buildQuestionnairePayload($this->request->getPost('questionnaire'));
 
-        if ($title === '' || $category === '' || $description === '' || $location === '') {
+        if ($title === '' || $category === '' || JobDescriptionSanitizer::plainText($description) === '' || $location === '') {
             return redirect()->back()->withInput()->with('error', 'Title, category, description and location are required.');
         }
 
@@ -89,6 +97,13 @@ class RecruiterJobs extends BaseController
 
         if ($questionnaireError !== null) {
             return redirect()->back()->withInput()->with('error', $questionnaireError);
+        }
+
+        if ($isInternship && ($internshipDuration === '' || $internshipStipend === '' || $internshipStartDate === '' || $internshipType === '' || $workMode === '')) {
+            return redirect()->back()->withInput()->with('error', 'Complete all required internship details.');
+        }
+        if ($isInternship && !$this->isValidDate($internshipStartDate)) {
+            return redirect()->back()->withInput()->with('error', 'Internship start date must be a valid date.');
         }
 
         $applicationDeadline = null;
@@ -170,6 +185,12 @@ class RecruiterJobs extends BaseController
 
         if ($db->fieldExists('application_questionnaire', 'jobs')) {
             $data['application_questionnaire'] = $questionnaire !== [] ? json_encode($questionnaire) : null;
+        }
+
+        foreach (['internship_duration' => $isInternship ? $internshipDuration : null, 'internship_stipend' => $isInternship ? $internshipStipend : null, 'internship_start_date' => $isInternship ? $internshipStartDate : null, 'internship_type' => $isInternship ? $internshipType : null, 'work_mode' => $isInternship ? $workMode : null, 'ppo_available' => $isInternship ? $ppoAvailable : 0] as $field => $value) {
+            if ($db->fieldExists($field, 'jobs')) {
+                $data[$field] = $value;
+            }
         }
 
         $jobModel->update($jobId, $data);
@@ -314,6 +335,12 @@ class RecruiterJobs extends BaseController
         }
 
         return [$questions, null];
+    }
+
+    private function isValidDate(string $date): bool
+    {
+        $parsed = \DateTime::createFromFormat('Y-m-d', $date);
+        return $parsed !== false && $parsed->format('Y-m-d') === $date;
     }
 
     private function normalizeOption(string $value, array $allowed, string $default): string
