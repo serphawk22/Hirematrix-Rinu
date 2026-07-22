@@ -60,6 +60,24 @@ if ($mode === 'mcq') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function () {
+    "use strict";
+    // If this page is ever opened as a real top-level browser navigation
+    // (direct URL, bookmark, old link) instead of inside the persistent
+    // fullscreen shell, bounce into the shell so fullscreen still survives
+    // the rest of the flow. No-op when already embedded in shell.php's
+    // iframe (window.top !== window.self in that case).
+    try {
+        if (window.top === window.self) {
+            var here = window.location.pathname.split('/').pop() || 'index.php';
+            var qs = window.location.search ? window.location.search.slice(1) : '';
+            var target = 'shell.php?p=' + encodeURIComponent(here) + (qs ? '&' + qs : '');
+            window.location.replace(target);
+        }
+    } catch (e) {}
+})();
+</script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Preparing - HireMatrix AI</title>
@@ -68,6 +86,17 @@ if ($mode === 'mcq') {
 <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
+<script>
+    window.candidate_id   = <?= (int) ($_SESSION['candidateId'] ?? 0); ?>;
+    window.job_id         = <?= (int) ($_SESSION['jobid'] ?? 0); ?>;
+    window.candidate_name = <?= json_encode($_SESSION['candidateName'] ?? null); ?>;
+    window.jobrole        = <?= json_encode($_SESSION['position'] ?? null); ?>;
+    window.FullscreenLockConfig = {
+        maxViolations: 0,
+        showStartOverlay: false // reached via a click from the previous page, no extra click needed
+    };
+</script>
+<script src="js/fullscreen-lock.js"></script>
   <?php include 'theme-toggle.php'; ?>
 <canvas id="particleCanvas"></canvas>
 <div id="app"><div id="screen-container">
@@ -118,6 +147,7 @@ async function generate() {
   try {
     if (SERVER_ROUNDS_AVAILABLE) {
       // Server already prepared rounds — skip client fetches and redirect.
+      if (window.FullscreenLock) window.FullscreenLock.stop();
       window.location.href = REDIRECT;
       return;
     }
@@ -145,6 +175,7 @@ async function generate() {
       setStep(4);
       await new Promise(r => setTimeout(r, 600));
     }
+    if (window.FullscreenLock) window.FullscreenLock.stop();
     window.location.href = REDIRECT;
   } catch(e) {
     document.getElementById('errorMsg').textContent = '⚠️ ' + e.message + ' — Please reload and try again.';

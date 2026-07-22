@@ -363,14 +363,34 @@ function handleDebug(el, q){
     state.idx=next; state.qStart=Date.now(); renderExam();
   }
 
+  /* ── SUBMIT LOADING SCREEN ───────────────────────────────────────────── */
+  function showSubmitLoading(isFinalRound){
+    sc.innerHTML=`
+    <div class="loading-screen animate-in">
+      <div class="loading-orb">${isFinalRound ? '📊' : '✅'}</div>
+      <h2 class="loading-title">Submitting Round <span class="text-gradient">${state.roundIdx+1}</span>…</h2>
+      <p class="loading-sub">${isFinalRound ? 'Saving your answers and preparing your results…' : 'Saving your answers…'}</p>
+      <div class="loading-steps">
+        <div class="loading-step active" id="subStep1"><span class="step-dot"></span> Saving your answers</div>
+        <div class="loading-step" id="subStep2"><span class="step-dot"></span> ${isFinalRound ? 'Calculating your results' : 'Preparing Round 2'}</div>
+      </div>
+    </div>`;
+  }
+
   /* ── END ROUND ───────────────────────────────────────────────────────── */
   async function endRound(){
     clearInterval(state.roundTimer);
+    const isFinalRound = state.roundIdx!==0;
+    showSubmitLoading(isFinalRound);
     const rStart=roundStart[state.roundIdx], rEnd=roundEnd[state.roundIdx];
     const answers=Object.entries(state.answers).filter(([k])=>+k>=rStart&&+k<=rEnd).map(([,v])=>v);
     await fetch('api/save.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({round:state.roundIdx+1,answers})}).catch(()=>{});
-    if(state.roundIdx===0) showTransition();
-    else window.location.href='results.php';
+    const step2 = document.getElementById('subStep2');
+    if(step2){ step2.classList.remove('active'); step2.classList.add('done'); }
+    const step1 = document.getElementById('subStep1');
+    if(step1){ step1.classList.remove('active'); step1.classList.add('done'); }
+    if(!isFinalRound) showTransition();
+    else { if (window.FullscreenLock) window.FullscreenLock.stop(); window.location.href='results.php'; }
   }
 
   // Boot
