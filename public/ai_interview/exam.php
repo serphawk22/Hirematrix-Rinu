@@ -15,6 +15,7 @@ $timeout = Q_TIMEOUT;
 <!DOCTYPE html>
 <html lang="en">
 <head>
+   
 <script>
 (function () {
     "use strict";
@@ -122,6 +123,7 @@ $timeout = Q_TIMEOUT;
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
 <!-- PROCTORING -->
 <script src="js/proctoring.js?v=2"></script>
 <script>
@@ -222,7 +224,7 @@ const jobrole = <?= json_encode($_SESSION['position'] ?? '') ?>;
 <script src="js/questions.js"></script>
 <script src="js/exam.js?v=5"></script> 
 <script src="js/prevent-back.js"></script> 
-<script src="js/theme.js"></script>
+<script src="js/theme.js"></script> 
 <script>
 // Surface JS errors instead of "blank screen" failures.
 window.addEventListener('error', (e) => {

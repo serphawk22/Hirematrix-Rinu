@@ -471,6 +471,146 @@
         }
     }
 
+    /*
+    |----------------------------------------------------------------------
+    | SHELL-LEVEL SCREENSHOT / DEVTOOLS DETERRENCE
+    |----------------------------------------------------------------------
+    | proctoring.js only runs INSIDE the iframe, so its PrintScreen/F12/
+    | copy-paste listeners only fire while the iframe itself has keyboard
+    | focus. Every shell-level overlay (the exit-confirm modal, the start
+    | overlay) is rendered directly on shell.php - NOT inside the iframe -
+    | so showing either of them moves keyboard focus to the top window.
+    | Nothing moved it back afterwards, so from the first "Resume
+    | Interview" click onward, every keystroke landed on shell.php, which
+    | had no PrintScreen/F12/copy-paste handling of its own. This block
+    | gives the shell (top window only) the same deterrents, and
+    | focusInterviewFrame() below is called every time a shell overlay
+    | closes so focus returns to the iframe (and therefore proctoring.js)
+    | as soon as possible.
+    |
+    | Same caveat as proctoring.js: this is a deterrent + violation log,
+    | not real prevention - the OS/browser chrome captures the screen or
+    | opens DevTools before any page JS runs, on the shell exactly the
+    | same as inside the iframe.
+    */
+
+    let antiScreenshotOverlayEl = null;
+
+    function ensureAntiScreenshotOverlay() {
+
+        if (antiScreenshotOverlayEl) return antiScreenshotOverlayEl;
+
+        const style = document.createElement("style");
+        style.id = "fs-anti-screenshot-style";
+        style.innerHTML = `
+            #fs-anti-screenshot-overlay {
+                position: fixed;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                background: #000000;
+                color: #ffffff;
+                font-family: 'Inter', sans-serif;
+                font-size: 18px;
+                text-align: center;
+                padding: 24px;
+                z-index: 2147483647;
+            }
+        `;
+        document.head.appendChild(style);
+
+        antiScreenshotOverlayEl = document.createElement("div");
+        antiScreenshotOverlayEl.id = "fs-anti-screenshot-overlay";
+        antiScreenshotOverlayEl.textContent =
+            "Screenshots are disabled during this interview";
+
+        document.documentElement.appendChild(antiScreenshotOverlayEl);
+
+        return antiScreenshotOverlayEl;
+    }
+
+    function triggerShellScreenshotBlackout(reason) {
+
+        const overlay = ensureAntiScreenshotOverlay();
+
+        overlay.style.display = "flex";
+        document.documentElement.style.filter = "blur(25px)";
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+
+            navigator.clipboard
+                .writeText("Screenshots are disabled during interview")
+                .catch(() => {});
+        }
+
+        logViolation(reason);
+
+        setTimeout(() => {
+
+            overlay.style.display = "none";
+            document.documentElement.style.filter = "none";
+
+        }, 3000);
+    }
+
+    function focusInterviewFrame() {
+
+        const frame = document.getElementById("ai-interview-frame");
+
+        if (frame) {
+
+            try { frame.focus(); } catch (e) { log("focusInterviewFrame failed:", e && e.message); }
+        }
+    }
+
+    if (isTopWindow) {
+
+        document.addEventListener("keydown", (e) => {
+
+            if (e.key === "PrintScreen") {
+
+                e.preventDefault();
+                triggerShellScreenshotBlackout("Screenshot attempt detected");
+            }
+
+            if (e.key === "F12") {
+
+                e.preventDefault();
+            }
+
+            if (
+                e.ctrlKey && e.shiftKey &&
+                (e.key === "I" || e.key === "i" ||
+                 e.key === "J" || e.key === "j" ||
+                 e.key === "C" || e.key === "c")
+            ) {
+
+                e.preventDefault();
+            }
+
+            if (e.ctrlKey && (e.key === "u" || e.key === "U")) {
+
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener("keyup", (e) => {
+
+            if (e.key === "PrintScreen") {
+
+                triggerShellScreenshotBlackout("Screenshot shortcut detected");
+            }
+        });
+
+        document.addEventListener("contextmenu", (e) => e.preventDefault());
+        document.addEventListener("copy", (e) => e.preventDefault());
+        document.addEventListener("cut", (e) => e.preventDefault());
+        document.addEventListener("paste", (e) => e.preventDefault());
+    }
+
     function logViolation(message) {
 
         if (!active) return;
@@ -732,6 +872,7 @@
             requestFullscreen().then(() => {
 
                 hideExitConfirmModal();
+                focusInterviewFrame();
             });
         });
 
@@ -775,7 +916,10 @@
         startOverlayEl.querySelector("#fs-start-btn").addEventListener("click", () => {
 
             log("Start overlay button clicked, requesting fullscreen");
-            beginFullscreenFlow().then(() => hideStartOverlay());
+            beginFullscreenFlow().then(() => {
+                hideStartOverlay();
+                focusInterviewFrame();
+            });
         });
     }
 
@@ -810,7 +954,10 @@
 
             if (!isFullscreen() && active) {
 
-                beginFullscreenFlow().then(() => hideStartOverlay());
+                beginFullscreenFlow().then(() => {
+                    hideStartOverlay();
+                    focusInterviewFrame();
+                });
             }
         };
 
@@ -836,6 +983,7 @@
 
             hideExitConfirmModal();
             hideStartOverlay();
+            focusInterviewFrame();
             return;
         }
 
