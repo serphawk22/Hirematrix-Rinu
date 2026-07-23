@@ -26,11 +26,24 @@ $activeFilters = array_filter([
             </div>
         </div>
 
-        <form method="get" action="<?= esc($baseDiscoveryUrl) ?>" class="companies-filter-card company-discovery-search">
+        <form id="companyDiscoveryForm" method="get" action="<?= esc($baseDiscoveryUrl) ?>" class="companies-filter-card company-discovery-search">
             <div class="company-discovery-search-grid">
-                <div>
+                <div class="company-discovery-autocomplete">
                     <label for="companyDiscoveryQ">Company, skill, or keyword</label>
-                    <input id="companyDiscoveryQ" type="text" name="q" class="form-control" value="<?= esc($filters['q'] ?? '') ?>" placeholder="Zoho, fintech, PHP, Bangalore">
+                    <input
+                        id="companyDiscoveryQ"
+                        type="text"
+                        name="q"
+                        class="form-control"
+                        value="<?= esc($filters['q'] ?? '') ?>"
+                        placeholder="Zoho, fintech, PHP, Bangalore"
+                        autocomplete="off"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-expanded="false"
+                        aria-controls="companyDiscoverySuggestions"
+                    >
+                    <div id="companyDiscoverySuggestions" class="company-discovery-suggestions" role="listbox" hidden></div>
                 </div>
                 <div>
                     <label for="companyDiscoveryIndustry">Industry</label>
@@ -141,5 +154,166 @@ $activeFilters = array_filter([
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+(function () {
+    const form = document.getElementById('companyDiscoveryForm');
+    const input = document.getElementById('companyDiscoveryQ');
+    const list = document.getElementById('companyDiscoverySuggestions');
+    const suggestionsUrl = <?= json_encode(base_url('candidate/company-jobs/suggestions')) ?>;
+
+    if (!form || !input || !list) {
+        return;
+    }
+
+    let debounceTimer = null;
+    let requestController = null;
+    let activeIndex = -1;
+    let suggestions = [];
+
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    }[character]));
+
+    const closeSuggestions = () => {
+        suggestions = [];
+        activeIndex = -1;
+        list.hidden = true;
+        list.innerHTML = '';
+        input.setAttribute('aria-expanded', 'false');
+        input.removeAttribute('aria-activedescendant');
+    };
+
+    const setActiveSuggestion = (index) => {
+        const options = Array.from(list.querySelectorAll('[role="option"]'));
+        if (options.length === 0) {
+            return;
+        }
+
+        activeIndex = Math.max(0, Math.min(index, options.length - 1));
+        options.forEach((option, optionIndex) => {
+            const isActive = optionIndex === activeIndex;
+            option.classList.toggle('is-active', isActive);
+            option.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        input.setAttribute('aria-activedescendant', options[activeIndex].id);
+        options[activeIndex].scrollIntoView({ block: 'nearest' });
+    };
+
+    const chooseSuggestion = (index) => {
+        const suggestion = suggestions[index];
+        if (!suggestion || !suggestion.name) {
+            return;
+        }
+
+        input.value = suggestion.name;
+        closeSuggestions();
+        form.requestSubmit();
+    };
+
+    const renderSuggestions = (items) => {
+        suggestions = Array.isArray(items)
+            ? items.filter((item) => item && String(item.name || '').trim() !== '').slice(0, 8)
+            : [];
+        activeIndex = -1;
+
+        if (suggestions.length === 0) {
+            closeSuggestions();
+            return;
+        }
+
+        list.innerHTML = suggestions.map((suggestion, index) => `
+            <button
+                id="companyDiscoverySuggestion${index}"
+                type="button"
+                class="company-discovery-suggestion"
+                role="option"
+                aria-selected="false"
+                data-suggestion-index="${index}"
+            >
+                <span class="company-discovery-suggestion-icon" aria-hidden="true"><i class="fas fa-building"></i></span>
+                <span>${escapeHtml(suggestion.name)}</span>
+            </button>
+        `).join('');
+        list.hidden = false;
+        input.setAttribute('aria-expanded', 'true');
+    };
+
+    const loadSuggestions = () => {
+        const query = input.value.trim();
+        if (query.length < 2) {
+            closeSuggestions();
+            return;
+        }
+
+        if (requestController) {
+            requestController.abort();
+        }
+        requestController = new AbortController();
+
+        fetch(suggestionsUrl + '?' + new URLSearchParams({ q: query }).toString(), {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            signal: requestController.signal
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Unable to load company suggestions');
+                }
+                return response.json();
+            })
+            .then((payload) => renderSuggestions(payload && payload.suggestions))
+            .catch((error) => {
+                if (error.name !== 'AbortError') {
+                    closeSuggestions();
+                }
+            });
+    };
+
+    input.addEventListener('input', () => {
+        window.clearTimeout(debounceTimer);
+        debounceTimer = window.setTimeout(loadSuggestions, 220);
+    });
+
+    input.addEventListener('keydown', (event) => {
+        if (list.hidden || suggestions.length === 0) {
+            return;
+        }
+
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            setActiveSuggestion(activeIndex + 1);
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            setActiveSuggestion(activeIndex <= 0 ? suggestions.length - 1 : activeIndex - 1);
+        } else if (event.key === 'Enter' && activeIndex >= 0) {
+            event.preventDefault();
+            chooseSuggestion(activeIndex);
+        } else if (event.key === 'Escape') {
+            closeSuggestions();
+        }
+    });
+
+    list.addEventListener('mousedown', (event) => {
+        event.preventDefault();
+    });
+
+    list.addEventListener('click', (event) => {
+        const option = event.target.closest('[data-suggestion-index]');
+        if (option) {
+            chooseSuggestion(Number(option.dataset.suggestionIndex));
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('.company-discovery-autocomplete')) {
+            closeSuggestions();
+        }
+    });
+}());
+</script>
 
 <?= view('Layouts/candidate_footer') ?>

@@ -148,7 +148,7 @@
     $companyNavSegments = [
         '' => ['label' => 'All Companies', 'icon' => 'fas fa-building'],
         'indian-mnc' => ['label' => 'Indian MNCs', 'icon' => 'fas fa-flag'],
-        'global-indian' => ['label' => 'Global Indian', 'icon' => 'fas fa-globe'],
+        'global-indian' => ['label' => 'Foreign MNC', 'icon' => 'fas fa-globe'],
         'corporate' => ['label' => 'Corporate', 'icon' => 'fas fa-industry'],
         'startups' => ['label' => 'Startups', 'icon' => 'fas fa-rocket'],
         'product' => ['label' => 'Product Companies', 'icon' => 'fas fa-cube'],

@@ -2094,22 +2094,13 @@ class CandidateDashboardController extends BaseController
                              ->groupEnd();
         }
         if ($activeSegment) {
-            $companiesBuilder->groupStart();
-            foreach ($activeSegment['terms'] as $index => $term) {
-                if ($index === 0) {
-                    $companiesBuilder->like('companies.industry', $term, 'both');
-                } else {
-                    $companiesBuilder->orLike('companies.industry', $term, 'both');
-                }
-                if ($hasCompanyType) {
-                    $companiesBuilder->orLike('companies.company_type', $term, 'both');
-                }
-                if ($hasCompanyTags) {
-                    $companiesBuilder->orLike('companies.company_tags', $term, 'both');
-                }
-                $companiesBuilder->orLike('companies.short_description', $term, 'both');
-            }
-            $companiesBuilder->groupEnd();
+            $this->applyCompanyDiscoverySegmentFilter(
+                $companiesBuilder,
+                $activeSegment,
+                $hasCompanyType,
+                $hasCompanyTags,
+                'companies.'
+            );
         }
         // Only companies with at least one current opening are listed. The
         // hiring-status query option remains accepted for existing links.
@@ -2251,15 +2242,104 @@ class CandidateDashboardController extends BaseController
     private function companyDiscoverySegments(): array
     {
         return [
-            'indian-mnc' => ['label' => 'Indian MNCs', 'icon' => 'fa-building-flag', 'terms' => ['indian mnc', 'mnc', 'enterprise', 'corporate']],
-            'global-indian' => ['label' => 'Global Indian', 'icon' => 'fa-globe-asia', 'terms' => ['global indian', 'global', 'export', 'international']],
-            'corporate' => ['label' => 'Corporate', 'icon' => 'fa-city', 'terms' => ['corporate', 'enterprise', 'large company']],
-            'startups' => ['label' => 'Startups', 'icon' => 'fa-rocket', 'terms' => ['startup', 'saas', 'product']],
-            'product' => ['label' => 'Product Companies', 'icon' => 'fa-cube', 'terms' => ['product', 'saas', 'platform']],
-            'service' => ['label' => 'Service Companies', 'icon' => 'fa-people-carry-box', 'terms' => ['service', 'services', 'consulting', 'agency']],
-            'remote-friendly' => ['label' => 'Remote Friendly', 'icon' => 'fa-laptop-house', 'terms' => ['remote', 'hybrid', 'distributed']],
-            'freshers' => ['label' => 'Freshers Hiring', 'icon' => 'fa-user-graduate', 'terms' => ['fresher', 'graduate', 'entry level', 'junior']],
+            'indian-mnc' => [
+                'label' => 'Indian MNCs',
+                'icon' => 'fa-building-flag',
+                'types' => ['Indian MNC'],
+                'tags' => ['indian mnc'],
+            ],
+            'global-indian' => [
+                'label' => 'Foreign MNC',
+                'icon' => 'fa-globe-asia',
+                'types' => ['Foreign MNC'],
+                'tags' => ['foreign mnc'],
+            ],
+            'corporate' => [
+                'label' => 'Corporate',
+                'icon' => 'fa-city',
+                'types' => ['Corporate'],
+                'tags' => ['corporate'],
+            ],
+            'startups' => [
+                'label' => 'Startups',
+                'icon' => 'fa-rocket',
+                'types' => ['Startup'],
+                'tags' => ['startup'],
+            ],
+            'product' => [
+                'label' => 'Product Companies',
+                'icon' => 'fa-cube',
+                'types' => ['Product Company'],
+                'industries' => ['Software Product'],
+                'tags' => ['product company', 'product'],
+            ],
+            'service' => [
+                'label' => 'Service Companies',
+                'icon' => 'fa-people-carry-box',
+                'types' => ['Service Company'],
+                'industry_terms' => ['services', 'consulting', 'agency'],
+                'tags' => ['service company', 'services', 'consulting', 'agency'],
+            ],
+            'remote-friendly' => [
+                'label' => 'Remote Friendly',
+                'icon' => 'fa-laptop-house',
+                'tags' => ['remote friendly', 'remote', 'hybrid', 'distributed'],
+            ],
+            'freshers' => [
+                'label' => 'Freshers Hiring',
+                'icon' => 'fa-user-graduate',
+                'tags' => ['freshers', 'fresher', 'graduate', 'entry level', 'junior'],
+            ],
         ];
+    }
+
+    /**
+     * Apply deliberate company classifications instead of fuzzy description
+     * matching. Identity categories use exact company types; only discovery
+     * attributes such as remote/fresher status use exact comma-separated tags.
+     */
+    private function applyCompanyDiscoverySegmentFilter(
+        $builder,
+        array $segment,
+        bool $hasCompanyType,
+        bool $hasCompanyTags,
+        string $columnPrefix = ''
+    ): void {
+        $conditions = [];
+
+        if ($hasCompanyType) {
+            foreach ($segment['types'] ?? [] as $type) {
+                $conditions[] = 'LOWER(TRIM(' . $columnPrefix . 'company_type)) = '
+                    . $builder->db()->escape(strtolower((string) $type));
+            }
+        }
+
+        foreach ($segment['industries'] ?? [] as $industry) {
+            $conditions[] = 'LOWER(TRIM(' . $columnPrefix . 'industry)) = '
+                . $builder->db()->escape(strtolower((string) $industry));
+        }
+
+        foreach ($segment['industry_terms'] ?? [] as $term) {
+            $conditions[] = 'LOWER(' . $columnPrefix . 'industry) LIKE '
+                . $builder->db()->escape('%' . strtolower((string) $term) . '%');
+        }
+
+        if ($hasCompanyTags) {
+            $normalizedTags = "CONCAT(',', LOWER(REPLACE(REPLACE(COALESCE("
+                . $columnPrefix
+                . "company_tags, ''), ', ', ','), ' ,', ',')), ',')";
+            foreach ($segment['tags'] ?? [] as $tag) {
+                $conditions[] = $normalizedTags . ' LIKE '
+                    . $builder->db()->escape('%,' . strtolower((string) $tag) . ',%');
+            }
+        }
+
+        if ($conditions === []) {
+            $builder->where('1 = 0', null, false);
+            return;
+        }
+
+        $builder->where('(' . implode(' OR ', $conditions) . ')', null, false);
     }
 
     private function companyDiscoverySegmentCards(array $segments, bool $hasCompanyType, bool $hasCompanyTags): array
@@ -2269,22 +2349,7 @@ class CandidateDashboardController extends BaseController
 
         foreach ($segments as $key => $segment) {
             $builder = $db->table('companies');
-            $builder->groupStart();
-            foreach ($segment['terms'] as $index => $term) {
-                if ($index === 0) {
-                    $builder->like('industry', $term, 'both');
-                } else {
-                    $builder->orLike('industry', $term, 'both');
-                }
-                if ($hasCompanyType) {
-                    $builder->orLike('company_type', $term, 'both');
-                }
-                if ($hasCompanyTags) {
-                    $builder->orLike('company_tags', $term, 'both');
-                }
-                $builder->orLike('short_description', $term, 'both');
-            }
-            $builder->groupEnd();
+            $this->applyCompanyDiscoverySegmentFilter($builder, $segment, $hasCompanyType, $hasCompanyTags);
             $count = (int) $builder->countAllResults();
 
             $cards[] = [
