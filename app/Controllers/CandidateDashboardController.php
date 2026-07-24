@@ -2045,6 +2045,30 @@ class CandidateDashboardController extends BaseController
         $today = date('Y-m-d');
         $hasDiscoveredJobs = $db->tableExists('mnc_external_jobs');
         $externalCountSelect = '0';
+        $freshAfter = date('Y-m-d H:i:s', strtotime('-30 days'));
+
+        // If the query matches an employer name, keep the result set focused
+        // on employers. Otherwise terms such as "SAP" can be interpreted as a
+        // skill and return consulting companies that merely advertise SAP
+        // roles, hiding the company the candidate actually searched for.
+        $isCompanyNameSearch = false;
+        if ($filters['q'] !== '') {
+            $isCompanyNameSearch = $db->table('companies')
+                ->like('name', $filters['q'], 'both')
+                ->limit(1)
+                ->countAllResults() > 0;
+
+            if (!$isCompanyNameSearch && $hasDiscoveredJobs) {
+                $isCompanyNameSearch = $db->table('mnc_external_jobs')
+                    ->where('is_active', 1)
+                    ->where('last_sync_at >=', $freshAfter)
+                    ->where('apply_url IS NOT NULL', null, false)
+                    ->where('apply_url !=', '')
+                    ->like('company_name', $filters['q'], 'both')
+                    ->limit(1)
+                    ->countAllResults() > 0;
+            }
+        }
 
         $companiesBuilder = $companyModel
             ->join(
@@ -2056,7 +2080,6 @@ class CandidateDashboardController extends BaseController
             );
 
         if ($hasDiscoveredJobs) {
-            $freshAfter = date('Y-m-d H:i:s', strtotime('-30 days'));
             $externalJobsSql = '(SELECT LOWER(TRIM(company_name)) AS company_key, COUNT(*) AS external_jobs_count'
                 . ' FROM mnc_external_jobs'
                 . ' WHERE is_active = 1'
@@ -2078,11 +2101,15 @@ class CandidateDashboardController extends BaseController
             ->having('open_jobs_count >', 0);
 
         if (!empty($filters['q'])) {
-            $companiesBuilder->groupStart()
-                ->like('companies.name', $filters['q'], 'both')
-                ->orLike('companies.industry', $filters['q'], 'both')
-                ->orLike('companies.short_description', $filters['q'], 'both')
-                ->groupEnd();
+            if ($isCompanyNameSearch) {
+                $companiesBuilder->like('companies.name', $filters['q'], 'both');
+            } else {
+                $companiesBuilder->groupStart()
+                    ->like('companies.name', $filters['q'], 'both')
+                    ->orLike('companies.industry', $filters['q'], 'both')
+                    ->orLike('companies.short_description', $filters['q'], 'both')
+                    ->groupEnd();
+            }
         }
         if (!empty($filters['industry'])) {
             $companiesBuilder->where('companies.industry', $filters['industry']);
@@ -2132,10 +2159,14 @@ class CandidateDashboardController extends BaseController
                 ->where('apply_url !=', '');
 
             if (!empty($filters['q'])) {
-                $externalCompanyBuilder->groupStart()
-                    ->like('company_name', $filters['q'], 'both')
-                    ->orLike('title', $filters['q'], 'both')
-                    ->groupEnd();
+                if ($isCompanyNameSearch) {
+                    $externalCompanyBuilder->like('company_name', $filters['q'], 'both');
+                } else {
+                    $externalCompanyBuilder->groupStart()
+                        ->like('company_name', $filters['q'], 'both')
+                        ->orLike('title', $filters['q'], 'both')
+                        ->groupEnd();
+                }
             }
             if (!empty($filters['location'])) {
                 $externalCompanyBuilder->like('location', $filters['location'], 'both');
