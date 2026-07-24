@@ -286,11 +286,120 @@ function injectThemeVariables() {
             color: #7A8B96;
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | ANTI-SCREENSHOT OVERLAY (NEW)
+        |--------------------------------------------------------------------------
+        */
+
+        #anti-screenshot-overlay {
+            background: #000000;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
+            text-align: center;
+            padding: 24px;
+        }
+
     `;
 
     document.head.appendChild(
         themeStyle
     );
+}
+
+/*
+|--------------------------------------------------------------------------
+| ANTI-SCREENSHOT OVERLAY (NEW)
+|--------------------------------------------------------------------------
+| Creates (once) and returns the full-screen blackout overlay used when a
+| PrintScreen / screenshot-shortcut attempt is detected. Previously this
+| element was referenced in the keydown handler but never created, so the
+| handler threw instead of running. Note: this is a deterrent + logging
+| mechanism, not real prevention - the OS captures the screen before this
+| JS can run, so nothing in-browser can stop the initial capture itself.
+|--------------------------------------------------------------------------
+*/
+
+function ensureAntiScreenshotOverlay() {
+
+    injectThemeVariables();
+
+    let overlay =
+        document.getElementById(
+            "anti-screenshot-overlay"
+        );
+
+    if (overlay) return overlay;
+
+    overlay =
+        document.createElement("div");
+
+    overlay.id =
+        "anti-screenshot-overlay";
+
+    overlay.textContent =
+        "Screenshots are disabled during this interview";
+
+    document.body.appendChild(
+        overlay
+    );
+
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+
+    overlay.style.display = "none";
+
+    overlay.style.justifyContent =
+        "center";
+
+    overlay.style.alignItems =
+        "center";
+
+    overlay.style.zIndex =
+        "9999999999999";
+
+    return overlay;
+}
+
+function triggerScreenshotBlackout(reason) {
+
+    const overlay =
+        ensureAntiScreenshotOverlay();
+
+    overlay.style.display = "flex";
+
+    document.body.style.filter =
+        "blur(25px)";
+
+    // Best-effort: overwrite whatever may have just been copied
+    if (
+        navigator.clipboard &&
+        navigator.clipboard.writeText
+    ) {
+
+        navigator.clipboard
+            .writeText(
+                "Screenshots are disabled during interview"
+            )
+            .catch(() => {});
+    }
+
+    showWarning(reason);
+    reportViolation(reason);
+
+    setTimeout(() => {
+
+        overlay.style.display = "none";
+
+        document.body.style.filter =
+            "blur(0px)";
+
+    }, 3000);
 }
 
 /*
@@ -352,7 +461,7 @@ function showWarning(message) {
 
                 animation:
                     slideIn 0.3s ease;
-                
+
                 position: relative;
             }
 
@@ -1440,7 +1549,7 @@ async function verifyCandidateFace() {
         updateVerificationOverlay(
             "Identity verified. Starting your interview..."
         );
- 
+
 
         await new Promise(
             (r) => setTimeout(r, 800)
@@ -2018,71 +2127,14 @@ document.addEventListener(
         | PRINT SCREEN
         |--------------------------------------------------------------------------
         */
-if (e.key === "PrintScreen") {
-e.preventDefault();
+        if (e.key === "PrintScreen") {
 
-    /*
-    |--------------------------------------------------------------------------
-    | BLACKOUT SCREEN
-    |--------------------------------------------------------------------------
-    */
+            e.preventDefault();
 
-    const overlay =
-        document.getElementById(
-            "anti-screenshot-overlay"
-        );
-
-    overlay.style.display = "flex";
-
-    /*
-    |--------------------------------------------------------------------------
-    | CLEAR CLIPBOARD
-    |--------------------------------------------------------------------------
-    */
-
-    navigator.clipboard.writeText(
-        "Screenshots are disabled during interview"
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | WARNING
-    |--------------------------------------------------------------------------
-    */
-
-    showWarning(
-        "Screenshot attempt detected"
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | SAVE VIOLATION
-    |--------------------------------------------------------------------------
-    */
-
-    reportViolation(
-        "Screenshot attempt detected"
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | HIDE CONTENT TEMPORARILY
-    |--------------------------------------------------------------------------
-    */
-
-    document.body.style.filter =
-        "blur(25px)";
-
-    setTimeout(() => {
-
-        overlay.style.display = "none";
-
-        document.body.style.filter =
-            "blur(0px)";
-
-    }, 3000);
-}
-       
+            triggerScreenshotBlackout(
+                "Screenshot attempt detected"
+            );
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -2156,11 +2208,33 @@ e.preventDefault();
             // //     "Developer tools detected"
             // // );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | WIN + SHIFT + S (Windows Snipping Tool)
+        |--------------------------------------------------------------------------
+        | Cannot actually be blocked (it's an OS-level shortcut the browser
+        | never fully sees), but we still preventDefault whatever bubbles up
+        | and log it in case the browser did receive the keydown.
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            e.shiftKey &&
+            e.key &&
+            e.key.toLowerCase() === "s" &&
+            (e.metaKey || e.getModifierState?.("Meta"))
+        ) {
+
+            triggerScreenshotBlackout(
+                "Snipping tool shortcut detected"
+            );
+        }
     }
 );
 /*
 |--------------------------------------------------------------------------
-| DETECT WINDOWS SNIPPING TOOL
+| DETECT PRINTSCREEN KEY RELEASE
 |--------------------------------------------------------------------------
 */
 
@@ -2172,7 +2246,7 @@ document.addEventListener(
             e.key === "PrintScreen"
         ) {
 
-            showWarning(
+            triggerScreenshotBlackout(
                 "Screenshot shortcut detected"
             );
         }
@@ -2565,6 +2639,10 @@ async function startFaceDetection() {
 */
 
 window.onload = async () => {
+
+    // Create the anti-screenshot overlay up-front so it always exists
+    // before any PrintScreen key event can fire.
+    ensureAntiScreenshotOverlay();
 
     await startCamera();
 
