@@ -1596,7 +1596,10 @@ async function startCamera() {
         const stream =
             await navigator.mediaDevices.getUserMedia({
 
-                video: true,
+                video: {
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
 
                 audio: true
 
@@ -1640,6 +1643,8 @@ async function startCamera() {
             detectMovement();
 
             startFaceDetection();
+
+            startPhoneDetection();
 
         } 
 
@@ -1919,7 +1924,10 @@ function showPermissionPopup() {
                     .mediaDevices
                     .getUserMedia({
 
-                        video: true,
+                        video: {
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        },
                         audio: true
                     });
 
@@ -1945,6 +1953,8 @@ function showPermissionPopup() {
                 detectMovement();
 
                 startFaceDetection();
+
+                startPhoneDetection();
             }
 
         } catch (err) {
@@ -2432,6 +2442,272 @@ function detectNoise(stream) {
 */  
  let faceWarningShown = false;
 
+let phoneDetectFrames = 0;
+let phoneWarningShown = false;
+
+// SWITCHED AWAY FROM TFJS + COCO-SSD ENTIRELY.
+// face-api.js bundles its own private copy of tfjs-core and registers it
+// globally. ANY separate tf.js + coco-ssd loaded on the same page -
+// main thread OR worker, any version pairing - ends up fighting over
+// tensor/kernel registries and throwing cryptic errors like
+// "n is not a function" (same bug family as
+// https://github.com/justadudewhohacks/face-api.js/issues/629).
+//
+// Instead of continuing to work around that, phone/device detection now
+// uses Google's MediaPipe Tasks Vision object detector. It's WASM-based,
+// not tfjs-based, so it never touches the `tf` global at all and can't
+// collide with face-api.js no matter what. It runs fine directly on the
+// main thread. This is Google's own currently-recommended library for
+// browser object detection (tfjs-models/coco-ssd is the older, now
+// lightly-maintained approach).
+const PHONE_DETECTION_CLASSES = ["cell phone", "remote"];
+const PHONE_CONFIDENCE_THRESHOLD = 0.3;
+const PHONE_REQUIRED_FRAMES = 2;
+const PHONE_DETECTION_INTERVAL_MS = 1000;
+const PHONE_WARNING_COOLDOWN_MS = 15000;
+
+const MEDIAPIPE_VISION_CDN_BASE =
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+
+const MEDIAPIPE_OBJECT_MODEL_URL =
+    "https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float16/1/efficientdet_lite0.tflite";
+
+/*
+|--------------------------------------------------------------------------
+| VISIBLE DEBUG READOUT (TEMPORARY - remove once tuned)
+|--------------------------------------------------------------------------
+| Writes what the model sees directly onto the page every cycle, so you
+| can confirm it's running and see real confidence numbers without
+| opening devtools. Delete showPhoneDebugReadout() and its call below
+| once you've picked a working threshold.
+|--------------------------------------------------------------------------
+*/
+
+function showPhoneDebugReadout(text) {
+
+    let box = document.getElementById("phone-debug-readout");
+
+    if (!box) {
+
+        box = document.createElement("div");
+        box.id = "phone-debug-readout";
+
+        box.style.position = "fixed";
+        box.style.bottom = "10px";
+        box.style.left = "10px";
+        box.style.maxWidth = "360px";
+        box.style.background = "rgba(0,0,0,0.85)";
+        box.style.color = "#00ff88";
+        box.style.font = "12px monospace";
+        box.style.padding = "8px 12px";
+        box.style.borderRadius = "8px";
+        box.style.zIndex = "999999999";
+        box.style.whiteSpace = "pre-wrap";
+        box.style.pointerEvents = "none";
+
+        document.body.appendChild(box);
+    }
+
+    box.textContent = "[phone-detect] " + text;
+}
+
+let phoneDetector = null;
+let phoneDetectorLoadFailed = false;
+let lastPhoneDetectVideoTime = -1;
+
+async function loadPhoneDetector() {
+
+    if (phoneDetector) return phoneDetector;
+
+    try {
+
+        showPhoneDebugReadout("loading MediaPipe object detector...");
+
+        const { ObjectDetector, FilesetResolver } =
+            await import(MEDIAPIPE_VISION_CDN_BASE);
+
+        const vision = await FilesetResolver.forVisionTasks(
+            MEDIAPIPE_VISION_CDN_BASE + "/wasm"
+        );
+
+        let detector;
+
+        try {
+
+            detector = await ObjectDetector.createFromOptions(vision, {
+                baseOptions: {
+                    modelAssetPath: MEDIAPIPE_OBJECT_MODEL_URL,
+                    delegate: "GPU"
+                },
+                scoreThreshold: 0.25,
+                runningMode: "VIDEO"
+            });
+
+        } catch (gpuErr) {
+
+            console.warn(
+                "[phone-detect] GPU delegate failed, falling back to CPU:",
+                gpuErr
+            );
+
+            detector = await ObjectDetector.createFromOptions(vision, {
+                baseOptions: {
+                    modelAssetPath: MEDIAPIPE_OBJECT_MODEL_URL,
+                    delegate: "CPU"
+                },
+                scoreThreshold: 0.25,
+                runningMode: "VIDEO"
+            });
+        }
+
+        phoneDetector = detector;
+
+        console.log("[phone-detect] MediaPipe object detector ready");
+        showPhoneDebugReadout("model ready, checking every " + PHONE_DETECTION_INTERVAL_MS + "ms");
+
+        return phoneDetector;
+
+    } catch (err) {
+
+        phoneDetectorLoadFailed = true;
+
+        console.error("[phone-detect] Failed to load MediaPipe object detector:", err);
+
+        showPhoneDebugReadout(
+            "ERROR loading detector: " + (err && err.message ? err.message : err) +
+            " (check network tab for blocked cdn.jsdelivr.net / storage.googleapis.com requests)"
+        );
+
+        return null;
+    }
+}
+
+function handlePhonePredictions(predictions) {
+
+    const summary = predictions.length
+        ? predictions.map((p) => p.class + " " + p.score.toFixed(2)).join(", ")
+        : "(nothing detected this frame)";
+
+    console.log("[phone-detect] predictions:", summary);
+    showPhoneDebugReadout(summary);
+
+    const phoneDetected = predictions.some((p) =>
+        PHONE_DETECTION_CLASSES.includes(p.class) &&
+        p.score >= PHONE_CONFIDENCE_THRESHOLD
+    );
+
+    if (phoneDetected) {
+
+        phoneDetectFrames++;
+
+    } else {
+
+        phoneDetectFrames = 0;
+    }
+
+    if (
+        phoneDetectFrames >= PHONE_REQUIRED_FRAMES &&
+        !phoneWarningShown
+    ) {
+
+        phoneWarningShown = true;
+
+        showWarning(
+            "Mobile phone detected in camera view. Please put it away."
+        );
+
+        reportViolation(
+            "Mobile phone / device detected in camera feed"
+        );
+
+        setTimeout(() => {
+
+            phoneWarningShown = false;
+
+        }, PHONE_WARNING_COOLDOWN_MS);
+    }
+}
+
+function detectPhoneUsageOnce() {
+
+    if (!phoneDetector) return;
+
+    if (
+        video.paused ||
+        video.ended ||
+        video.readyState < 2
+    ) {
+
+        showPhoneDebugReadout("video not ready (paused/ended/readyState=" + video.readyState + ")");
+        return;
+    }
+
+    // detectForVideo requires a strictly increasing timestamp and errors
+    // if called again for the same frame the video hasn't advanced past
+    // yet (e.g. if the interval fires faster than the camera's frame rate).
+    if (video.currentTime === lastPhoneDetectVideoTime) {
+        return;
+    }
+
+    lastPhoneDetectVideoTime = video.currentTime;
+
+    try {
+
+        const result = phoneDetector.detectForVideo(video, performance.now());
+
+        const predictions = (result.detections || [])
+            .filter((d) => d.categories && d.categories.length)
+            .map((d) => ({
+                class: d.categories[0].categoryName,
+                score: d.categories[0].score
+            }));
+
+        handlePhonePredictions(predictions);
+
+    } catch (err) {
+
+        console.error("[phone-detect] detectForVideo() error:", err);
+        showPhoneDebugReadout("ERROR during detect: " + err.message);
+    }
+}
+
+function startPhoneDetection() {
+
+    loadPhoneDetector().then((detector) => {
+
+        if (detector) {
+            setInterval(detectPhoneUsageOnce, PHONE_DETECTION_INTERVAL_MS);
+            return;
+        }
+
+        // First attempt failed (e.g. transient network issue) - retry
+        // once instead of disabling phone detection for the whole
+        // interview.
+        console.warn("[phone-detect] Initial detector load failed - retrying once in 5s...");
+        showPhoneDebugReadout("initial load failed - retrying in 5s...");
+
+        setTimeout(() => {
+
+            phoneDetectorLoadFailed = false;
+
+            loadPhoneDetector().then((retryDetector) => {
+
+                if (!retryDetector) {
+                    console.error(
+                        "[phone-detect] Retry also failed - phone detection disabled " +
+                        "for this session. Check the debug box / console / network tab."
+                    );
+                    return;
+                }
+
+                setInterval(detectPhoneUsageOnce, PHONE_DETECTION_INTERVAL_MS);
+            });
+
+        }, 5000);
+    });
+}
+
+
 async function startFaceDetection() {
 
     /*
@@ -2522,6 +2798,96 @@ async function startFaceDetection() {
                 "Detected Faces:",
                 detections.length
             );
+
+            /*
+            |--------------------------------------------------------------------------
+            | GAZE / LOOK-AWAY DETECTION (reuses the landmarks above - no
+            | extra model or extra detect() call). Only runs when exactly
+            | one face is present, since with 0 or 2+ faces the "which
+            | face's gaze" question is already moot / covered by the
+            | no-face / multiple-face checks below.
+            |--------------------------------------------------------------------------
+            */
+
+            if (detections.length === 1) {
+
+                const landmarks = detections[0].landmarks;
+                const box = detections[0].detection.box;
+
+                const eyePoints = [
+                    ...landmarks.getLeftEye(),
+                    ...landmarks.getRightEye()
+                ];
+
+                const eyeCenterY =
+                    eyePoints.reduce((sum, p) => sum + p.y, 0) / eyePoints.length;
+
+                // Normalize to 0-1 within this face's own bounding box so
+                // it's independent of how close/far the candidate is
+                // sitting from the camera.
+                const relativeEyeY = (eyeCenterY - box.y) / box.height;
+
+                if (gazeCalibrationCount < GAZE_CALIBRATION_SAMPLES) {
+
+                    gazeBaseline += relativeEyeY;
+                    gazeCalibrationCount++;
+
+                    if (gazeCalibrationCount === GAZE_CALIBRATION_SAMPLES) {
+
+                        gazeBaseline /= GAZE_CALIBRATION_SAMPLES;
+
+                        console.log(
+                            "[gaze] baseline relative eye Y:",
+                            gazeBaseline.toFixed(3)
+                        );
+                    }
+
+                } else {
+
+                    const drop = relativeEyeY - gazeBaseline;
+
+                    if (drop > GAZE_DOWN_THRESHOLD) {
+
+                        gazeDownFrames++;
+
+                    } else {
+
+                        gazeDownFrames = 0;
+                    }
+
+                    if (
+                        gazeDownFrames >= GAZE_DOWN_REQUIRED_FRAMES &&
+                        !gazeWarningShown
+                    ) {
+
+                        gazeWarningShown = true;
+
+                        showWarning(
+                            "Looking away from the screen for an extended period"
+                        );
+
+                        reportViolation(
+                            "Sustained downward gaze detected (possible phone/device use), drop=" +
+                            drop.toFixed(3)
+                        );
+
+                        console.log("[gaze] sustained look-away violation, drop:", drop.toFixed(3));
+
+                        setTimeout(() => {
+
+                            gazeWarningShown = false;
+
+                        }, GAZE_WARNING_COOLDOWN_MS);
+                    }
+                }
+
+            } else {
+
+                // Face count changed (none/multiple) - reset the streak so
+                // a warning doesn't fire on stale frames once a single
+                // face reappears.
+                gazeDownFrames = 0;
+            }
 
             /*
             |--------------------------------------------------------------------------
