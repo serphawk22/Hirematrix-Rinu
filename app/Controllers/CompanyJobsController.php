@@ -62,6 +62,7 @@ class CompanyJobsController extends BaseController
 
         return $this->response->setJSON([
             'success' => true,
+            'state' => !empty($jobs) ? 'cached_results' : 'cache_empty',
             'company' => $companyName,
             'count' => count($jobs),
             'jobs' => $jobs,

@@ -10,6 +10,9 @@ class MncJobIngestor
     private $apiKey;
     private $tavilyApiKey;
     private bool $tavilyUnavailable = false;
+    private int $remoteAttempts = 0;
+    private int $remoteResponses = 0;
+    private array $remoteErrors = [];
 
     public function __construct()
     {
@@ -111,6 +114,36 @@ class MncJobIngestor
         }
 
         return [];
+    }
+
+    /**
+     * Distinguishes a genuine empty search from an outage where no source
+     * could be reached. Error details remain server-side; callers receive only
+     * a safe state and counts.
+     *
+     * @return array{state:string,attempts:int,responses:int,error_count:int}
+     */
+    public function getDiscoveryHealth(): array
+    {
+        return [
+            'state' => $this->remoteAttempts > 0 && $this->remoteResponses === 0
+                ? 'external_unavailable'
+                : (!empty($this->remoteErrors) ? 'degraded' : 'available'),
+            'attempts' => $this->remoteAttempts,
+            'responses' => $this->remoteResponses,
+            'error_count' => count($this->remoteErrors),
+        ];
+    }
+
+    private function recordRemoteResult(bool $responded, string $service, string $error = ''): void
+    {
+        $this->remoteAttempts++;
+        if ($responded) {
+            $this->remoteResponses++;
+            return;
+        }
+
+        $this->remoteErrors[] = $service . ($error !== '' ? ': ' . $error : '');
     }
 
     /**
@@ -588,9 +621,11 @@ class MncJobIngestor
         curl_close($ch);
 
         if ($response === false) {
+            $this->recordRemoteResult(false, 'OpenAI', $error);
             log_message('error', 'MncJobIngestor: OpenAI cURL Error: ' . $error);
             return [];
         }
+        $this->recordRemoteResult($httpCode === 200, 'OpenAI', 'HTTP ' . $httpCode);
 
         $data = json_decode($response, true);
         if ($httpCode !== 200 || isset($data['error'])) {
@@ -887,6 +922,7 @@ class MncJobIngestor
     private function tavilySearch(string $query, int $maxResults = 10, string $depth = 'advanced'): array
     {
         if (!$this->tavilyApiKey || $this->tavilyUnavailable) {
+            $this->recordRemoteResult(false, 'Tavily', !$this->tavilyApiKey ? 'not configured' : 'temporarily unavailable');
             return [];
         }
 
@@ -913,6 +949,7 @@ class MncJobIngestor
         curl_close($ch);
 
         if ($httpCode !== 200 || !$response) {
+            $this->recordRemoteResult(false, 'Tavily', $errorMsg !== '' ? $errorMsg : 'HTTP ' . $httpCode);
             log_message('error', "MncJobIngestor: Tavily API Error (HTTP $httpCode, cURL Error $errorNo: $errorMsg). Response: " . ($response ?: 'No response'));
 
             // Quota/auth/rate-limit responses will not recover during this
@@ -926,6 +963,7 @@ class MncJobIngestor
 
             return [];
         }
+        $this->recordRemoteResult(true, 'Tavily');
 
         $data = json_decode($response, true);
         return $data['results'] ?? [];
@@ -977,7 +1015,14 @@ class MncJobIngestor
             CURLOPT_HTTPHEADER     => ['Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8']
         ]);
         $response = curl_exec($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
         curl_close($ch);
+        $this->recordRemoteResult(
+            is_string($response) && $response !== '' && $httpCode > 0,
+            (string) (parse_url($url, PHP_URL_HOST) ?: 'career site'),
+            $error !== '' ? $error : 'HTTP ' . $httpCode
+        );
         return is_string($response) ? $response : '';
     }
 

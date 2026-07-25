@@ -59,7 +59,7 @@ class ExternalJobScraperService
                         continue;
                     }
 
-                    $applyUrl = strtolower(trim((string) ($normalized['apply_url'] ?? '')));
+                    $applyUrl = ExternalJobUrl::canonicalize((string) ($normalized['apply_url'] ?? ''));
                     if ($applyUrl === '' || isset($seenUrls[$applyUrl])) {
                         continue;
                     }

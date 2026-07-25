@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Libraries\ExternalJobScraperService;
+use App\Libraries\ExternalJobIntegrityService;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -42,6 +43,7 @@ class JobFeedScheduler extends Controller
             log_message('info', "Starting external job import: limit=$limit, sources=" . implode(',', $sources));
 
             $result = $this->scraper->scrapeAndIngest($limit, $sources, $keyword, $location);
+            $maintenance = (new ExternalJobIntegrityService())->maintain(50);
 
             log_message('info', 'External job import completed: ' . json_encode($result));
 
@@ -52,6 +54,7 @@ class JobFeedScheduler extends Controller
                 'skipped' => $result['skipped_count'],
                 'fetched' => $result['fetched_count'],
                 'source_stats' => $result['source_stats'],
+                'maintenance' => $maintenance,
             ]);
         } catch (\Throwable $e) {
             log_message('error', 'Job import failed: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
@@ -90,6 +93,7 @@ class JobFeedScheduler extends Controller
             log_message('info', "Admin manual import: limit=$limit, user=" . session()->get('user_id'));
 
             $result = $this->scraper->scrapeAndIngest($limit, $sources, $keyword, $location);
+            $maintenance = (new ExternalJobIntegrityService())->maintain(25);
 
             return $this->response->setJSON([
                 'status' => 'success',
@@ -98,6 +102,7 @@ class JobFeedScheduler extends Controller
                 'skipped' => $result['skipped_count'],
                 'fetched' => $result['fetched_count'],
                 'source_stats' => $result['source_stats'],
+                'maintenance' => $maintenance,
             ]);
         } catch (\Throwable $e) {
             log_message('error', 'Manual import failed: ' . $e->getMessage());

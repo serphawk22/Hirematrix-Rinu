@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\MncJobModel;
 use App\Libraries\MncJobIngestor;
+use App\Libraries\ExternalJobUrl;
 
 class MncJobController extends BaseController
 {
@@ -52,6 +53,7 @@ class MncJobController extends BaseController
             log_message('error', 'MncJobController::discover exception: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
             return $this->response->setJSON([
                 'success'      => false,
+                'state'        => 'external_unavailable',
                 'company'      => $companyName,
                 'jobs'         => [],
                 'company_info' => null,
@@ -112,12 +114,15 @@ class MncJobController extends BaseController
         // 1. Check if we have recently discovered jobs (Cache to save API costs)
         $jobs = $this->filterUsableJobs($this->getCachedJobsForCompanyAliases($model, $companyName, $companyInfo, $limit), $companyName, $limit);
         $jobs = $this->filterUsableJobs($jobs, $companyName, $limit);
+        $hadCachedJobs = !empty($jobs);
+        $discoveryHealth = ['state' => 'available'];
 
         $emptyDiscoveryCacheKey = 'mnc_empty_discovery_' . sha1(strtolower(trim($companyName)));
         $runningDiscoveryCacheKey = 'mnc_running_discovery_' . sha1(strtolower(trim($companyName)));
         if (empty($jobs) && cache()->get($emptyDiscoveryCacheKey)) {
             return $this->response->setJSON([
                 'success' => true,
+                'state' => 'no_openings',
                 'company' => $companyName,
                 'limit' => $limit,
                 'count' => 0,
@@ -131,6 +136,7 @@ class MncJobController extends BaseController
         if (empty($jobs) && cache()->get($runningDiscoveryCacheKey)) {
             return $this->response->setJSON([
                 'success' => true,
+                'state' => 'search_running',
                 'company' => $companyName,
                 'limit' => $limit,
                 'count' => 0,
@@ -146,15 +152,25 @@ class MncJobController extends BaseController
             // This is the longest running part of the request
             log_message('info', "MncJobController: Cache miss for $companyName. Triggering AI discovery for up to $limit jobs.");
             cache()->save($runningDiscoveryCacheKey, true, 180);
-            $discovered = $ingestor->discoverJobs($companyName, $limit, $mapping, $companyInfo);
-            cache()->delete($runningDiscoveryCacheKey);
+            try {
+                $discovered = $ingestor->discoverJobs($companyName, $limit, $mapping, $companyInfo);
+            } finally {
+                // Never leave the UI reporting "still running" after an
+                // exception or an interrupted provider request.
+                cache()->delete($runningDiscoveryCacheKey);
+            }
+            $discoveryHealth = $ingestor->getDiscoveryHealth();
             
             // Critical: Reconnect after the deep search/AI parsing loop
             \Config\Database::connect()->reconnect();
 
             if (empty($discovered)) {
                 log_message('notice', "MncJobController: AI discovery returned 0 jobs for $companyName.");
-                cache()->save($emptyDiscoveryCacheKey, true, 600);
+                // Provider/network errors are not evidence that an employer
+                // has no openings and must never poison the empty-result cache.
+                if (($discoveryHealth['state'] ?? '') !== 'external_unavailable') {
+                    cache()->save($emptyDiscoveryCacheKey, true, 600);
+                }
             }
 
             if (!empty($discovered)) {
@@ -182,6 +198,13 @@ class MncJobController extends BaseController
                         'posted_at_raw'=> $postedAtRaw !== '' ? $postedAtRaw : 'Recently',
                         'last_sync_at' => date('Y-m-d H:i:s')
                     ];
+                    $hasIntegrityFields = \Config\Database::connect()->fieldExists('external_url_hash', 'mnc_external_jobs');
+                    $externalUrlHash = ExternalJobUrl::hash($applyUrl);
+                    if ($hasIntegrityFields) {
+                        $jobData['external_url_hash'] = $externalUrlHash;
+                        $jobData['external_validation_status'] = 'new';
+                        $jobData['external_failure_count'] = 0;
+                    }
 
                     $validationData = $jobData;
                     $validationData['discovered_employer'] = $discoveredEmployer;
@@ -191,9 +214,13 @@ class MncJobController extends BaseController
                     }
 
                     // Check if this specific job link already exists for this company
-                    $existing = $model->where('company_name', $companyName)
-                                    ->where('apply_url', $applyUrl)
-                                    ->first();
+                    $existingQuery = $model->where('company_name', $companyName);
+                    if ($hasIntegrityFields && $externalUrlHash !== '') {
+                        $existingQuery->where('external_url_hash', $externalUrlHash);
+                    } else {
+                        $existingQuery->where('apply_url', $applyUrl);
+                    }
+                    $existing = $existingQuery->first();
                     
                     if (!$existing) {
                         $model->insert($jobData);
@@ -205,6 +232,9 @@ class MncJobController extends BaseController
                             'source_platform' => $jobData['source_platform'],
                             'posted_at_raw' => $jobData['posted_at_raw'],
                             'last_sync_at' => $jobData['last_sync_at'],
+                            'is_active' => 1,
+                            'external_failure_count' => 0,
+                            'external_validation_status' => 'refreshed',
                         ]);
                     }
                 }
@@ -229,15 +259,30 @@ class MncJobController extends BaseController
             $this->persistCompanyWithOpenings($companyModel, $companyName, $companyInfo, $mapping, $jobs);
         }
         $jobs = $this->markSavedExternalJobs($jobs);
+        $healthState = $discoveryHealth['state'] ?? 'available';
+        $state = !empty($jobs)
+            ? ($hadCachedJobs ? 'cached_results' : 'results_found')
+            : ($healthState === 'external_unavailable' ? 'external_unavailable' : 'no_openings');
+        $message = match ($state) {
+            'cached_results' => $healthState === 'external_unavailable'
+                ? 'Showing cached openings. Live sources could not be refreshed right now.'
+                : 'Showing recently cached openings.',
+            'external_unavailable' => 'External job sources are temporarily unavailable. Please try again shortly.',
+            'no_openings' => 'No current openings were found in the completed search.',
+            default => 'Current openings were refreshed successfully.',
+        };
 
         return $this->response->setJSON([
             'success' => true,
+            'state'   => $state,
             'company' => $companyName,
             'limit'   => $limit,
             'count'   => count($jobs),
             'company_info' => $companyInfo,
             'jobs'    => $jobs,
-            'source'  => 'AI Job Discovery Engine'
+            'source'  => $hadCachedJobs ? 'External jobs cache' : 'AI Job Discovery Engine',
+            'message' => $message,
+            'refresh_state' => $healthState,
         ]);
     }
 

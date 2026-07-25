@@ -19,6 +19,10 @@ class MncJobModel extends Model
         'posted_at_raw',
         'is_active',
         'last_sync_at',
+        'external_url_hash',
+        'external_last_checked_at',
+        'external_failure_count',
+        'external_validation_status',
     ];
 
     public function getCachedJobs(string $companyName, int $limit = 100): array

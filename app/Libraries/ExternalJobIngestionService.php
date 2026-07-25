@@ -96,21 +96,34 @@ class ExternalJobIngestionService
         $description = ExternalJobTextNormalizer::normalize((string) ($payload['description'] ?? ''));
         $source = ExternalJobTextNormalizer::normalize((string) ($payload['source'] ?? ''));
         $applyUrl = trim((string) ($payload['apply_url'] ?? ''));
+        $externalUrlHash = ExternalJobUrl::hash($applyUrl);
 
         if ($title === '' || $company === '' || $location === '' || $description === '' || $source === '' || $applyUrl === '') {
             throw new \InvalidArgumentException('title, company, location, description, source, and apply_url are required for external jobs.');
         }
 
-        if (!filter_var($applyUrl, FILTER_VALIDATE_URL)) {
+        if ($externalUrlHash === '') {
             throw new \InvalidArgumentException('apply_url must be a valid URL.');
         }
 
         $jobModel = new JobModel();
-        $existing = $jobModel
-            ->where('is_external', 1)
-            ->where('external_apply_url', $applyUrl)
-            ->first();
+        $existingQuery = $jobModel->where('is_external', 1);
+        if (\Config\Database::connect()->fieldExists('external_url_hash', 'jobs')) {
+            $existingQuery->where('external_url_hash', $externalUrlHash);
+        } else {
+            $existingQuery->where('external_apply_url', $applyUrl);
+        }
+        $existing = $existingQuery->first();
         if (!empty($existing['id'])) {
+            // Seeing the posting again confirms it is current. Reactivate a
+            // previously expired copy instead of inserting another row.
+            $jobModel->update((int) $existing['id'], [
+                'status' => 'open',
+                'external_apply_url' => $applyUrl,
+                'application_deadline' => !empty($payload['application_deadline'])
+                    ? $payload['application_deadline']
+                    : date('Y-m-d', strtotime('+30 days')),
+            ]);
             return [
                 'id' => (int) $existing['id'],
                 'inserted' => false,
@@ -142,6 +155,11 @@ class ExternalJobIngestionService
                 : date('Y-m-d', strtotime('+30 days')),
             'created_at' => date('Y-m-d H:i:s'),
         ];
+        if (\Config\Database::connect()->fieldExists('external_url_hash', 'jobs')) {
+            $insertData['external_url_hash'] = $externalUrlHash;
+            $insertData['external_validation_status'] = 'new';
+            $insertData['external_failure_count'] = 0;
+        }
 
         $jobModel->insert($insertData);
 

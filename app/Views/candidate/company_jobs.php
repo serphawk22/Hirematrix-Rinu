@@ -169,6 +169,7 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
         <section class="company-jobs-panel is-active" data-company-panel="jobs">
             <div class="company-jobs-content-grid">
                 <div class="company-jobs-list">
+                    <div id="companyJobsDiscoveryStatus" class="alert alert-info mb-3" role="status" aria-live="polite" hidden></div>
                     <?php if ($portalCount > 0): ?>
                         <div class="company-jobs-section-label">Available Jobs</div>
                     <?php endif; ?>
@@ -259,6 +260,7 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
     const portalCount = <?= (int) $portalCount ?>;
     const externalList = document.getElementById('cachedExternalJobsList');
     const emptyState = document.getElementById('companyJobsEmptyState');
+    const discoveryStatus = document.getElementById('companyJobsDiscoveryStatus');
     const totalCountEl = document.getElementById('companyJobsTotalCount');
     const tabCountEl = document.getElementById('companyJobsTabCount');
     const initialExternalCount = <?= (int) $externalCount ?>;
@@ -368,12 +370,22 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
         ].join('');
     };
 
+    const showDiscoveryStatus = (message, tone = 'info') => {
+        if (!discoveryStatus) {
+            return;
+        }
+        discoveryStatus.className = 'alert alert-' + (tone === 'warning' ? 'warning' : 'info') + ' mb-3';
+        discoveryStatus.textContent = message;
+        discoveryStatus.hidden = !message;
+    };
+
     const showDiscoveryLoading = () => {
         if (!emptyState) {
             return;
         }
 
         emptyState.classList.add('is-discovering');
+        showDiscoveryStatus('');
         emptyState.innerHTML = [
             '<div class="company-discovery-animation" role="status" aria-live="polite">',
             '  <div class="company-discovery-heading">',
@@ -601,12 +613,60 @@ $formatExternalSource = static function ($source, $applyUrl = '') use ($companyN
             }))
             .then((payload) => {
                 window.clearTimeout(discoveryTimeout);
-                if (!payload || payload.success === false || payload.error) {
+                if (!payload) {
+                    throw new Error('Could not check latest jobs.');
+                }
+
+                const state = String(payload.state || '');
+                const jobs = Array.isArray(payload.jobs) ? payload.jobs : [];
+
+                if (state === 'search_running') {
+                    showDiscoveryLoading();
+                    return;
+                }
+
+                if (state === 'external_unavailable') {
+                    stopCachePolling();
+                    if (previousHtml || renderedJobCardCount() > 0) {
+                        if (previousHtml && !externalList.innerHTML) {
+                            externalList.innerHTML = previousHtml;
+                        }
+                        showDiscoveryStatus(
+                            payload.message || 'Showing saved openings. Live sources are temporarily unavailable.',
+                            'warning'
+                        );
+                        if (emptyState) {
+                            emptyState.hidden = true;
+                        }
+                    } else {
+                        setEmptyStateContent(
+                            'External job sources are unavailable',
+                            payload.message || 'Current openings could not be checked. Please try again shortly.',
+                            'fas fa-exclamation-triangle'
+                        );
+                        emptyState.hidden = portalCount > 0;
+                    }
+                    return;
+                }
+
+                if (payload.success === false || payload.error) {
                     throw new Error(payload && payload.error ? payload.error : 'Could not check latest jobs.');
                 }
-                if (Array.isArray(payload.jobs) && payload.jobs.length > 0) {
-                    renderExternalJobs(payload.jobs);
+
+                if (jobs.length > 0) {
+                    renderExternalJobs(jobs);
                     stopCachePolling();
+                    if (state === 'cached_results') {
+                        showDiscoveryStatus(
+                            payload.message || 'Showing recently cached openings.',
+                            payload.refresh_state === 'external_unavailable' ? 'warning' : 'info'
+                        );
+                    } else {
+                        showDiscoveryStatus('');
+                    }
+                } else if (state === 'no_openings') {
+                    stopCachePolling();
+                    showNoResultsState();
                 } else if (cachePollAttempts >= maxCachePollAttempts) {
                     showNoResultsState();
                 }
