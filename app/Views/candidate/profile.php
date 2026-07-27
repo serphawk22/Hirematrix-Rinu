@@ -10,6 +10,13 @@ $introVideoUrl = $introVideoPath !== ''
     : '';
 
 $profileReadiness = $profileReadiness ?? ['is_ready' => true, 'missing_details' => []];
+$completion = is_array($completion ?? null) ? $completion : [
+    'percentage' => 0,
+    'completed_count' => 0,
+    'total_count' => 0,
+    'missing_count' => 0,
+    'items' => [],
+];
 $totalExperienceMonths = $totalExperienceMonths ?? 0;
 $isFresherCandidate = $isFresherCandidate ?? false;
 
@@ -72,6 +79,70 @@ $formatExperienceDisplay = static function (int $months): string {
                          aria-valuenow="<?= (int) $completion['percentage'] ?>" aria-valuemin="0" aria-valuemax="100">
                     </div>
                 </div>
+                <div class="profile-strength-summary">
+                    <strong>
+                        <?= (int) ($completion['completed_count'] ?? 0) ?>
+                        of <?= (int) ($completion['total_count'] ?? 0) ?> profile goals complete
+                    </strong>
+                    <?php if ((int) ($completion['missing_count'] ?? 0) > 0): ?>
+                        <span>Start with the highest-impact actions below.</span>
+                    <?php else: ?>
+                        <span>Your profile has all the core information recruiters need.</span>
+                    <?php endif; ?>
+                </div>
+                <?php
+                $profileItems = array_values((array) ($completion['items'] ?? []));
+                $missingProfileItems = array_values(array_filter($profileItems, static fn (array $item): bool => empty($item['completed'])));
+                $priorityProfileItems = array_slice($missingProfileItems, 0, 2);
+                ?>
+                <div class="profile-strength-checklist profile-strength-priority" aria-label="Highest-impact profile actions">
+                    <?php foreach ($priorityProfileItems as $checkItem): ?>
+                        <?php $isComplete = !empty($checkItem['completed']); ?>
+                        <article class="profile-strength-item <?= $isComplete ? 'is-complete' : 'is-missing' ?>">
+                            <span class="profile-strength-item-icon" aria-hidden="true">
+                                <i class="<?= esc($isComplete ? 'fas fa-check' : ($checkItem['icon'] ?? 'fas fa-circle')) ?>"></i>
+                            </span>
+                            <div class="profile-strength-item-copy">
+                                <strong><?= esc($checkItem['title'] ?? 'Complete profile item') ?></strong>
+                                <p><?= esc($checkItem['detail'] ?? '') ?></p>
+                            </div>
+                            <?php if ($isComplete): ?>
+                                <span class="profile-strength-done">Complete</span>
+                            <?php else: ?>
+                                <a class="btn btn-sm btn-outline-primary" href="<?= esc($checkItem['actionUrl'] ?? '#personal') ?>">
+                                    Add now <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            <?php endif; ?>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+                <details class="profile-strength-details">
+                    <summary>
+                        <span><i class="fas fa-list" aria-hidden="true"></i> View all profile goals</span>
+                        <small><?= (int) ($completion['missing_count'] ?? 0) ?> remaining</small>
+                    </summary>
+                    <div class="profile-strength-checklist" aria-label="All profile strength goals">
+                        <?php foreach ($profileItems as $checkItem): ?>
+                            <?php $isComplete = !empty($checkItem['completed']); ?>
+                            <article class="profile-strength-item <?= $isComplete ? 'is-complete' : 'is-missing' ?>">
+                                <span class="profile-strength-item-icon" aria-hidden="true">
+                                    <i class="<?= esc($isComplete ? 'fas fa-check' : ($checkItem['icon'] ?? 'fas fa-circle')) ?>"></i>
+                                </span>
+                                <div class="profile-strength-item-copy">
+                                    <strong><?= esc($checkItem['title'] ?? 'Complete profile item') ?></strong>
+                                    <p><?= esc($checkItem['detail'] ?? '') ?></p>
+                                </div>
+                                <?php if ($isComplete): ?>
+                                    <span class="profile-strength-done">Complete</span>
+                                <?php else: ?>
+                                    <a class="btn btn-sm btn-outline-primary" href="<?= esc($checkItem['actionUrl'] ?? '#personal') ?>">
+                                        Add now <i class="fas fa-arrow-right ml-1"></i>
+                                    </a>
+                                <?php endif; ?>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                </details>
             </div>
         </div>
 

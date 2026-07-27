@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Libraries\RecruiterResponseDisciplineService;
+
 use App\Controllers\BaseController;
 use App\Models\ApplicationModel;
 use App\Models\JobModel;
@@ -263,6 +265,12 @@ class JobResponsesController extends BaseController
         
         // Fetch paginated applications for the active stage
         $paginatedApplications = $this->getApplicationsForRecruiterJobs([$jobId], $recruiterId, true, $activeStage, $filters);
+        $responseIndicatorMap = (new RecruiterResponseDisciplineService())
+            ->getApplicationIndicators($jobId, $recruiterId);
+        foreach ($paginatedApplications as &$applicationRow) {
+            $applicationRow['response_indicators'] = $responseIndicatorMap[(int) ($applicationRow['id'] ?? 0)] ?? [];
+        }
+        unset($applicationRow);
         $applicationModel = model(ApplicationModel::class);
         $pager = $applicationModel->pager;
 
@@ -297,6 +305,7 @@ class JobResponsesController extends BaseController
             'advancedFilters' => $filters,
             'nextActionCounts' => $this->buildNextActionCounts($allApplications),
             'stageCounts' => $stageCounts,
+            'responseIndicatorMap' => $responseIndicatorMap,
         ];
 
         if ($this->request->isAJAX()) {

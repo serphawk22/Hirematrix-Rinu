@@ -1,0 +1,39 @@
+/* Compact profile-health checklist; loaded after the main candidate bundle. */
+body.candidate-app .profile-jobboard .profile-progress-panel {
+    padding-top: 12px;
+}
+
+body.candidate-app .profile-jobboard .profile-strength-priority {
+    margin-top: 12px;
+}
+
+body.candidate-app .profile-jobboard .profile-strength-details {
+    border-top: 1px solid var(--candidate-line, #e2e8f0);
+    margin-top: 12px;
+    padding-top: 10px;
+}
+
+body.candidate-app .profile-jobboard .profile-strength-details > summary {
+    align-items: center;
+    color: var(--candidate-accent, #0f9f91);
+    cursor: pointer;
+    display: flex;
+    font-size: 0.82rem;
+    font-weight: 700;
+    justify-content: space-between;
+    list-style: none;
+}
+
+body.candidate-app .profile-jobboard .profile-strength-details > summary::-webkit-details-marker {
+    display: none;
+}
+
+body.candidate-app .profile-jobboard .profile-strength-details > summary small {
+    color: var(--candidate-muted, #64748b);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+body.candidate-app .profile-jobboard .profile-strength-details[open] > summary {
+    margin-bottom: 4px;
+}

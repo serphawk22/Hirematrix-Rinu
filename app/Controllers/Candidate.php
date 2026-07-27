@@ -15,6 +15,7 @@ use App\Models\CandidateInterestsModel;
 use App\Models\JobModel;
 use App\Models\GithubAnalysisModel;
 use App\Libraries\GithubAnalyzer;
+use App\Libraries\CandidateProfileStrengthService;
 use App\Models\WorkExperienceModel;
 use App\Models\EducationModel;
 use App\Models\CertificationModel;
@@ -92,23 +93,13 @@ class Candidate extends BaseController
 
         $profileReadiness = $this->getProfileReadinessForResume($userId);
 
-        // Calculate profile completion percentage
-        $completionFields = [
-            'name' => !empty($user['name']),
-            'email' => !empty($user['email']),
-            'phone' => !empty($user['phone']),
-            'profile_photo' => !empty($user['profile_photo']),
-            'resume' => !empty($user['resume_path']),
-            'intro_video' => !empty($user['intro_video_path']),
-            'github' => !empty($github['github_username']),
-            'skills' => !empty($skills['skill_name']),
-            'location' => !empty($user['location']),
-            'bio' => !empty($user['bio'])
-        ];
-        
-        $completedFields = array_sum($completionFields); // This is for the overall profile completion, not specific missing details
-        $totalFields = count($completionFields);
-        $completionPercentage = round(($completedFields / $totalFields) * 100);
+        $profileStrength = (new CandidateProfileStrengthService())->evaluate(
+            (array) $user,
+            is_array($skills) ? $skills : null,
+            $workExperiences,
+            $education,
+            $projects
+        );
 
         return view('candidate/profile', [
             'user'            => $user,
@@ -124,10 +115,7 @@ class Candidate extends BaseController
                 'interviews'   => $totalInterviews,
                 'offers'       => $totalOffers
             ],
-            'completion' => [
-                'percentage' => $completionPercentage,
-                'fields'     => $completionFields
-            ],
+            'completion' => $profileStrength,
             'totalExperienceMonths' => $totalExperienceMonths,
             'isFresherCandidate' => (int)($user['is_fresher_candidate'] ?? 0) === 1,
             'profileReadiness' => $profileReadiness,

@@ -318,6 +318,50 @@ if (!empty($availableRates)) {
             </div>
 
             <?php if (empty($noJobs)): ?>
+            <?php $disciplineItems = (array) (($responseDiscipline['items'] ?? [])); ?>
+            <div class="card recruiter-radius-16 mb-4">
+                <div class="card-header py-3 d-flex align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold recruiter-weight-600">Response Discipline</h6>
+                    <?php if (!empty($disciplineItems)): ?>
+                        <span class="badge recruiter-badge-warning-soft"><?= count($disciplineItems) ?> alerts</span>
+                    <?php endif; ?>
+                </div>
+                <div class="card-body p-0">
+                    <?php if (!empty($disciplineItems)): ?>
+                        <div class="row no-gutters">
+                            <?php foreach ($disciplineItems as $disciplineItem): ?>
+                                <div class="col-md-6">
+                                    <a href="<?= esc($disciplineItem['url'] ?? $jobsUrl) ?>" class="recruiter-action-center-link h-100 d-flex align-items-start justify-content-between p-3">
+                                        <div class="d-flex align-items-start min-width-0">
+                                            <i class="<?= esc($disciplineItem['icon'] ?? 'fas fa-clock') ?> mr-3 mt-1 <?= ($disciplineItem['tone'] ?? '') === 'danger' ? 'recruiter-danger-icon' : 'recruiter-warning-icon' ?>"></i>
+                                            <div class="min-width-0">
+                                                <strong><?= esc($disciplineItem['title'] ?? 'Action required') ?></strong>
+                                                <small class="d-block text-muted">
+                                                    <?= esc($disciplineItem['jobs_label'] ?? '') ?> ·
+                                                    <?= esc($disciplineItem['age_label'] ?? '') ?>
+                                                </small>
+                                                <small class="d-block text-muted text-truncate" title="<?= esc($disciplineItem['roles_preview'] ?? '') ?>">
+                                                    <?= esc($disciplineItem['roles_preview'] ?? '') ?>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <span class="badge ml-2 <?= ($disciplineItem['tone'] ?? '') === 'danger' ? 'recruiter-badge-danger-soft' : 'recruiter-badge-warning-soft' ?>">
+                                            <?= (int) ($disciplineItem['count'] ?? 1) ?>
+                                        </span>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center py-4">
+                            <div class="recruiter-caught-up-icon"><i class="fas fa-check"></i></div>
+                            <h6 class="recruiter-weight-600">Response times are on track</h6>
+                            <p class="text-muted small mb-0">No overdue reviews, contacts, feedback, or closing vacancies.</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
             <div class="card recruiter-radius-16">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold recruiter-weight-600">Action Center</h6>

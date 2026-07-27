@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\JobModel;
+use App\Libraries\RecruiterResponseDisciplineService;
 
 class DashboardController extends BaseController
 {
@@ -56,6 +57,7 @@ class DashboardController extends BaseController
                 'conversionMetrics' => [],
                 'monthlyTrends' => [],
                 'reminders' => [],
+                'responseDiscipline' => ['items' => [], 'counts' => []],
                 'unread_count' => model('NotificationModel')->getUnreadCount($currentUserId),
                 'upcomingInterviews' => [],
                 'interviewDates' => [],
@@ -132,6 +134,8 @@ class DashboardController extends BaseController
             // ->whereIn('job_id', $jobIds ?: [0])
             //                                      ->countAllResults()
         ];
+        $responseDiscipline = (new RecruiterResponseDisciplineService())
+            ->getDashboardReminders((int) $currentUserId);
 
         $reminders = [];
         if ((int) ($pendingActions['pending_screening'] ?? 0) > 0) {
@@ -292,6 +296,7 @@ class DashboardController extends BaseController
             'conversionMetrics' => $conversionMetrics,
             'monthlyTrends' => $monthlyTrends,
             'reminders' => $reminders,
+            'responseDiscipline' => $responseDiscipline,
             'staleJobs' => $staleJobs,
             'unread_count' => $unreadNotificationsCount,
             'upcomingInterviews' => $upcomingInterviews,

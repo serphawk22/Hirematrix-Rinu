@@ -62,6 +62,7 @@
     <link rel="stylesheet" href="<?= base_url('jobboard/css/responsive.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/responsive.min.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/portal-ui-system.css?v=' . @filemtime(FCPATH . 'jobboard/css/portal-ui-system.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/candidate-pages.min.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-pages.min.css')) ?>">
+    <link rel="stylesheet" href="<?= base_url('jobboard/css/candidate-profile-compact.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-profile-compact.css')) ?>">
     <link rel="stylesheet" href="<?= base_url('jobboard/css/candidate-profile-fixes.css?v=' . @filemtime(FCPATH . 'jobboard/css/candidate-profile-fixes.css')) ?>">
     <?php if ($candidateNeedsAtsCircle): ?>
         <!-- CSS Circle Progress (Required for visual ATS Score) -->

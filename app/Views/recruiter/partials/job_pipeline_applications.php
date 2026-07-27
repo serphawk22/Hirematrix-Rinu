@@ -1,4 +1,32 @@
 <style>
+.response-aging-pill {
+  align-items: center;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 999px;
+  color: #9a3412;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 5px;
+  padding: 4px 9px;
+  white-space: nowrap;
+}
+.response-aging-pill.is-danger {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+body.dark .response-aging-pill {
+  background: rgba(154, 52, 18, .22);
+  border-color: rgba(251, 146, 60, .42);
+  color: #fdba74;
+}
+body.dark .response-aging-pill.is-danger {
+  background: rgba(153, 27, 27, .24);
+  border-color: rgba(248, 113, 113, .42);
+  color: #fca5a5;
+}
 /* ============================================================
    Candidate Pipeline Card — Compact "Option B" redesign
    Uses the existing HireMatrix --hm-* token system.
@@ -691,6 +719,7 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
             <?php foreach ($paginatedApplications as $app): ?>
                 <?php
                     $rawAppStatus = (string) ($app['status'] ?? 'applied');
+                    $responseIndicators = (array) ($app['response_indicators'] ?? []);
                     $appStatus = ['hold' => 'on_hold', '' => 'applied'][$rawAppStatus] ?? $rawAppStatus;
                     $tone = $statusTones[$appStatus] ?? 'neutral';
                     $appliedAt = !empty($app['applied_at']) ? date('d M, Y', strtotime($app['applied_at'])) : '-';
@@ -840,6 +869,17 @@ $atsSortIcon = $pipelineSort === 'ats_asc' ? 'fa-sort-up' : 'fa-sort-down';
                                     <?php if ($atsScore >= 70): ?>
                                         <span class="response-recommended">Recommended</span>
                                     <?php endif; ?>
+                                    <?php foreach ($responseIndicators as $responseIndicator): ?>
+                                        <span class="response-aging-pill <?= ($responseIndicator['tone'] ?? '') === 'danger' ? 'is-danger' : '' ?>"
+                                              title="<?= esc($responseIndicator['detail'] ?? '') ?>">
+                                            <i class="<?= esc($responseIndicator['icon'] ?? 'fas fa-clock') ?>"></i>
+                                            <?= esc($responseIndicator['type'] === 'unreviewed'
+                                                ? 'Unreviewed ' . ($responseIndicator['age_days'] ?? 0) . 'd'
+                                                : ($responseIndicator['type'] === 'feedback_overdue'
+                                                    ? 'Feedback overdue'
+                                                    : 'Not contacted')) ?>
+                                        </span>
+                                    <?php endforeach; ?>
                                 </div>
                                 <div class="response-meta-line">
                                     <span><i class="fas fa-briefcase"></i> <?= esc($app['experience_display'] ?? '-') ?></span>
