@@ -96,6 +96,201 @@ $routes->get('auth/google', 'Auth::googleCandidateStart');
 $routes->post('auth/parse-resume', 'Auth::parseResumeForOnboarding');
 $routes->get('auth/google/callback', 'Auth::googleCandidateCallback');
 
+// API Routes for Flutter App
+$routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
+    $routes->post('login', 'ApiAuthController::login');
+    $routes->post('google-login', 'ApiAuthController::googleLogin');
+    $routes->post('register', 'ApiAuthController::register');
+    $routes->post('recruiter/register', 'ApiAuthController::registerRecruiter');
+    $routes->post('recruiter/verify-email', 'ApiAuthController::verifyRecruiterEmail');
+    $routes->post('recruiter/resend-verification', 'ApiAuthController::resendRecruiterVerification');
+    $routes->post('onboarding/(:segment)', 'ApiOnboardingController::saveStep/$1');
+    $routes->get('profile/(:num)', 'ApiProfileController::getProfile/$1');
+    $routes->post('profile/update_personal', 'ApiProfileController::updatePersonal');
+    $routes->post('profile/update_career', 'ApiProfileController::updateCareer');
+    $routes->post('profile/update_preferences', 'ApiProfileController::updatePreferences');
+    $routes->post('profile/update_settings', 'ApiProfileController::updateSettings');
+    $routes->post('change-password', 'ApiAuthController::changePassword');
+    $routes->post('forgot-password', 'ApiAuthController::forgotPassword');
+    $routes->post('reset-password', 'ApiAuthController::resetPassword');
+    $routes->post('profile/add_skill', 'ApiProfileController::addSkill');
+    $routes->post('profile/remove_skill', 'ApiProfileController::removeSkill');
+    $routes->post('profile/analyze_github', 'ApiProfileController::analyzeGithub');
+    $routes->post('profile/update_interests', 'ApiProfileController::updateInterests');
+    $routes->post('profile/save_experience', 'ApiProfileController::saveExperience');
+    $routes->post('profile/delete_experience/(:num)', 'ApiProfileController::deleteExperience/$1');
+    $routes->post('profile/save_project', 'ApiProfileController::saveProject');
+    $routes->post('profile/delete_project/(:num)', 'ApiProfileController::deleteProject/$1');
+    $routes->post('profile/save_education', 'ApiProfileController::saveEducation');
+    $routes->post('profile/delete_education/(:num)', 'ApiProfileController::deleteEducation/$1');
+    $routes->post('profile/save_certification', 'ApiProfileController::saveCertification');
+    $routes->post('profile/delete_certification/(:num)', 'ApiProfileController::deleteCertification/$1');
+    $routes->post('profile/upload_resume', 'ApiProfileController::uploadResume');
+    $routes->post('profile/upload_video', 'ApiProfileController::uploadVideo');
+    $routes->post('profile/upload_photo', 'ApiProfileController::uploadPhoto');
+    $routes->post('profile/delete_photo', 'ApiProfileController::deletePhoto');
+    $routes->post('chatbot/ask', 'ApiDashboardController::askChatbot');
+    $routes->get('chatbot/suggestions', 'ApiDashboardController::getChatbotSuggestions');
+    $routes->get('dashboard/(:num)', 'ApiDashboardController::getDashboard/$1');
+    $routes->get('job-search-strategy/(:num)', 'ApiDashboardController::getJobSearchStrategy/$1');
+    $routes->get('company-discovery', 'ApiDashboardController::getCompanyDiscovery');
+    $routes->get('jobs/featured', 'ApiJobsController::getFeaturedJobs');
+    $routes->get('local-companies/init', 'Companies::initLocalCompanies');
+    $routes->get('jobs/detail/(:num)', 'ApiJobsController::getJobDetails/$1');
+    $routes->get('jobs/(:num)', 'ApiJobsController::getJobs/$1');
+    $routes->post('jobs/mark-visited/(:num)', 'ApiJobsController::markVisited/$1');
+    $routes->get('jobs/saved/(:num)', 'ApiJobsController::getSavedJobs/$1');
+    $routes->post('jobs/save', 'ApiJobsController::saveJob');
+    $routes->post('jobs/unsave', 'ApiJobsController::unsaveJob');
+    $routes->post('jobs/apply/(:num)', 'ApiJobsController::applyJob/$1');
+    $routes->get('jobs/generate-ai-cover-letter', 'ApiJobsController::generateAiCoverLetter');
+    $routes->get('jobs/analyze-ats-match', 'ApiJobsController::analyzeAtsMatch');
+    $routes->get('jobs/invitation', 'ApiJobsController::getJobInvitation');
+    $routes->get('company/(:num)', 'ApiJobsController::getCompanyProfile/$1');
+    $routes->post('company/(:num)/review', 'ApiJobsController::submitCompanyReview/$1');
+    $routes->get('plans/(:num)', 'ApiDashboardController::getPlans/$1');
+    $routes->post('plans/subscribe', 'ApiDashboardController::subscribe');
+    $routes->post('plans/start-trial', 'ApiDashboardController::startTrial');
+    $routes->post('payment/create-order', 'ApiPaymentController::createOrder');
+    $routes->post('payment/verify', 'ApiPaymentController::verify');
+    $routes->get('applications/(:num)', 'ApiApplicationsController::getApplications/$1');
+    $routes->post('applications/withdraw/(:num)', 'ApiApplicationsController::withdraw/$1');
+    $routes->get('applications/(:num)/slots', 'ApiApplicationsController::getAvailableSlots/$1');
+    $routes->post('applications/book-slot', 'ApiApplicationsController::processBooking');
+    $routes->get('applications/bookings/(:num)', 'ApiApplicationsController::getMyBookings/$1');
+    $routes->get('applications/(:num)/reschedule-info', 'ApiApplicationsController::getRescheduleInfo/$1');
+    $routes->post('applications/reschedule', 'ApiApplicationsController::processReschedule');
+    
+    // Notification API Routes
+    $routes->get('notifications/(:num)', 'ApiNotificationController::getNotifications/$1');
+    $routes->post('notifications/mark-read/(:num)', 'ApiNotificationController::markAsRead/$1');
+    $routes->post('notifications/mark-all-read/(:num)', 'ApiNotificationController::markAllAsRead/$1');
+    $routes->post('notifications/delete/(:num)', 'ApiNotificationController::deleteNotification/$1');
+
+    // Message API Routes
+    $routes->get('messages/thread', 'ApiMessagesController::getThread');
+    $routes->post('messages/reply', 'ApiMessagesController::sendReply');
+    
+    // Mobile Recruiter API Routes
+    $routes->group('mobile', function($routes) {
+        $routes->get('test', function() {
+            try {
+                $db = \Config\Database::connect();
+                $db->connect();
+                return service('response')->setJSON([
+                    'success' => true,
+                    'message' => 'Connection successful',
+                    'database' => $db->getDatabase()
+                ]);
+            } catch (\Exception $e) {
+                return service('response')->setJSON([
+                    'success' => true,
+                    'message' => 'Server reached, but DB error: ' . $e->getMessage()
+                ]);
+            }
+        });
+        
+        $routes->post('login', 'ApiAuthController::login');
+        $routes->post('validate_session', 'ApiAuthController::validateSession');
+        $routes->post('forgot_password', 'ApiAuthController::forgotPassword');
+        $routes->post('reset_password', 'ApiAuthController::resetPassword');
+        $routes->post('resend_verification', 'ApiAuthController::resendVerification');
+        $routes->post('signup', 'ApiAuthController::register');
+        $routes->post('change-password', 'ApiAuthController::changePassword');
+        $routes->post('recruiter/change-password', 'API_RecruiterController::changePassword');
+        $routes->post('chatbot/ask', 'API_RecruiterController::askChatbot');
+        $routes->get('chatbot/suggestions', 'API_RecruiterController::getChatbotSuggestions');
+        $routes->get('chatbot/brief', 'API_RecruiterController::getChatbotBrief');
+        $routes->get('dashboard', 'API_RecruiterController::getDashboard');
+        $routes->get('export/excel', 'API_RecruiterController::exportExcel');
+        $routes->get('export-jobs-report', 'API_RecruiterController::exportJobsReport');
+        $routes->get('dashboard/leaderboard', 'API_RecruiterController::getLeaderboard');
+        $routes->get('jobs', 'API_RecruiterController::getJobs');
+        $routes->post('jobs/add', 'API_RecruiterController::addJob');
+        $routes->post('jobs/update', 'API_RecruiterController::updateJob');
+        $routes->post('jobs/update-status', 'API_RecruiterController::updateJobStatus');
+        $routes->get('applications', 'API_RecruiterController::getApplications');
+        $routes->get('candidates', 'API_RecruiterController::getCandidateDatabase');
+        $routes->post('candidates/invite', 'API_RecruiterController::inviteCandidate');
+        $routes->post('candidates/bulk_invite', 'API_RecruiterController::bulkInviteCandidate');
+        $routes->get('candidates/(:num)', 'API_RecruiterController::getCandidateProfile/$1');
+        $routes->post('candidates/(:num)/action', 'API_RecruiterController::logCandidateAction/$1');
+        $routes->post('candidates/(:num)/message', 'API_RecruiterController::sendCandidateMessage/$1');
+        $routes->post('candidates/(:num)/notes', 'API_RecruiterController::saveCandidateNotes/$1');
+        $routes->get('candidates/(:num)/resume', 'API_RecruiterController::downloadCandidateResume/$1');
+        $routes->get('interviews', 'API_RecruiterController::getInterviews');
+        $routes->get('notifications', 'API_RecruiterController::getNotifications');
+        $routes->post('notifications/mark_read', 'API_RecruiterController::markNotificationRead');
+        $routes->post('notifications/delete', 'API_RecruiterController::deleteNotification');
+        $routes->get('company', 'API_RecruiterController::getCompany');
+        $routes->post('company/update', 'API_RecruiterController::updateCompanyProfile');
+        $routes->post('company/upload_photo', 'API_RecruiterController::uploadCompanyImage');
+        $routes->post('company/delete_photo', 'API_RecruiterController::deleteCompanyImage');
+        $routes->post('support/chat', 'API_SupportController::chat');
+        $routes->get('profile', 'API_RecruiterController::getProfile');
+        $routes->post('profile/update', 'API_RecruiterController::updateProfile');
+        $routes->get('settings', 'API_RecruiterController::getSettings');
+        $routes->post('settings/update', 'API_RecruiterController::updateSettings');
+        $routes->get('activity', 'API_RecruiterController::getActivity');
+        $routes->get('team', 'API_RecruiterController::getTeam');
+        $routes->post('team/invite', 'API_RecruiterController::inviteMember');
+        $routes->post('applications/update_status', 'API_RecruiterController::updateApplicationStatus');
+        $routes->post('applications/bulk_update_status', 'API_RecruiterController::bulkUpdateApplicationStatus');
+        $routes->post('applications/bulk_email', 'API_RecruiterController::bulkSendEmail');
+        $routes->post('applications/bulk_message', 'API_RecruiterController::bulkSendMessage');
+        $routes->post('update_fcm_token', 'API_RecruiterController::updateFcmToken');
+
+        // Resdex API Routes
+        $routes->get('resdex/search', 'API_RecruiterController::resdexSearch');
+        $routes->get('resdex/candidate/(:num)', 'API_RecruiterController::resdexGetCandidate/$1');
+        $routes->get('resdex/folders', 'API_RecruiterController::resdexGetFolders');
+        $routes->post('resdex/folders/create', 'API_RecruiterController::resdexCreateFolder');
+        $routes->post('resdex/folders/delete', 'API_RecruiterController::resdexDeleteFolders');
+        $routes->get('resdex/folders/(:num)', 'API_RecruiterController::resdexGetFolderDetails/$1');
+        $routes->post('resdex/folders/add', 'API_RecruiterController::resdexAddToFolder');
+        $routes->post('resdex/folders/bulk-add', 'API_RecruiterController::resdexBulkAddToFolder');
+        $routes->post('resdex/folders/remove', 'API_RecruiterController::resdexRemoveFromFolder');
+        $routes->get('resdex/searches', 'API_RecruiterController::resdexGetSearches');
+        $routes->post('resdex/searches/save', 'API_RecruiterController::resdexSaveSearch');
+        $routes->post('resdex/searches/delete', 'API_RecruiterController::resdexDeleteSearches');
+
+        // Interview Management
+        $routes->get('interview_slots', 'API_RecruiterController::getInterviewSlots');
+        $routes->post('interview_slots/add', 'API_RecruiterController::addInterviewSlot');
+        $routes->post('interview_slots/update', 'API_RecruiterController::updateInterviewSlot');
+        $routes->post('interview_slots/delete', 'API_RecruiterController::deleteInterviewSlot');
+        $routes->get('interview_bookings', 'API_RecruiterController::getInterviewBookings');
+        $routes->post('interviews/reschedule', 'API_RecruiterController::rescheduleInterviewBooking');
+        $routes->get('interviews/reschedule/data', 'API_RecruiterController::getRescheduleData');
+        $routes->post('interviews/reschedule/process', 'API_RecruiterController::processRescheduleData');
+        $routes->post('interviews/review', 'API_RecruiterController::submitInterviewReview');
+    });
+    // Career Transition AI API Routes
+    $routes->get('career-transition/(:num)', 'ApiCareerTransitionController::getTransition/$1');
+    $routes->post('career-transition/create', 'ApiCareerTransitionController::create');
+    $routes->post('career-transition/complete-task/(:num)', 'ApiCareerTransitionController::completeTask/$1');
+    $routes->post('career-transition/complete-lesson/(:num)', 'ApiCareerTransitionController::completeLesson/$1');
+    $routes->get('career-transition/modules/(:num)', 'ApiCareerTransitionController::getModules/$1');
+    $routes->get('career-transition/module-lessons/(:num)', 'ApiCareerTransitionController::getLessons/$1');
+    $routes->post('career-transition/reset', 'ApiCareerTransitionController::reset');
+    $routes->get('career-transition/history/(:num)', 'ApiCareerTransitionController::history/$1');
+    $routes->post('career-transition/reactivate', 'ApiCareerTransitionController::reactivate');
+
+    // Resume Studio API Routes
+    $routes->get('resume-studio/(:num)', 'ApiResumeStudioController::getStudioData/$1');
+    $routes->post('resume-studio/generate', 'ApiResumeStudioController::generate');
+    $routes->post('resume-studio/sync-transition', 'ApiResumeStudioController::syncTransition');
+    $routes->post('resume-studio/set-primary', 'ApiResumeStudioController::setPrimary');
+    $routes->post('resume-studio/delete', 'ApiResumeStudioController::delete');
+    $routes->get('resume-studio/download-pdf/(:num)/(:num)', 'ApiResumeStudioController::downloadResumeVersion/$1/$2');
+    $routes->get('resume-studio/preview-html/(:num)/(:num)', 'ApiResumeStudioController::previewResumeVersion/$1/$2');
+
+    // Premium Mentor API Routes
+    $routes->get('premium-mentor/(:num)', 'ApiPremiumMentorController::getMentorData/$1');
+    $routes->post('premium-mentor/chat', 'ApiPremiumMentorController::chat');
+    $routes->post('premium-mentor/create-plan', 'ApiPremiumMentorController::createPlan');
+});
+
 // recruiter registration (restricted)
 $routes->get('recruiter/register', 'Auth::registerAdmin');
 $routes->post('recruiter/register', 'Auth::saveAdmin');
@@ -226,6 +421,7 @@ $routes->post('recruiter/post_job', 'Recruiter::saveJob', ['filter' => 'recruite
 
 $routes->get('candidate/profile', 'Candidate::profile', ['filter' => 'candidate']);
 $routes->get('candidate/settings', 'Candidate::settings', ['filter' => 'candidate']);
+$routes->get('candidate/get-settings-ajax', 'Candidate::getSettingsAjax', ['filter' => 'candidate']);
 $routes->post('candidate/update-notification-settings', 'Candidate::updateNotificationSettings', ['filter' => 'candidate']);
 $routes->get('candidate/resume-studio', 'Candidate::resumeStudio', ['filter' => 'candidate']);
 $routes->post('candidate/resume_upload', 'Candidate::resumeUpload', ['filter' => 'candidate']);

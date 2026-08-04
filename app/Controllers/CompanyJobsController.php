@@ -133,7 +133,7 @@ class CompanyJobsController extends BaseController
      * for quick display only when it is active, has a valid apply URL, and was
      * checked recently.
      */
-    private function getCachedDiscoveredJobsByCompany(string $companyName, int $limit = 50): array
+    public function getCachedDiscoveredJobsByCompany(string $companyName, int $limit = 50): array
     {
         $limit = max(1, min(100, $limit));
         $freshAfter = date('Y-m-d H:i:s', strtotime('-30 days'));

@@ -522,7 +522,7 @@ class DashboardController extends BaseController
 
     }
 
-    private function getStaleJobsNeedingAttention(array $jobIds, int $daysWithoutShortlist = 14): array
+    public function getStaleJobsNeedingAttention(array $jobIds, int $daysWithoutShortlist = 14): array
     {
         $jobIds = array_values(array_filter(array_map('intval', $jobIds), static fn (int $id): bool => $id > 0));
         if (empty($jobIds)) {
@@ -550,7 +550,7 @@ class DashboardController extends BaseController
         ", [$cutoff])->getResultArray();
     }
 
-    private function getCandidateRepliesAwaitingResponse(int $recruiterId, array $jobIds, int $daysWaiting = 3): array
+    public function getCandidateRepliesAwaitingResponse(int $recruiterId, array $jobIds, int $daysWaiting = 3): array
     {
         $jobIds = array_values(array_filter(array_map('intval', $jobIds), static fn (int $id): bool => $id > 0));
         if ($recruiterId <= 0 || empty($jobIds)) {
@@ -625,7 +625,7 @@ class DashboardController extends BaseController
     /**
      * Get Overview Export Data
      */
-    private function getOverviewExportData($jobIds = [])
+    public function getOverviewExportData($jobIds = [])
     {
 
         return [
@@ -732,7 +732,7 @@ class DashboardController extends BaseController
     /**
      * Get Detailed Export Data
      */
-    private function getDetailedExportData($jobIds = [])
+    public function getDetailedExportData($jobIds = [])
     {
         $applicationModel = model('ApplicationModel');
         $db = \Config\Database::connect();
@@ -795,7 +795,7 @@ class DashboardController extends BaseController
     /**
      * Generate Excel Report
      */
-    private function generateExcelReport($data, $filename)
+    public function generateExcelReport($data, $filename)
     {
         require_once ROOTPATH . 'vendor/autoload.php';
 
@@ -870,7 +870,7 @@ class DashboardController extends BaseController
     /**
      * Helper Methods
      */
-    private function getSummarySheet($jobIds = [])
+    public function getSummarySheet($jobIds = [])
     {
         $applicationModel = model('ApplicationModel');
 
@@ -905,7 +905,7 @@ class DashboardController extends BaseController
 
     }
 
-    private function getApplicationsSheet($jobIds = [])
+    public function getApplicationsSheet($jobIds = [])
     {
         $applicationModel = model('ApplicationModel');
 
@@ -937,7 +937,7 @@ class DashboardController extends BaseController
         return $data;
     }
 
-    private function getJobStatsSheet($jobIds = [])
+    public function getJobStatsSheet($jobIds = [])
     {
         $db = \Config\Database::connect();
         $whereClause = '';

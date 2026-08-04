@@ -16,7 +16,7 @@ class CareerTransitionPDF_TCPDF extends BaseController
     /**
      * Download entire course as PDF using PHP only (no Python required)
      */
-    public function downloadCoursePDF()
+    public function downloadCoursePDF($candidateId = null)
     {
         if (session()->get('role') !== 'candidate') {
             return redirect()->to(base_url('recruiter/dashboard'))->with('error', 'Access denied.');
@@ -35,6 +35,9 @@ class CareerTransitionPDF_TCPDF extends BaseController
         $activeTransition = $transitionModel->getActiveTransition($candidateId);
         
         if (!$activeTransition) {
+            if ($isApi) {
+                return $this->response->setStatusCode(404)->setBody('No active career transition found.');
+            }
             return redirect()->to('career-transition')->with('error', 'No active career transition found.');
         }
 
@@ -67,6 +70,9 @@ class CareerTransitionPDF_TCPDF extends BaseController
             return $this->response->download($pdfPath, null)->setFileName($filename);
         } catch (\Throwable $e) {
             log_message('error', 'PDF Generation Error: ' . $e->getMessage());
+            if ($isApi) {
+                return $this->response->setStatusCode(500)->setBody('Failed to generate PDF. Please try again.');
+            }            
             return redirect()->to('career-transition')->with('error', 'Failed to generate PDF. Please try again.');
         }
     }
