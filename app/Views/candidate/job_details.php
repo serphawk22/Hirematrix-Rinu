@@ -298,7 +298,7 @@ $interviewNudge = [
                             </a>
                         </div>
                     <?php elseif ($alreadyApplied): ?>
-                        <div class="resume-coach-card">
+                        <div class="resume-coach-card applied-guidance-card">
                             <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
                                 <div>
                                     <h3 class="h5 mb-1 text-primary"><i class="fas fa-check-circle mr-2"></i>Application Already Submitted</h3>

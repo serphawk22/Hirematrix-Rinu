@@ -807,21 +807,23 @@ $activeFilterCount = count($activeFilterChips);
                                     </div>
                                 <?php endif; ?>
 
+                                <?php
+                                $resultPage = isset($pager) && method_exists($pager, 'getCurrentPage')
+                                    ? max(1, (int) $pager->getCurrentPage())
+                                    : 1;
+                                $resultPerPage = isset($pager) && method_exists($pager, 'getPerPage')
+                                    ? max(1, (int) $pager->getPerPage())
+                                    : max(1, count((array) $jobs));
+                                $resultStart = $totalJobs > 0 ? (($resultPage - 1) * $resultPerPage) + 1 : 0;
+                                $resultEnd = $totalJobs > 0 ? min($totalJobs, $resultStart + count((array) $jobs) - 1) : 0;
+                                $resultLabel = trim((string) ($filters['search'] ?? ''));
+                                ?>
                                 <div class="jobs-results-summary">
-                                    <div class="jobs-results-summary-copy">
-                                        <div class="jobs-results-summary-kicker">Browse jobs</div>
-                                        <h2 class="jobs-results-summary-title">
-                                            <?php if (!empty($filters['search'])): ?>
-                                                Results for "<?= esc($filters['search']) ?>"
-                                            <?php else: ?>
-                                                <?= $activeFilterCount > 0 ? 'Filtered jobs' : 'All jobs' ?>
-                                            <?php endif; ?>
-                                        </h2>
-                                        <p class="jobs-results-summary-text">
-                                            <strong><?= $totalJobs ?></strong> job<?= $totalJobs != 1 ? 's' : '' ?>
-                                            found<?= $activeFilterCount > 0 ? ' with ' . $activeFilterCount . ' active filter' . ($activeFilterCount === 1 ? '' : 's') : '' ?>.
-                                        </p>
-                                    </div>
+                                    <p class="jobs-results-summary-text">
+                                        <strong><?= $resultStart ?>–<?= $resultEnd ?></strong>
+                                        of <strong><?= (int) $totalJobs ?></strong>
+                                        <?= $resultLabel !== '' ? esc($resultLabel) . ' ' : '' ?>Job<?= (int) $totalJobs === 1 ? '' : 's' ?>
+                                    </p>
                                     <?php
                                     $clearAllUrl = !empty($filters['company'])
                                         ? base_url('jobs?company=' . urlencode($filters['company']))
